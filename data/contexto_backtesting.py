@@ -1,0 +1,49 @@
+# -*- coding: utf-8 -*-
+"""CONTEXTO DE BACKTESTING - Datos reales para nutrir a Gemini"""
+import json
+from datetime import datetime
+
+def generar_contexto_backtesting():
+    """Genera un resumen de rendimiento para inyectar en prompts de Gemini"""
+    
+    # Datos REALES del backtesting de 20 días (262 partidos)
+    contexto = {
+        "rendimiento_global": {
+            "win_rate": "63.0%",
+            "profit": "+$1,367",
+            "total_partidos": 262,
+            "dias_analizados": 20
+        },
+        "por_clase": {
+            "ELITE": {"wr": "73.1%", "picks": 78, "profit": "+$909", "stake": "3u"},
+            "SEGURO": {"wr": "73.6%", "picks": 53, "profit": "+$422", "stake": "2u"},
+            "RESCATE": {"wr": "57.1%", "picks": 42, "profit": "+$36", "stake": "1u"},
+            "EVITAR": {"wr": "50.6%", "picks": 89, "profit": "$0", "stake": "0u"}
+        },
+        "lecciones": [
+            "ELITE y SEGURO son las clases más rentables (73% WR)",
+            "RESCATE tiene WR aceptable (57%) pero bajo profit",
+            "EVITAR descarta correctamente picks perdedores (50.6% WR)",
+            "Confianza >55% en SEGURO es clave para mantener WR alto",
+            "Equipos trampa (Angels, Marlins) deben seguir bloqueados"
+        ],
+        "recomendaciones": [
+            "Priorizar picks ELITE y SEGURO",
+            "RESCATE solo si el handicap es +3.5",
+            "EVITAR mantener umbrales actuales",
+            "Aumentar stake en ELITE si WR se mantiene >70%"
+        ]
+    }
+    
+    with open("data/contexto_backtesting.json", "w", encoding="utf-8") as f:
+        json.dump(contexto, f, indent=2, ensure_ascii=False)
+    
+    return contexto
+
+if __name__ == "__main__":
+    ctx = generar_contexto_backtesting()
+    print("✅ Contexto de backtesting generado:")
+    print(f"   WR Global: {ctx['rendimiento_global']['win_rate']}")
+    print(f"   Profit: {ctx['rendimiento_global']['profit']}")
+    print(f"   Lecciones: {len(ctx['lecciones'])}")
+    print(f"   Recomendaciones: {len(ctx['recomendaciones'])}")

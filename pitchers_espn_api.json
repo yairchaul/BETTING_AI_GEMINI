@@ -1,0 +1,52 @@
+{
+  "juegos": [
+    {
+      "away_team": "Cleveland Guardians",
+      "home_team": "Tampa Bay Rays",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "Pittsburgh Pirates",
+      "home_team": "St. Louis Cardinals",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "Toronto Blue Jays",
+      "home_team": "Boston Red Sox",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "Chicago White Sox",
+      "home_team": "Los Angeles Angels",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "Minnesota Twins",
+      "home_team": "Seattle Mariners",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "Texas Rangers",
+      "home_team": "New York Yankees",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "San Diego Padres",
+      "home_team": "Chicago Cubs",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "Los Angeles Dodgers",
+      "home_team": "Miami Marlins",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    }
+  ]
+}

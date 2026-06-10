@@ -1,0 +1,27 @@
+[
+  {
+    "team_a": {"name": "Dodgers", "runs_avg": 5.4, "runs_allowed": 4.2, "obp": 0.335, "slugging": 0.445, "pitcher_era": 3.2, "bullpen_era": 3.8},
+    "team_b": {"name": "Giants", "runs_avg": 4.3, "runs_allowed": 4.6, "obp": 0.310, "slugging": 0.395, "pitcher_era": 4.5, "bullpen_era": 4.2},
+    "result": {"win": "A"}
+  },
+  {
+    "team_a": {"name": "Yankees", "runs_avg": 5.1, "runs_allowed": 4.0, "obp": 0.325, "slugging": 0.430, "pitcher_era": 3.5, "bullpen_era": 3.6},
+    "team_b": {"name": "Red Sox", "runs_avg": 4.8, "runs_allowed": 4.5, "obp": 0.318, "slugging": 0.420, "pitcher_era": 4.1, "bullpen_era": 4.0},
+    "result": {"win": "A"}
+  },
+  {
+    "team_a": {"name": "Astros", "runs_avg": 4.9, "runs_allowed": 3.8, "obp": 0.330, "slugging": 0.425, "pitcher_era": 3.1, "bullpen_era": 3.5},
+    "team_b": {"name": "Rangers", "runs_avg": 5.2, "runs_allowed": 4.3, "obp": 0.322, "slugging": 0.440, "pitcher_era": 3.8, "bullpen_era": 3.9},
+    "result": {"win": "B"}
+  },
+  {
+    "team_a": {"name": "Braves", "runs_avg": 5.6, "runs_allowed": 3.9, "obp": 0.340, "slugging": 0.460, "pitcher_era": 3.0, "bullpen_era": 3.4},
+    "team_b": {"name": "Mets", "runs_avg": 4.5, "runs_allowed": 4.4, "obp": 0.315, "slugging": 0.400, "pitcher_era": 4.2, "bullpen_era": 4.1},
+    "result": {"win": "A"}
+  },
+  {
+    "team_a": {"name": "Phillies", "runs_avg": 4.7, "runs_allowed": 4.1, "obp": 0.320, "slugging": 0.415, "pitcher_era": 3.7, "bullpen_era": 3.8},
+    "team_b": {"name": "Marlins", "runs_avg": 3.9, "runs_allowed": 4.8, "obp": 0.295, "slugging": 0.370, "pitcher_era": 4.6, "bullpen_era": 4.4},
+    "result": {"win": "A"}
+  }
+]

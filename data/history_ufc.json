@@ -1,0 +1,18 @@
+[
+  {
+    "fecha": "20260530",
+    "deporte": "ufc",
+    "nombre": "UFC Fight Night: Song vs. Figueiredo",
+    "home": "Loma Lookboonmee",
+    "away": "Jaqueline Amorim",
+    "home_score": null,
+    "away_score": null,
+    "ganador_real": "Jaqueline Amorim",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "evento_ejemplo": {
+    "type": "event",
+    "data": {
+      "evento": "N/A",
+      "detalles": {},
+      "peleas": []
+    }
+  },
+  "peleador_ejemplo": {
+    "type": "fighter",
+    "data": {
+      "nombre": "N/A",
+      "apodo": "",
+      "record": "0-0-0",
+      "metricas": {}
+    }
+  }
+}

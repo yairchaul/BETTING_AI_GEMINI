@@ -1,0 +1,1968 @@
+{
+  "leagues": [
+    {
+      "id": "3321",
+      "uid": "s:3301~l:3321",
+      "name": "Ultimate Fighting Championship",
+      "displayName": "UFC",
+      "abbreviation": "UFC",
+      "shortName": "UFC",
+      "slug": "ufc",
+      "season": {
+        "year": 2026,
+        "startDate": "2026-01-01T08:00Z",
+        "endDate": "2026-12-31T08:00Z",
+        "displayName": "2026",
+        "type": {
+          "id": "2",
+          "type": 2,
+          "name": "Regular Season",
+          "abbreviation": "reg"
+        }
+      },
+      "logos": [
+        {
+          "href": "https://a.espncdn.com/i/teamlogos/leagues/500/ufc.png",
+          "width": 500,
+          "height": 500,
+          "alt": "",
+          "rel": [
+            "full",
+            "default"
+          ],
+          "lastUpdated": "2018-12-21T18:30Z"
+        },
+        {
+          "href": "https://a.espncdn.com/i/teamlogos/leagues/500/ufc.png",
+          "width": 500,
+          "height": 500,
+          "alt": "",
+          "rel": [
+            "full",
+            "dark"
+          ],
+          "lastUpdated": "2018-12-21T18:30Z"
+        }
+      ],
+      "calendarType": "list",
+      "calendarIsWhitelist": true,
+      "calendarStartDate": "2026-01-01T08:00Z",
+      "calendarEndDate": "2026-12-31T08:00Z",
+      "calendar": [
+        {
+          "label": "UFC 324: Gaethje vs. Pimblett",
+          "startDate": "2026-01-25T01:30Z",
+          "endDate": "2026-01-25T07:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600057024?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC 325: Volkanovski vs. Lopes 2",
+          "startDate": "2026-02-01T01:00Z",
+          "endDate": "2026-02-01T07:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600057025?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC Fight Night: Bautista vs. Oliveira",
+          "startDate": "2026-02-08T01:00Z",
+          "endDate": "2026-02-08T07:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600057328?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC Fight Night: Strickland vs. Hernandez",
+          "startDate": "2026-02-22T01:00Z",
+          "endDate": "2026-02-22T07:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600057329?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC Fight Night: Moreno vs. Kavanagh",
+          "startDate": "2026-03-01T01:00Z",
+          "endDate": "2026-03-01T07:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600057330?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC 326: Holloway vs. Oliveira 2",
+          "startDate": "2026-03-08T01:30Z",
+          "endDate": "2026-03-08T07:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600057326?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC Fight Night: Emmett vs. Vallejos",
+          "startDate": "2026-03-15T00:00Z",
+          "endDate": "2026-03-15T06:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600057364?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC Fight Night: Evloev vs. Murphy",
+          "startDate": "2026-03-21T20:00Z",
+          "endDate": "2026-03-22T06:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600057365?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC Fight Night: Adesanya vs. Pyfer",
+          "startDate": "2026-03-29T00:00Z",
+          "endDate": "2026-03-29T06:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600057366?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC Fight Night: Moicano vs. Duncan",
+          "startDate": "2026-04-05T00:00Z",
+          "endDate": "2026-04-05T06:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600058693?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC 327: Procházka vs. Ulberg",
+          "startDate": "2026-04-12T00:30Z",
+          "endDate": "2026-04-12T06:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600058745?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC Fight Night: Burns vs. Malott",
+          "startDate": "2026-04-19T00:00Z",
+          "endDate": "2026-04-19T06:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600058725?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC Fight Night: Sterling vs. Zalal",
+          "startDate": "2026-04-26T00:00Z",
+          "endDate": "2026-04-26T06:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600058746?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC Fight Night: Della Maddalena vs. Prates",
+          "startDate": "2026-05-02T11:00Z",
+          "endDate": "2026-05-03T06:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600058807?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC 328: Chimaev vs. Strickland",
+          "startDate": "2026-05-10T00:00Z",
+          "endDate": "2026-05-10T06:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600058947?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC Fight Night: Allen vs. Costa",
+          "startDate": "2026-05-17T01:00Z",
+          "endDate": "2026-05-17T06:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600058948?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC Fight Night: Song vs. Figueiredo",
+          "startDate": "2026-05-30T23:00Z",
+          "endDate": "2026-05-31T06:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600058517?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC Fight Night: Muhammad vs. Bonfim",
+          "startDate": "2026-06-07T00:00Z",
+          "endDate": "2026-06-07T06:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600058949?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC Freedom 250: Topuria vs. Gaethje",
+          "startDate": "2026-06-15T03:00Z",
+          "endDate": "2026-06-15T06:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600058854?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC 329",
+          "startDate": "2026-07-11T23:00Z",
+          "endDate": "2026-07-12T06:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600059148?lang=en&region=us"
+          }
+        },
+        {
+          "label": "UFC 330",
+          "startDate": "2026-08-16T00:00Z",
+          "endDate": "2026-08-16T06:59Z",
+          "event": {
+            "$ref": "http://sports.core.api.espn.pvt/v2/sports/mma/leagues/ufc/events/600059185?lang=en&region=us"
+          }
+        }
+      ]
+    }
+  ],
+  "season": {
+    "type": 2,
+    "year": 2026
+  },
+  "day": {
+    "date": "2026-04-18"
+  },
+  "events": [
+    {
+      "id": "600058725",
+      "uid": "s:3301~l:3321~e:600058725",
+      "date": "2026-04-18T21:00Z",
+      "name": "UFC Fight Night: Burns vs. Malott",
+      "shortName": "UFC Fight Night",
+      "season": {
+        "year": 2026,
+        "type": 2,
+        "slug": "regular-season"
+      },
+      "competitions": [
+        {
+          "id": "401867940",
+          "uid": "s:3301~l:3321~e:600058725~c:401867940",
+          "date": "2026-04-18T21:00Z",
+          "endDate": "2026-04-18T21:00Z",
+          "type": {
+            "id": "970",
+            "abbreviation": "Bantamweight"
+          },
+          "timeValid": true,
+          "neutralSite": false,
+          "playByPlayAvailable": false,
+          "recent": false,
+          "venue": {
+            "id": "1397",
+            "fullName": "Canada Life Centre",
+            "address": {
+              "city": "Winnipeg",
+              "state": "MB",
+              "address1": "300 PORTAGE AVENUE",
+              "country": "Canada"
+            },
+            "indoor": true
+          },
+          "competitors": [
+            {
+              "id": "4421489",
+              "uid": "s:3301~a:4421489",
+              "type": "athlete",
+              "order": 1,
+              "winner": false,
+              "athlete": {
+                "fullName": "Jamie Siraj",
+                "displayName": "Jamie Siraj",
+                "shortName": "J. Siraj",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/can.png",
+                  "alt": "Canada",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "0-0-0"
+                }
+              ]
+            },
+            {
+              "id": "5145575",
+              "uid": "s:3301~a:5145575",
+              "type": "athlete",
+              "order": 2,
+              "winner": false,
+              "athlete": {
+                "fullName": "John Yannis",
+                "displayName": "John Yannis",
+                "shortName": "J. Yannis",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/usa.png",
+                  "alt": "USA",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "0-0-0"
+                }
+              ]
+            }
+          ],
+          "status": {
+            "clock": 0.0,
+            "displayClock": "-",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sat, April 18th at 5:00 PM EDT",
+              "shortDetail": "4/18 - 5:00 PM EDT"
+            }
+          },
+          "broadcasts": [
+            {
+              "market": "national",
+              "names": [
+                "Paramount+"
+              ]
+            }
+          ],
+          "format": {
+            "regulation": {
+              "periods": 3
+            }
+          },
+          "startDate": "2026-04-18T21:00Z",
+          "broadcast": "Paramount+",
+          "geoBroadcasts": [
+            {
+              "type": {
+                "id": "4",
+                "shortName": "Streaming"
+              },
+              "market": {
+                "id": "1",
+                "type": "National"
+              },
+              "media": {
+                "shortName": "Paramount+"
+              },
+              "lang": "en",
+              "region": "us"
+            }
+          ],
+          "highlights": []
+        },
+        {
+          "id": "401867772",
+          "uid": "s:3301~l:3321~e:600058725~c:401867772",
+          "date": "2026-04-18T21:00Z",
+          "endDate": "2026-04-18T21:00Z",
+          "type": {
+            "id": "970",
+            "abbreviation": "Bantamweight"
+          },
+          "timeValid": true,
+          "neutralSite": false,
+          "playByPlayAvailable": false,
+          "recent": false,
+          "venue": {
+            "id": "1397",
+            "fullName": "Canada Life Centre",
+            "address": {
+              "city": "Winnipeg",
+              "state": "MB",
+              "address1": "300 PORTAGE AVENUE",
+              "country": "Canada"
+            },
+            "indoor": true
+          },
+          "competitors": [
+            {
+              "id": "4063869",
+              "uid": "s:3301~a:4063869",
+              "type": "athlete",
+              "order": 1,
+              "winner": false,
+              "athlete": {
+                "fullName": "John Castaneda",
+                "displayName": "John Castaneda",
+                "shortName": "J. Castaneda",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/usa.png",
+                  "alt": "USA",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "0-0-0"
+                }
+              ]
+            },
+            {
+              "id": "5310571",
+              "uid": "s:3301~a:5310571",
+              "type": "athlete",
+              "order": 2,
+              "winner": false,
+              "athlete": {
+                "fullName": "Mark Vologdin",
+                "displayName": "Mark Vologdin",
+                "shortName": "M. Vologdin",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/rus.png",
+                  "alt": "Russia",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "0-0-0"
+                }
+              ]
+            }
+          ],
+          "status": {
+            "clock": 0.0,
+            "displayClock": "-",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sat, April 18th at 5:00 PM EDT",
+              "shortDetail": "4/18 - 5:00 PM EDT"
+            }
+          },
+          "broadcasts": [
+            {
+              "market": "national",
+              "names": [
+                "Paramount+"
+              ]
+            }
+          ],
+          "format": {
+            "regulation": {
+              "periods": 3
+            }
+          },
+          "startDate": "2026-04-18T21:00Z",
+          "broadcast": "Paramount+",
+          "geoBroadcasts": [
+            {
+              "type": {
+                "id": "4",
+                "shortName": "Streaming"
+              },
+              "market": {
+                "id": "1",
+                "type": "National"
+              },
+              "media": {
+                "shortName": "Paramount+"
+              },
+              "lang": "en",
+              "region": "us"
+            }
+          ],
+          "highlights": []
+        },
+        {
+          "id": "401864580",
+          "uid": "s:3301~l:3321~e:600058725~c:401864580",
+          "date": "2026-04-18T21:00Z",
+          "endDate": "2026-04-18T21:00Z",
+          "type": {
+            "id": "1007",
+            "abbreviation": "W Flyweight"
+          },
+          "timeValid": true,
+          "neutralSite": false,
+          "playByPlayAvailable": false,
+          "recent": false,
+          "venue": {
+            "id": "1397",
+            "fullName": "Canada Life Centre",
+            "address": {
+              "city": "Winnipeg",
+              "state": "MB",
+              "address1": "300 PORTAGE AVENUE",
+              "country": "Canada"
+            },
+            "indoor": true
+          },
+          "competitors": [
+            {
+              "id": "3136289",
+              "uid": "s:3301~a:3136289",
+              "type": "athlete",
+              "order": 1,
+              "winner": false,
+              "athlete": {
+                "fullName": "JJ Aldrich",
+                "displayName": "JJ Aldrich",
+                "shortName": "J. Aldrich",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/usa.png",
+                  "alt": "USA",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "0-0-0"
+                }
+              ]
+            },
+            {
+              "id": "4689227",
+              "uid": "s:3301~a:4689227",
+              "type": "athlete",
+              "order": 2,
+              "winner": false,
+              "athlete": {
+                "fullName": "Jamey-Lyn Horth",
+                "displayName": "Jamey-Lyn Horth",
+                "shortName": "J. Horth",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/can.png",
+                  "alt": "Canada",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "0-0-0"
+                }
+              ]
+            }
+          ],
+          "status": {
+            "clock": 0.0,
+            "displayClock": "-",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sat, April 18th at 5:00 PM EDT",
+              "shortDetail": "4/18 - 5:00 PM EDT"
+            }
+          },
+          "broadcasts": [
+            {
+              "market": "national",
+              "names": [
+                "Paramount+"
+              ]
+            }
+          ],
+          "format": {
+            "regulation": {
+              "periods": 3
+            }
+          },
+          "startDate": "2026-04-18T21:00Z",
+          "broadcast": "Paramount+",
+          "geoBroadcasts": [
+            {
+              "type": {
+                "id": "4",
+                "shortName": "Streaming"
+              },
+              "market": {
+                "id": "1",
+                "type": "National"
+              },
+              "media": {
+                "shortName": "Paramount+"
+              },
+              "lang": "en",
+              "region": "us"
+            }
+          ],
+          "highlights": []
+        },
+        {
+          "id": "401863572",
+          "uid": "s:3301~l:3321~e:600058725~c:401863572",
+          "date": "2026-04-18T21:00Z",
+          "endDate": "2026-04-18T21:00Z",
+          "type": {
+            "id": "956",
+            "abbreviation": "Flyweight"
+          },
+          "timeValid": true,
+          "neutralSite": false,
+          "playByPlayAvailable": false,
+          "recent": false,
+          "venue": {
+            "id": "1397",
+            "fullName": "Canada Life Centre",
+            "address": {
+              "city": "Winnipeg",
+              "state": "MB",
+              "address1": "300 PORTAGE AVENUE",
+              "country": "Canada"
+            },
+            "indoor": true
+          },
+          "competitors": [
+            {
+              "id": "3020408",
+              "uid": "s:3301~a:3020408",
+              "type": "athlete",
+              "order": 2,
+              "winner": false,
+              "athlete": {
+                "fullName": "Allan Nascimento",
+                "displayName": "Allan Nascimento",
+                "shortName": "A. Nascimento",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/bra.png",
+                  "alt": "Brazil",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "0-0-0"
+                }
+              ]
+            },
+            {
+              "id": "4815978",
+              "uid": "s:3301~a:4815978",
+              "type": "athlete",
+              "order": 1,
+              "winner": false,
+              "athlete": {
+                "fullName": "Mitch Raposo",
+                "displayName": "Mitch Raposo",
+                "shortName": "M. Raposo",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/usa.png",
+                  "alt": "USA",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "0-0-0"
+                }
+              ]
+            }
+          ],
+          "status": {
+            "clock": 0.0,
+            "displayClock": "-",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sat, April 18th at 5:00 PM EDT",
+              "shortDetail": "4/18 - 5:00 PM EDT"
+            }
+          },
+          "broadcasts": [
+            {
+              "market": "national",
+              "names": [
+                "Paramount+"
+              ]
+            }
+          ],
+          "format": {
+            "regulation": {
+              "periods": 3
+            }
+          },
+          "startDate": "2026-04-18T21:00Z",
+          "broadcast": "Paramount+",
+          "geoBroadcasts": [
+            {
+              "type": {
+                "id": "4",
+                "shortName": "Streaming"
+              },
+              "market": {
+                "id": "1",
+                "type": "National"
+              },
+              "media": {
+                "shortName": "Paramount+"
+              },
+              "lang": "en",
+              "region": "us"
+            }
+          ],
+          "highlights": []
+        },
+        {
+          "id": "401862027",
+          "uid": "s:3301~l:3321~e:600058725~c:401862027",
+          "date": "2026-04-18T21:00Z",
+          "endDate": "2026-04-18T21:00Z",
+          "type": {
+            "id": "1003",
+            "abbreviation": "W Bantamweight"
+          },
+          "timeValid": true,
+          "neutralSite": false,
+          "playByPlayAvailable": false,
+          "recent": false,
+          "venue": {
+            "id": "1397",
+            "fullName": "Canada Life Centre",
+            "address": {
+              "city": "Winnipeg",
+              "state": "MB",
+              "address1": "300 PORTAGE AVENUE",
+              "country": "Canada"
+            },
+            "indoor": true
+          },
+          "competitors": [
+            {
+              "id": "4894780",
+              "uid": "s:3301~a:4894780",
+              "type": "athlete",
+              "order": 2,
+              "winner": false,
+              "athlete": {
+                "fullName": "Daria Zhelezniakova",
+                "displayName": "Daria Zhelezniakova",
+                "shortName": "D. Zhelezniakova",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/rus.png",
+                  "alt": "Russia",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "10-2-0"
+                }
+              ]
+            },
+            {
+              "id": "4947922",
+              "uid": "s:3301~a:4947922",
+              "type": "athlete",
+              "order": 1,
+              "winner": false,
+              "athlete": {
+                "fullName": "Melissa Croden",
+                "displayName": "Melissa Croden",
+                "shortName": "M. Croden",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/can.png",
+                  "alt": "Canada",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "7-3-0"
+                }
+              ]
+            }
+          ],
+          "status": {
+            "clock": 0.0,
+            "displayClock": "-",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sat, April 18th at 5:00 PM EDT",
+              "shortDetail": "4/18 - 5:00 PM EDT"
+            }
+          },
+          "broadcasts": [
+            {
+              "market": "national",
+              "names": [
+                "Paramount+"
+              ]
+            }
+          ],
+          "format": {
+            "regulation": {
+              "periods": 3
+            }
+          },
+          "startDate": "2026-04-18T21:00Z",
+          "broadcast": "Paramount+",
+          "geoBroadcasts": [
+            {
+              "type": {
+                "id": "4",
+                "shortName": "Streaming"
+              },
+              "market": {
+                "id": "1",
+                "type": "National"
+              },
+              "media": {
+                "shortName": "Paramount+"
+              },
+              "lang": "en",
+              "region": "us"
+            }
+          ],
+          "highlights": []
+        },
+        {
+          "id": "401863530",
+          "uid": "s:3301~l:3321~e:600058725~c:401863530",
+          "date": "2026-04-18T21:00Z",
+          "endDate": "2026-04-18T21:00Z",
+          "type": {
+            "id": "982",
+            "abbreviation": "Heavyweight"
+          },
+          "timeValid": true,
+          "neutralSite": false,
+          "playByPlayAvailable": false,
+          "recent": false,
+          "venue": {
+            "id": "1397",
+            "fullName": "Canada Life Centre",
+            "address": {
+              "city": "Winnipeg",
+              "state": "MB",
+              "address1": "300 PORTAGE AVENUE",
+              "country": "Canada"
+            },
+            "indoor": true
+          },
+          "competitors": [
+            {
+              "id": "4232775",
+              "uid": "s:3301~a:4232775",
+              "type": "athlete",
+              "order": 1,
+              "winner": false,
+              "athlete": {
+                "fullName": "Tanner Boser",
+                "displayName": "Tanner Boser",
+                "shortName": "T. Boser",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/can.png",
+                  "alt": "Canada",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "0-0-0"
+                }
+              ]
+            },
+            {
+              "id": "4588192",
+              "uid": "s:3301~a:4588192",
+              "type": "athlete",
+              "order": 2,
+              "winner": false,
+              "athlete": {
+                "fullName": "Gokhan Saricam",
+                "displayName": "Gokhan Saricam",
+                "shortName": "G. Saricam",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/tur.png",
+                  "alt": "Türkiye",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "9-2-0"
+                }
+              ]
+            }
+          ],
+          "status": {
+            "clock": 0.0,
+            "displayClock": "-",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sat, April 18th at 5:00 PM EDT",
+              "shortDetail": "4/18 - 5:00 PM EDT"
+            }
+          },
+          "broadcasts": [
+            {
+              "market": "national",
+              "names": [
+                "Paramount+"
+              ]
+            }
+          ],
+          "format": {
+            "regulation": {
+              "periods": 3
+            }
+          },
+          "startDate": "2026-04-18T21:00Z",
+          "broadcast": "Paramount+",
+          "geoBroadcasts": [
+            {
+              "type": {
+                "id": "4",
+                "shortName": "Streaming"
+              },
+              "market": {
+                "id": "1",
+                "type": "National"
+              },
+              "media": {
+                "shortName": "Paramount+"
+              },
+              "lang": "en",
+              "region": "us"
+            }
+          ],
+          "highlights": []
+        },
+        {
+          "id": "401862762",
+          "uid": "s:3301~l:3321~e:600058725~c:401862762",
+          "date": "2026-04-18T21:00Z",
+          "endDate": "2026-04-18T21:00Z",
+          "type": {
+            "id": "972",
+            "abbreviation": "Middleweight"
+          },
+          "timeValid": true,
+          "neutralSite": false,
+          "playByPlayAvailable": false,
+          "recent": false,
+          "venue": {
+            "id": "1397",
+            "fullName": "Canada Life Centre",
+            "address": {
+              "city": "Winnipeg",
+              "state": "MB",
+              "address1": "300 PORTAGE AVENUE",
+              "country": "Canada"
+            },
+            "indoor": true
+          },
+          "competitors": [
+            {
+              "id": "4686237",
+              "uid": "s:3301~a:4686237",
+              "type": "athlete",
+              "order": 2,
+              "winner": false,
+              "athlete": {
+                "fullName": "Robert Valentin",
+                "displayName": "Robert Valentin",
+                "shortName": "R. Valentin",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/sui.png",
+                  "alt": "Switzerland",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "11-6-0"
+                }
+              ]
+            },
+            {
+              "id": "4807973",
+              "uid": "s:3301~a:4807973",
+              "type": "athlete",
+              "order": 1,
+              "winner": false,
+              "athlete": {
+                "fullName": "Julien LeBlanc",
+                "displayName": "Julien LeBlanc",
+                "shortName": "J. LeBlanc",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/can.png",
+                  "alt": "Canada",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "10-2-0"
+                }
+              ]
+            }
+          ],
+          "status": {
+            "clock": 0.0,
+            "displayClock": "-",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sat, April 18th at 5:00 PM EDT",
+              "shortDetail": "4/18 - 5:00 PM EDT"
+            }
+          },
+          "broadcasts": [
+            {
+              "market": "national",
+              "names": [
+                "Paramount+"
+              ]
+            }
+          ],
+          "format": {
+            "regulation": {
+              "periods": 3
+            }
+          },
+          "startDate": "2026-04-18T21:00Z",
+          "broadcast": "Paramount+",
+          "geoBroadcasts": [
+            {
+              "type": {
+                "id": "4",
+                "shortName": "Streaming"
+              },
+              "market": {
+                "id": "1",
+                "type": "National"
+              },
+              "media": {
+                "shortName": "Paramount+"
+              },
+              "lang": "en",
+              "region": "us"
+            }
+          ],
+          "highlights": []
+        },
+        {
+          "id": "401867343",
+          "uid": "s:3301~l:3321~e:600058725~c:401867343",
+          "date": "2026-04-19T00:00Z",
+          "endDate": "2026-04-19T00:00Z",
+          "type": {
+            "id": "999",
+            "abbreviation": "Featherweight"
+          },
+          "timeValid": true,
+          "neutralSite": false,
+          "playByPlayAvailable": false,
+          "recent": false,
+          "venue": {
+            "id": "1397",
+            "fullName": "Canada Life Centre",
+            "address": {
+              "city": "Winnipeg",
+              "state": "MB",
+              "address1": "300 PORTAGE AVENUE",
+              "country": "Canada"
+            },
+            "indoor": true
+          },
+          "competitors": [
+            {
+              "id": "4686735",
+              "uid": "s:3301~a:4686735",
+              "type": "athlete",
+              "order": 1,
+              "winner": false,
+              "athlete": {
+                "fullName": "Dennis Buzukja",
+                "displayName": "Dennis Buzukja",
+                "shortName": "D. Buzukja",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/usa.png",
+                  "alt": "USA",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "12-5-0"
+                }
+              ]
+            },
+            {
+              "id": "5099679",
+              "uid": "s:3301~a:5099679",
+              "type": "athlete",
+              "order": 2,
+              "winner": false,
+              "athlete": {
+                "fullName": "Marcio Barbosa",
+                "displayName": "Marcio Barbosa",
+                "shortName": "M. Barbosa",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/bra.png",
+                  "alt": "Brazil",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "17-2-0"
+                }
+              ]
+            }
+          ],
+          "status": {
+            "clock": 0.0,
+            "displayClock": "-",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sat, April 18th at 8:00 PM EDT",
+              "shortDetail": "4/18 - 8:00 PM EDT"
+            }
+          },
+          "broadcasts": [
+            {
+              "market": "national",
+              "names": [
+                "Paramount+"
+              ]
+            }
+          ],
+          "format": {
+            "regulation": {
+              "periods": 3
+            }
+          },
+          "startDate": "2026-04-19T00:00Z",
+          "broadcast": "Paramount+",
+          "geoBroadcasts": [
+            {
+              "type": {
+                "id": "4",
+                "shortName": "Streaming"
+              },
+              "market": {
+                "id": "1",
+                "type": "National"
+              },
+              "media": {
+                "shortName": "Paramount+"
+              },
+              "lang": "en",
+              "region": "us"
+            }
+          ],
+          "highlights": []
+        },
+        {
+          "id": "401867342",
+          "uid": "s:3301~l:3321~e:600058725~c:401867342",
+          "date": "2026-04-19T00:00Z",
+          "endDate": "2026-04-19T00:00Z",
+          "type": {
+            "id": "986",
+            "abbreviation": "Lightweight"
+          },
+          "timeValid": true,
+          "neutralSite": false,
+          "playByPlayAvailable": false,
+          "recent": false,
+          "venue": {
+            "id": "1397",
+            "fullName": "Canada Life Centre",
+            "address": {
+              "city": "Winnipeg",
+              "state": "MB",
+              "address1": "300 PORTAGE AVENUE",
+              "country": "Canada"
+            },
+            "indoor": true
+          },
+          "competitors": [
+            {
+              "id": "3955778",
+              "uid": "s:3301~a:3955778",
+              "type": "athlete",
+              "order": 1,
+              "winner": false,
+              "athlete": {
+                "fullName": "Thiago Moisés",
+                "displayName": "Thiago Moisés",
+                "shortName": "T. Moisés",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/bra.png",
+                  "alt": "Brazil",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "19-9-0"
+                }
+              ]
+            },
+            {
+              "id": "5085318",
+              "uid": "s:3301~a:5085318",
+              "type": "athlete",
+              "order": 2,
+              "winner": false,
+              "athlete": {
+                "fullName": "Gauge Young",
+                "displayName": "Gauge Young",
+                "shortName": "G. Young",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/usa.png",
+                  "alt": "USA",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "10-3-0"
+                }
+              ]
+            }
+          ],
+          "status": {
+            "clock": 0.0,
+            "displayClock": "-",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sat, April 18th at 8:00 PM EDT",
+              "shortDetail": "4/18 - 8:00 PM EDT"
+            }
+          },
+          "broadcasts": [
+            {
+              "market": "national",
+              "names": [
+                "Paramount+"
+              ]
+            }
+          ],
+          "format": {
+            "regulation": {
+              "periods": 3
+            }
+          },
+          "startDate": "2026-04-19T00:00Z",
+          "broadcast": "Paramount+",
+          "geoBroadcasts": [
+            {
+              "type": {
+                "id": "4",
+                "shortName": "Streaming"
+              },
+              "market": {
+                "id": "1",
+                "type": "National"
+              },
+              "media": {
+                "shortName": "Paramount+"
+              },
+              "lang": "en",
+              "region": "us"
+            }
+          ],
+          "highlights": []
+        },
+        {
+          "id": "401862671",
+          "uid": "s:3301~l:3321~e:600058725~c:401862671",
+          "date": "2026-04-19T00:00Z",
+          "endDate": "2026-04-19T00:00Z",
+          "type": {
+            "id": "1007",
+            "abbreviation": "W Flyweight"
+          },
+          "timeValid": true,
+          "neutralSite": false,
+          "playByPlayAvailable": false,
+          "recent": false,
+          "venue": {
+            "id": "1397",
+            "fullName": "Canada Life Centre",
+            "address": {
+              "city": "Winnipeg",
+              "state": "MB",
+              "address1": "300 PORTAGE AVENUE",
+              "country": "Canada"
+            },
+            "indoor": true
+          },
+          "competitors": [
+            {
+              "id": "3309918",
+              "uid": "s:3301~a:3309918",
+              "type": "athlete",
+              "order": 2,
+              "winner": false,
+              "athlete": {
+                "fullName": "Karine Silva",
+                "displayName": "Karine Silva",
+                "shortName": "K. Silva",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/bra.png",
+                  "alt": "Brazil",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "0-0-0"
+                }
+              ]
+            },
+            {
+              "id": "4835135",
+              "uid": "s:3301~a:4835135",
+              "type": "athlete",
+              "order": 1,
+              "winner": false,
+              "athlete": {
+                "fullName": "Jasmine Jasudavicius",
+                "displayName": "Jasmine Jasudavicius",
+                "shortName": "J. Jasudavicius",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/can.png",
+                  "alt": "Canada",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "0-0-0"
+                }
+              ]
+            }
+          ],
+          "status": {
+            "clock": 0.0,
+            "displayClock": "-",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sat, April 18th at 8:00 PM EDT",
+              "shortDetail": "4/18 - 8:00 PM EDT"
+            }
+          },
+          "broadcasts": [
+            {
+              "market": "national",
+              "names": [
+                "Paramount+"
+              ]
+            }
+          ],
+          "format": {
+            "regulation": {
+              "periods": 3
+            }
+          },
+          "startDate": "2026-04-19T00:00Z",
+          "broadcast": "Paramount+",
+          "geoBroadcasts": [
+            {
+              "type": {
+                "id": "4",
+                "shortName": "Streaming"
+              },
+              "market": {
+                "id": "1",
+                "type": "National"
+              },
+              "media": {
+                "shortName": "Paramount+"
+              },
+              "lang": "en",
+              "region": "us"
+            }
+          ],
+          "highlights": []
+        },
+        {
+          "id": "401867118",
+          "uid": "s:3301~l:3321~e:600058725~c:401867118",
+          "date": "2026-04-19T00:00Z",
+          "endDate": "2026-04-19T00:00Z",
+          "type": {
+            "id": "986",
+            "abbreviation": "Lightweight"
+          },
+          "timeValid": true,
+          "neutralSite": false,
+          "playByPlayAvailable": false,
+          "recent": false,
+          "venue": {
+            "id": "1397",
+            "fullName": "Canada Life Centre",
+            "address": {
+              "city": "Winnipeg",
+              "state": "MB",
+              "address1": "300 PORTAGE AVENUE",
+              "country": "Canada"
+            },
+            "indoor": true
+          },
+          "competitors": [
+            {
+              "id": "4063786",
+              "uid": "s:3301~a:4063786",
+              "type": "athlete",
+              "order": 1,
+              "winner": false,
+              "athlete": {
+                "fullName": "Mandel Nallo",
+                "displayName": "Mandel Nallo",
+                "shortName": "M. Nallo",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/can.png",
+                  "alt": "Canada",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "14-3-0"
+                }
+              ]
+            },
+            {
+              "id": "4078246",
+              "uid": "s:3301~a:4078246",
+              "type": "athlete",
+              "order": 2,
+              "winner": false,
+              "athlete": {
+                "fullName": "Jai Herbert",
+                "displayName": "Jai Herbert",
+                "shortName": "J. Herbert",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/eng.png",
+                  "alt": "England",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "13-6-1"
+                }
+              ]
+            }
+          ],
+          "status": {
+            "clock": 0.0,
+            "displayClock": "-",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sat, April 18th at 8:00 PM EDT",
+              "shortDetail": "4/18 - 8:00 PM EDT"
+            }
+          },
+          "broadcasts": [
+            {
+              "market": "national",
+              "names": [
+                "Paramount+"
+              ]
+            }
+          ],
+          "format": {
+            "regulation": {
+              "periods": 3
+            }
+          },
+          "startDate": "2026-04-19T00:00Z",
+          "broadcast": "Paramount+",
+          "geoBroadcasts": [
+            {
+              "type": {
+                "id": "4",
+                "shortName": "Streaming"
+              },
+              "market": {
+                "id": "1",
+                "type": "National"
+              },
+              "media": {
+                "shortName": "Paramount+"
+              },
+              "lang": "en",
+              "region": "us"
+            }
+          ],
+          "highlights": []
+        },
+        {
+          "id": "401864359",
+          "uid": "s:3301~l:3321~e:600058725~c:401864359",
+          "date": "2026-04-19T00:00Z",
+          "endDate": "2026-04-19T00:00Z",
+          "type": {
+            "id": "970",
+            "abbreviation": "Bantamweight"
+          },
+          "timeValid": true,
+          "neutralSite": false,
+          "playByPlayAvailable": false,
+          "recent": false,
+          "venue": {
+            "id": "1397",
+            "fullName": "Canada Life Centre",
+            "address": {
+              "city": "Winnipeg",
+              "state": "MB",
+              "address1": "300 PORTAGE AVENUE",
+              "country": "Canada"
+            },
+            "indoor": true
+          },
+          "competitors": [
+            {
+              "id": "4237015",
+              "uid": "s:3301~a:4237015",
+              "type": "athlete",
+              "order": 1,
+              "winner": false,
+              "athlete": {
+                "fullName": "Kyler Phillips",
+                "displayName": "Kyler Phillips",
+                "shortName": "K. Phillips",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/usa.png",
+                  "alt": "USA",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "12-4-0"
+                }
+              ]
+            },
+            {
+              "id": "4421978",
+              "uid": "s:3301~a:4421978",
+              "type": "athlete",
+              "order": 2,
+              "winner": false,
+              "athlete": {
+                "fullName": "Charles Jourdain",
+                "displayName": "Charles Jourdain",
+                "shortName": "C. Jourdain",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/can.png",
+                  "alt": "Canada",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "17-8-1"
+                }
+              ]
+            }
+          ],
+          "status": {
+            "clock": 0.0,
+            "displayClock": "-",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sat, April 18th at 8:00 PM EDT",
+              "shortDetail": "4/18 - 8:00 PM EDT"
+            }
+          },
+          "broadcasts": [
+            {
+              "market": "national",
+              "names": [
+                "Paramount+"
+              ]
+            }
+          ],
+          "format": {
+            "regulation": {
+              "periods": 3
+            }
+          },
+          "startDate": "2026-04-19T00:00Z",
+          "broadcast": "Paramount+",
+          "geoBroadcasts": [
+            {
+              "type": {
+                "id": "4",
+                "shortName": "Streaming"
+              },
+              "market": {
+                "id": "1",
+                "type": "National"
+              },
+              "media": {
+                "shortName": "Paramount+"
+              },
+              "lang": "en",
+              "region": "us"
+            }
+          ],
+          "highlights": []
+        },
+        {
+          "id": "401862026",
+          "uid": "s:3301~l:3321~e:600058725~c:401862026",
+          "date": "2026-04-19T00:00Z",
+          "endDate": "2026-04-19T00:00Z",
+          "type": {
+            "id": "969",
+            "abbreviation": "Welterweight"
+          },
+          "timeValid": true,
+          "neutralSite": false,
+          "playByPlayAvailable": false,
+          "recent": false,
+          "venue": {
+            "id": "1397",
+            "fullName": "Canada Life Centre",
+            "address": {
+              "city": "Winnipeg",
+              "state": "MB",
+              "address1": "300 PORTAGE AVENUE",
+              "country": "Canada"
+            },
+            "indoor": true
+          },
+          "competitors": [
+            {
+              "id": "3090197",
+              "uid": "s:3301~a:3090197",
+              "type": "athlete",
+              "order": 1,
+              "winner": false,
+              "athlete": {
+                "fullName": "Gilbert Burns",
+                "displayName": "Gilbert Burns",
+                "shortName": "G. Burns",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/bra.png",
+                  "alt": "Brazil",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "22-9-0"
+                }
+              ]
+            },
+            {
+              "id": "3165120",
+              "uid": "s:3301~a:3165120",
+              "type": "athlete",
+              "order": 2,
+              "winner": false,
+              "athlete": {
+                "fullName": "Mike Malott",
+                "displayName": "Mike Malott",
+                "shortName": "M. Malott",
+                "flag": {
+                  "href": "https://a.espncdn.com/i/teamlogos/countries/500/can.png",
+                  "alt": "Canada",
+                  "rel": [
+                    "country-flag"
+                  ]
+                }
+              },
+              "records": [
+                {
+                  "name": "overall",
+                  "abbreviation": "TOT",
+                  "type": "total",
+                  "summary": "0-0-0"
+                }
+              ]
+            }
+          ],
+          "status": {
+            "clock": 0.0,
+            "displayClock": "-",
+            "period": 0,
+            "type": {
+              "id": "1",
+              "name": "STATUS_SCHEDULED",
+              "state": "pre",
+              "completed": false,
+              "description": "Scheduled",
+              "detail": "Sat, April 18th at 8:00 PM EDT",
+              "shortDetail": "4/18 - 8:00 PM EDT"
+            }
+          },
+          "broadcasts": [
+            {
+              "market": "national",
+              "names": [
+                "Paramount+"
+              ]
+            }
+          ],
+          "format": {
+            "regulation": {
+              "periods": 5
+            }
+          },
+          "startDate": "2026-04-19T00:00Z",
+          "broadcast": "Paramount+",
+          "geoBroadcasts": [
+            {
+              "type": {
+                "id": "4",
+                "shortName": "Streaming"
+              },
+              "market": {
+                "id": "1",
+                "type": "National"
+              },
+              "media": {
+                "shortName": "Paramount+"
+              },
+              "lang": "en",
+              "region": "us"
+            }
+          ],
+          "highlights": []
+        }
+      ],
+      "links": [
+        {
+          "language": "en-US",
+          "rel": [
+            "summary",
+            "desktop",
+            "event"
+          ],
+          "href": "https://www.espn.com/mma/fightcenter/_/id/600058725/league/ufc",
+          "text": "Gamecast",
+          "shortText": "Gamecast",
+          "isExternal": false,
+          "isPremium": false
+        }
+      ],
+      "venues": [
+        {
+          "id": "1397",
+          "fullName": "Canada Life Centre",
+          "address": {
+            "city": "Winnipeg",
+            "state": "MB",
+            "address1": "300 PORTAGE AVENUE",
+            "country": "Canada"
+          }
+        }
+      ],
+      "status": {
+        "type": {
+          "id": "1",
+          "name": "STATUS_SCHEDULED",
+          "state": "pre",
+          "completed": false,
+          "description": "Scheduled",
+          "detail": "Scheduled",
+          "shortDetail": "Scheduled"
+        }
+      }
+    }
+  ],
+  "provider": {
+    "id": "100",
+    "name": "Draft Kings",
+    "displayName": "Draft Kings",
+    "priority": 1,
+    "logos": [
+      {
+        "href": "https://a.espncdn.com/i/betting/Draftkings_Light.svg",
+        "rel": [
+          "light"
+        ]
+      },
+      {
+        "href": "https://a.espncdn.com/i/betting/Draftkings_Dark.svg",
+        "rel": [
+          "dark"
+        ]
+      }
+    ]
+  }
+}

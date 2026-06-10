@@ -1,0 +1,227 @@
+﻿============================================================
+ESTRUCTURA DE CARPETAS
+============================================================
+
+📂 .venv (25324 archivos)
+   📄 .gitignore
+   📄 pyvenv.cfg
+📂 .venv_clean (19644 archivos)
+   📄 .gitignore
+   📄 pyvenv.cfg
+📂 analyzers (8 archivos)
+   📄 futbol_gemini.py
+   📄 futbol_premium.py
+   📄 mlb_analyzer.py
+   📄 mlb_analyzer_real.py
+   📄 probabilidad_futbol.py
+   📄 ufc_analyzer.py
+   📄 ufc_analyzer_enhanced.py
+   📄 __init__.py
+📂 data (20 archivos)
+   📄 backtest_hr_resultados.json
+   📄 betting_stats.db
+   📄 betway_odds_paired.json
+   📄 bitacora.csv
+   📄 bitacora_backtesting.csv
+   📄 bitacora_maestra.csv
+   📄 espn_api_debug.json
+   📄 espn_bet_api.json
+   📄 historial_resultados.csv
+   📄 ocr_debug.txt
+   📄 predicciones_20260416.json
+   📄 ufc_fallback.json
+   📄 ufc_rankings_cache.json
+   📄 ufc_stats_cache.json
+   📄 ufc_unificado_cache.json
+   📄 __init__.py
+📂 scrapers (23 archivos)
+   📄 caliente_odds_scraper.py
+   📄 espn_score_scraper.py
+   📄 manager.py
+   📄 mlb_hybrid_scraper.py
+   📄 mlb_live_scraper.py
+   📄 mlb_resultados_scraper.py
+   📄 mlb_scraper.py
+   📄 mlb_scraper_dinamico.py
+   📄 mlb_scraper_oficial.py
+   📄 mlb_scraper_optimized.py
+   📄 mlb_scraper_real.py
+   📄 mlb_scraper_validado.py
+   📄 mlb_selenium_scraper.py
+   📄 sherdog_scraper.py
+   📄 stealth_driver.py
+   📄 ufc_odds_optimized.py
+   📄 ufc_odds_scraper.py
+   📄 ufc_rankings_scraper.py
+   📄 ufc_scraper_unificado.py
+   📄 ufc_stats_scraper.py
+   📄 ufc_stats_scraper_backup.py
+   📄 ufc_unified_scraper.py
+   📄 __init__.py
+📂 ~ (1 archivos)
+
+============================================================
+IMPORTS EN main_vision_completo.py
+============================================================
+
+import streamlit as st
+import logging
+from datetime import datetime
+from config import get_gemini_api_key, get_groq_api_key
+from utils import (
+from espn_nba import ESPN_NBA
+from espn_mlb import ESPN_MLB_Mejorado as ESPN_MLB
+from espn_ufc import ESPN_UFC
+from espn_futbol import ESPN_FUTBOL
+from visual_nba_mejorado import VisualNBAMejorado
+from visual_ufc_final import VisualUFCFinal
+from visual_futbol_triple import VisualFutbolTriple
+from visual_mlb import VisualMLB
+from motor_nba_pro_v17 import analizar_nba_pro_v17
+from motor_mlb_pro import analizar_mlb_pro_v20
+from motor_fut_pro import analizar_futbol_pro_v20
+from scrapers.ufc_stats_scraper import UFCStatsScraper
+from analyzers.ufc_analyzer import UFCAnalyzer
+from bet_tracker import BetTracker
+from render_unificado import render_analisis_card
+
+============================================================
+IMPORTS DE: espn_mlb.py
+============================================================
+
+import requests
+import json
+import re
+from datetime import datetime
+from bs4 import BeautifulSoup
+
+============================================================
+IMPORTS DE: espn_nba.py
+============================================================
+
+import requests
+import re
+
+============================================================
+IMPORTS DE: espn_ufc.py
+============================================================
+
+import requests
+import logging
+from datetime import datetime
+
+============================================================
+IMPORTS DE: espn_futbol.py
+============================================================
+
+import requests
+import logging
+from datetime import datetime
+
+============================================================
+IMPORTS DE: motor_mlb_pro.py
+============================================================
+
+from mlb_records_real import get_record, get_diff, get_confianza, get_pick
+
+============================================================
+IMPORTS DE: motor_nba_pro_v17.py
+============================================================
+
+
+============================================================
+IMPORTS DE: motor_fut_pro.py
+============================================================
+
+
+============================================================
+IMPORTS DE: motor_ufc_pro.py
+============================================================
+
+import json
+from datetime import datetime
+from scrapers.ufc_scraper_unificado import UFCScraperUnificado
+from scrapers.ufc_stats_scraper import UFCStatsScraper
+
+============================================================
+IMPORTS DE: cerebro_gemini_pro.py
+============================================================
+
+import os
+import json
+import google.generativeai as genai
+
+============================================================
+IMPORTS DE: groq_ufc_engine.py
+============================================================
+
+import os
+from groq import Groq
+
+============================================================
+IMPORTS DE: visual_mlb.py
+============================================================
+
+import streamlit as st
+
+============================================================
+IMPORTS DE: visual_nba_mejorado.py
+============================================================
+
+import streamlit as st
+
+============================================================
+IMPORTS DE: visual_ufc_final.py
+============================================================
+
+import streamlit as st
+import logging
+
+============================================================
+IMPORTS DE: visual_futbol_triple.py
+============================================================
+
+import streamlit as st
+import sqlite3
+import logging
+
+============================================================
+ARCHIVOS EN SCRAPERS/
+============================================================
+
+   📄 caliente_odds_scraper.py
+   📄 espn_score_scraper.py
+   📄 manager.py
+   📄 mlb_hybrid_scraper.py
+   📄 mlb_live_scraper.py
+   📄 mlb_resultados_scraper.py
+   📄 mlb_scraper.py
+   📄 mlb_scraper_dinamico.py
+   📄 mlb_scraper_oficial.py
+   📄 mlb_scraper_optimized.py
+   📄 mlb_scraper_real.py
+   📄 mlb_scraper_validado.py
+   📄 mlb_selenium_scraper.py
+   📄 sherdog_scraper.py
+   📄 stealth_driver.py
+   📄 ufc_odds_optimized.py
+   📄 ufc_odds_scraper.py
+   📄 ufc_rankings_scraper.py
+   📄 ufc_scraper_unificado.py
+   📄 ufc_stats_scraper.py
+   📄 ufc_stats_scraper_backup.py
+   📄 ufc_unified_scraper.py
+   📄 __init__.py
+
+============================================================
+ARCHIVOS EN ANALYZERS/
+============================================================
+
+   📄 futbol_gemini.py
+   📄 futbol_premium.py
+   📄 mlb_analyzer.py
+   📄 mlb_analyzer_real.py
+   📄 probabilidad_futbol.py
+   📄 ufc_analyzer.py
+   📄 ufc_analyzer_enhanced.py
+   📄 __init__.py

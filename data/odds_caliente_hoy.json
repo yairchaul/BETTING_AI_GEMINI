@@ -1,0 +1,122 @@
+[
+  {
+    "visitante": "Tampa Bay Rays",
+    "lanzador_v": "Steven Matz",
+    "local": "Cleveland Guardians",
+    "lanzador_h": "Logan Allen",
+    "momio_v": "+115",
+    "momio_h": "-118"
+  },
+  {
+    "visitante": "Houston Astros",
+    "lanzador_v": "TBD",
+    "local": "Baltimore Orioles",
+    "lanzador_h": "TBD",
+    "momio_v": "+120",
+    "momio_h": "-105"
+  },
+  {
+    "visitante": "Colorado Rockies",
+    "lanzador_v": "TBD",
+    "local": "Cincinnati Reds",
+    "lanzador_h": "TBD",
+    "momio_v": "+130",
+    "momio_h": "-115"
+  },
+  {
+    "visitante": "San Francisco Giants",
+    "lanzador_v": "TBD",
+    "local": "Philadelphia Phillies",
+    "lanzador_h": "TBD",
+    "momio_v": "+140",
+    "momio_h": "-110"
+  },
+  {
+    "visitante": "St. Louis Cardinals",
+    "lanzador_v": "Sonny Gray",
+    "local": "Pittsburgh Pirates",
+    "lanzador_h": "Mitch Keller",
+    "momio_v": "+142",
+    "momio_h": "-111"
+  },
+  {
+    "visitante": "Boston Red Sox",
+    "lanzador_v": "Brayan Bello",
+    "local": "Toronto Blue Jays",
+    "lanzador_h": "Kevin Gausman",
+    "momio_v": "+141",
+    "momio_h": "-117"
+  },
+  {
+    "visitante": "Washington Nationals",
+    "lanzador_v": "TBD",
+    "local": "New York Mets",
+    "lanzador_h": "TBD",
+    "momio_v": "+135",
+    "momio_h": "-120"
+  },
+  {
+    "visitante": "Detroit Tigers",
+    "lanzador_v": "TBD",
+    "local": "Atlanta Braves",
+    "lanzador_h": "TBD",
+    "momio_v": "+130",
+    "momio_h": "-130"
+  },
+  {
+    "visitante": "Los Angeles Angels",
+    "lanzador_v": "Reid Detmers",
+    "local": "Chicago White Sox",
+    "lanzador_h": "Garrett Crochet",
+    "momio_v": "+143",
+    "momio_h": "-145"
+  },
+  {
+    "visitante": "Arizona Diamondbacks",
+    "lanzador_v": "TBD",
+    "local": "Milwaukee Brewers",
+    "lanzador_h": "TBD",
+    "momio_v": "+125",
+    "momio_h": "-110"
+  },
+  {
+    "visitante": "Seattle Mariners",
+    "lanzador_v": "Luis Castillo",
+    "local": "Minnesota Twins",
+    "lanzador_h": "Pablo Lopez",
+    "momio_v": "+125",
+    "momio_h": "-119"
+  },
+  {
+    "visitante": "New York Yankees",
+    "lanzador_v": "Gerrit Cole",
+    "local": "Texas Rangers",
+    "lanzador_h": "Jacob deGrom",
+    "momio_v": "+146",
+    "momio_h": "-127"
+  },
+  {
+    "visitante": "Chicago Cubs",
+    "lanzador_v": "Justin Steele",
+    "local": "San Diego Padres",
+    "lanzador_h": "Yu Darvish",
+    "momio_v": "+110",
+    "momio_h": "-136"
+  },
+  {
+    "visitante": "Kansas City Royals",
+    "lanzador_v": "TBD",
+    "local": "Athletics",
+    "lanzador_h": "TBD",
+    "momio_v": "+115",
+    "momio_h": "+150"
+  },
+  {
+    "visitante": "Miami Marlins",
+    "lanzador_v": "Jesus Luzardo",
+    "local": "Los Angeles Dodgers",
+    "lanzador_h": "Yoshinobu Yamamoto",
+    "momio_v": "+147",
+    "momio_h": "-121"
+  }
+]

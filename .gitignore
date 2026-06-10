@@ -1,0 +1,23 @@
+﻿# Python
+__pycache__/
+*.pyc
+.venv/
+.venv_clean/
+env/
+venv/
+
+# IDE
+.vscode/
+.idea/
+.kiro/
+.continue/
+
+# Sensibles
+.env
+*.key
+*.pem
+
+# Datos
+data/*.db
+*.log
+*.tmp

@@ -1,0 +1,149 @@
+[
+  {
+    "evento": "UFC Freedom 250: Topuria vs. Gaethje",
+    "fecha": "2026-06-15",
+    "peleador1": {
+      "nombre": "Steve Garcia",
+      "estadisticas_carrera": {},
+      "last_update": "2026-06-08T13:09:10.276573",
+      "record": "19-5-0",
+      "photo": "",
+      "odds": "N/A"
+    },
+    "peleador2": {
+      "nombre": "Diego Lopes",
+      "estadisticas_carrera": {},
+      "last_update": "2026-06-08T13:09:18.158739",
+      "record": "27-8-0",
+      "photo": "",
+      "odds": "N/A"
+    },
+    "peso": "N/A"
+  },
+  {
+    "evento": "UFC Freedom 250: Topuria vs. Gaethje",
+    "fecha": "2026-06-15",
+    "peleador1": {
+      "nombre": "Kyle Daukaus",
+      "estadisticas_carrera": {},
+      "last_update": "2026-06-08T13:09:24.864115",
+      "record": "17-4-0",
+      "photo": "",
+      "odds": "N/A"
+    },
+    "peleador2": {
+      "nombre": "Bo Nickal",
+      "estadisticas_carrera": {},
+      "last_update": "2026-06-08T13:09:30.278387",
+      "record": "8-1-0",
+      "photo": "",
+      "odds": "N/A"
+    },
+    "peso": "N/A"
+  },
+  {
+    "evento": "UFC Freedom 250: Topuria vs. Gaethje",
+    "fecha": "2026-06-15",
+    "peleador1": {
+      "nombre": "Michael Chandler",
+      "estadisticas_carrera": {},
+      "last_update": "2026-06-08T13:09:37.560574",
+      "record": "23-10-0",
+      "photo": "",
+      "odds": "N/A"
+    },
+    "peleador2": {
+      "nombre": "Mauricio Ruffy",
+      "estadisticas_carrera": {},
+      "last_update": "2026-06-08T13:09:45.961640",
+      "record": "13-2-0",
+      "photo": "",
+      "odds": "N/A"
+    },
+    "peso": "N/A"
+  },
+  {
+    "evento": "UFC Freedom 250: Topuria vs. Gaethje",
+    "fecha": "2026-06-15",
+    "peleador1": {
+      "nombre": "Derrick Lewis",
+      "estadisticas_carrera": {},
+      "last_update": "2026-06-08T13:09:51.625398",
+      "record": "29-13-0",
+      "photo": "",
+      "odds": "N/A"
+    },
+    "peleador2": {
+      "nombre": "Josh Hokit",
+      "estadisticas_carrera": {},
+      "last_update": "2026-06-08T13:09:58.800477",
+      "record": "9-0-0",
+      "photo": "",
+      "odds": "N/A"
+    },
+    "peso": "N/A"
+  },
+  {
+    "evento": "UFC Freedom 250: Topuria vs. Gaethje",
+    "fecha": "2026-06-15",
+    "peleador1": {
+      "nombre": "Aiemann Zahabi",
+      "estadisticas_carrera": {},
+      "last_update": "2026-06-08T13:10:02.611935",
+      "record": "14-2-0",
+      "photo": "",
+      "odds": "N/A"
+    },
+    "peleador2": {
+      "nombre": "Sean O'Malley",
+      "estadisticas_carrera": {},
+      "last_update": "2026-06-08T13:10:06.310573",
+      "record": "19-3-0",
+      "photo": "",
+      "odds": "N/A"
+    },
+    "peso": "N/A"
+  },
+  {
+    "evento": "UFC Freedom 250: Topuria vs. Gaethje",
+    "fecha": "2026-06-15",
+    "peleador1": {
+      "nombre": "Ciryl Gane",
+      "estadisticas_carrera": {},
+      "last_update": "2026-06-08T13:10:10.744498",
+      "record": "13-2-0",
+      "photo": "",
+      "odds": "N/A"
+    },
+    "peleador2": {
+      "nombre": "Alex Pereira",
+      "estadisticas_carrera": {},
+      "last_update": "2026-06-08T13:06:23.668058",
+      "record": "13-3-0",
+      "photo": "",
+      "odds": "N/A"
+    },
+    "peso": "N/A"
+  },
+  {
+    "evento": "UFC Freedom 250: Topuria vs. Gaethje",
+    "fecha": "2026-06-15",
+    "peleador1": {
+      "nombre": "Justin Gaethje",
+      "estadisticas_carrera": {},
+      "last_update": "2026-06-08T13:06:18.679849",
+      "record": "27-5-0",
+      "photo": "",
+      "odds": "N/A"
+    },
+    "peleador2": {
+      "nombre": "Ilia Topuria",
+      "estadisticas_carrera": {},
+      "last_update": "2026-06-08T13:06:15.098856",
+      "record": "17-0-0",
+      "photo": "",
+      "odds": "N/A"
+    },
+    "peso": "N/A"
+  }
+]

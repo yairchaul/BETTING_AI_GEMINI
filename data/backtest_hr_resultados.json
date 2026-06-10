@@ -1,0 +1,60 @@
+{
+  "fecha_backtest": "2026-04-21 17:13",
+  "juegos_analizados": 251,
+  "stats": {
+    "por_prob_ia": {
+      "65-100%": {
+        "predichos": 0,
+        "aciertos": 0
+      },
+      "55-64%": {
+        "predichos": 0,
+        "aciertos": 0
+      },
+      "45-54%": {
+        "predichos": 0,
+        "aciertos": 0
+      },
+      "<45%": {
+        "predichos": 0,
+        "aciertos": 0
+      }
+    },
+    "por_racha": {
+      "5+ HR": {
+        "predichos": 0,
+        "aciertos": 0
+      },
+      "3-4 HR": {
+        "predichos": 0,
+        "aciertos": 0
+      },
+      "1-2 HR": {
+        "predichos": 0,
+        "aciertos": 0
+      },
+      "0 HR": {
+        "predichos": 0,
+        "aciertos": 0
+      }
+    },
+    "combinado": {
+      "ALTA (6+)": {
+        "predichos": 0,
+        "aciertos": 0
+      },
+      "MEDIA (4-5)": {
+        "predichos": 0,
+        "aciertos": 0
+      },
+      "BAJA (2-3)": {
+        "predichos": 0,
+        "aciertos": 0
+      },
+      "MUY BAJA (0-1)": {
+        "predichos": 0,
+        "aciertos": 0
+      }
+    }
+  }
+}

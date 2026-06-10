@@ -1,0 +1,86 @@
+{
+  "Coors Field": {
+    "factor_hr": 1.35,
+    "factor_runs": 1.3,
+    "altitud": 5280,
+    "viento_factor": 1.2
+  },
+  "Great American Ball Park": {
+    "factor_hr": 1.25,
+    "factor_runs": 1.15,
+    "altitud": 550,
+    "viento_factor": 1.1
+  },
+  "Yankee Stadium": {
+    "factor_hr": 1.15,
+    "factor_runs": 1.05,
+    "altitud": 30,
+    "viento_factor": 1.0
+  },
+  "Fenway Park": {
+    "factor_hr": 1.05,
+    "factor_runs": 1.1,
+    "altitud": 20,
+    "viento_factor": 0.9
+  },
+  "Dodger Stadium": {
+    "factor_hr": 0.85,
+    "factor_runs": 0.9,
+    "altitud": 340,
+    "viento_factor": 0.8
+  },
+  "Petco Park": {
+    "factor_hr": 0.8,
+    "factor_runs": 0.85,
+    "altitud": 15,
+    "viento_factor": 0.7
+  },
+  "Oracle Park": {
+    "factor_hr": 0.75,
+    "factor_runs": 0.8,
+    "altitud": 10,
+    "viento_factor": 1.3
+  },
+  "Wrigley Field": {
+    "factor_hr": 1.1,
+    "factor_runs": 1.05,
+    "altitud": 600,
+    "viento_factor": 1.4
+  },
+  "Progressive Field": {
+    "factor_hr": 0.95,
+    "factor_runs": 1.0,
+    "altitud": 650,
+    "viento_factor": 0.9
+  },
+  "Target Field": {
+    "factor_hr": 0.85,
+    "factor_runs": 0.9,
+    "altitud": 840,
+    "viento_factor": 0.8
+  },
+  "Globe Life Field": {
+    "factor_hr": 1.05,
+    "factor_runs": 1.05,
+    "altitud": 550,
+    "viento_factor": 1.0
+  },
+  "Rogers Centre": {
+    "factor_hr": 1.0,
+    "factor_runs": 1.0,
+    "altitud": 250,
+    "viento_factor": 0.0
+  },
+  "PNC Park": {
+    "factor_hr": 0.9,
+    "factor_runs": 0.95,
+    "altitud": 730,
+    "viento_factor": 1.1
+  },
+  "Rate Field": {
+    "factor_hr": 1.05,
+    "factor_runs": 1.0,
+    "altitud": 600,
+    "viento_factor": 1.0
+  }
+}

@@ -1,0 +1,54 @@
+﻿.stApp { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+section[data-testid="stSidebar"] { background: linear-gradient(180deg, #020617 0%, #0f172a 100%); border-right: 1px solid #334155; }
+.stButton > button { border-radius: 12px !important; background: linear-gradient(90deg, #3b82f6 0%, #9333ea 100%) !important; color: white !important; font-weight: bold !important; border: none !important; transition: all 0.3s !important; }
+.stButton > button:hover { transform: scale(1.02) !important; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4) !important; }
+h1, h2, h3 { color: #f1f5f9 !important; }
+div[data-testid="stExpander"] { background-color: #1c2128 !important; border: 1px solid #30363d !important; border-radius: 10px !important; }
+.ko-card { background: #1c2128; border-radius: 12px; padding: 15px; margin: 10px 0; border: 1px solid #30363d; }
+.stTabs [data-baseweb="tab"] { font-size: 16px !important; padding: 10px 16px !important; }
+.stTabs [data-baseweb="tab"][aria-selected="true"] { color: #3b82f6 !important; border-bottom: 3px solid #3b82f6 !important; }
+
+@keyframes neon-glow {
+    0% { box-shadow: 0 0 5px #00ff41, 0 0 10px #00ff41; border-color: #00ff41; }
+    50% { box-shadow: 0 0 15px #00ff41, 0 0 25px #00ff41; border-color: #39ff14; }
+    100% { box-shadow: 0 0 5px #00ff41, 0 0 10px #00ff41; border-color: #00ff41; }
+}
+
+.elite-pick-card {
+    animation: neon-glow 2.5s infinite ease-in-out !important;
+    border: 2px solid #00ff41 !important;
+    background: rgba(0, 255, 65, 0.07) !important;
+    border-radius: 12px;
+}
+
+@keyframes gold-glow {
+    0% { box-shadow: 0 0 5px #fbbf24, 0 0 10px #fbbf24; border-color: #fbbf24; }
+    50% { box-shadow: 0 0 15px #fbbf24, 0 0 25px #f59e0b; border-color: #f59e0b; }
+    100% { box-shadow: 0 0 5px #fbbf24, 0 0 10px #fbbf24; border-color: #fbbf24; }
+}
+
+.favorite-gold-card {
+    animation: gold-glow 3s infinite ease-in-out !important;
+    border: 2px solid #fbbf24 !important;
+    background: rgba(251, 191, 36, 0.07) !important;
+    border-radius: 15px;
+}
+
+.stApp {
+    scroll-behavior: smooth;
+}
+
+@keyframes purple-neon-glow {
+    0% { box-shadow: 0 0 5px #bc13fe, 0 0 10px #bc13fe; border-color: #bc13fe; }
+    50% { box-shadow: 0 0 15px #bc13fe, 0 0 25px #bc13fe; border-color: #bc13fe; }
+    100% { box-shadow: 0 0 5px #bc13fe, 0 0 10px #bc13fe; border-color: #bc13fe; }
+}
+
+.prop-hot-purple {
+    animation: purple-neon-glow 2s infinite ease-in-out !important;
+    background: rgba(188, 19, 254, 0.07) !important;
+    border: 2px solid #bc13fe !important;
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 10px;
+}

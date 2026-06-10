@@ -1,0 +1,7 @@
+{
+  "elite_diff_min": 15,
+  "elite_diff_alt": 7,
+  "seguro_diff_min": 5,
+  "seguro_conf_min": 55,
+  "rescate_diff_min": 2
+}

@@ -1,0 +1,28 @@
+# Dependencias para el Sistema BETTING_AI V24
+
+# Core
+streamlit>=1.28.0
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Visualización
+plotly>=5.15.0
+matplotlib>=3.7.0
+
+# APIs y Web
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+selenium>=4.15.0
+
+# MLB API (opcional - para motor_mlb_completo)
+# statsapi>=1.8.0  # Descomentar si se quiere usar la API oficial
+
+# Base de datos
+sqlite3
+
+# Utilidades
+python-dotenv>=1.0.0
+python-dateutil>=2.8.0
+
+# Para UFC (si se usa)
+# rapidfuzz>=3.0.0  # Para fuzzy matching de nombres

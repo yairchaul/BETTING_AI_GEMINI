@@ -1,0 +1,152 @@
+[
+  {
+    "visitante": "Tampa Bay Rays",
+    "local": "Cleveland Guardians",
+    "pitcher_visitante": "TBD",
+    "pitcher_local": "TBD",
+    "lineup_visitante": [],
+    "lineup_local": [],
+    "hora": "22:10",
+    "venue": "Progressive Field"
+  },
+  {
+    "visitante": "Houston Astros",
+    "local": "Baltimore Orioles",
+    "pitcher_visitante": "TBD",
+    "pitcher_local": "TBD",
+    "lineup_visitante": [],
+    "lineup_local": [],
+    "hora": "22:35",
+    "venue": "Oriole Park at Camden Yards"
+  },
+  {
+    "visitante": "Colorado Rockies",
+    "local": "Cincinnati Reds",
+    "pitcher_visitante": "TBD",
+    "pitcher_local": "TBD",
+    "lineup_visitante": [],
+    "lineup_local": [],
+    "hora": "22:40",
+    "venue": "Great American Ball Park"
+  },
+  {
+    "visitante": "St. Louis Cardinals",
+    "local": "Pittsburgh Pirates",
+    "pitcher_visitante": "TBD",
+    "pitcher_local": "TBD",
+    "lineup_visitante": [],
+    "lineup_local": [],
+    "hora": "22:40",
+    "venue": "PNC Park"
+  },
+  {
+    "visitante": "San Francisco Giants",
+    "local": "Philadelphia Phillies",
+    "pitcher_visitante": "TBD",
+    "pitcher_local": "TBD",
+    "lineup_visitante": [],
+    "lineup_local": [],
+    "hora": "22:40",
+    "venue": "Citizens Bank Park"
+  },
+  {
+    "visitante": "Boston Red Sox",
+    "local": "Toronto Blue Jays",
+    "pitcher_visitante": "TBD",
+    "pitcher_local": "TBD",
+    "lineup_visitante": [],
+    "lineup_local": [],
+    "hora": "23:07",
+    "venue": "Rogers Centre"
+  },
+  {
+    "visitante": "Washington Nationals",
+    "local": "New York Mets",
+    "pitcher_visitante": "TBD",
+    "pitcher_local": "TBD",
+    "lineup_visitante": [],
+    "lineup_local": [],
+    "hora": "23:10",
+    "venue": "Citi Field"
+  },
+  {
+    "visitante": "Detroit Tigers",
+    "local": "Atlanta Braves",
+    "pitcher_visitante": "TBD",
+    "pitcher_local": "TBD",
+    "lineup_visitante": [],
+    "lineup_local": [],
+    "hora": "23:15",
+    "venue": "Truist Park"
+  },
+  {
+    "visitante": "Seattle Mariners",
+    "local": "Minnesota Twins",
+    "pitcher_visitante": "TBD",
+    "pitcher_local": "TBD",
+    "lineup_visitante": [],
+    "lineup_local": [],
+    "hora": "23:40",
+    "venue": "Target Field"
+  },
+  {
+    "visitante": "Los Angeles Angels",
+    "local": "Chicago White Sox",
+    "pitcher_visitante": "TBD",
+    "pitcher_local": "TBD",
+    "lineup_visitante": [],
+    "lineup_local": [],
+    "hora": "23:40",
+    "venue": "Rate Field"
+  },
+  {
+    "visitante": "Arizona Diamondbacks",
+    "local": "Milwaukee Brewers",
+    "pitcher_visitante": "TBD",
+    "pitcher_local": "TBD",
+    "lineup_visitante": [],
+    "lineup_local": [],
+    "hora": "23:40",
+    "venue": "American Family Field"
+  },
+  {
+    "visitante": "New York Yankees",
+    "local": "Texas Rangers",
+    "pitcher_visitante": "TBD",
+    "pitcher_local": "TBD",
+    "lineup_visitante": [],
+    "lineup_local": [],
+    "hora": "00:05",
+    "venue": "Globe Life Field"
+  },
+  {
+    "visitante": "Kansas City Royals",
+    "local": "Athletics",
+    "pitcher_visitante": "TBD",
+    "pitcher_local": "TBD",
+    "lineup_visitante": [],
+    "lineup_local": [],
+    "hora": "01:40",
+    "venue": "Sutter Health Park"
+  },
+  {
+    "visitante": "Chicago Cubs",
+    "local": "San Diego Padres",
+    "pitcher_visitante": "TBD",
+    "pitcher_local": "TBD",
+    "lineup_visitante": [],
+    "lineup_local": [],
+    "hora": "01:40",
+    "venue": "Petco Park"
+  },
+  {
+    "visitante": "Miami Marlins",
+    "local": "Los Angeles Dodgers",
+    "pitcher_visitante": "TBD",
+    "pitcher_local": "TBD",
+    "lineup_visitante": [],
+    "lineup_local": [],
+    "hora": "02:10",
+    "venue": "UNIQLO Field at Dodger Stadium"
+  }
+]

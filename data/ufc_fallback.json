@@ -1,0 +1,9 @@
+﻿{
+  "fights": [
+    {"evento": "UFC 316", "fecha": "2026-04-19", "p1": "Alexandre Pantoja", "p2": "Kai Kara-France", "p1_odds": "-200", "p2_odds": "+170"},
+    {"evento": "UFC 316", "fecha": "2026-04-19", "p1": "Shavkat Rakhmonov", "p2": "Jack Della Maddalena", "p1_odds": "-250", "p2_odds": "+200"},
+    {"evento": "UFC 316", "fecha": "2026-04-19", "p1": "Mackenzie Dern", "p2": "Amanda Ribas", "p1_odds": "-150", "p2_odds": "+125"},
+    {"evento": "UFC Fight Night", "fecha": "2026-04-26", "p1": "Marvin Vettori", "p2": "Roman Dolidze", "p1_odds": "-180", "p2_odds": "+150"},
+    {"evento": "UFC Fight Night", "fecha": "2026-04-26", "p1": "Michel Pereira", "p2": "Stephen Thompson", "p1_odds": "-130", "p2_odds": "+110"}
+  ]
+}

@@ -1,0 +1,252 @@
+{
+  "pitchers": {
+    "Jacob Misiorowski": {
+      "k_total": 51,
+      "k9": 22.1,
+      "equipo": "Milwaukee Brewers"
+    },
+    "Dylan Cease": {
+      "k_total": 49,
+      "k9": 21.2,
+      "equipo": "Toronto Blue Jays"
+    },
+    "Nolan McLean": {
+      "k_total": 45,
+      "k9": 19.5,
+      "equipo": "New York Mets"
+    },
+    "Gavin Williams": {
+      "k_total": 44,
+      "k9": 19.0,
+      "equipo": "Cleveland Guardians"
+    },
+    "José Soriano": {
+      "k_total": 43,
+      "k9": 18.6,
+      "equipo": "Los Angeles Angels"
+    },
+    "Cristopher Sánchez": {
+      "k_total": 43,
+      "k9": 18.6,
+      "equipo": "Philadelphia Phillies"
+    },
+    "MacKenzie Gore": {
+      "k_total": 42,
+      "k9": 18.2,
+      "equipo": "Texas Rangers"
+    },
+    "Cam Schlittler": {
+      "k_total": 41,
+      "k9": 17.7,
+      "equipo": "New York Yankees"
+    },
+    "Ryan Weathers": {
+      "k_total": 40,
+      "k9": 17.3,
+      "equipo": "New York Yankees"
+    },
+    "Chase Dollander": {
+      "k_total": 39,
+      "k9": 16.9,
+      "equipo": "Colorado Rockies"
+    },
+    "Kevin Gausman": {
+      "k_total": 38,
+      "k9": 16.4,
+      "equipo": "Toronto Blue Jays"
+    },
+    "Tyler Glasnow": {
+      "k_total": 38,
+      "k9": 16.4,
+      "equipo": "Los Angeles Dodgers"
+    },
+    "Shota Imanaga": {
+      "k_total": 38,
+      "k9": 16.4,
+      "equipo": "Chicago Cubs"
+    },
+    "Parker Messick": {
+      "k_total": 38,
+      "k9": 16.4,
+      "equipo": "Cleveland Guardians"
+    },
+    "Chris Sale": {
+      "k_total": 38,
+      "k9": 16.4,
+      "equipo": "Atlanta Braves"
+    },
+    "Tarik Skubal": {
+      "k_total": 38,
+      "k9": 16.4,
+      "equipo": "Detroit Tigers"
+    },
+    "Taj Bradley": {
+      "k_total": 37,
+      "k9": 16.0,
+      "equipo": "Minnesota Twins"
+    },
+    "Garrett Crochet": {
+      "k_total": 37,
+      "k9": 16.0,
+      "equipo": "Boston Red Sox"
+    },
+    "Max Fried": {
+      "k_total": 37,
+      "k9": 16.0,
+      "equipo": "New York Yankees"
+    },
+    "Landen Roupp": {
+      "k_total": 37,
+      "k9": 16.0,
+      "equipo": "San Francisco Giants"
+    },
+    "Will Warren": {
+      "k_total": 37,
+      "k9": 16.0,
+      "equipo": "New York Yankees"
+    },
+    "Reid Detmers": {
+      "k_total": 36,
+      "k9": 15.6,
+      "equipo": "Los Angeles Angels"
+    },
+    "Freddy Peralta": {
+      "k_total": 36,
+      "k9": 15.6,
+      "equipo": "New York Mets"
+    },
+    "Logan Gilbert": {
+      "k_total": 35,
+      "k9": 15.1,
+      "equipo": "Seattle Mariners"
+    },
+    "Aaron Nola": {
+      "k_total": 35,
+      "k9": 15.1,
+      "equipo": "Philadelphia Phillies"
+    },
+    "Robbie Ray": {
+      "k_total": 35,
+      "k9": 15.1,
+      "equipo": "San Francisco Giants"
+    },
+    "Jacob deGrom": {
+      "k_total": 35,
+      "k9": 15.1,
+      "equipo": "Texas Rangers"
+    },
+    "Joey Cantillo": {
+      "k_total": 34,
+      "k9": 14.7,
+      "equipo": "Cleveland Guardians"
+    },
+    "Jake Irvin": {
+      "k_total": 34,
+      "k9": 14.7,
+      "equipo": "Washington Nationals"
+    },
+    "Michael King": {
+      "k_total": 34,
+      "k9": 14.7,
+      "equipo": "San Diego Padres"
+    },
+    "Michael Soroka": {
+      "k_total": 34,
+      "k9": 14.7,
+      "equipo": "Arizona Diamondbacks"
+    },
+    "Randy Vásquez": {
+      "k_total": 34,
+      "k9": 14.7,
+      "equipo": "San Diego Padres"
+    }
+  },
+  "bateadores": {
+    "James Wood": {
+      "k_total": 44,
+      "equipo": "Washington Nationals"
+    },
+    "Oneil Cruz": {
+      "k_total": 43,
+      "equipo": "Pittsburgh Pirates"
+    },
+    "Gunnar Henderson": {
+      "k_total": 41,
+      "equipo": "Baltimore Orioles"
+    },
+    "Munetaka Murakami": {
+      "k_total": 41,
+      "equipo": "Chicago White Sox"
+    },
+    "Zach Neto": {
+      "k_total": 41,
+      "equipo": "Los Angeles Angels"
+    },
+    "Hunter Goodman": {
+      "k_total": 40,
+      "equipo": "Colorado Rockies"
+    },
+    "Nick Kurtz": {
+      "k_total": 40,
+      "equipo": "Athletics"
+    },
+    "Kyle Schwarber": {
+      "k_total": 40,
+      "equipo": "Philadelphia Phillies"
+    },
+    "Owen Caissie": {
+      "k_total": 39,
+      "equipo": "Miami Marlins"
+    },
+    "Matt Wallner": {
+      "k_total": 39,
+      "equipo": "Minnesota Twins"
+    },
+    "Cal Raleigh": {
+      "k_total": 38,
+      "equipo": "Seattle Mariners"
+    },
+    "Trevor Story": {
+      "k_total": 38,
+      "equipo": "Boston Red Sox"
+    },
+    "Ian Happ": {
+      "k_total": 37,
+      "equipo": "Chicago Cubs"
+    },
+    "Max Muncy": {
+      "k_total": 37,
+      "equipo": "Athletics"
+    },
+    "Jordan Walker": {
+      "k_total": 37,
+      "equipo": "St. Louis Cardinals"
+    },
+    "Willy Adames": {
+      "k_total": 36,
+      "equipo": "San Francisco Giants"
+    },
+    "Jake Burger": {
+      "k_total": 36,
+      "equipo": "Texas Rangers"
+    },
+    "Elly De La Cruz": {
+      "k_total": 36,
+      "equipo": "Cincinnati Reds"
+    },
+    "Rafael Devers": {
+      "k_total": 36,
+      "equipo": "San Francisco Giants"
+    },
+    "Colson Montgomery": {
+      "k_total": 36,
+      "equipo": "Chicago White Sox"
+    },
+    "Jorge Soler": {
+      "k_total": 36,
+      "equipo": "Los Angeles Angels"
+    }
+  },
+  "actualizado": "2026-04-28 09:03",
+  "fuente": "MLB Stats API"
+}

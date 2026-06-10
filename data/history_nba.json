@@ -1,0 +1,146 @@
+[
+  {
+    "fecha": "20260605",
+    "deporte": "nba",
+    "nombre": "New York Knicks at San Antonio Spurs",
+    "home": "San Antonio Spurs",
+    "away": "New York Knicks",
+    "home_score": "0",
+    "away_score": "0",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "SA -6.5",
+      "over_under": 217.5,
+      "spread": -6.5
+    },
+    "status": "STATUS_SCHEDULED"
+  },
+  {
+    "fecha": "20260603",
+    "deporte": "nba",
+    "nombre": "New York Knicks at San Antonio Spurs",
+    "home": "San Antonio Spurs",
+    "away": "New York Knicks",
+    "home_score": "95",
+    "away_score": "105",
+    "ganador_real": "New York Knicks",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260530",
+    "deporte": "nba",
+    "nombre": "San Antonio Spurs at Oklahoma City Thunder",
+    "home": "Oklahoma City Thunder",
+    "away": "San Antonio Spurs",
+    "home_score": "103",
+    "away_score": "111",
+    "ganador_real": "San Antonio Spurs",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260528",
+    "deporte": "nba",
+    "nombre": "Oklahoma City Thunder at San Antonio Spurs",
+    "home": "San Antonio Spurs",
+    "away": "Oklahoma City Thunder",
+    "home_score": "118",
+    "away_score": "91",
+    "ganador_real": "San Antonio Spurs",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260526",
+    "deporte": "nba",
+    "nombre": "San Antonio Spurs at Oklahoma City Thunder",
+    "home": "Oklahoma City Thunder",
+    "away": "San Antonio Spurs",
+    "home_score": "127",
+    "away_score": "114",
+    "ganador_real": "Oklahoma City Thunder",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260525",
+    "deporte": "nba",
+    "nombre": "New York Knicks at Cleveland Cavaliers",
+    "home": "Cleveland Cavaliers",
+    "away": "New York Knicks",
+    "home_score": "93",
+    "away_score": "130",
+    "ganador_real": "New York Knicks",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260524",
+    "deporte": "nba",
+    "nombre": "Oklahoma City Thunder at San Antonio Spurs",
+    "home": "San Antonio Spurs",
+    "away": "Oklahoma City Thunder",
+    "home_score": "103",
+    "away_score": "82",
+    "ganador_real": "San Antonio Spurs",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260523",
+    "deporte": "nba",
+    "nombre": "New York Knicks at Cleveland Cavaliers",
+    "home": "Cleveland Cavaliers",
+    "away": "New York Knicks",
+    "home_score": "108",
+    "away_score": "121",
+    "ganador_real": "New York Knicks",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260522",
+    "deporte": "nba",
+    "nombre": "Oklahoma City Thunder at San Antonio Spurs",
+    "home": "San Antonio Spurs",
+    "away": "Oklahoma City Thunder",
+    "home_score": "108",
+    "away_score": "123",
+    "ganador_real": "Oklahoma City Thunder",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  }
+]

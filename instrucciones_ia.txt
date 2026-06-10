@@ -1,0 +1,15 @@
+REGLAS CRÍTICAS DEL PROYECTO BETTING_AI:
+1. CODIFICACIÓN: Prohibido usar UTF-8 con BOM (U+FEFF). Guardar siempre en UTF-8 puro.
+2. ESTRUCTURA:
+   - Motores/Lógica: /motors
+   - Scrapers: /scrapers
+   - Visualizadores: /visualizers
+3. IMPORTACIONES:
+   - Desde la raíz: use 'from motors import X'.
+   - Desde subcarpetas (ej. /visualizers): use 'from motors.module import X'.
+4. INTERFAZ (UI):
+   - No simplificar códigos. Mantener siempre: Radar de Triples (NBA), Candidatos HR (MLB), Datos Físicos completos (UFC).
+   - Botones centrados: use 'st.columns([1, 2, 1])'.
+5. RESILIENCIA: Mantener los bloques try-except en motors/__init__.py para que un fallo en un motor no rompa todo el sistema.
+6. INDENTACIÓN: Usar estrictamente 4 espacios. No mezclar niveles en bloques de pestañas (tabs).
+7. RE-RUNS: Al finalizar un análisis (IA o Heurístico), usar 'st.rerun()' para actualizar la UI inmediatamente.

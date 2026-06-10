@@ -1,0 +1,35 @@
+{
+  "equipos_trampa": [],
+  "wr_por_dia": {
+    "6": {
+      "total": 46,
+      "aciertos": 24
+    },
+    "5": {
+      "total": 29,
+      "aciertos": 20
+    },
+    "4": {
+      "total": 29,
+      "aciertos": 22
+    },
+    "3": {
+      "total": 19,
+      "aciertos": 11
+    },
+    "2": {
+      "total": 30,
+      "aciertos": 21
+    },
+    "1": {
+      "total": 30,
+      "aciertos": 19
+    },
+    "0": {
+      "total": 20,
+      "aciertos": 15
+    }
+  },
+  "wr_reciente": 57.0,
+  "ultima_actualizacion": "2026-04-27 16:20"
+}

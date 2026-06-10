@@ -1,0 +1,57 @@
+{
+  "scrapers": {
+    "ESPN_NBA": "✅ OK (Importable)",
+    "ESPN_MLB": "✅ OK (Importable)",
+    "ESPN_UFC": "✅ OK (Importable)",
+    "ESPN_Futbol": "✅ OK (Importable)",
+    "NBA_Stats": "✅ OK (Importable)",
+    "UFC_Stats": "✅ OK (Importable)",
+    "MLB_Resultados": "✅ OK (Importable)"
+  },
+  "motores": {
+    "NBA_Heurístico": "✅ OK",
+    "NBA_OverUnder": "✅ OK",
+    "MLB_Heurístico": "❌ FALTANTE",
+    "MLB_HR": "✅ OK",
+    "MLB_K": "✅ OK",
+    "MLB_OverUnder": "✅ OK",
+    "UFC_Analyzer": "✅ OK",
+    "Futbol_Jerarquico": "✅ OK",
+    "Motor_Momentum": "✅ OK",
+    "Decision_Inteligente": "✅ OK"
+  },
+  "visualizadores": {
+    "NBA": "✅ ACTIVO",
+    "MLB": "✅ ACTIVO",
+    "UFC": "✅ ACTIVO",
+    "Futbol": "✅ ACTIVO",
+    "deprecated": "4 archivos archivados"
+  },
+  "ias": {
+    "Gemini": "✅ Configurada (***px1o)",
+    "Groq": "✅ Configurada (***W30j)",
+    "DeepSeek": "✅ Configurada (***aba2)",
+    "OpenAI": "✅ Configurada (***yK8A)"
+  },
+  "archivos": {
+    "Database": "✅ 52.0 KB",
+    "MLB_Partidos": "✅ 9.8 KB",
+    "MLB_Resultados": "❌ FALTANTE",
+    "NBA_Cache": "❌ FALTANTE",
+    "UFC_Cache": "✅ 1.9 KB",
+    "Bitácora": "✅ 1.0 KB",
+    "Pesos_Motores": "❌ FALTANTE",
+    "Aprendizaje": "✅ 0.2 KB"
+  },
+  "base_datos": {
+    "peleadores_ufc_cache": "✅ 0 registros",
+    "eventos_ufc": "✅ 0 registros",
+    "player_stats": "✅ 0 registros",
+    "sqlite_sequence": "✅ 1 registros",
+    "equipos": "✅ 0 registros",
+    "backtesting": "✅ 38 registros",
+    "historial_equipos": "✅ 0 registros",
+    "hr_candidates_history": "✅ 0 registros"
+  },
+  "timestamp": "2026-06-09T13:39:29.811412"
+}

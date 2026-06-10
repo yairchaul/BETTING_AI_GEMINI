@@ -1,0 +1,13 @@
+[
+  {
+    "team_a": {"name": "Dodgers", "is_home": true, "runs_avg": 5.4, "runs_allowed": 4.2, "obp": 0.335, "slugging": 0.445, "pitcher_era": 3.2, "bullpen_era": 3.8},
+    "team_b": {"name": "Giants", "is_home": false, "runs_avg": 4.3, "runs_allowed": 4.6, "obp": 0.310, "slugging": 0.395, "pitcher_era": 4.5, "bullpen_era": 4.2},
+    "odds": {"moneyline": -150, "runline": 2.1, "total": 8.5, "over_odds": -110, "under_odds": -110},
+    "hr_candidates": [{"name": "Mookie Betts", "prob": 28, "odds": 3.5}]
+  },
+  {
+    "team_a": {"name": "Rockies", "is_home": false, "runs_avg": 4.1, "runs_allowed": 5.2, "obp": 0.305, "slugging": 0.385, "pitcher_era": 4.8, "bullpen_era": 4.5},
+    "team_b": {"name": "Dodgers", "is_home": true, "runs_avg": 5.4, "runs_allowed": 4.2, "obp": 0.335, "slugging": 0.445, "pitcher_era": 3.2, "bullpen_era": 3.8},
+    "odds": {"moneyline": 180, "runline": -162, "total": 10.5, "over_odds": -110, "under_odds": -110}
+  }
+]

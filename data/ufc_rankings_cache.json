@@ -1,0 +1,47 @@
+{
+  "last_update": "2026-05-19T17:40:43.206799",
+  "rankings": {
+    "campeones": [
+      "Alexandre Pantoja",
+      "Petr Yan",
+      "Alexander Volkanovski",
+      "Ilia Topuria",
+      "Islam Makhachev",
+      "Khamzat Chimaev",
+      "Carlos Ulberg",
+      "Jon Jones",
+      "Zhang Weili",
+      "Valentina Shevchenko",
+      "Julianna Peña"
+    ],
+    "top5": [],
+    "top10": [],
+    "top15": [],
+    "p4p": [
+      "Islam Makhachev",
+      "Ilia Topuria",
+      "Alex Pereira",
+      "Khamzat Chimaev",
+      "Alexander Volkanovski",
+      "Petr Yan",
+      "Tom Aspinall",
+      "Merab Dvalishvili",
+      "Alexandre Pantoja",
+      "Joshua Van",
+      "Charles Oliveira"
+    ],
+    "p4p_positions": {
+      "Islam Makhachev": 1,
+      "Ilia Topuria": 2,
+      "Alex Pereira": 3,
+      "Khamzat Chimaev": 4,
+      "Alexander Volkanovski": 5,
+      "Petr Yan": 6,
+      "Tom Aspinall": 7,
+      "Merab Dvalishvili": 8,
+      "Alexandre Pantoja": 9,
+      "Joshua Van": 10,
+      "Charles Oliveira": 11
+    }
+  }
+}

@@ -1,0 +1,25 @@
+﻿## COMANDOS RÁPIDOS PARA USAR EN LA GEM
+
+Escribe estos comandos directamente en el chat de Gemini cuando uses la Gem:
+
+### /analizar-mlb
+"Analiza el flujo de MLB desde el scraper hasta la visualización. Identifica por qué los candidatos a HR no aparecen."
+
+### /conectar-nba
+"Analiza la conexión entre balldontlie_client.py, radar_triples_nba.py y visual_nba_mejorado.py. ¿Por qué no se muestran los tripleros?"
+
+### /depurar-gemini
+"Verifica la conexión de Gemini en cerebro_gemini_pro.py. El modelo debe ser gemini-2.5-flash. Dame el código corregido."
+
+### /over-under
+"Analiza el motor Over/Under en motors/motor_over_under.py. ¿Está correctamente conectado a visual_mlb.py?"
+
+### /todos
+"Analiza TODO el proyecto. Identifica qué módulos están conectados y cuáles faltan por conectar. Dame un plan de acción."
+
+### /fix-hr
+"Arregla la visualización de candidatos a Home Run en MLB. El código debe ir en visual_mlb.py y recibir los datos de motor_mlb_pro.py"
+
+### /fix-radar
+"Arregla el radar de triples NBA. Debe mostrar los nombres de los jugadores y sus triples por partido usando balldontlie_client.py"
+

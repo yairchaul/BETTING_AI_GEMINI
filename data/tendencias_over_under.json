@@ -1,0 +1,253 @@
+{
+  "ultima_actualizacion": "2026-04-27 16:31",
+  "total_partidos": 203,
+  "pct_over_global": 54.7,
+  "factores_dia": {
+    "0": {
+      "nombre": "Lunes",
+      "pct_over": 70.0,
+      "factor": 1.15,
+      "total": 20
+    },
+    "1": {
+      "nombre": "Martes",
+      "pct_over": 46.7,
+      "factor": 1.0,
+      "total": 30
+    },
+    "2": {
+      "nombre": "Miércoles",
+      "pct_over": 60.0,
+      "factor": 1.08,
+      "total": 30
+    },
+    "3": {
+      "nombre": "Jueves",
+      "pct_over": 47.4,
+      "factor": 1.0,
+      "total": 19
+    },
+    "4": {
+      "nombre": "Viernes",
+      "pct_over": 58.6,
+      "factor": 1.08,
+      "total": 29
+    },
+    "5": {
+      "nombre": "Sábado",
+      "pct_over": 58.6,
+      "factor": 1.08,
+      "total": 29
+    },
+    "6": {
+      "nombre": "Domingo",
+      "pct_over": 47.8,
+      "factor": 1.0,
+      "total": 46
+    }
+  },
+  "factores_estadio": {
+    "Baltimore Orioles": {
+      "pct_over": 57.1,
+      "avg_runs": 11.9,
+      "factor": 1.15,
+      "total": 7
+    },
+    "Atlanta Braves": {
+      "pct_over": 71.4,
+      "avg_runs": 11.0,
+      "factor": 1.15,
+      "total": 7
+    },
+    "Toronto Blue Jays": {
+      "pct_over": 50.0,
+      "avg_runs": 9.5,
+      "factor": 1.08,
+      "total": 4
+    },
+    "Cincinnati Reds": {
+      "pct_over": 71.4,
+      "avg_runs": 10.1,
+      "factor": 1.15,
+      "total": 7
+    },
+    "New York Mets": {
+      "pct_over": 14.3,
+      "avg_runs": 6.6,
+      "factor": 0.92,
+      "total": 7
+    },
+    "Tampa Bay Rays": {
+      "pct_over": 28.6,
+      "avg_runs": 8.9,
+      "factor": 1.0,
+      "total": 7
+    },
+    "Chicago White Sox": {
+      "pct_over": 66.7,
+      "avg_runs": 8.8,
+      "factor": 1.0,
+      "total": 6
+    },
+    "Houston Astros": {
+      "pct_over": 77.8,
+      "avg_runs": 10.8,
+      "factor": 1.15,
+      "total": 9
+    },
+    "Milwaukee Brewers": {
+      "pct_over": 42.9,
+      "avg_runs": 8.0,
+      "factor": 1.0,
+      "total": 7
+    },
+    "St. Louis Cardinals": {
+      "pct_over": 57.1,
+      "avg_runs": 10.4,
+      "factor": 1.15,
+      "total": 7
+    },
+    "Texas Rangers": {
+      "pct_over": 33.3,
+      "avg_runs": 7.3,
+      "factor": 0.95,
+      "total": 6
+    },
+    "Arizona Diamondbacks": {
+      "pct_over": 75.0,
+      "avg_runs": 12.4,
+      "factor": 1.15,
+      "total": 8
+    },
+    "San Francisco Giants": {
+      "pct_over": 33.3,
+      "avg_runs": 6.7,
+      "factor": 0.92,
+      "total": 6
+    },
+    "Kansas City Royals": {
+      "pct_over": 100.0,
+      "avg_runs": 12.9,
+      "factor": 1.15,
+      "total": 7
+    },
+    "Los Angeles Dodgers": {
+      "pct_over": 42.9,
+      "avg_runs": 8.0,
+      "factor": 1.0,
+      "total": 7
+    },
+    "Washington Nationals": {
+      "pct_over": 85.7,
+      "avg_runs": 11.7,
+      "factor": 1.15,
+      "total": 7
+    },
+    "Detroit Tigers": {
+      "pct_over": 57.1,
+      "avg_runs": 9.6,
+      "factor": 1.08,
+      "total": 7
+    },
+    "Chicago Cubs": {
+      "pct_over": 62.5,
+      "avg_runs": 9.9,
+      "factor": 1.08,
+      "total": 8
+    },
+    "Colorado Rockies": {
+      "pct_over": 57.1,
+      "avg_runs": 10.7,
+      "factor": 1.15,
+      "total": 7
+    },
+    "Boston Red Sox": {
+      "pct_over": 14.3,
+      "avg_runs": 6.1,
+      "factor": 0.92,
+      "total": 7
+    },
+    "Miami Marlins": {
+      "pct_over": 16.7,
+      "avg_runs": 8.0,
+      "factor": 1.0,
+      "total": 6
+    },
+    "Cleveland Guardians": {
+      "pct_over": 57.1,
+      "avg_runs": 8.6,
+      "factor": 1.0,
+      "total": 7
+    },
+    "Los Angeles Angels": {
+      "pct_over": 16.7,
+      "avg_runs": 6.5,
+      "factor": 0.92,
+      "total": 6
+    },
+    "Seattle Mariners": {
+      "pct_over": 37.5,
+      "avg_runs": 7.9,
+      "factor": 0.95,
+      "total": 8
+    },
+    "Pittsburgh Pirates": {
+      "pct_over": 71.4,
+      "avg_runs": 11.0,
+      "factor": 1.15,
+      "total": 7
+    },
+    "New York Yankees": {
+      "pct_over": 57.1,
+      "avg_runs": 11.9,
+      "factor": 1.15,
+      "total": 7
+    },
+    "Minnesota Twins": {
+      "pct_over": 66.7,
+      "avg_runs": 10.3,
+      "factor": 1.15,
+      "total": 6
+    },
+    "Athletics": {
+      "pct_over": 85.7,
+      "avg_runs": 10.4,
+      "factor": 1.15,
+      "total": 7
+    },
+    "Philadelphia Phillies": {
+      "pct_over": 57.1,
+      "avg_runs": 10.4,
+      "factor": 1.15,
+      "total": 7
+    },
+    "San Diego Padres": {
+      "pct_over": 50.0,
+      "avg_runs": 8.5,
+      "factor": 1.0,
+      "total": 4
+    }
+  },
+  "factores_diff": {
+    "5-10%": {
+      "pct_over": 55.8,
+      "factor": 1.05,
+      "total": 43
+    },
+    ">15%": {
+      "pct_over": 52.8,
+      "factor": 1.0,
+      "total": 89
+    },
+    "10-15%": {
+      "pct_over": 57.6,
+      "factor": 1.05,
+      "total": 33
+    },
+    "0-5%": {
+      "pct_over": 55.3,
+      "factor": 1.05,
+      "total": 38
+    }
+  }
+}

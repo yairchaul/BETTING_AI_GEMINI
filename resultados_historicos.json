@@ -1,0 +1,62 @@
+[
+  {
+    "p1": "Carlos Ulberg",
+    "p2": "Jiri Prochazka",
+    "ganador": "Carlos Ulberg",
+    "metodo": "KO/TKO"
+  },
+  {
+    "p1": "Paulo Costa",
+    "p2": "Azamat Murzakanov",
+    "ganador": "Paulo Costa",
+    "metodo": "KO/TKO"
+  },
+  {
+    "p1": "Josh Hokit",
+    "p2": "Marcin Tybura",
+    "ganador": "Josh Hokit",
+    "metodo": "Decisión Unánime"
+  },
+  {
+    "p1": "Dominick Reyes",
+    "p2": "Volkan Oezdemir",
+    "ganador": "Dominick Reyes",
+    "metodo": "Decisión Dividida"
+  },
+  {
+    "p1": "Darragh Kelly",
+    "p2": "Jay-Jay Wilson",
+    "ganador": "Darragh Kelly",
+    "metodo": "KO/TKO"
+  },
+  {
+    "p1": "Rhys McKee",
+    "p2": "Alex Lohore",
+    "ganador": "Rhys McKee",
+    "metodo": "Decisión Unánime"
+  },
+  {
+    "p1": "Dovlet Yagshimuradov",
+    "p2": "Tyson Pedro",
+    "ganador": "Dovlet Yagshimuradov",
+    "metodo": "Decisión Unánime"
+  },
+  {
+    "p1": "Aljamain Sterling",
+    "p2": "Youssef Zalal",
+    "ganador": "Aljamain Sterling",
+    "metodo": "Decisión"
+  },
+  {
+    "p1": "Norma Dumont",
+    "p2": "Joselyne Edwards",
+    "ganador": "Norma Dumont",
+    "metodo": "Decisión"
+  },
+  {
+    "p1": "Montel Jackson",
+    "p2": "Raoni Barcelos",
+    "ganador": "Montel Jackson",
+    "metodo": "KO/TKO"
+  }
+]

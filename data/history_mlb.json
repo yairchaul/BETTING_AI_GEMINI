@@ -1,0 +1,3266 @@
+[
+  {
+    "fecha": "20260605",
+    "deporte": "mlb",
+    "nombre": "San Francisco Giants at Chicago Cubs",
+    "home": "Chicago Cubs",
+    "away": "San Francisco Giants",
+    "home_score": "3",
+    "away_score": "18",
+    "ganador_real": "San Francisco Giants",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260605",
+    "deporte": "mlb",
+    "nombre": "Chicago White Sox at Philadelphia Phillies",
+    "home": "Philadelphia Phillies",
+    "away": "Chicago White Sox",
+    "home_score": "0",
+    "away_score": "2",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_IN_PROGRESS"
+  },
+  {
+    "fecha": "20260605",
+    "deporte": "mlb",
+    "nombre": "Seattle Mariners at Detroit Tigers",
+    "home": "Detroit Tigers",
+    "away": "Seattle Mariners",
+    "home_score": "0",
+    "away_score": "1",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_IN_PROGRESS"
+  },
+  {
+    "fecha": "20260605",
+    "deporte": "mlb",
+    "nombre": "Boston Red Sox at New York Yankees",
+    "home": "New York Yankees",
+    "away": "Boston Red Sox",
+    "home_score": "0",
+    "away_score": "0",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_IN_PROGRESS"
+  },
+  {
+    "fecha": "20260605",
+    "deporte": "mlb",
+    "nombre": "Baltimore Orioles at Toronto Blue Jays",
+    "home": "Toronto Blue Jays",
+    "away": "Baltimore Orioles",
+    "home_score": "0",
+    "away_score": "1",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_IN_PROGRESS"
+  },
+  {
+    "fecha": "20260605",
+    "deporte": "mlb",
+    "nombre": "Tampa Bay Rays at Miami Marlins",
+    "home": "Miami Marlins",
+    "away": "Tampa Bay Rays",
+    "home_score": "0",
+    "away_score": "0",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_IN_PROGRESS"
+  },
+  {
+    "fecha": "20260605",
+    "deporte": "mlb",
+    "nombre": "Pittsburgh Pirates at Atlanta Braves",
+    "home": "Atlanta Braves",
+    "away": "Pittsburgh Pirates",
+    "home_score": "0",
+    "away_score": "0",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "ATL -149",
+      "over_under": 8.5,
+      "spread": -1.5
+    },
+    "status": "STATUS_SCHEDULED"
+  },
+  {
+    "fecha": "20260605",
+    "deporte": "mlb",
+    "nombre": "Athletics Athletics at Houston Astros",
+    "home": "Houston Astros",
+    "away": "Athletics",
+    "home_score": "0",
+    "away_score": "0",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "HOU -115",
+      "over_under": 9.0,
+      "spread": 1.5
+    },
+    "status": "STATUS_SCHEDULED"
+  },
+  {
+    "fecha": "20260605",
+    "deporte": "mlb",
+    "nombre": "Cincinnati Reds at St. Louis Cardinals",
+    "home": "St. Louis Cardinals",
+    "away": "Cincinnati Reds",
+    "home_score": "0",
+    "away_score": "0",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "STL -144",
+      "over_under": 9.0,
+      "spread": -1.5
+    },
+    "status": "STATUS_SCHEDULED"
+  },
+  {
+    "fecha": "20260605",
+    "deporte": "mlb",
+    "nombre": "Cleveland Guardians at Texas Rangers",
+    "home": "Texas Rangers",
+    "away": "Cleveland Guardians",
+    "home_score": "0",
+    "away_score": "0",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "CLE -126",
+      "over_under": 7.5,
+      "spread": 1.5
+    },
+    "status": "STATUS_SCHEDULED"
+  },
+  {
+    "fecha": "20260605",
+    "deporte": "mlb",
+    "nombre": "Kansas City Royals at Minnesota Twins",
+    "home": "Minnesota Twins",
+    "away": "Kansas City Royals",
+    "home_score": "0",
+    "away_score": "0",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "MIN -121",
+      "over_under": 8.5,
+      "spread": 1.5
+    },
+    "status": "STATUS_SCHEDULED"
+  },
+  {
+    "fecha": "20260605",
+    "deporte": "mlb",
+    "nombre": "Milwaukee Brewers at Colorado Rockies",
+    "home": "Colorado Rockies",
+    "away": "Milwaukee Brewers",
+    "home_score": "0",
+    "away_score": "0",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "MIL -161",
+      "over_under": 12.0,
+      "spread": 1.5
+    },
+    "status": "STATUS_SCHEDULED"
+  },
+  {
+    "fecha": "20260605",
+    "deporte": "mlb",
+    "nombre": "New York Mets at San Diego Padres",
+    "home": "San Diego Padres",
+    "away": "New York Mets",
+    "home_score": "0",
+    "away_score": "0",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "SD -131",
+      "over_under": 7.0,
+      "spread": -1.5
+    },
+    "status": "STATUS_SCHEDULED"
+  },
+  {
+    "fecha": "20260605",
+    "deporte": "mlb",
+    "nombre": "Washington Nationals at Arizona Diamondbacks",
+    "home": "Arizona Diamondbacks",
+    "away": "Washington Nationals",
+    "home_score": "0",
+    "away_score": "0",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "ARI -141",
+      "over_under": 9.0,
+      "spread": -1.5
+    },
+    "status": "STATUS_SCHEDULED"
+  },
+  {
+    "fecha": "20260605",
+    "deporte": "mlb",
+    "nombre": "Los Angeles Angels at Los Angeles Dodgers",
+    "home": "Los Angeles Dodgers",
+    "away": "Los Angeles Angels",
+    "home_score": "0",
+    "away_score": "0",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "LAD -199",
+      "over_under": 8.0,
+      "spread": -1.5
+    },
+    "status": "STATUS_SCHEDULED"
+  },
+  {
+    "fecha": "20260604",
+    "deporte": "mlb",
+    "nombre": "San Diego Padres at Philadelphia Phillies",
+    "home": "Philadelphia Phillies",
+    "away": "San Diego Padres",
+    "home_score": "6",
+    "away_score": "4",
+    "ganador_real": "Philadelphia Phillies",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260604",
+    "deporte": "mlb",
+    "nombre": "Baltimore Orioles at Boston Red Sox",
+    "home": "Boston Red Sox",
+    "away": "Baltimore Orioles",
+    "home_score": "2",
+    "away_score": "8",
+    "ganador_real": "Baltimore Orioles",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260604",
+    "deporte": "mlb",
+    "nombre": "Cleveland Guardians at New York Yankees",
+    "home": "New York Yankees",
+    "away": "Cleveland Guardians",
+    "home_score": "2",
+    "away_score": "1",
+    "ganador_real": "New York Yankees",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260604",
+    "deporte": "mlb",
+    "nombre": "San Francisco Giants at Milwaukee Brewers",
+    "home": "Milwaukee Brewers",
+    "away": "San Francisco Giants",
+    "home_score": "9",
+    "away_score": "12",
+    "ganador_real": "San Francisco Giants",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260604",
+    "deporte": "mlb",
+    "nombre": "Toronto Blue Jays at Atlanta Braves",
+    "home": "Atlanta Braves",
+    "away": "Toronto Blue Jays",
+    "home_score": "2",
+    "away_score": "7",
+    "ganador_real": "Toronto Blue Jays",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260604",
+    "deporte": "mlb",
+    "nombre": "Kansas City Royals at Minnesota Twins",
+    "home": "Minnesota Twins",
+    "away": "Kansas City Royals",
+    "home_score": "6",
+    "away_score": "8",
+    "ganador_real": "Kansas City Royals",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260604",
+    "deporte": "mlb",
+    "nombre": "Athletics Athletics at Chicago Cubs",
+    "home": "Chicago Cubs",
+    "away": "Athletics",
+    "home_score": "7",
+    "away_score": "6",
+    "ganador_real": "Chicago Cubs",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260604",
+    "deporte": "mlb",
+    "nombre": "Pittsburgh Pirates at Houston Astros",
+    "home": "Houston Astros",
+    "away": "Pittsburgh Pirates",
+    "home_score": "1",
+    "away_score": "5",
+    "ganador_real": "Pittsburgh Pirates",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260604",
+    "deporte": "mlb",
+    "nombre": "Los Angeles Dodgers at Arizona Diamondbacks",
+    "home": "Arizona Diamondbacks",
+    "away": "Los Angeles Dodgers",
+    "home_score": "3",
+    "away_score": "2",
+    "ganador_real": "Arizona Diamondbacks",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260603",
+    "deporte": "mlb",
+    "nombre": "Miami Marlins at Washington Nationals",
+    "home": "Washington Nationals",
+    "away": "Miami Marlins",
+    "home_score": "1",
+    "away_score": "4",
+    "ganador_real": "Miami Marlins",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260603",
+    "deporte": "mlb",
+    "nombre": "Detroit Tigers at Tampa Bay Rays",
+    "home": "Tampa Bay Rays",
+    "away": "Detroit Tigers",
+    "home_score": "2",
+    "away_score": "7",
+    "ganador_real": "Detroit Tigers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260603",
+    "deporte": "mlb",
+    "nombre": "Chicago White Sox at Minnesota Twins",
+    "home": "Minnesota Twins",
+    "away": "Chicago White Sox",
+    "home_score": "0",
+    "away_score": "8",
+    "ganador_real": "Chicago White Sox",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260603",
+    "deporte": "mlb",
+    "nombre": "New York Mets at Seattle Mariners",
+    "home": "Seattle Mariners",
+    "away": "New York Mets",
+    "home_score": "1",
+    "away_score": "7",
+    "ganador_real": "New York Mets",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260603",
+    "deporte": "mlb",
+    "nombre": "San Diego Padres at Philadelphia Phillies",
+    "home": "Philadelphia Phillies",
+    "away": "San Diego Padres",
+    "home_score": "3",
+    "away_score": "2",
+    "ganador_real": "Philadelphia Phillies",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260603",
+    "deporte": "mlb",
+    "nombre": "Baltimore Orioles at Boston Red Sox",
+    "home": "Boston Red Sox",
+    "away": "Baltimore Orioles",
+    "home_score": "8",
+    "away_score": "1",
+    "ganador_real": "Boston Red Sox",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260603",
+    "deporte": "mlb",
+    "nombre": "Cleveland Guardians at New York Yankees",
+    "home": "New York Yankees",
+    "away": "Cleveland Guardians",
+    "home_score": "4",
+    "away_score": "5",
+    "ganador_real": "Cleveland Guardians",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260603",
+    "deporte": "mlb",
+    "nombre": "Kansas City Royals at Cincinnati Reds",
+    "home": "Cincinnati Reds",
+    "away": "Kansas City Royals",
+    "home_score": "2",
+    "away_score": "5",
+    "ganador_real": "Kansas City Royals",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260603",
+    "deporte": "mlb",
+    "nombre": "Toronto Blue Jays at Atlanta Braves",
+    "home": "Atlanta Braves",
+    "away": "Toronto Blue Jays",
+    "home_score": "7",
+    "away_score": "3",
+    "ganador_real": "Atlanta Braves",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260603",
+    "deporte": "mlb",
+    "nombre": "San Francisco Giants at Milwaukee Brewers",
+    "home": "Milwaukee Brewers",
+    "away": "San Francisco Giants",
+    "home_score": "0",
+    "away_score": "1",
+    "ganador_real": "San Francisco Giants",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260603",
+    "deporte": "mlb",
+    "nombre": "Texas Rangers at St. Louis Cardinals",
+    "home": "St. Louis Cardinals",
+    "away": "Texas Rangers",
+    "home_score": "5",
+    "away_score": "3",
+    "ganador_real": "St. Louis Cardinals",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260603",
+    "deporte": "mlb",
+    "nombre": "Athletics Athletics at Chicago Cubs",
+    "home": "Chicago Cubs",
+    "away": "Athletics",
+    "home_score": "4",
+    "away_score": "5",
+    "ganador_real": "Athletics",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260603",
+    "deporte": "mlb",
+    "nombre": "Pittsburgh Pirates at Houston Astros",
+    "home": "Houston Astros",
+    "away": "Pittsburgh Pirates",
+    "home_score": "11",
+    "away_score": "9",
+    "ganador_real": "Houston Astros",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260603",
+    "deporte": "mlb",
+    "nombre": "Colorado Rockies at Los Angeles Angels",
+    "home": "Los Angeles Angels",
+    "away": "Colorado Rockies",
+    "home_score": "11",
+    "away_score": "4",
+    "ganador_real": "Los Angeles Angels",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260603",
+    "deporte": "mlb",
+    "nombre": "Los Angeles Dodgers at Arizona Diamondbacks",
+    "home": "Arizona Diamondbacks",
+    "away": "Los Angeles Dodgers",
+    "home_score": "0",
+    "away_score": "7",
+    "ganador_real": "Los Angeles Dodgers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260602",
+    "deporte": "mlb",
+    "nombre": "Detroit Tigers at Tampa Bay Rays",
+    "home": "Tampa Bay Rays",
+    "away": "Detroit Tigers",
+    "home_score": "0",
+    "away_score": "8",
+    "ganador_real": "Detroit Tigers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260602",
+    "deporte": "mlb",
+    "nombre": "San Diego Padres at Philadelphia Phillies",
+    "home": "Philadelphia Phillies",
+    "away": "San Diego Padres",
+    "home_score": "3",
+    "away_score": "2",
+    "ganador_real": "Philadelphia Phillies",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260602",
+    "deporte": "mlb",
+    "nombre": "Baltimore Orioles at Boston Red Sox",
+    "home": "Boston Red Sox",
+    "away": "Baltimore Orioles",
+    "home_score": "2",
+    "away_score": "4",
+    "ganador_real": "Baltimore Orioles",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260602",
+    "deporte": "mlb",
+    "nombre": "Miami Marlins at Washington Nationals",
+    "home": "Washington Nationals",
+    "away": "Miami Marlins",
+    "home_score": "3",
+    "away_score": "7",
+    "ganador_real": "Miami Marlins",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260602",
+    "deporte": "mlb",
+    "nombre": "Cleveland Guardians at New York Yankees",
+    "home": "New York Yankees",
+    "away": "Cleveland Guardians",
+    "home_score": "4",
+    "away_score": "9",
+    "ganador_real": "Cleveland Guardians",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260602",
+    "deporte": "mlb",
+    "nombre": "Kansas City Royals at Cincinnati Reds",
+    "home": "Cincinnati Reds",
+    "away": "Kansas City Royals",
+    "home_score": "4",
+    "away_score": "3",
+    "ganador_real": "Cincinnati Reds",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260602",
+    "deporte": "mlb",
+    "nombre": "Toronto Blue Jays at Atlanta Braves",
+    "home": "Atlanta Braves",
+    "away": "Toronto Blue Jays",
+    "home_score": "4",
+    "away_score": "3",
+    "ganador_real": "Atlanta Braves",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260602",
+    "deporte": "mlb",
+    "nombre": "Chicago White Sox at Minnesota Twins",
+    "home": "Minnesota Twins",
+    "away": "Chicago White Sox",
+    "home_score": "6",
+    "away_score": "4",
+    "ganador_real": "Minnesota Twins",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260602",
+    "deporte": "mlb",
+    "nombre": "San Francisco Giants at Milwaukee Brewers",
+    "home": "Milwaukee Brewers",
+    "away": "San Francisco Giants",
+    "home_score": "8",
+    "away_score": "3",
+    "ganador_real": "Milwaukee Brewers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260602",
+    "deporte": "mlb",
+    "nombre": "Texas Rangers at St. Louis Cardinals",
+    "home": "St. Louis Cardinals",
+    "away": "Texas Rangers",
+    "home_score": "4",
+    "away_score": "7",
+    "ganador_real": "Texas Rangers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260602",
+    "deporte": "mlb",
+    "nombre": "Athletics Athletics at Chicago Cubs",
+    "home": "Chicago Cubs",
+    "away": "Athletics",
+    "home_score": "1",
+    "away_score": "2",
+    "ganador_real": "Athletics",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260602",
+    "deporte": "mlb",
+    "nombre": "Pittsburgh Pirates at Houston Astros",
+    "home": "Houston Astros",
+    "away": "Pittsburgh Pirates",
+    "home_score": "6",
+    "away_score": "10",
+    "ganador_real": "Pittsburgh Pirates",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260602",
+    "deporte": "mlb",
+    "nombre": "Colorado Rockies at Los Angeles Angels",
+    "home": "Los Angeles Angels",
+    "away": "Colorado Rockies",
+    "home_score": "2",
+    "away_score": "8",
+    "ganador_real": "Colorado Rockies",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260602",
+    "deporte": "mlb",
+    "nombre": "Los Angeles Dodgers at Arizona Diamondbacks",
+    "home": "Arizona Diamondbacks",
+    "away": "Los Angeles Dodgers",
+    "home_score": "5",
+    "away_score": "6",
+    "ganador_real": "Los Angeles Dodgers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260602",
+    "deporte": "mlb",
+    "nombre": "New York Mets at Seattle Mariners",
+    "home": "Seattle Mariners",
+    "away": "New York Mets",
+    "home_score": "8",
+    "away_score": "3",
+    "ganador_real": "Seattle Mariners",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260601",
+    "deporte": "mlb",
+    "nombre": "Detroit Tigers at Tampa Bay Rays",
+    "home": "Tampa Bay Rays",
+    "away": "Detroit Tigers",
+    "home_score": "9",
+    "away_score": "10",
+    "ganador_real": "Detroit Tigers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260601",
+    "deporte": "mlb",
+    "nombre": "Miami Marlins at Washington Nationals",
+    "home": "Washington Nationals",
+    "away": "Miami Marlins",
+    "home_score": "3",
+    "away_score": "7",
+    "ganador_real": "Miami Marlins",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260601",
+    "deporte": "mlb",
+    "nombre": "Kansas City Royals at Cincinnati Reds",
+    "home": "Cincinnati Reds",
+    "away": "Kansas City Royals",
+    "home_score": "2",
+    "away_score": "9",
+    "ganador_real": "Kansas City Royals",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260601",
+    "deporte": "mlb",
+    "nombre": "Chicago White Sox at Minnesota Twins",
+    "home": "Minnesota Twins",
+    "away": "Chicago White Sox",
+    "home_score": "9",
+    "away_score": "6",
+    "ganador_real": "Minnesota Twins",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260601",
+    "deporte": "mlb",
+    "nombre": "San Francisco Giants at Milwaukee Brewers",
+    "home": "Milwaukee Brewers",
+    "away": "San Francisco Giants",
+    "home_score": "16",
+    "away_score": "2",
+    "ganador_real": "Milwaukee Brewers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260601",
+    "deporte": "mlb",
+    "nombre": "Texas Rangers at St. Louis Cardinals",
+    "home": "St. Louis Cardinals",
+    "away": "Texas Rangers",
+    "home_score": "1",
+    "away_score": "2",
+    "ganador_real": "Texas Rangers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260601",
+    "deporte": "mlb",
+    "nombre": "Colorado Rockies at Los Angeles Angels",
+    "home": "Los Angeles Angels",
+    "away": "Colorado Rockies",
+    "home_score": "8",
+    "away_score": "9",
+    "ganador_real": "Colorado Rockies",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260601",
+    "deporte": "mlb",
+    "nombre": "Los Angeles Dodgers at Arizona Diamondbacks",
+    "home": "Arizona Diamondbacks",
+    "away": "Los Angeles Dodgers",
+    "home_score": "4",
+    "away_score": "1",
+    "ganador_real": "Arizona Diamondbacks",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260601",
+    "deporte": "mlb",
+    "nombre": "New York Mets at Seattle Mariners",
+    "home": "Seattle Mariners",
+    "away": "New York Mets",
+    "home_score": "3",
+    "away_score": "2",
+    "ganador_real": "Seattle Mariners",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260531",
+    "deporte": "mlb",
+    "nombre": "Toronto Blue Jays at Baltimore Orioles",
+    "home": "Baltimore Orioles",
+    "away": "Toronto Blue Jays",
+    "home_score": "9",
+    "away_score": "5",
+    "ganador_real": "Baltimore Orioles",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260531",
+    "deporte": "mlb",
+    "nombre": "Minnesota Twins at Pittsburgh Pirates",
+    "home": "Pittsburgh Pirates",
+    "away": "Minnesota Twins",
+    "home_score": "9",
+    "away_score": "3",
+    "ganador_real": "Pittsburgh Pirates",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260531",
+    "deporte": "mlb",
+    "nombre": "San Diego Padres at Washington Nationals",
+    "home": "Washington Nationals",
+    "away": "San Diego Padres",
+    "home_score": "4",
+    "away_score": "2",
+    "ganador_real": "Washington Nationals",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260531",
+    "deporte": "mlb",
+    "nombre": "Los Angeles Angels at Tampa Bay Rays",
+    "home": "Tampa Bay Rays",
+    "away": "Los Angeles Angels",
+    "home_score": "5",
+    "away_score": "2",
+    "ganador_real": "Tampa Bay Rays",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260531",
+    "deporte": "mlb",
+    "nombre": "Atlanta Braves at Cincinnati Reds",
+    "home": "Cincinnati Reds",
+    "away": "Atlanta Braves",
+    "home_score": "6",
+    "away_score": "4",
+    "ganador_real": "Cincinnati Reds",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260531",
+    "deporte": "mlb",
+    "nombre": "Boston Red Sox at Cleveland Guardians",
+    "home": "Cleveland Guardians",
+    "away": "Boston Red Sox",
+    "home_score": "4",
+    "away_score": "9",
+    "ganador_real": "Boston Red Sox",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260531",
+    "deporte": "mlb",
+    "nombre": "Miami Marlins at New York Mets",
+    "home": "New York Mets",
+    "away": "Miami Marlins",
+    "home_score": "10",
+    "away_score": "1",
+    "ganador_real": "New York Mets",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260531",
+    "deporte": "mlb",
+    "nombre": "Detroit Tigers at Chicago White Sox",
+    "home": "Chicago White Sox",
+    "away": "Detroit Tigers",
+    "home_score": "2",
+    "away_score": "1",
+    "ganador_real": "Chicago White Sox",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260531",
+    "deporte": "mlb",
+    "nombre": "Milwaukee Brewers at Houston Astros",
+    "home": "Houston Astros",
+    "away": "Milwaukee Brewers",
+    "home_score": "0",
+    "away_score": "2",
+    "ganador_real": "Milwaukee Brewers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260531",
+    "deporte": "mlb",
+    "nombre": "Kansas City Royals at Texas Rangers",
+    "home": "Texas Rangers",
+    "away": "Kansas City Royals",
+    "home_score": "6",
+    "away_score": "3",
+    "ganador_real": "Texas Rangers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260531",
+    "deporte": "mlb",
+    "nombre": "San Francisco Giants at Colorado Rockies",
+    "home": "Colorado Rockies",
+    "away": "San Francisco Giants",
+    "home_score": "6",
+    "away_score": "19",
+    "ganador_real": "San Francisco Giants",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260531",
+    "deporte": "mlb",
+    "nombre": "New York Yankees at Athletics Athletics",
+    "home": "Athletics",
+    "away": "New York Yankees",
+    "home_score": "8",
+    "away_score": "13",
+    "ganador_real": "New York Yankees",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260531",
+    "deporte": "mlb",
+    "nombre": "Arizona Diamondbacks at Seattle Mariners",
+    "home": "Seattle Mariners",
+    "away": "Arizona Diamondbacks",
+    "home_score": "3",
+    "away_score": "2",
+    "ganador_real": "Seattle Mariners",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260531",
+    "deporte": "mlb",
+    "nombre": "Philadelphia Phillies at Los Angeles Dodgers",
+    "home": "Los Angeles Dodgers",
+    "away": "Philadelphia Phillies",
+    "home_score": "9",
+    "away_score": "1",
+    "ganador_real": "Los Angeles Dodgers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260531",
+    "deporte": "mlb",
+    "nombre": "Chicago Cubs at St. Louis Cardinals",
+    "home": "St. Louis Cardinals",
+    "away": "Chicago Cubs",
+    "home_score": "5",
+    "away_score": "1",
+    "ganador_real": "St. Louis Cardinals",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260530",
+    "deporte": "mlb",
+    "nombre": "Detroit Tigers at Chicago White Sox",
+    "home": "Chicago White Sox",
+    "away": "Detroit Tigers",
+    "home_score": "7",
+    "away_score": "1",
+    "ganador_real": "Chicago White Sox",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260530",
+    "deporte": "mlb",
+    "nombre": "Minnesota Twins at Pittsburgh Pirates",
+    "home": "Pittsburgh Pirates",
+    "away": "Minnesota Twins",
+    "home_score": "10",
+    "away_score": "9",
+    "ganador_real": "Pittsburgh Pirates",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260530",
+    "deporte": "mlb",
+    "nombre": "San Diego Padres at Washington Nationals",
+    "home": "Washington Nationals",
+    "away": "San Diego Padres",
+    "home_score": "9",
+    "away_score": "4",
+    "ganador_real": "Washington Nationals",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260530",
+    "deporte": "mlb",
+    "nombre": "Toronto Blue Jays at Baltimore Orioles",
+    "home": "Baltimore Orioles",
+    "away": "Toronto Blue Jays",
+    "home_score": "6",
+    "away_score": "5",
+    "ganador_real": "Baltimore Orioles",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260530",
+    "deporte": "mlb",
+    "nombre": "Kansas City Royals at Texas Rangers",
+    "home": "Texas Rangers",
+    "away": "Kansas City Royals",
+    "home_score": "7",
+    "away_score": "6",
+    "ganador_real": "Texas Rangers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260530",
+    "deporte": "mlb",
+    "nombre": "Los Angeles Angels at Tampa Bay Rays",
+    "home": "Tampa Bay Rays",
+    "away": "Los Angeles Angels",
+    "home_score": "3",
+    "away_score": "14",
+    "ganador_real": "Los Angeles Angels",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260530",
+    "deporte": "mlb",
+    "nombre": "Boston Red Sox at Cleveland Guardians",
+    "home": "Cleveland Guardians",
+    "away": "Boston Red Sox",
+    "home_score": "1",
+    "away_score": "9",
+    "ganador_real": "Boston Red Sox",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260530",
+    "deporte": "mlb",
+    "nombre": "Miami Marlins at New York Mets",
+    "home": "New York Mets",
+    "away": "Miami Marlins",
+    "home_score": "6",
+    "away_score": "1",
+    "ganador_real": "New York Mets",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260530",
+    "deporte": "mlb",
+    "nombre": "Milwaukee Brewers at Houston Astros",
+    "home": "Houston Astros",
+    "away": "Milwaukee Brewers",
+    "home_score": "9",
+    "away_score": "2",
+    "ganador_real": "Houston Astros",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260530",
+    "deporte": "mlb",
+    "nombre": "Atlanta Braves at Cincinnati Reds",
+    "home": "Cincinnati Reds",
+    "away": "Atlanta Braves",
+    "home_score": "2",
+    "away_score": "5",
+    "ganador_real": "Atlanta Braves",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260530",
+    "deporte": "mlb",
+    "nombre": "Chicago Cubs at St. Louis Cardinals",
+    "home": "St. Louis Cardinals",
+    "away": "Chicago Cubs",
+    "home_score": "1",
+    "away_score": "6",
+    "ganador_real": "Chicago Cubs",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260530",
+    "deporte": "mlb",
+    "nombre": "San Francisco Giants at Colorado Rockies",
+    "home": "Colorado Rockies",
+    "away": "San Francisco Giants",
+    "home_score": "8",
+    "away_score": "3",
+    "ganador_real": "Colorado Rockies",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260530",
+    "deporte": "mlb",
+    "nombre": "New York Yankees at Athletics Athletics",
+    "home": "Athletics",
+    "away": "New York Yankees",
+    "home_score": "6",
+    "away_score": "4",
+    "ganador_real": "Athletics",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260530",
+    "deporte": "mlb",
+    "nombre": "Arizona Diamondbacks at Seattle Mariners",
+    "home": "Seattle Mariners",
+    "away": "Arizona Diamondbacks",
+    "home_score": "5",
+    "away_score": "1",
+    "ganador_real": "Seattle Mariners",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260530",
+    "deporte": "mlb",
+    "nombre": "Philadelphia Phillies at Los Angeles Dodgers",
+    "home": "Los Angeles Dodgers",
+    "away": "Philadelphia Phillies",
+    "home_score": "3",
+    "away_score": "4",
+    "ganador_real": "Philadelphia Phillies",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260529",
+    "deporte": "mlb",
+    "nombre": "Atlanta Braves at Cincinnati Reds",
+    "home": "Cincinnati Reds",
+    "away": "Atlanta Braves",
+    "home_score": "3",
+    "away_score": "8",
+    "ganador_real": "Atlanta Braves",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260529",
+    "deporte": "mlb",
+    "nombre": "Minnesota Twins at Pittsburgh Pirates",
+    "home": "Pittsburgh Pirates",
+    "away": "Minnesota Twins",
+    "home_score": "6",
+    "away_score": "5",
+    "ganador_real": "Pittsburgh Pirates",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260529",
+    "deporte": "mlb",
+    "nombre": "San Diego Padres at Washington Nationals",
+    "home": "Washington Nationals",
+    "away": "San Diego Padres",
+    "home_score": "5",
+    "away_score": "7",
+    "ganador_real": "San Diego Padres",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260529",
+    "deporte": "mlb",
+    "nombre": "Toronto Blue Jays at Baltimore Orioles",
+    "home": "Baltimore Orioles",
+    "away": "Toronto Blue Jays",
+    "home_score": "5",
+    "away_score": "6",
+    "ganador_real": "Toronto Blue Jays",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260529",
+    "deporte": "mlb",
+    "nombre": "Los Angeles Angels at Tampa Bay Rays",
+    "home": "Tampa Bay Rays",
+    "away": "Los Angeles Angels",
+    "home_score": "8",
+    "away_score": "5",
+    "ganador_real": "Tampa Bay Rays",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260529",
+    "deporte": "mlb",
+    "nombre": "Boston Red Sox at Cleveland Guardians",
+    "home": "Cleveland Guardians",
+    "away": "Boston Red Sox",
+    "home_score": "4",
+    "away_score": "3",
+    "ganador_real": "Cleveland Guardians",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260529",
+    "deporte": "mlb",
+    "nombre": "Miami Marlins at New York Mets",
+    "home": "New York Mets",
+    "away": "Miami Marlins",
+    "home_score": "9",
+    "away_score": "7",
+    "ganador_real": "New York Mets",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260529",
+    "deporte": "mlb",
+    "nombre": "Chicago Cubs at St. Louis Cardinals",
+    "home": "St. Louis Cardinals",
+    "away": "Chicago Cubs",
+    "home_score": "6",
+    "away_score": "5",
+    "ganador_real": "St. Louis Cardinals",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260529",
+    "deporte": "mlb",
+    "nombre": "Detroit Tigers at Chicago White Sox",
+    "home": "Chicago White Sox",
+    "away": "Detroit Tigers",
+    "home_score": "4",
+    "away_score": "3",
+    "ganador_real": "Chicago White Sox",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260529",
+    "deporte": "mlb",
+    "nombre": "Kansas City Royals at Texas Rangers",
+    "home": "Texas Rangers",
+    "away": "Kansas City Royals",
+    "home_score": "9",
+    "away_score": "1",
+    "ganador_real": "Texas Rangers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260529",
+    "deporte": "mlb",
+    "nombre": "Milwaukee Brewers at Houston Astros",
+    "home": "Houston Astros",
+    "away": "Milwaukee Brewers",
+    "home_score": "4",
+    "away_score": "5",
+    "ganador_real": "Milwaukee Brewers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260529",
+    "deporte": "mlb",
+    "nombre": "San Francisco Giants at Colorado Rockies",
+    "home": "Colorado Rockies",
+    "away": "San Francisco Giants",
+    "home_score": "8",
+    "away_score": "6",
+    "ganador_real": "Colorado Rockies",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260529",
+    "deporte": "mlb",
+    "nombre": "New York Yankees at Athletics Athletics",
+    "home": "Athletics",
+    "away": "New York Yankees",
+    "home_score": "2",
+    "away_score": "8",
+    "ganador_real": "New York Yankees",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260529",
+    "deporte": "mlb",
+    "nombre": "Arizona Diamondbacks at Seattle Mariners",
+    "home": "Seattle Mariners",
+    "away": "Arizona Diamondbacks",
+    "home_score": "7",
+    "away_score": "6",
+    "ganador_real": "Seattle Mariners",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260529",
+    "deporte": "mlb",
+    "nombre": "Philadelphia Phillies at Los Angeles Dodgers",
+    "home": "Los Angeles Dodgers",
+    "away": "Philadelphia Phillies",
+    "home_score": "4",
+    "away_score": "2",
+    "ganador_real": "Los Angeles Dodgers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260528",
+    "deporte": "mlb",
+    "nombre": "Los Angeles Angels at Detroit Tigers",
+    "home": "Detroit Tigers",
+    "away": "Los Angeles Angels",
+    "home_score": "1",
+    "away_score": "7",
+    "ganador_real": "Los Angeles Angels",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260528",
+    "deporte": "mlb",
+    "nombre": "Minnesota Twins at Chicago White Sox",
+    "home": "Chicago White Sox",
+    "away": "Minnesota Twins",
+    "home_score": "6",
+    "away_score": "2",
+    "ganador_real": "Chicago White Sox",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260528",
+    "deporte": "mlb",
+    "nombre": "Atlanta Braves at Boston Red Sox",
+    "home": "Boston Red Sox",
+    "away": "Atlanta Braves",
+    "home_score": "2",
+    "away_score": "10",
+    "ganador_real": "Atlanta Braves",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260528",
+    "deporte": "mlb",
+    "nombre": "Toronto Blue Jays at Baltimore Orioles",
+    "home": "Baltimore Orioles",
+    "away": "Toronto Blue Jays",
+    "home_score": "1",
+    "away_score": "2",
+    "ganador_real": "Toronto Blue Jays",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260528",
+    "deporte": "mlb",
+    "nombre": "Chicago Cubs at Pittsburgh Pirates",
+    "home": "Pittsburgh Pirates",
+    "away": "Chicago Cubs",
+    "home_score": "2",
+    "away_score": "7",
+    "ganador_real": "Chicago Cubs",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260528",
+    "deporte": "mlb",
+    "nombre": "Houston Astros at Texas Rangers",
+    "home": "Texas Rangers",
+    "away": "Houston Astros",
+    "home_score": "1",
+    "away_score": "5",
+    "ganador_real": "Houston Astros",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260527",
+    "deporte": "mlb",
+    "nombre": "Miami Marlins at Toronto Blue Jays",
+    "home": "Toronto Blue Jays",
+    "away": "Miami Marlins",
+    "home_score": "2",
+    "away_score": "1",
+    "ganador_real": "Toronto Blue Jays",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260527",
+    "deporte": "mlb",
+    "nombre": "Washington Nationals at Cleveland Guardians",
+    "home": "Cleveland Guardians",
+    "away": "Washington Nationals",
+    "home_score": "3",
+    "away_score": "2",
+    "ganador_real": "Cleveland Guardians",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260527",
+    "deporte": "mlb",
+    "nombre": "St. Louis Cardinals at Milwaukee Brewers",
+    "home": "Milwaukee Brewers",
+    "away": "St. Louis Cardinals",
+    "home_score": "2",
+    "away_score": "1",
+    "ganador_real": "Milwaukee Brewers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260527",
+    "deporte": "mlb",
+    "nombre": "Seattle Mariners at Athletics Athletics",
+    "home": "Athletics",
+    "away": "Seattle Mariners",
+    "home_score": "1",
+    "away_score": "9",
+    "ganador_real": "Seattle Mariners",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260527",
+    "deporte": "mlb",
+    "nombre": "Arizona Diamondbacks at San Francisco Giants",
+    "home": "San Francisco Giants",
+    "away": "Arizona Diamondbacks",
+    "home_score": "2",
+    "away_score": "3",
+    "ganador_real": "Arizona Diamondbacks",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260527",
+    "deporte": "mlb",
+    "nombre": "Philadelphia Phillies at San Diego Padres",
+    "home": "San Diego Padres",
+    "away": "Philadelphia Phillies",
+    "home_score": "0",
+    "away_score": "3",
+    "ganador_real": "Philadelphia Phillies",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260527",
+    "deporte": "mlb",
+    "nombre": "Tampa Bay Rays at Baltimore Orioles",
+    "home": "Baltimore Orioles",
+    "away": "Tampa Bay Rays",
+    "home_score": "11",
+    "away_score": "2",
+    "ganador_real": "Baltimore Orioles",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260527",
+    "deporte": "mlb",
+    "nombre": "Los Angeles Angels at Detroit Tigers",
+    "home": "Detroit Tigers",
+    "away": "Los Angeles Angels",
+    "home_score": "4",
+    "away_score": "0",
+    "ganador_real": "Detroit Tigers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260527",
+    "deporte": "mlb",
+    "nombre": "Chicago Cubs at Pittsburgh Pirates",
+    "home": "Pittsburgh Pirates",
+    "away": "Chicago Cubs",
+    "home_score": "4",
+    "away_score": "10",
+    "ganador_real": "Chicago Cubs",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260527",
+    "deporte": "mlb",
+    "nombre": "Atlanta Braves at Boston Red Sox",
+    "home": "Boston Red Sox",
+    "away": "Atlanta Braves",
+    "home_score": "8",
+    "away_score": "0",
+    "ganador_real": "Boston Red Sox",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260527",
+    "deporte": "mlb",
+    "nombre": "Cincinnati Reds at New York Mets",
+    "home": "New York Mets",
+    "away": "Cincinnati Reds",
+    "home_score": "4",
+    "away_score": "2",
+    "ganador_real": "New York Mets",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260527",
+    "deporte": "mlb",
+    "nombre": "Minnesota Twins at Chicago White Sox",
+    "home": "Chicago White Sox",
+    "away": "Minnesota Twins",
+    "home_score": "15",
+    "away_score": "2",
+    "ganador_real": "Chicago White Sox",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260527",
+    "deporte": "mlb",
+    "nombre": "New York Yankees at Kansas City Royals",
+    "home": "Kansas City Royals",
+    "away": "New York Yankees",
+    "home_score": "0",
+    "away_score": "7",
+    "ganador_real": "New York Yankees",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260527",
+    "deporte": "mlb",
+    "nombre": "Houston Astros at Texas Rangers",
+    "home": "Texas Rangers",
+    "away": "Houston Astros",
+    "home_score": "3",
+    "away_score": "4",
+    "ganador_real": "Houston Astros",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260527",
+    "deporte": "mlb",
+    "nombre": "Colorado Rockies at Los Angeles Dodgers",
+    "home": "Los Angeles Dodgers",
+    "away": "Colorado Rockies",
+    "home_score": "4",
+    "away_score": "1",
+    "ganador_real": "Los Angeles Dodgers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260526",
+    "deporte": "mlb",
+    "nombre": "Washington Nationals at Cleveland Guardians",
+    "home": "Cleveland Guardians",
+    "away": "Washington Nationals",
+    "home_score": "3",
+    "away_score": "6",
+    "ganador_real": "Washington Nationals",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260526",
+    "deporte": "mlb",
+    "nombre": "Tampa Bay Rays at Baltimore Orioles",
+    "home": "Baltimore Orioles",
+    "away": "Tampa Bay Rays",
+    "home_score": "6",
+    "away_score": "1",
+    "ganador_real": "Baltimore Orioles",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260526",
+    "deporte": "mlb",
+    "nombre": "Los Angeles Angels at Detroit Tigers",
+    "home": "Detroit Tigers",
+    "away": "Los Angeles Angels",
+    "home_score": "6",
+    "away_score": "10",
+    "ganador_real": "Los Angeles Angels",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260526",
+    "deporte": "mlb",
+    "nombre": "Chicago Cubs at Pittsburgh Pirates",
+    "home": "Pittsburgh Pirates",
+    "away": "Chicago Cubs",
+    "home_score": "12",
+    "away_score": "1",
+    "ganador_real": "Pittsburgh Pirates",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260526",
+    "deporte": "mlb",
+    "nombre": "Atlanta Braves at Boston Red Sox",
+    "home": "Boston Red Sox",
+    "away": "Atlanta Braves",
+    "home_score": "6",
+    "away_score": "7",
+    "ganador_real": "Atlanta Braves",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260526",
+    "deporte": "mlb",
+    "nombre": "Miami Marlins at Toronto Blue Jays",
+    "home": "Toronto Blue Jays",
+    "away": "Miami Marlins",
+    "home_score": "8",
+    "away_score": "1",
+    "ganador_real": "Toronto Blue Jays",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260526",
+    "deporte": "mlb",
+    "nombre": "Cincinnati Reds at New York Mets",
+    "home": "New York Mets",
+    "away": "Cincinnati Reds",
+    "home_score": "2",
+    "away_score": "7",
+    "ganador_real": "Cincinnati Reds",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260526",
+    "deporte": "mlb",
+    "nombre": "Minnesota Twins at Chicago White Sox",
+    "home": "Chicago White Sox",
+    "away": "Minnesota Twins",
+    "home_score": "3",
+    "away_score": "5",
+    "ganador_real": "Minnesota Twins",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260526",
+    "deporte": "mlb",
+    "nombre": "New York Yankees at Kansas City Royals",
+    "home": "Kansas City Royals",
+    "away": "New York Yankees",
+    "home_score": "1",
+    "away_score": "15",
+    "ganador_real": "New York Yankees",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260526",
+    "deporte": "mlb",
+    "nombre": "St. Louis Cardinals at Milwaukee Brewers",
+    "home": "Milwaukee Brewers",
+    "away": "St. Louis Cardinals",
+    "home_score": "6",
+    "away_score": "0",
+    "ganador_real": "Milwaukee Brewers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260526",
+    "deporte": "mlb",
+    "nombre": "Houston Astros at Texas Rangers",
+    "home": "Texas Rangers",
+    "away": "Houston Astros",
+    "home_score": "10",
+    "away_score": "7",
+    "ganador_real": "Texas Rangers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260526",
+    "deporte": "mlb",
+    "nombre": "Philadelphia Phillies at San Diego Padres",
+    "home": "San Diego Padres",
+    "away": "Philadelphia Phillies",
+    "home_score": "3",
+    "away_score": "4",
+    "ganador_real": "Philadelphia Phillies",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260526",
+    "deporte": "mlb",
+    "nombre": "Seattle Mariners at Athletics Athletics",
+    "home": "Athletics",
+    "away": "Seattle Mariners",
+    "home_score": "1",
+    "away_score": "4",
+    "ganador_real": "Seattle Mariners",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260526",
+    "deporte": "mlb",
+    "nombre": "Arizona Diamondbacks at San Francisco Giants",
+    "home": "San Francisco Giants",
+    "away": "Arizona Diamondbacks",
+    "home_score": "5",
+    "away_score": "7",
+    "ganador_real": "Arizona Diamondbacks",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260526",
+    "deporte": "mlb",
+    "nombre": "Colorado Rockies at Los Angeles Dodgers",
+    "home": "Los Angeles Dodgers",
+    "away": "Colorado Rockies",
+    "home_score": "15",
+    "away_score": "6",
+    "ganador_real": "Los Angeles Dodgers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260525",
+    "deporte": "mlb",
+    "nombre": "Chicago Cubs at Pittsburgh Pirates",
+    "home": "Pittsburgh Pirates",
+    "away": "Chicago Cubs",
+    "home_score": "2",
+    "away_score": "1",
+    "ganador_real": "Pittsburgh Pirates",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260525",
+    "deporte": "mlb",
+    "nombre": "Tampa Bay Rays at Baltimore Orioles",
+    "home": "Baltimore Orioles",
+    "away": "Tampa Bay Rays",
+    "home_score": "9",
+    "away_score": "7",
+    "ganador_real": "Baltimore Orioles",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260525",
+    "deporte": "mlb",
+    "nombre": "Minnesota Twins at Chicago White Sox",
+    "home": "Chicago White Sox",
+    "away": "Minnesota Twins",
+    "home_score": "3",
+    "away_score": "1",
+    "ganador_real": "Chicago White Sox",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260525",
+    "deporte": "mlb",
+    "nombre": "St. Louis Cardinals at Milwaukee Brewers",
+    "home": "Milwaukee Brewers",
+    "away": "St. Louis Cardinals",
+    "home_score": "5",
+    "away_score": "1",
+    "ganador_real": "Milwaukee Brewers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260525",
+    "deporte": "mlb",
+    "nombre": "New York Yankees at Kansas City Royals",
+    "home": "Kansas City Royals",
+    "away": "New York Yankees",
+    "home_score": "3",
+    "away_score": "4",
+    "ganador_real": "New York Yankees",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260525",
+    "deporte": "mlb",
+    "nombre": "Cincinnati Reds at New York Mets",
+    "home": "New York Mets",
+    "away": "Cincinnati Reds",
+    "home_score": "2",
+    "away_score": "7",
+    "ganador_real": "Cincinnati Reds",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260525",
+    "deporte": "mlb",
+    "nombre": "Arizona Diamondbacks at San Francisco Giants",
+    "home": "San Francisco Giants",
+    "away": "Arizona Diamondbacks",
+    "home_score": "2",
+    "away_score": "6",
+    "ganador_real": "Arizona Diamondbacks",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260525",
+    "deporte": "mlb",
+    "nombre": "Washington Nationals at Cleveland Guardians",
+    "home": "Cleveland Guardians",
+    "away": "Washington Nationals",
+    "home_score": "2",
+    "away_score": "10",
+    "ganador_real": "Washington Nationals",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260525",
+    "deporte": "mlb",
+    "nombre": "Philadelphia Phillies at San Diego Padres",
+    "home": "San Diego Padres",
+    "away": "Philadelphia Phillies",
+    "home_score": "0",
+    "away_score": "3",
+    "ganador_real": "Philadelphia Phillies",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260525",
+    "deporte": "mlb",
+    "nombre": "Houston Astros at Texas Rangers",
+    "home": "Texas Rangers",
+    "away": "Houston Astros",
+    "home_score": "0",
+    "away_score": "9",
+    "ganador_real": "Houston Astros",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260525",
+    "deporte": "mlb",
+    "nombre": "Miami Marlins at Toronto Blue Jays",
+    "home": "Toronto Blue Jays",
+    "away": "Miami Marlins",
+    "home_score": "2",
+    "away_score": "8",
+    "ganador_real": "Miami Marlins",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260525",
+    "deporte": "mlb",
+    "nombre": "Colorado Rockies at Los Angeles Dodgers",
+    "home": "Los Angeles Dodgers",
+    "away": "Colorado Rockies",
+    "home_score": "5",
+    "away_score": "3",
+    "ganador_real": "Los Angeles Dodgers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260525",
+    "deporte": "mlb",
+    "nombre": "Seattle Mariners at Athletics Athletics",
+    "home": "Athletics",
+    "away": "Seattle Mariners",
+    "home_score": "2",
+    "away_score": "9",
+    "ganador_real": "Seattle Mariners",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260524",
+    "deporte": "mlb",
+    "nombre": "Pittsburgh Pirates at Toronto Blue Jays",
+    "home": "Toronto Blue Jays",
+    "away": "Pittsburgh Pirates",
+    "home_score": "1",
+    "away_score": "4",
+    "ganador_real": "Pittsburgh Pirates",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260524",
+    "deporte": "mlb",
+    "nombre": "Detroit Tigers at Baltimore Orioles",
+    "home": "Baltimore Orioles",
+    "away": "Detroit Tigers",
+    "home_score": "5",
+    "away_score": "3",
+    "ganador_real": "Baltimore Orioles",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260524",
+    "deporte": "mlb",
+    "nombre": "Cleveland Guardians at Philadelphia Phillies",
+    "home": "Philadelphia Phillies",
+    "away": "Cleveland Guardians",
+    "home_score": "1",
+    "away_score": "3",
+    "ganador_real": "Cleveland Guardians",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260524",
+    "deporte": "mlb",
+    "nombre": "Minnesota Twins at Boston Red Sox",
+    "home": "Boston Red Sox",
+    "away": "Minnesota Twins",
+    "home_score": "5",
+    "away_score": "6",
+    "ganador_real": "Minnesota Twins",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260524",
+    "deporte": "mlb",
+    "nombre": "Tampa Bay Rays at New York Yankees",
+    "home": "New York Yankees",
+    "away": "Tampa Bay Rays",
+    "home_score": "2",
+    "away_score": "0",
+    "ganador_real": "New York Yankees",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260524",
+    "deporte": "mlb",
+    "nombre": "New York Mets at Miami Marlins",
+    "home": "Miami Marlins",
+    "away": "New York Mets",
+    "home_score": "4",
+    "away_score": "0",
+    "ganador_real": "Miami Marlins",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260524",
+    "deporte": "mlb",
+    "nombre": "St. Louis Cardinals at Cincinnati Reds",
+    "home": "Cincinnati Reds",
+    "away": "St. Louis Cardinals",
+    "home_score": "0",
+    "away_score": "0",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_POSTPONED"
+  },
+  {
+    "fecha": "20260524",
+    "deporte": "mlb",
+    "nombre": "Los Angeles Dodgers at Milwaukee Brewers",
+    "home": "Milwaukee Brewers",
+    "away": "Los Angeles Dodgers",
+    "home_score": "1",
+    "away_score": "5",
+    "ganador_real": "Los Angeles Dodgers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260524",
+    "deporte": "mlb",
+    "nombre": "Seattle Mariners at Kansas City Royals",
+    "home": "Kansas City Royals",
+    "away": "Seattle Mariners",
+    "home_score": "8",
+    "away_score": "6",
+    "ganador_real": "Kansas City Royals",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260524",
+    "deporte": "mlb",
+    "nombre": "Houston Astros at Chicago Cubs",
+    "home": "Chicago Cubs",
+    "away": "Houston Astros",
+    "home_score": "5",
+    "away_score": "8",
+    "ganador_real": "Houston Astros",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260524",
+    "deporte": "mlb",
+    "nombre": "Chicago White Sox at San Francisco Giants",
+    "home": "San Francisco Giants",
+    "away": "Chicago White Sox",
+    "home_score": "8",
+    "away_score": "5",
+    "ganador_real": "San Francisco Giants",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260524",
+    "deporte": "mlb",
+    "nombre": "Washington Nationals at Atlanta Braves",
+    "home": "Atlanta Braves",
+    "away": "Washington Nationals",
+    "home_score": "1",
+    "away_score": "2",
+    "ganador_real": "Washington Nationals",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260524",
+    "deporte": "mlb",
+    "nombre": "Athletics Athletics at San Diego Padres",
+    "home": "San Diego Padres",
+    "away": "Athletics",
+    "home_score": "2",
+    "away_score": "5",
+    "ganador_real": "Athletics",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260524",
+    "deporte": "mlb",
+    "nombre": "Colorado Rockies at Arizona Diamondbacks",
+    "home": "Arizona Diamondbacks",
+    "away": "Colorado Rockies",
+    "home_score": "9",
+    "away_score": "1",
+    "ganador_real": "Arizona Diamondbacks",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260524",
+    "deporte": "mlb",
+    "nombre": "Detroit Tigers at Baltimore Orioles",
+    "home": "Baltimore Orioles",
+    "away": "Detroit Tigers",
+    "home_score": "1",
+    "away_score": "4",
+    "ganador_real": "Detroit Tigers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260524",
+    "deporte": "mlb",
+    "nombre": "Texas Rangers at Los Angeles Angels",
+    "home": "Los Angeles Angels",
+    "away": "Texas Rangers",
+    "home_score": "2",
+    "away_score": "1",
+    "ganador_real": "Los Angeles Angels",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260523",
+    "deporte": "mlb",
+    "nombre": "St. Louis Cardinals at Cincinnati Reds",
+    "home": "Cincinnati Reds",
+    "away": "St. Louis Cardinals",
+    "home_score": "1",
+    "away_score": "8",
+    "ganador_real": "St. Louis Cardinals",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260523",
+    "deporte": "mlb",
+    "nombre": "Tampa Bay Rays at New York Yankees",
+    "home": "New York Yankees",
+    "away": "Tampa Bay Rays",
+    "home_score": "0",
+    "away_score": "0",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_POSTPONED"
+  },
+  {
+    "fecha": "20260523",
+    "deporte": "mlb",
+    "nombre": "Houston Astros at Chicago Cubs",
+    "home": "Chicago Cubs",
+    "away": "Houston Astros",
+    "home_score": "0",
+    "away_score": "3",
+    "ganador_real": "Houston Astros",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260523",
+    "deporte": "mlb",
+    "nombre": "Pittsburgh Pirates at Toronto Blue Jays",
+    "home": "Toronto Blue Jays",
+    "away": "Pittsburgh Pirates",
+    "home_score": "5",
+    "away_score": "2",
+    "ganador_real": "Toronto Blue Jays",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260523",
+    "deporte": "mlb",
+    "nombre": "Cleveland Guardians at Philadelphia Phillies",
+    "home": "Philadelphia Phillies",
+    "away": "Cleveland Guardians",
+    "home_score": "3",
+    "away_score": "0",
+    "ganador_real": "Philadelphia Phillies",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260523",
+    "deporte": "mlb",
+    "nombre": "Detroit Tigers at Baltimore Orioles",
+    "home": "Baltimore Orioles",
+    "away": "Detroit Tigers",
+    "home_score": "0",
+    "away_score": "0",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_POSTPONED"
+  },
+  {
+    "fecha": "20260523",
+    "deporte": "mlb",
+    "nombre": "Chicago White Sox at San Francisco Giants",
+    "home": "San Francisco Giants",
+    "away": "Chicago White Sox",
+    "home_score": "10",
+    "away_score": "3",
+    "ganador_real": "San Francisco Giants",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260523",
+    "deporte": "mlb",
+    "nombre": "Minnesota Twins at Boston Red Sox",
+    "home": "Boston Red Sox",
+    "away": "Minnesota Twins",
+    "home_score": "2",
+    "away_score": "4",
+    "ganador_real": "Minnesota Twins",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260523",
+    "deporte": "mlb",
+    "nombre": "New York Mets at Miami Marlins",
+    "home": "Miami Marlins",
+    "away": "New York Mets",
+    "home_score": "4",
+    "away_score": "1",
+    "ganador_real": "Miami Marlins",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260523",
+    "deporte": "mlb",
+    "nombre": "Washington Nationals at Atlanta Braves",
+    "home": "Atlanta Braves",
+    "away": "Washington Nationals",
+    "home_score": "0",
+    "away_score": "2",
+    "ganador_real": "Washington Nationals",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260523",
+    "deporte": "mlb",
+    "nombre": "Seattle Mariners at Kansas City Royals",
+    "home": "Kansas City Royals",
+    "away": "Seattle Mariners",
+    "home_score": "5",
+    "away_score": "0",
+    "ganador_real": "Kansas City Royals",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260523",
+    "deporte": "mlb",
+    "nombre": "St. Louis Cardinals at Cincinnati Reds",
+    "home": "Cincinnati Reds",
+    "away": "St. Louis Cardinals",
+    "home_score": "7",
+    "away_score": "6",
+    "ganador_real": "Cincinnati Reds",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260523",
+    "deporte": "mlb",
+    "nombre": "Los Angeles Dodgers at Milwaukee Brewers",
+    "home": "Milwaukee Brewers",
+    "away": "Los Angeles Dodgers",
+    "home_score": "3",
+    "away_score": "11",
+    "ganador_real": "Los Angeles Dodgers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260523",
+    "deporte": "mlb",
+    "nombre": "Athletics Athletics at San Diego Padres",
+    "home": "San Diego Padres",
+    "away": "Athletics",
+    "home_score": "2",
+    "away_score": "0",
+    "ganador_real": "San Diego Padres",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260523",
+    "deporte": "mlb",
+    "nombre": "Texas Rangers at Los Angeles Angels",
+    "home": "Los Angeles Angels",
+    "away": "Texas Rangers",
+    "home_score": "5",
+    "away_score": "2",
+    "ganador_real": "Los Angeles Angels",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260523",
+    "deporte": "mlb",
+    "nombre": "Colorado Rockies at Arizona Diamondbacks",
+    "home": "Arizona Diamondbacks",
+    "away": "Colorado Rockies",
+    "home_score": "5",
+    "away_score": "4",
+    "ganador_real": "Arizona Diamondbacks",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260522",
+    "deporte": "mlb",
+    "nombre": "Houston Astros at Chicago Cubs",
+    "home": "Chicago Cubs",
+    "away": "Houston Astros",
+    "home_score": "2",
+    "away_score": "4",
+    "ganador_real": "Houston Astros",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260522",
+    "deporte": "mlb",
+    "nombre": "Cleveland Guardians at Philadelphia Phillies",
+    "home": "Philadelphia Phillies",
+    "away": "Cleveland Guardians",
+    "home_score": "0",
+    "away_score": "1",
+    "ganador_real": "Cleveland Guardians",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260522",
+    "deporte": "mlb",
+    "nombre": "St. Louis Cardinals at Cincinnati Reds",
+    "home": "Cincinnati Reds",
+    "away": "St. Louis Cardinals",
+    "home_score": "0",
+    "away_score": "0",
+    "ganador_real": null,
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_POSTPONED"
+  },
+  {
+    "fecha": "20260522",
+    "deporte": "mlb",
+    "nombre": "Tampa Bay Rays at New York Yankees",
+    "home": "New York Yankees",
+    "away": "Tampa Bay Rays",
+    "home_score": "2",
+    "away_score": "4",
+    "ganador_real": "Tampa Bay Rays",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260522",
+    "deporte": "mlb",
+    "nombre": "Pittsburgh Pirates at Toronto Blue Jays",
+    "home": "Toronto Blue Jays",
+    "away": "Pittsburgh Pirates",
+    "home_score": "6",
+    "away_score": "2",
+    "ganador_real": "Toronto Blue Jays",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260522",
+    "deporte": "mlb",
+    "nombre": "Minnesota Twins at Boston Red Sox",
+    "home": "Boston Red Sox",
+    "away": "Minnesota Twins",
+    "home_score": "6",
+    "away_score": "8",
+    "ganador_real": "Minnesota Twins",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260522",
+    "deporte": "mlb",
+    "nombre": "New York Mets at Miami Marlins",
+    "home": "Miami Marlins",
+    "away": "New York Mets",
+    "home_score": "2",
+    "away_score": "1",
+    "ganador_real": "Miami Marlins",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260522",
+    "deporte": "mlb",
+    "nombre": "Detroit Tigers at Baltimore Orioles",
+    "home": "Baltimore Orioles",
+    "away": "Detroit Tigers",
+    "home_score": "7",
+    "away_score": "4",
+    "ganador_real": "Baltimore Orioles",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260522",
+    "deporte": "mlb",
+    "nombre": "Washington Nationals at Atlanta Braves",
+    "home": "Atlanta Braves",
+    "away": "Washington Nationals",
+    "home_score": "5",
+    "away_score": "4",
+    "ganador_real": "Atlanta Braves",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260522",
+    "deporte": "mlb",
+    "nombre": "Los Angeles Dodgers at Milwaukee Brewers",
+    "home": "Milwaukee Brewers",
+    "away": "Los Angeles Dodgers",
+    "home_score": "5",
+    "away_score": "1",
+    "ganador_real": "Milwaukee Brewers",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260522",
+    "deporte": "mlb",
+    "nombre": "Seattle Mariners at Kansas City Royals",
+    "home": "Kansas City Royals",
+    "away": "Seattle Mariners",
+    "home_score": "0",
+    "away_score": "2",
+    "ganador_real": "Seattle Mariners",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260522",
+    "deporte": "mlb",
+    "nombre": "Texas Rangers at Los Angeles Angels",
+    "home": "Los Angeles Angels",
+    "away": "Texas Rangers",
+    "home_score": "9",
+    "away_score": "6",
+    "ganador_real": "Los Angeles Angels",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260522",
+    "deporte": "mlb",
+    "nombre": "Athletics Athletics at San Diego Padres",
+    "home": "San Diego Padres",
+    "away": "Athletics",
+    "home_score": "7",
+    "away_score": "3",
+    "ganador_real": "San Diego Padres",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260522",
+    "deporte": "mlb",
+    "nombre": "Colorado Rockies at Arizona Diamondbacks",
+    "home": "Arizona Diamondbacks",
+    "away": "Colorado Rockies",
+    "home_score": "2",
+    "away_score": "3",
+    "ganador_real": "Colorado Rockies",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  },
+  {
+    "fecha": "20260522",
+    "deporte": "mlb",
+    "nombre": "Chicago White Sox at San Francisco Giants",
+    "home": "San Francisco Giants",
+    "away": "Chicago White Sox",
+    "home_score": "4",
+    "away_score": "9",
+    "ganador_real": "Chicago White Sox",
+    "closing_odds": {
+      "details": "N/A",
+      "over_under": "N/A",
+      "spread": "N/A"
+    },
+    "status": "STATUS_FINAL"
+  }
+]

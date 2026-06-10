@@ -1,0 +1,41 @@
+{
+  "TRADUCCION_MLB": {
+    "Rayos de Tampa Bay": "Tampa Bay Rays",
+    "Guardianes de Cleveland": "Cleveland Guardians",
+    "Astros de Houston": "Houston Astros",
+    "Orioles de Baltimore": "Baltimore Orioles",
+    "Rockies de Colorado": "Colorado Rockies",
+    "Rojos de Cincinnati": "Cincinnati Reds",
+    "Gigantes de San Francisco": "San Francisco Giants",
+    "Filis de Filadelfia": "Philadelphia Phillies",
+    "Cardenales de San Luis": "St. Louis Cardinals",
+    "Piratas de Pittsburgh": "Pittsburgh Pirates",
+    "Medias Rojas de Boston": "Boston Red Sox",
+    "Azulejos de Toronto": "Toronto Blue Jays",
+    "Nacionales de Washington": "Washington Nationals",
+    "Mets de Nueva York": "New York Mets",
+    "Tigres de Detroit": "Detroit Tigers",
+    "Bravos de Atlanta": "Atlanta Braves",
+    "Angelinos de Los Angeles": "Los Angeles Angels",
+    "Medias Blancas de Chicago": "Chicago White Sox",
+    "Cascabeles de Arizona": "Arizona Diamondbacks",
+    "Cerveceros de Milwaukee": "Milwaukee Brewers",
+    "Marineros de Seattle": "Seattle Mariners",
+    "Mellizos de Minnesota": "Minnesota Twins",
+    "Yankees de Nueva York": "New York Yankees",
+    "Vigilantes de Texas": "Texas Rangers",
+    "Cachorros de Chicago": "Chicago Cubs",
+    "Padres de San Diego": "San Diego Padres",
+    "Reales de Kansas City": "Kansas City Royals",
+    "Marlins de Miami": "Miami Marlins",
+    "Dodgers de Los Angeles": "Los Angeles Dodgers"
+  },
+  "EQUIPOS_A_ABREV": {
+    "Tampa Bay Rays": "TB", "Cleveland Guardians": "CLE", "Houston Astros": "HOU", "Baltimore Orioles": "BAL", "Colorado Rockies": "COL", "Cincinnati Reds": "CIN", "San Francisco Giants": "SF", "Philadelphia Phillies": "PHI", "St. Louis Cardinals": "STL", "Pittsburgh Pirates": "PIT", "Boston Red Sox": "BOS", "Toronto Blue Jays": "TOR", "Washington Nationals": "WSH", "New York Mets": "NYM", "Detroit Tigers": "DET", "Atlanta Braves": "ATL", "Los Angeles Angels": "LAA", "Chicago White Sox": "CHW", "Arizona Diamondbacks": "ARI", "Milwaukee Brewers": "MIL", "Seattle Mariners": "SEA", "Minnesota Twins": "MIN", "New York Yankees": "NYY", "Texas Rangers": "TEX", "Chicago Cubs": "CHC", "San Diego Padres": "SD", "Kansas City Royals": "KC", "Miami Marlins": "MIA", "Los Angeles Dodgers": "LAD"
+  },
+  "CONFIG_DEFECTO": {
+    "umbral_whip": 1.20,
+    "umbral_k_9": 9.0,
+    "intentos_scraper": 3
+  }
+}

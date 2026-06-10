@@ -1,0 +1,1950 @@
+{
+  "fighters": {
+    "jamie siraj": {
+      "nombre": "Jamie Siraj",
+      "record": "14-3-0",
+      "wins": 14,
+      "losses": 3,
+      "altura": 170,
+      "alcance": 167,
+      "ko_rate": 0,
+      "sub_rate": 0,
+      "striking_accuracy": 0,
+      "takedown_accuracy": 0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "john yannis": {
+      "nombre": "John Yannis",
+      "record": "9-4-0",
+      "wins": 9,
+      "losses": 4,
+      "altura": 170,
+      "alcance": 177,
+      "ko_rate": 0,
+      "sub_rate": 0,
+      "striking_accuracy": 0,
+      "takedown_accuracy": 0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "john castaneda": {
+      "nombre": "John Castaneda",
+      "record": "21-8-0",
+      "wins": 21,
+      "losses": 8,
+      "altura": 167,
+      "alcance": 180,
+      "ko_rate": 0.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.01,
+      "takedown_accuracy": 0.03,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.2,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 60,
+          "strikes_attempted": 12398,
+          "td_landed": 1,
+          "td_attempted": 50,
+          "knockdowns": 1
+        },
+        {
+          "strikes_landed": 111,
+          "strikes_attempted": 17988,
+          "td_landed": 3,
+          "td_attempted": 80,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "mark vologdin": {
+      "nombre": "Mark Vologdin",
+      "record": "12-4-1",
+      "wins": 12,
+      "losses": 4,
+      "altura": 160,
+      "alcance": 165,
+      "ko_rate": 0,
+      "sub_rate": 0,
+      "striking_accuracy": 0,
+      "takedown_accuracy": 0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "jj aldrich": {
+      "nombre": "JJ Aldrich",
+      "record": "14-7-0",
+      "wins": 14,
+      "losses": 7,
+      "altura": 165,
+      "alcance": 170,
+      "ko_rate": 0.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.0,
+      "takedown_accuracy": 0.0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 27,
+          "strikes_attempted": 6336,
+          "td_landed": 0,
+          "td_attempted": 20,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "jamey-lyn horth": {
+      "nombre": "Jamey-Lyn Horth",
+      "record": "9-2-0",
+      "wins": 9,
+      "losses": 2,
+      "altura": 170,
+      "alcance": 167,
+      "ko_rate": 0.5,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.01,
+      "takedown_accuracy": 0.07,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 16,
+          "strikes_attempted": 222,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 101,
+          "strikes_attempted": 16736,
+          "td_landed": 2,
+          "td_attempted": 30,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "daria zhelezniakova": {
+      "nombre": "Daria Zhelezniakova",
+      "record": "10-2-0",
+      "wins": 10,
+      "losses": 2,
+      "altura": 175,
+      "alcance": 172,
+      "ko_rate": 0.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.0,
+      "takedown_accuracy": 0.0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 99,
+          "strikes_attempted": 22364,
+          "td_landed": 0,
+          "td_attempted": 3,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "melissa croden": {
+      "nombre": "Melissa Croden",
+      "record": "7-3-0",
+      "wins": 7,
+      "losses": 3,
+      "altura": 175,
+      "alcance": 172,
+      "ko_rate": 1.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.0,
+      "takedown_accuracy": 0.04,
+      "takedown_defense": 0,
+      "knockdowns_avg": 3.3,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 22,
+          "strikes_attempted": 7412,
+          "td_landed": 0,
+          "td_attempted": 13,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 99,
+          "strikes_attempted": 17542,
+          "td_landed": 2,
+          "td_attempted": 32,
+          "knockdowns": 10
+        }
+      ]
+    },
+    "tanner boser": {
+      "nombre": "Tanner Boser",
+      "record": "22-10-1",
+      "wins": 22,
+      "losses": 10,
+      "altura": 187,
+      "alcance": 190,
+      "ko_rate": 0.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.01,
+      "takedown_accuracy": 0.0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 120,
+          "strikes_attempted": 21568,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 5,
+          "strikes_attempted": 1630,
+          "td_landed": 0,
+          "td_attempted": 1,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 62,
+          "strikes_attempted": 11536,
+          "td_landed": 0,
+          "td_attempted": 3,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "gokhan saricam": {
+      "nombre": "Gokhan Saricam",
+      "record": "11-2-0",
+      "wins": 11,
+      "losses": 2,
+      "altura": 190,
+      "alcance": 190,
+      "ko_rate": 0,
+      "sub_rate": 0,
+      "striking_accuracy": 0,
+      "takedown_accuracy": 0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "robert valentin": {
+      "nombre": "Robert Valentin",
+      "record": "11-6-0",
+      "wins": 11,
+      "losses": 6,
+      "altura": 187,
+      "alcance": 195,
+      "ko_rate": 0,
+      "sub_rate": 0,
+      "striking_accuracy": 0.0,
+      "takedown_accuracy": 0.0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 1,
+          "strikes_attempted": 242,
+          "td_landed": 0,
+          "td_attempted": 11,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "julien leblanc": {
+      "nombre": "Julien LeBlanc",
+      "record": "10-2-0",
+      "wins": 10,
+      "losses": 2,
+      "altura": 187,
+      "alcance": 187,
+      "ko_rate": 0,
+      "sub_rate": 0,
+      "striking_accuracy": 0,
+      "takedown_accuracy": 0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "dennis buzukja": {
+      "nombre": "Dennis Buzukja",
+      "record": "12-5-0",
+      "wins": 12,
+      "losses": 5,
+      "altura": 175,
+      "alcance": 177,
+      "ko_rate": 1.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.0,
+      "takedown_accuracy": 0.0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 3.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 66,
+          "strikes_attempted": 14557,
+          "td_landed": 0,
+          "td_attempted": 11,
+          "knockdowns": 1
+        },
+        {
+          "strikes_landed": 83,
+          "strikes_attempted": 20160,
+          "td_landed": 0,
+          "td_attempted": 1,
+          "knockdowns": 10
+        },
+        {
+          "strikes_landed": 3,
+          "strikes_attempted": 714,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 1
+        }
+      ]
+    },
+    "marcio barbosa": {
+      "nombre": "Marcio Barbosa",
+      "record": "17-2-0",
+      "wins": 17,
+      "losses": 2,
+      "altura": 167,
+      "alcance": 177,
+      "ko_rate": 1.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0,
+      "takedown_accuracy": 0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "thiago moises": {
+      "nombre": "Thiago Moisés",
+      "record": "19-9-0",
+      "wins": 19,
+      "losses": 9,
+      "altura": 175,
+      "alcance": 177,
+      "ko_rate": 0.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0,
+      "takedown_accuracy": 0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "gauge young": {
+      "nombre": "Gauge Young",
+      "record": "10-3-0",
+      "wins": 10,
+      "losses": 3,
+      "altura": 175,
+      "alcance": 177,
+      "ko_rate": 0.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.01,
+      "takedown_accuracy": 0.0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 64,
+          "strikes_attempted": 11381,
+          "td_landed": 0,
+          "td_attempted": 39,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "karine silva": {
+      "nombre": "Karine Silva",
+      "record": "19-6-0",
+      "wins": 19,
+      "losses": 6,
+      "altura": 165,
+      "alcance": 170,
+      "ko_rate": 0.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.0,
+      "takedown_accuracy": 0.03,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 26,
+          "strikes_attempted": 7031,
+          "td_landed": 1,
+          "td_attempted": 33,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "jasmine jasudavicius": {
+      "nombre": "Jasmine Jasudavicius",
+      "record": "14-4-0",
+      "wins": 14,
+      "losses": 4,
+      "altura": 170,
+      "alcance": 172,
+      "ko_rate": 0.0,
+      "sub_rate": 0.5,
+      "striking_accuracy": 0.01,
+      "takedown_accuracy": 0.06,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 56,
+          "strikes_attempted": 10537,
+          "td_landed": 3,
+          "td_attempted": 50,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "mandel nallo": {
+      "nombre": "Mandel Nallo",
+      "record": "14-3-0",
+      "wins": 14,
+      "losses": 3,
+      "altura": 182,
+      "alcance": 190,
+      "ko_rate": 1.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.06,
+      "takedown_accuracy": 0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 5.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 30,
+          "strikes_attempted": 489,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 10
+        }
+      ]
+    },
+    "jai herbert": {
+      "nombre": "Jai Herbert",
+      "record": "13-6-1",
+      "wins": 13,
+      "losses": 6,
+      "altura": 185,
+      "alcance": 195,
+      "ko_rate": 0.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.0,
+      "takedown_accuracy": 0.02,
+      "takedown_defense": 0,
+      "knockdowns_avg": 2.5,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 38,
+          "strikes_attempted": 12239,
+          "td_landed": 0,
+          "td_attempted": 10,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 82,
+          "strikes_attempted": 17867,
+          "td_landed": 2,
+          "td_attempted": 30,
+          "knockdowns": 10
+        },
+        {
+          "strikes_landed": 49,
+          "strikes_attempted": 13461,
+          "td_landed": 0,
+          "td_attempted": 61,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "kyler phillips": {
+      "nombre": "Kyler Phillips",
+      "record": "12-4-0",
+      "wins": 12,
+      "losses": 4,
+      "altura": 172,
+      "alcance": 182,
+      "ko_rate": 0.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.0,
+      "takedown_accuracy": 0.0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.2,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 49,
+          "strikes_attempted": 15196,
+          "td_landed": 0,
+          "td_attempted": 51,
+          "knockdowns": 1
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "charles jourdain": {
+      "nombre": "Charles Jourdain",
+      "record": "17-8-1",
+      "wins": 17,
+      "losses": 8,
+      "altura": 175,
+      "alcance": 175,
+      "ko_rate": 0.0,
+      "sub_rate": 1.0,
+      "striking_accuracy": 0.01,
+      "takedown_accuracy": 0.03,
+      "takedown_defense": 0,
+      "knockdowns_avg": 3.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 25,
+          "strikes_attempted": 439,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 10
+        },
+        {
+          "strikes_landed": 39,
+          "strikes_attempted": 7324,
+          "td_landed": 0,
+          "td_attempted": 24,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 23,
+          "strikes_attempted": 4634,
+          "td_landed": 3,
+          "td_attempted": 70,
+          "knockdowns": 2
+        }
+      ]
+    },
+    "gilbert burns": {
+      "nombre": "Gilbert Burns",
+      "record": "22-9-0",
+      "wins": 22,
+      "losses": 9,
+      "altura": 177,
+      "alcance": 180,
+      "ko_rate": 0,
+      "sub_rate": 0,
+      "striking_accuracy": 0.0,
+      "takedown_accuracy": 0.05,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.8,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 5,
+          "strikes_attempted": 1833,
+          "td_landed": 1,
+          "td_attempted": 20,
+          "knockdowns": 2
+        },
+        {
+          "strikes_landed": 47,
+          "strikes_attempted": 97130,
+          "td_landed": 1,
+          "td_attempted": 67,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 27,
+          "strikes_attempted": 5867,
+          "td_landed": 7,
+          "td_attempted": 110,
+          "knockdowns": 1
+        }
+      ]
+    },
+    "mike malott": {
+      "nombre": "Mike Malott",
+      "record": "13-2-1",
+      "wins": 13,
+      "losses": 2,
+      "altura": 185,
+      "alcance": 185,
+      "ko_rate": 0.3333333333333333,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.0,
+      "takedown_accuracy": 0.0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 2.5,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 36,
+          "strikes_attempted": 6110,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 10
+        },
+        {
+          "strikes_landed": 59,
+          "strikes_attempted": 13034,
+          "td_landed": 0,
+          "td_attempted": 10,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "julia polastri": {
+      "nombre": "Julia Polastri",
+      "record": "14-5-0",
+      "wins": 14,
+      "losses": 5,
+      "altura": 157,
+      "alcance": 162,
+      "ko_rate": 0.5,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.01,
+      "takedown_accuracy": 0.0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 137,
+          "strikes_attempted": 25372,
+          "td_landed": 0,
+          "td_attempted": 1,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 88,
+          "strikes_attempted": 14540,
+          "td_landed": 0,
+          "td_attempted": 11,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "talita alencar": {
+      "nombre": "Talita Alencar",
+      "record": "7-1-1",
+      "wins": 7,
+      "losses": 1,
+      "altura": 154,
+      "alcance": 147,
+      "ko_rate": 0.0,
+      "sub_rate": 0.5,
+      "striking_accuracy": 0.01,
+      "takedown_accuracy": 0.06,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 60,
+          "strikes_attempted": 10025,
+          "td_landed": 5,
+          "td_attempted": 80,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "max griffin": {
+      "nombre": "Max Griffin",
+      "record": "20-12-0",
+      "wins": 20,
+      "losses": 12,
+      "altura": 180,
+      "alcance": 193,
+      "ko_rate": 0.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.0,
+      "takedown_accuracy": 0.05,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 59,
+          "strikes_attempted": 17864,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 26,
+          "strikes_attempted": 5332,
+          "td_landed": 1,
+          "td_attempted": 21,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "victor valenzuela": {
+      "nombre": "Victor Valenzuela",
+      "record": "13-6-2",
+      "wins": 13,
+      "losses": 6,
+      "altura": 177,
+      "alcance": 0,
+      "ko_rate": 0,
+      "sub_rate": 0,
+      "striking_accuracy": 0,
+      "takedown_accuracy": 0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "lucas brennan": {
+      "nombre": "Lucas Brennan",
+      "record": "11-2-0",
+      "wins": 11,
+      "losses": 2,
+      "altura": 177,
+      "alcance": 180,
+      "ko_rate": 0,
+      "sub_rate": 0,
+      "striking_accuracy": 0,
+      "takedown_accuracy": 0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "francis marshall": {
+      "nombre": "Francis Marshall",
+      "record": "9-3-0",
+      "wins": 9,
+      "losses": 3,
+      "altura": 175,
+      "alcance": 182,
+      "ko_rate": 0.0,
+      "sub_rate": 0.5,
+      "striking_accuracy": 0,
+      "takedown_accuracy": 0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "jafel filho": {
+      "nombre": "Jafel Filho",
+      "record": "17-4-0",
+      "wins": 17,
+      "losses": 4,
+      "altura": 170,
+      "alcance": 172,
+      "ko_rate": 0.0,
+      "sub_rate": 1.0,
+      "striking_accuracy": 0.01,
+      "takedown_accuracy": 0.07,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 5,
+          "strikes_attempted": 137,
+          "td_landed": 1,
+          "td_attempted": 10,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 14,
+          "strikes_attempted": 3012,
+          "td_landed": 4,
+          "td_attempted": 71,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 21,
+          "strikes_attempted": 350,
+          "td_landed": 1,
+          "td_attempted": 10,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "cody durden": {
+      "nombre": "Cody Durden",
+      "record": "17-10-1",
+      "wins": 17,
+      "losses": 10,
+      "altura": 170,
+      "alcance": 170,
+      "ko_rate": 0,
+      "sub_rate": 0,
+      "striking_accuracy": 0.0,
+      "takedown_accuracy": 0.04,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.2,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 8,
+          "strikes_attempted": 2125,
+          "td_landed": 3,
+          "td_attempted": 84,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 9,
+          "strikes_attempted": 4130,
+          "td_landed": 2,
+          "td_attempted": 40,
+          "knockdowns": 1
+        }
+      ]
+    },
+    "michelle montague": {
+      "nombre": "Michelle Montague",
+      "record": "7-0-0",
+      "wins": 7,
+      "losses": 0,
+      "altura": 175,
+      "alcance": 172,
+      "ko_rate": 0.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.0,
+      "takedown_accuracy": 0.07,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 41,
+          "strikes_attempted": 8848,
+          "td_landed": 5,
+          "td_attempted": 70,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "sedriques dumas": {
+      "nombre": "Sedriques Dumas",
+      "record": "10-4-0",
+      "wins": 10,
+      "losses": 4,
+      "altura": 187,
+      "alcance": 200,
+      "ko_rate": 0,
+      "sub_rate": 0,
+      "striking_accuracy": 0.0,
+      "takedown_accuracy": 0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.2,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 3,
+          "strikes_attempted": 2634,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 1
+        }
+      ]
+    },
+    "jackson mcvey": {
+      "nombre": "Jackson McVey",
+      "record": "6-2-0",
+      "wins": 6,
+      "losses": 2,
+      "altura": 193,
+      "alcance": 195,
+      "ko_rate": 0,
+      "sub_rate": 0,
+      "striking_accuracy": 0,
+      "takedown_accuracy": 0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "eric mcconico": {
+      "nombre": "Eric McConico",
+      "record": "10-4-1",
+      "wins": 10,
+      "losses": 4,
+      "altura": 182,
+      "alcance": 195,
+      "ko_rate": 0.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0,
+      "takedown_accuracy": 0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "rodolfo vieira": {
+      "nombre": "Rodolfo Vieira",
+      "record": "11-4-0",
+      "wins": 11,
+      "losses": 4,
+      "altura": 182,
+      "alcance": 185,
+      "ko_rate": 0.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.01,
+      "takedown_accuracy": 0.01,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 89,
+          "strikes_attempted": 15941,
+          "td_landed": 1,
+          "td_attempted": 140,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 58,
+          "strikes_attempted": 9955,
+          "td_landed": 1,
+          "td_attempted": 110,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "ryan spann": {
+      "nombre": "Ryan Spann",
+      "record": "23-11-0",
+      "wins": 23,
+      "losses": 11,
+      "altura": 195,
+      "alcance": 200,
+      "ko_rate": 0.0,
+      "sub_rate": 1.0,
+      "striking_accuracy": 0.04,
+      "takedown_accuracy": 0.1,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 8,
+          "strikes_attempted": 195,
+          "td_landed": 1,
+          "td_attempted": 10,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 9,
+          "strikes_attempted": 207,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "marcus buchecha": {
+      "nombre": "Marcus Buchecha",
+      "record": "5-2-1",
+      "wins": 5,
+      "losses": 2,
+      "altura": 187,
+      "alcance": 195,
+      "ko_rate": 0,
+      "sub_rate": 0,
+      "striking_accuracy": 0,
+      "takedown_accuracy": 0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "raoni barcelos": {
+      "nombre": "Raoni Barcelos",
+      "record": "21-5-0",
+      "wins": 21,
+      "losses": 5,
+      "altura": 170,
+      "alcance": 170,
+      "ko_rate": 0.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0,
+      "takedown_accuracy": 0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "montel jackson": {
+      "nombre": "Montel Jackson",
+      "record": "15-3-0",
+      "wins": 15,
+      "losses": 3,
+      "altura": 177,
+      "alcance": 190,
+      "ko_rate": 0.5,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.01,
+      "takedown_accuracy": 0.02,
+      "takedown_defense": 0,
+      "knockdowns_avg": 2.5,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 30,
+          "strikes_attempted": 6617,
+          "td_landed": 2,
+          "td_attempted": 83,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 4,
+          "strikes_attempted": 61,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 10
+        }
+      ]
+    },
+    "davey grant": {
+      "nombre": "Davey Grant",
+      "record": "17-8-0",
+      "wins": 17,
+      "losses": 8,
+      "altura": 172,
+      "alcance": 175,
+      "ko_rate": 0.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.01,
+      "takedown_accuracy": 0.0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 66,
+          "strikes_attempted": 13033,
+          "td_landed": 0,
+          "td_attempted": 1,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 147,
+          "strikes_attempted": 29069,
+          "td_landed": 0,
+          "td_attempted": 10,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "adrian luna martinetti": {
+      "nombre": "Adrian Luna Martinetti",
+      "record": "17-1-0",
+      "wins": 17,
+      "losses": 1,
+      "altura": 172,
+      "alcance": 180,
+      "ko_rate": 0.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.0,
+      "takedown_accuracy": 0.04,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 165,
+          "strikes_attempted": 252117,
+          "td_landed": 3,
+          "td_attempted": 70,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "alexander hernandez": {
+      "nombre": "Alexander Hernandez",
+      "record": "18-8-0",
+      "wins": 18,
+      "losses": 8,
+      "altura": 175,
+      "alcance": 182,
+      "ko_rate": 0.6666666666666666,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.0,
+      "takedown_accuracy": 0.08,
+      "takedown_defense": 0,
+      "knockdowns_avg": 2.5,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 30,
+          "strikes_attempted": 7523,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 10
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 59,
+          "strikes_attempted": 14971,
+          "td_landed": 4,
+          "td_attempted": 50,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "rafa garcia": {
+      "nombre": "Rafa Garcia",
+      "record": "18-4-0",
+      "wins": 18,
+      "losses": 4,
+      "altura": 170,
+      "alcance": 177,
+      "ko_rate": 0.5,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.01,
+      "takedown_accuracy": 0.04,
+      "takedown_defense": 0,
+      "knockdowns_avg": 2.5,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 91,
+          "strikes_attempted": 16265,
+          "td_landed": 2,
+          "td_attempted": 31,
+          "knockdowns": 10
+        },
+        {
+          "strikes_landed": 64,
+          "strikes_attempted": 12079,
+          "td_landed": 2,
+          "td_attempted": 60,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "joselyne edwards": {
+      "nombre": "Joselyne Edwards",
+      "record": "17-6-0",
+      "wins": 17,
+      "losses": 6,
+      "altura": 172,
+      "alcance": 177,
+      "ko_rate": 0.6666666666666666,
+      "sub_rate": 0.3333333333333333,
+      "striking_accuracy": 0.01,
+      "takedown_accuracy": 0.0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 2.5,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 26,
+          "strikes_attempted": 4418,
+          "td_landed": 0,
+          "td_attempted": 20,
+          "knockdowns": 10
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "norma dumont": {
+      "nombre": "Norma Dumont",
+      "record": "13-2-0",
+      "wins": 13,
+      "losses": 2,
+      "altura": 170,
+      "alcance": 170,
+      "ko_rate": 0.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0.0,
+      "takedown_accuracy": 0.07,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 11,
+          "strikes_attempted": 2916,
+          "td_landed": 6,
+          "td_attempted": 80,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "aljamain sterling": {
+      "nombre": "Aljamain Sterling",
+      "record": "25-5-0",
+      "wins": 25,
+      "losses": 5,
+      "altura": 170,
+      "alcance": 180,
+      "ko_rate": 0.0,
+      "sub_rate": 0.0,
+      "striking_accuracy": 0,
+      "takedown_accuracy": 0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    },
+    "youssef zalal": {
+      "nombre": "Youssef Zalal",
+      "record": "18-5-1",
+      "wins": 18,
+      "losses": 5,
+      "altura": 177,
+      "alcance": 182,
+      "ko_rate": 0.0,
+      "sub_rate": 0.6666666666666666,
+      "striking_accuracy": 0,
+      "takedown_accuracy": 0,
+      "takedown_defense": 0,
+      "knockdowns_avg": 0.0,
+      "last_fights": [
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        },
+        {
+          "strikes_landed": 0,
+          "strikes_attempted": 0,
+          "td_landed": 0,
+          "td_attempted": 0,
+          "knockdowns": 0
+        }
+      ]
+    }
+  }
+}

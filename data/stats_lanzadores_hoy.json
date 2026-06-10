@@ -1,0 +1,213 @@
+{
+  "Baltimore Orioles": {
+    "nombre": "Trevor Rogers",
+    "k9": 6.8,
+    "era": 6.29,
+    "avg_innings": 4.9,
+    "whip": 1.51
+  },
+  "Seattle Mariners": {
+    "nombre": "Logan Gilbert",
+    "k9": 9.4,
+    "era": 3.79,
+    "avg_innings": 5.6,
+    "whip": 1.1
+  },
+  "Pittsburgh Pirates": {
+    "nombre": "Paul Skenes",
+    "k9": 10.5,
+    "era": 2.83,
+    "avg_innings": 5.4,
+    "whip": 0.9
+  },
+  "Los Angeles Dodgers": {
+    "nombre": "Eric Lauer",
+    "k9": 5.9,
+    "era": 5.74,
+    "avg_innings": 5.9,
+    "whip": 1.38
+  },
+  "Tampa Bay Rays": {
+    "nombre": "Nick Martinez",
+    "k9": 5.3,
+    "era": 2.29,
+    "avg_innings": 5.9,
+    "whip": 1.19
+  },
+  "Boston Red Sox": {
+    "nombre": "Payton Tolle",
+    "k9": 9.7,
+    "era": 2.28,
+    "avg_innings": 5.9,
+    "whip": 0.97
+  },
+  "Detroit Tigers": {
+    "nombre": "Troy Melton",
+    "k9": 3.9,
+    "era": 1.74,
+    "avg_innings": 6.7,
+    "whip": 0.87
+  },
+  "Minnesota Twins": {
+    "nombre": "Taj Bradley",
+    "k9": 10.4,
+    "era": 3.56,
+    "avg_innings": 5.5,
+    "whip": 1.32
+  },
+  "Miami Marlins": {
+    "nombre": "Max Meyer",
+    "k9": 9.9,
+    "era": 2.81,
+    "avg_innings": 5.6,
+    "whip": 1.05
+  },
+  "Arizona Diamondbacks": {
+    "nombre": "Zac Gallen",
+    "k9": 6.0,
+    "era": 5.32,
+    "avg_innings": 4.9,
+    "whip": 1.52
+  },
+  "Cleveland Guardians": {
+    "nombre": "Slade Cecconi",
+    "k9": 7.2,
+    "era": 4.92,
+    "avg_innings": 5.2,
+    "whip": 1.43
+  },
+  "New York Yankees": {
+    "nombre": "Gerrit Cole",
+    "k9": 7.0,
+    "era": 2.0,
+    "avg_innings": 6.0,
+    "whip": 0.89
+  },
+  "Toronto Blue Jays": {
+    "nombre": "Dylan Cease",
+    "k9": 13.3,
+    "era": 3.05,
+    "avg_innings": 5.6,
+    "whip": 1.21
+  },
+  "Philadelphia Phillies": {
+    "nombre": "Zack Wheeler",
+    "k9": 8.5,
+    "era": 2.31,
+    "avg_innings": 6.3,
+    "whip": 0.83
+  },
+  "New York Mets": {
+    "nombre": "Freddy Peralta",
+    "k9": 9.2,
+    "era": 3.63,
+    "avg_innings": 5.5,
+    "whip": 1.32
+  },
+  "St. Louis Cardinals": {
+    "nombre": "Dustin May",
+    "k9": 8.1,
+    "era": 4.59,
+    "avg_innings": 5.5,
+    "whip": 1.29
+  },
+  "Kansas City Royals": {
+    "nombre": "Stephen Kolek",
+    "k9": 6.4,
+    "era": 3.32,
+    "avg_innings": 6.3,
+    "whip": 0.97
+  },
+  "Texas Rangers": {
+    "nombre": "Nathan Eovaldi",
+    "k9": 8.9,
+    "era": 4.1,
+    "avg_innings": 6.2,
+    "whip": 1.18
+  },
+  "Chicago White Sox": {
+    "nombre": "Brandon Eisert",
+    "k9": 9.6,
+    "era": 3.21,
+    "avg_innings": 7.0,
+    "whip": 1.21
+  },
+  "Atlanta Braves": {
+    "nombre": "Grant Holmes",
+    "k9": 8.1,
+    "era": 3.86,
+    "avg_innings": 5.2,
+    "whip": 1.32
+  },
+  "Colorado Rockies": {
+    "nombre": "Tomoyuki Sugano",
+    "k9": 5.1,
+    "era": 3.98,
+    "avg_innings": 5.3,
+    "whip": 1.26
+  },
+  "Chicago Cubs": {
+    "nombre": "Colin Rea",
+    "k9": 7.2,
+    "era": 4.59,
+    "avg_innings": 6.4,
+    "whip": 1.35
+  },
+  "Los Angeles Angels": {
+    "nombre": "Walbert Ureña",
+    "k9": 8.6,
+    "era": 2.68,
+    "avg_innings": 5.6,
+    "whip": 1.33
+  },
+  "Houston Astros": {
+    "nombre": "Kai-Wei Teng",
+    "k9": 8.4,
+    "era": 3.06,
+    "avg_innings": 7.8,
+    "whip": 1.17
+  },
+  "San Diego Padres": {
+    "nombre": "Lucas Giolito",
+    "k9": 5.9,
+    "era": 4.86,
+    "avg_innings": 4.0,
+    "whip": 1.74
+  },
+  "Cincinnati Reds": {
+    "nombre": "Chase Burns",
+    "k9": 10.4,
+    "era": 2.05,
+    "avg_innings": 5.8,
+    "whip": 0.95
+  },
+  "San Francisco Giants": {
+    "nombre": "Adrian Houser",
+    "k9": 5.9,
+    "era": 5.49,
+    "avg_innings": 5.0,
+    "whip": 1.58
+  },
+  "Washington Nationals": {
+    "nombre": "Andrew Alvarez",
+    "k9": 9.7,
+    "era": 3.54,
+    "avg_innings": 20.1,
+    "whip": 1.23
+  },
+  "Athletics": {
+    "nombre": "J.T. Ginn",
+    "k9": 8.2,
+    "era": 2.74,
+    "avg_innings": 5.9,
+    "whip": 1.08
+  },
+  "Milwaukee Brewers": {
+    "nombre": "Robert Gasser",
+    "k9": 8.1,
+    "era": 4.73,
+    "avg_innings": 4.4,
+    "whip": 1.43
+  },
+  "_timestamp": "2026-06-09T15:20:17.497196"
+}

@@ -1,0 +1,143 @@
+{
+  "_timestamp": "2026-06-09T08:39:33.622286",
+  "data": {
+    "partidos": [
+      {
+        "matchup": "Seattle Mariners @ Baltimore Orioles",
+        "home": "Baltimore Orioles",
+        "away": "Seattle Mariners",
+        "confirmed": false,
+        "home_players": [],
+        "away_players": [],
+        "total_players": 0
+      },
+      {
+        "matchup": "Los Angeles Dodgers @ Pittsburgh Pirates",
+        "home": "Pittsburgh Pirates",
+        "away": "Los Angeles Dodgers",
+        "confirmed": false,
+        "home_players": [],
+        "away_players": [],
+        "total_players": 0
+      },
+      {
+        "matchup": "Boston Red Sox @ Tampa Bay Rays",
+        "home": "Tampa Bay Rays",
+        "away": "Boston Red Sox",
+        "confirmed": false,
+        "home_players": [],
+        "away_players": [],
+        "total_players": 0
+      },
+      {
+        "matchup": "Minnesota Twins @ Detroit Tigers",
+        "home": "Detroit Tigers",
+        "away": "Minnesota Twins",
+        "confirmed": false,
+        "home_players": [],
+        "away_players": [],
+        "total_players": 0
+      },
+      {
+        "matchup": "Arizona Diamondbacks @ Miami Marlins",
+        "home": "Miami Marlins",
+        "away": "Arizona Diamondbacks",
+        "confirmed": false,
+        "home_players": [],
+        "away_players": [],
+        "total_players": 0
+      },
+      {
+        "matchup": "New York Yankees @ Cleveland Guardians",
+        "home": "Cleveland Guardians",
+        "away": "New York Yankees",
+        "confirmed": false,
+        "home_players": [],
+        "away_players": [],
+        "total_players": 0
+      },
+      {
+        "matchup": "Philadelphia Phillies @ Toronto Blue Jays",
+        "home": "Toronto Blue Jays",
+        "away": "Philadelphia Phillies",
+        "confirmed": false,
+        "home_players": [],
+        "away_players": [],
+        "total_players": 0
+      },
+      {
+        "matchup": "St. Louis Cardinals @ New York Mets",
+        "home": "New York Mets",
+        "away": "St. Louis Cardinals",
+        "confirmed": false,
+        "home_players": [],
+        "away_players": [],
+        "total_players": 0
+      },
+      {
+        "matchup": "Texas Rangers @ Kansas City Royals",
+        "home": "Kansas City Royals",
+        "away": "Texas Rangers",
+        "confirmed": false,
+        "home_players": [],
+        "away_players": [],
+        "total_players": 0
+      },
+      {
+        "matchup": "Atlanta Braves @ Chicago White Sox",
+        "home": "Chicago White Sox",
+        "away": "Atlanta Braves",
+        "confirmed": false,
+        "home_players": [],
+        "away_players": [],
+        "total_players": 0
+      },
+      {
+        "matchup": "Chicago Cubs @ Colorado Rockies",
+        "home": "Colorado Rockies",
+        "away": "Chicago Cubs",
+        "confirmed": false,
+        "home_players": [],
+        "away_players": [],
+        "total_players": 0
+      },
+      {
+        "matchup": "Houston Astros @ Los Angeles Angels",
+        "home": "Los Angeles Angels",
+        "away": "Houston Astros",
+        "confirmed": false,
+        "home_players": [],
+        "away_players": [],
+        "total_players": 0
+      },
+      {
+        "matchup": "Cincinnati Reds @ San Diego Padres",
+        "home": "San Diego Padres",
+        "away": "Cincinnati Reds",
+        "confirmed": false,
+        "home_players": [],
+        "away_players": [],
+        "total_players": 0
+      },
+      {
+        "matchup": "Washington Nationals @ San Francisco Giants",
+        "home": "San Francisco Giants",
+        "away": "Washington Nationals",
+        "confirmed": false,
+        "home_players": [],
+        "away_players": [],
+        "total_players": 0
+      },
+      {
+        "matchup": "Milwaukee Brewers @ Athletics",
+        "home": "Athletics",
+        "away": "Milwaukee Brewers",
+        "confirmed": false,
+        "home_players": [],
+        "away_players": [],
+        "total_players": 0
+      }
+    ],
+    "actualizado": "2026-06-09T08:39:33.622253"
+  }
+}
