@@ -12,14 +12,27 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-_RESPONSE_SCHEMA = '{"pick":"<texto>","confianza":<0-100>,"stake":<1-3>,"razon":"<texto>","mercado":"MONEYLINE|OVER_UNDER|STRIKEOUTS|HOME_RUN|BTTS|HANDICAP"}'
+_RESPONSE_SCHEMA = ('{"pick":"<texto>","confianza":<0-100>,"stake":<1-3>,'
+                    '"razon":"<por qué, nombrando el factor clave>",'
+                    '"alerta":"<aviso de contexto: cambio de peso, racha/momentum, lesión, '
+                    'inactividad larga, debut, motivación — o cadena vacía si no aplica>",'
+                    '"mercado":"MONEYLINE|OVER_UNDER|STRIKEOUTS|HOME_RUN|BTTS|HANDICAP|METODO|DISTANCIA"}')
 
 _SYSTEM_PERSONA = (
-    "Eres el 'Analista Deportivo BETTING_AI', experto senior en apuestas deportivas con enfoque cuantitativo. "
+    "Eres el 'Analista Deportivo BETTING_AI', experto senior en apuestas deportivas con enfoque cuantitativo "
+    "PERO con criterio de contexto, como un apostador profesional que también lee la noticia. "
     "Tu trabajo: de TODOS los mercados disponibles del partido, elegir el ÚNICO con mayor valor esperado (EV) y probabilidad real, "
-    "no solo el ganador. Pondera el análisis heurístico que recibes (ya trae datos reales) y corrígelo solo si tienes razón técnica. "
+    "no solo el ganador. Recibes un análisis heurístico (trae datos reales: récords, pitchers, stats). "
+    "PUEDES y DEBES CONTRADECIR al heurístico cuando el CONTEXTO lo justifique, y lo explicas. "
+    "Usa tu conocimiento del contexto MÁS RECIENTE de cada equipo/peleador/jugador: "
+    "• RACHA y MOMENTUM: alguien que llega ganando varias seguidas y en ascenso puede vencer a un favorito en papel "
+    "(ejemplo típico: un peleador en racha que sorprende). Favorécelo aunque las stats base digan lo contrario. "
+    "• CAMBIO DE DIVISIÓN DE PESO (UFC/boxeo): si un peleador SUBE de categoría, su poder pega menos contra rivales más "
+    "grandes y el cuerpo aún se adapta → PENALÍZALO y avísalo. Si BAJA, considera el desgaste del corte. "
+    "• LESIONES, REGRESO DE INACTIVIDAD LARGA, edad/declive, viajes, motivación (título, revancha). "
+    "Si detectas cualquiera de estos, resúmelo en el campo 'alerta'. Si no, deja 'alerta' vacío. "
     "Reglas por deporte: "
-    "MLB → compara Moneyline vs Over/Under vs Home Run (bateador concreto) vs Strikeouts del pitcher; el HR paga más pero exige bateador con poder real vs pitcher vulnerable. "
+    "MLB → Moneyline vs Over/Under vs Home Run (bateador concreto) vs Strikeouts del pitcher; el abridor del día es el factor #1. "
     "NBA → Moneyline vs Hándicap vs Total (O/U) vs props de triples. "
     "UFC → Ganador (Moneyline) vs Método (KO/Sumisión/Decisión) vs Distancia (si llega o no a decisión). "
     "Fútbol → 1X2 vs Doble oportunidad vs BTTS vs Over/Under goles. "
@@ -255,7 +268,8 @@ class AnalistaTotal:
         def _resumen(p):
             ec = p.get('estadisticas_carrera', {}) or {}
             return (f"record {p.get('record', 'N/A')}, KO {int((p.get('ko_rate', 0) or 0)*100)}%, "
-                    f"edad {p.get('edad', '?')}, SLpM {ec.get('sig_strikes_landed_per_min', 0)}, "
+                    f"edad {p.get('edad', '?')}, división {p.get('division', '?')} ({p.get('peso', '?')}), "
+                    f"SLpM {ec.get('sig_strikes_landed_per_min', 0)}, "
                     f"racha {p.get('streak', 0)}W")
 
         if self.conservative_mode:
@@ -276,7 +290,10 @@ class AnalistaTotal:
             f"método: {resultado.get('metodo', 'N/A')}, "
             f"mejor mercado: {mejor.get('mercado', 'N/A')} → {mejor.get('apuesta', 'N/A')} ({mejor.get('confianza', 0)}%)\n"
             f"{mercados_prompt}"
-            "Evalúa Ganador vs Método (KO/Sumisión/Decisión) vs Distancia (¿llega a decisión?) y elige el de mayor valor. "
+            "Antes de decidir, valora el CONTEXTO con tu conocimiento: ¿alguno SUBE o BAJA de división de peso? "
+            "¿quién llega con mejor racha/momentum? ¿regreso de inactividad, lesión o declive por edad? "
+            "Si la racha o el cambio de peso cambian el panorama, contradice al heurístico y dilo en 'alerta'. "
+            "Luego evalúa Ganador vs Método (KO/Sumisión/Decisión) vs Distancia (¿llega a decisión?) y elige el de mayor valor. "
             "Recomendación final en JSON."
         )
 

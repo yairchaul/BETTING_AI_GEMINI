@@ -122,6 +122,16 @@ class UFCAnalyzer:
         elif slpm >= 4.0:
             score += 2
 
+        # 12. CAMBIO DE DIVISIÓN DE PESO (riesgo de adaptación)
+        # Subir de peso: el cuerpo se está acostumbrando y el poder pega menos
+        # contra rivales más grandes (caso Pereira). Bajar de peso: desgaste del
+        # corte. Penaliza al que cambia de categoría.
+        cambio = str(fighter.get('cambio_peso', '') or '').lower()
+        if cambio in ('sube', 'subiendo', 'up', 'arriba'):
+            score -= 6
+        elif cambio in ('baja', 'bajando', 'down', 'abajo'):
+            score -= 3
+
         return score
     
     def _cargar_calibracion(self):
@@ -153,18 +163,39 @@ class UFCAnalyzer:
         ec_l = loser_data.get('estadisticas_carrera', {}) or {}
         slpm = ec_w.get('sig_strikes_landed_per_min', 0)
         sub_avg = ec_w.get('sub_avg_per_15min', 0)
+        td_acc_w = ec_w.get('td_accuracy', 0)
         avg_time_w = ec_w.get('avg_fight_time', 0)
         dec_pct_w = ec_w.get('decision_pct', 0)
         dec_pct_l = ec_l.get('decision_pct', 0)
+        # Debilidades del RIVAL (definen si conviene buscar el KO o la sumisión)
+        str_def_l = ec_l.get('sig_strike_defense', 0)   # mala defensa de golpeo → KO
+        td_def_l = ec_l.get('td_defense', 0)            # mala defensa de derribo → sumisión
         rival_koed = loser_data.get('was_koed_recently', False)
         rival_ko_losses = loser_data.get('ko_losses', 0)
+        rival_sub_losses = loser_data.get('sub_losses', 0)
+        sube_peso = str(winner_data.get('cambio_peso', '') or '').lower() \
+            in ('sube', 'subiendo', 'up', 'arriba')
 
-        # Puntaje por método (señales acumulativas)
+        # Solo sumamos la debilidad del rival si el dato existe (>0)
+        rival_chin = max(0, 55 - str_def_l) * 0.12 if str_def_l else 0
+        rival_grapple_weak = max(0, 60 - td_def_l) * 0.12 if td_def_l else 0
+
+        # KO/TKO: poder + volumen de golpeo + rival fácil de noquear
         score_ko = (ko_rate * 60) + max(0, slpm - 3.0) * 8 \
-                   + (8 if rival_koed else 0) + min(rival_ko_losses, 4) * 2
-        score_sub = (sub_rate * 50) + sub_avg * 12
+                   + (8 if rival_koed else 0) + min(rival_ko_losses, 4) * 3 \
+                   + rival_chin
+        if sube_peso:
+            score_ko *= 0.75   # el poder no sube tan bien de categoría (Pereira)
+
+        # SUMISIÓN: amenaza de sumisión + rival que se derriba/somete fácil
+        score_sub = (sub_rate * 55) + sub_avg * 12 + min(rival_sub_losses, 4) * 3 \
+                    + (rival_grapple_weak if td_acc_w >= 25 else rival_grapple_weak * 0.4)
+
+        # DECISIÓN: historial de ir a las tarjetas + peleas largas
         score_dec = (dec_pct_w * 0.45) + (dec_pct_l * 0.25) \
                     + max(0, avg_time_w - 10) * 2.5
+        if sube_peso:
+            score_dec += 8     # adaptándose al peso → más probable que vaya largo
 
         scores = {"KO/TKO": score_ko, "Sumisión": score_sub, "Decisión": score_dec}
         metodo = max(scores, key=scores.get)
@@ -240,6 +271,10 @@ class UFCAnalyzer:
         dec2 = _ec(p2_data).get('decision_pct', 0)
         sub1 = _ec(p1_data).get('sub_avg_per_15min', 0)
         sub2 = _ec(p2_data).get('sub_avg_per_15min', 0)
+        slpm1 = _ec(p1_data).get('sig_strikes_landed_per_min', 0)
+        slpm2 = _ec(p2_data).get('sig_strikes_landed_per_min', 0)
+        kol1 = p1_data.get('ko_losses', 0)
+        kol2 = p2_data.get('ko_losses', 0)
 
         dur_max = rounds * 5
         tiempos = [t for t in (t1, t2) if t > 0]
@@ -249,21 +284,43 @@ class UFCAnalyzer:
         p = 0.48
         p += (avg_time / dur_max - 0.55) * 0.55          # peleas largas → decisión
         p += ((dec1 + dec2) / 2 - 30) * 0.004            # historial de decisiones
-        p -= max(ko1, ko2) * 0.28                        # poder de KO
-        p -= (sub1 + sub2) * 0.03                        # amenaza de sumisión
+
+        # PODER DE KO (lo que pediste): el de más poder manda; si AMBOS pegan
+        # fuerte, todavía menos probable que llegue al límite.
+        ko_max = max(ko1, ko2)
+        ko_combo = ko1 + ko2
+        p -= ko_max * 0.30
+        p -= ko_combo * 0.10
+        # Volumen del más activo: presión que acumula daño y abre el KO
+        p -= max(0, max(slpm1, slpm2) - 4.0) * 0.03
+        # Amenaza de sumisión de cualquiera de los dos
+        p -= (sub1 + sub2) * 0.04
+        # Quijada frágil (KO encajados) → más probable que termine antes
+        p -= min(kol1 + kol2, 5) * 0.015
 
         # Offset medido por el backtester
         calib = self._cargar_calibracion()
         p += calib.get('distancia_offset', 0)
 
-        p = max(0.10, min(0.90, p))
+        p = max(0.08, min(0.92, p))
         va_decision = p >= 0.5
+
+        if not va_decision and ko_max >= 0.55:
+            razon = f"Alto poder de KO ({round(ko_max * 100)}%) → probable final anticipado"
+        elif not va_decision and (sub1 + sub2) >= 1.0:
+            razon = "Amenaza real de sumisión → puede terminar antes del límite"
+        elif va_decision:
+            razon = "Volumen/estilo de decisión → probable que llegue al límite"
+        else:
+            razon = "Estilos de finalización → puede terminar antes del límite"
+
         return {
             'va_a_decision': va_decision,
             'prob': round(p * 100),
             'pick': f"LLEGA A DECISIÓN ({rounds} rounds)" if va_decision
                     else "NO llega a decisión (termina antes)",
             'confianza': round(max(p, 1 - p) * 100),
+            'razon': razon,
         }
 
     def calculate_probability(self, p1, p2):

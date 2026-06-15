@@ -34,34 +34,51 @@ _FIFA_RANK = {
 
 
 def _analisis_ranking_fifa(local: str, visitante: str, fase: str = "") -> dict:
-    """Fallback: análisis basado en ranking FIFA cuando no hay historial en DB."""
+    """Fallback por ranking FIFA cuando no hay historial en DB (típico en el
+    Mundial). Emite los MERCADOS de alta probabilidad que mejor pegan —
+    'favorito anota (Over 0.5)', Over 1.5, BTTS y gana favorito— con confianza
+    realista que SÍ califica para el selector de picks/parlays."""
     r_l = next((v for k, v in _FIFA_RANK.items() if k.lower() in local.lower() or local.lower() in k.lower()), 60)
     r_v = next((v for k, v in _FIFA_RANK.items() if k.lower() in visitante.lower() or visitante.lower() in k.lower()), 60)
-    diff = r_v - r_l  # positivo = local mejor ranked
+    diff = r_v - r_l            # positivo = local mejor ranked
+    abs_diff = abs(diff)
+    fav = local if diff > 0 else visitante
+    es_elim = bool(fase) and any(x in fase.lower() for x in ["octavo", "cuarto", "semi", "final", "round of", "quarter"])
 
-    es_elim = fase and any(x in fase.lower() for x in ["octavo", "cuarto", "semi", "final"])
+    opciones = []
+    # Mercado más seguro: el favorito marca al menos un gol (Over 0.5)
+    if abs_diff >= 12:
+        opciones.append({"pick": f"{fav} OVER 0.5 goles (anota)",
+                         "confianza": min(82, 70 + abs_diff // 4), "regla": 1})
+    # Con favorito claro suele haber goles → Over 1.5 total
+    if abs_diff >= 16:
+        opciones.append({"pick": "OVER 1.5 goles",
+                         "confianza": min(72, 58 + abs_diff // 5), "regla": 2})
+    # Partidos parejos/ofensivos → ambos anotan
+    if 8 <= abs_diff <= 24:
+        opciones.append({"pick": "AMBOS ANOTAN (BTTS)", "confianza": 58, "regla": 3})
+    # Gana el favorito (incluye prórroga en eliminación directa)
+    if abs_diff >= 20:
+        opciones.append({"pick": f"Gana {fav}" + (" (incluye prórroga)" if es_elim else ""),
+                         "confianza": min(70, 56 + abs_diff // 5), "regla": 4})
+    # Caso muy parejo: Over 1.5 suave
+    if not opciones:
+        opciones.append({"pick": "OVER 1.5 goles", "confianza": 55, "regla": 2})
 
-    if abs(diff) >= 25:
-        fav = local if diff > 0 else visitante
-        conf = min(68, 52 + abs(diff) // 3)
-        pick = f"Gana {fav}" if not es_elim else f"Gana {fav} (incluye prórroga)"
-    elif abs(diff) >= 10:
-        fav = local if diff > 0 else visitante
-        conf = 50
-        if es_elim:
-            pick = f"Gana {fav} o Empate"
-        else:
-            pick = f"BTTS + {fav} anota"
-    else:
-        conf = 42
-        pick = "Empate (equipos parejos)" if not es_elim else "Partido cerrado — Over 1.5"
+    # En eliminación directa los equipos se cierran → enfría mercados de goles
+    if es_elim:
+        for o in opciones:
+            if "OVER" in o["pick"] or "BTTS" in o["pick"]:
+                o["confianza"] = max(50, o["confianza"] - 4)
 
+    opciones.sort(key=lambda x: x["confianza"], reverse=True)
+    best = opciones[0]
     return {
-        "pick": pick,
-        "confianza": conf,
-        "regla": -1,
-        "todas_opciones": [],
-        "nota": f"Fallback ranking FIFA: #{r_l} {local} vs #{r_v} {visitante}. Sin historial en DB.",
+        "pick": best["pick"],
+        "confianza": best["confianza"],
+        "regla": best["regla"],
+        "todas_opciones": opciones,
+        "nota": f"Ranking FIFA: #{r_l} {local} vs #{r_v} {visitante} (sin historial en DB).",
     }
 
 

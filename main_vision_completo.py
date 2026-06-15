@@ -324,7 +324,11 @@ def main():
     #btn-arriba:hover {transform:scale(1.1);}
     </style>
     <button id="btn-arriba" title="Volver arriba"
-        onclick="window.parent.document.querySelector('section.main, .main, [data-testid=stAppViewContainer]').scrollTo({top:0,behavior:'smooth'});">⬆️</button>
+        onclick="(function(){var d=window.parent&&window.parent.document?window.parent.document:document;
+        var sels=['section.main','[data-testid=stAppViewContainer]','[data-testid=stMain]','.main','.block-container'];
+        for(var i=0;i<sels.length;i++){var c=d.querySelector(sels[i]);if(c){c.scrollTo({top:0,behavior:'smooth'});}}
+        var a=d.getElementById('tope-pagina');if(a){a.scrollIntoView({behavior:'smooth',block:'start'});}
+        try{d.documentElement.scrollTo({top:0,behavior:'smooth'});window.parent.scrollTo({top:0,behavior:'smooth'});}catch(e){}})();">⬆️</button>
     """, unsafe_allow_html=True)
 
     with st.sidebar:
@@ -375,8 +379,10 @@ def main():
         if st.button("🥊 CARGAR UFC", use_container_width=True):
             with st.spinner("🔄 Buscando cartelera UFC..."):
                 st.session_state.ufc_combates = st.session_state.scrapers["ufc"].get_events()
-                st.session_state.analisis_ufc = {}  # limpiar cache viejo
+                st.session_state.analisis_ufc = {}        # limpiar análisis viejo
+                st.session_state.ufc_enriched_cache = {}  # recargar stats frescas de cada pelea
                 st.success(f"✅ {len(st.session_state.ufc_combates)} combates" if st.session_state.ufc_combates else "ℹ️ No hay eventos")
+                st.rerun()  # refresca la cartelera automáticamente al actualizar
 
         st.markdown("---"); st.subheader("⚽ FUTBOL")
         ligas = st.session_state.scrapers["futbol"].get_available_leagues()
@@ -982,7 +988,7 @@ def main():
                         [sys.executable, "run_backtest.py"],
                         capture_output=True, text=True, timeout=300, encoding='utf-8'
                     )
-                    st.code(result.stdout + "\n" + result.stderr, language="bash")
+                    st.code((result.stdout or "") + "\n" + (result.stderr or ""), language="bash")
                     st.success("Backtest finalizado. El reporte se ha actualizado.")
                 except Exception as e:
                     st.error(f"Error al ejecutar el backtest: {e}")

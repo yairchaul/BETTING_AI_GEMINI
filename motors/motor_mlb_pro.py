@@ -147,6 +147,17 @@ try:
 except ImportError:
     obtener_whip_cacheado = None
 
+# Abridores probables del día + stats FRESCAS por pitcher (API oficial MLB).
+# Es el factor #1 de un juego individual y puede voltear el pick contra el récord.
+try:
+    from .mlb_pitchers_live import obtener_abridores_hoy as abridores_hoy, abridor_de
+except ImportError:
+    abridores_hoy = None
+    def abridor_de(*_a, **_k):
+        return None
+
+LIGA_ERA_REF = 4.20   # media de liga para el composite de calidad de pitcher
+
 
 # ──────────────────────────────────────────────────────────────────────────
 # HELPERS
@@ -218,7 +229,7 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
     w_v, l_v, pct_v = _parse_record(
         partido.get('visitante_record') or partido.get('visit_record', '0-0'))
     diff_pct = pct_l - pct_v
-    score += diff_pct * 30                       # ±30 max
+    score += diff_pct * 18                       # récord pesa menos: el abridor manda
     if abs(diff_pct) >= 0.08:
         mejor = local if diff_pct > 0 else visitante
         razones.append(f"Récord favorece a {mejor} ({pct_l:.0%} vs {pct_v:.0%})")
@@ -245,58 +256,101 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
             fav = local if diff_mercado > 0 else visitante
             razones.append(f"Mercado respalda a {fav} (ML {ml_l if diff_mercado > 0 else ml_v})")
 
-    # ── 4. Lanzadores (WHIP + K/9 + ERA reciente) ───────────────────────
+    # ── 4. Abridores — FACTOR #1 de un juego de MLB ─────────────────────
+    # Datos FRESCOS del día, por pitcher, desde la API oficial (con shrinkage
+    # para que muestras chicas no engañen). El duelo de abridores puede VOLTEAR
+    # el pick contra el récord: así se cazan los upsets (buen abridor en equipo
+    # de mal récord) que el motor por-récord siempre perdía.
     ap = _pitcher_nombre(pitchers, 'visitante')
     hp = _pitcher_nombre(pitchers, 'local')
-    k9_l = k9_v = 7.5
-    era_l = era_v = 4.20
+    k9_l = k9_v = 7.8
+    era_l = era_v = LIGA_ERA_REF
+    whip_l = whip_v = None
+    cal_l = cal_v = 0.0
 
+    info_l = info_v = None
+    if abridores_hoy is not None:
+        try:
+            mapa_ab = abridores_hoy()
+            info_l = abridor_de(local, mapa_ab)
+            info_v = abridor_de(visitante, mapa_ab)
+        except Exception:
+            info_l = info_v = None
+
+    if info_l:
+        if info_l.get('nombre') not in ('TBD', '', None):
+            hp = info_l['nombre']
+        k9_l = info_l.get('k9_adj') or info_l.get('k9') or k9_l
+        era_l = info_l.get('era_adj') or info_l.get('era') or era_l
+        whip_l = info_l.get('whip_adj') or info_l.get('whip')
+        cal_l = info_l.get('calidad', 0.0) or 0.0
+    if info_v:
+        if info_v.get('nombre') not in ('TBD', '', None):
+            ap = info_v['nombre']
+        k9_v = info_v.get('k9_adj') or info_v.get('k9') or k9_v
+        era_v = info_v.get('era_adj') or info_v.get('era') or era_v
+        whip_v = info_v.get('whip_adj') or info_v.get('whip')
+        cal_v = info_v.get('calidad', 0.0) or 0.0
+
+    # Fallback: stats por equipo del JSON local (solo si la API no dio abridores)
     datos_k = {}
-    if obtener_analisis_lanzadores:
+    if not (info_l or info_v) and obtener_analisis_lanzadores:
         try:
             datos_k = obtener_analisis_lanzadores() or {}
         except Exception:
             datos_k = {}
-    if local in datos_k:
-        k9_l = datos_k[local].get('k9', 7.5)
-        era_l = datos_k[local].get('era_reciente', 4.20)
-    if visitante in datos_k:
-        k9_v = datos_k[visitante].get('k9', 7.5)
-        era_v = datos_k[visitante].get('era_reciente', 4.20)
+        if local in datos_k:
+            k9_l = datos_k[local].get('k9', k9_l)
+            era_l = datos_k[local].get('era', datos_k[local].get('era_reciente', era_l))
+            cal_l = (LIGA_ERA_REF - era_l) + (k9_l - 8.2) * 0.35
+        if visitante in datos_k:
+            k9_v = datos_k[visitante].get('k9', k9_v)
+            era_v = datos_k[visitante].get('era', datos_k[visitante].get('era_reciente', era_v))
+            cal_v = (LIGA_ERA_REF - era_v) + (k9_v - 8.2) * 0.35
 
-    whip_l = whip_v = None
-    if obtener_whip_cacheado:
-        try:
-            if hp != 'TBD':
-                whip_l = obtener_whip_cacheado(hp)
-            if ap != 'TBD':
-                whip_v = obtener_whip_cacheado(ap)
-        except Exception:
-            pass
-
-    if whip_l and whip_v and whip_l > 0 and whip_v > 0:
-        diff_whip = whip_v - whip_l              # positivo → pitcher local mejor
-        score += diff_whip * 14
-        if abs(diff_whip) >= 0.15:
-            mejor_p = hp if diff_whip > 0 else ap
-            razones.append(f"Ventaja de pitcheo: {mejor_p} (WHIP {min(whip_l, whip_v):.2f})")
-
-    score += (era_v - era_l) * 2.5               # ERA baja = mejor
-    score += (k9_l - k9_v) * 0.8
+    # Edge de pitcheo (+ = abridor LOCAL mejor). Peso alto para que pueda voltear
+    # el pick, pero acotado ±30 para no desbocarse con un outlier.
+    pitcher_edge = cal_l - cal_v
+    score += max(-30.0, min(30.0, pitcher_edge * 8.0))
+    if abs(pitcher_edge) >= 0.6:
+        if pitcher_edge > 0:
+            mejor_p, era_mejor, era_rival = hp, era_l, era_v
+        else:
+            mejor_p, era_mejor, era_rival = ap, era_v, era_l
+        razones.insert(0, f"Duelo de abridores favorece a {mejor_p} "
+                          f"(ERA {era_mejor:.2f} vs {era_rival:.2f})")
 
     # ── 5. Ventaja de local ─────────────────────────────────────────────
     score += 3.0
 
-    # ── Pick de ganador + jerarquía V21 ─────────────────────────────────
+    # ── Pick de ganador + jerarquía V21 (consciente del mercado) ─────────
     pick_team = local if score >= 0 else visitante
-    confianza = round(min(85, max(35, 50 + abs(score) * 1.6)))
+    confianza = round(min(85, max(35, 50 + abs(score) * 1.4)))
+
+    # ¿Nuestro pick coincide con el favorito del mercado, o lo estamos fadeando?
+    pick_es_favorito = None
+    if p_l is not None and p_v is not None:
+        fav_mercado = local if p_l >= p_v else visitante
+        pick_es_favorito = (pick_team == fav_mercado)
+    fadeando = (pick_es_favorito is False)   # pick = underdog → valor en el ML
+
+    # Al fadear el mercado somos algo menos categóricos (más incertidumbre) y el
+    # valor está en el MONEYLINE (momio +), no en un run line -1.5.
+    if fadeando:
+        confianza = min(confianza, 79)
 
     if confianza >= 80:
         decision, tipo, handicap, stake = "🟢 ÉLITE", "MONEYLINE", "", "3u"
     elif confianza >= 65:
-        decision, tipo, handicap, stake = "🟡 SEGURO", "HANDICAP", "-1.5", "2u"
+        if fadeando:
+            decision, tipo, handicap, stake = "🟡 SEGURO", "MONEYLINE", "", "2u"
+        else:
+            decision, tipo, handicap, stake = "🟡 SEGURO", "HANDICAP", "-1.5", "2u"
     elif confianza >= 55:
-        decision, tipo, handicap, stake = "🔵 RESCATE", "HANDICAP", "+1.5", "1u"
+        if fadeando:
+            decision, tipo, handicap, stake = "🔵 RESCATE", "MONEYLINE", "", "1u"
+        else:
+            decision, tipo, handicap, stake = "🔵 RESCATE", "HANDICAP", "+1.5", "1u"
     else:
         decision, tipo, handicap, stake = "🔴 EVITAR", "EVITAR", "", "0u"
 
@@ -416,7 +470,8 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
         'hr_candidates': hr_candidates,
         'k_picks': k_picks,
         'tb_picks': tb_picks,
-        'run_line': {'pick': pick_team, 'linea': handicap or ('-1.5' if pick_team == local else '+1.5'),
+        'run_line': {'pick': pick_team,
+                     'linea': handicap or ('+1.5' if fadeando else '-1.5'),
                      'confianza': max(50, confianza - 8)},
         'score_raw': round(score, 2),
         'pitchers': {'local': hp, 'visitante': ap},

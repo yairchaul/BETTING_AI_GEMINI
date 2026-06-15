@@ -34,6 +34,19 @@ def _americano_a_decimal(ml):
         return None
 
 
+def _decimal_a_americano(dec):
+    """Cuota decimal → momio americano (str). 28.0 → '+2700', 1.5 → '-200'."""
+    try:
+        dec = float(dec)
+        if dec <= 1.0:
+            return "—"
+        if dec >= 2.0:
+            return f"+{round((dec - 1) * 100)}"
+        return f"-{round(100 / (dec - 1))}"
+    except Exception:
+        return "—"
+
+
 def _recolectar_picks():
     """Corre los motores sobre todo lo cargado y devuelve un pool de picks."""
     ss = st.session_state
@@ -210,15 +223,20 @@ def _armar_parlay(legs):
 
 
 def _tarjeta_parlay(titulo, color, descripcion, parlay):
+    momio = _decimal_a_americano(parlay['cuota'])
+    ganancia = round((parlay['cuota'] - 1) * 100)   # ganancia por cada $100 apostados
     st.markdown(
         f"<div style='background:#1e293b;border-left:5px solid {color};border-radius:10px;padding:14px;margin-bottom:6px'>"
         f"<div style='color:{color};font-weight:800;font-size:1.05rem'>{titulo}</div>"
         f"<div style='color:#94a3b8;font-size:0.8rem;margin-bottom:8px'>{descripcion}</div>"
-        f"<div style='display:flex;gap:18px'>"
-        f"<span style='color:#fff'>Prob. combinada: <b style='color:{color}'>{parlay['prob']}%</b></span>"
+        f"<div style='display:flex;gap:18px;flex-wrap:wrap'>"
+        f"<span style='color:#fff'>Momio: <b style='color:#fbbf24;font-size:1.15rem'>{momio}</b></span>"
         f"<span style='color:#fff'>Cuota: <b style='color:#fbbf24'>{parlay['cuota']:.2f}x</b></span>"
+        f"<span style='color:#fff'>Prob. combinada: <b style='color:{color}'>{parlay['prob']}%</b></span>"
         f"<span style='color:#fff'>EV: <b style='color:{'#22c55e' if parlay['ev_pct']>=0 else '#ef4444'}'>{parlay['ev_pct']:+.1f}%</b></span>"
-        f"</div></div>",
+        f"</div>"
+        f"<div style='color:#64748b;font-size:0.8rem;margin-top:6px'>💵 $100 → <b style='color:#22c55e'>${ganancia:,}</b> de ganancia ({len(parlay['legs'])} legs)</div>"
+        f"</div>",
         unsafe_allow_html=True,
     )
     for l in parlay["legs"]:
