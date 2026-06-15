@@ -1,23 +1,32 @@
 ﻿# Python
 __pycache__/
 *.pyc
-.venv/
-.venv_clean/
-env/
-venv/
+*.pyo
+*.pyd
 
-# IDE
+# Virtual Environment
+.venv
+venv
+ENV/
+env/
+
+# Cache and Logs
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.log
+logs/
+
+# Secrets - MUY IMPORTANTE
+.env
+
+# IDE specific
 .vscode/
 .idea/
-.kiro/
-.continue/
 
-# Sensibles
-.env
-*.key
-*.pem
+# OS specific
+.DS_Store
+Thumbs.db
 
-# Datos
-data/*.db
-*.log
-*.tmp
+# Base de datos (generalmente no se versiona si contiene datos de usuario)
+data/betting_stats.db
