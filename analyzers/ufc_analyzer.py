@@ -70,7 +70,7 @@ class UFCAnalyzer:
                 score += 3
         
         # 6. EDAD/PEAK
-        age = fighter.get('edad', 30)
+        age = fighter.get('edad') or 30
         if 27 <= age <= 32:
             score += 6
         elif age >= 36:
@@ -96,34 +96,186 @@ class UFCAnalyzer:
             score += 4
         elif td >= 0.35:
             score += 2
-        
+
+        # 10. DEFENSA (Str.Def / TD Def / SApM del cuadro de carrera UFCStats)
+        ec = fighter.get('estadisticas_carrera', {}) or {}
+        str_def = ec.get('sig_strike_defense', 0)
+        if str_def >= 60:
+            score += 3
+        elif str_def >= 55:
+            score += 2
+        td_def = ec.get('td_defense', 0)
+        if td_def >= 80:
+            score += 3
+        elif td_def >= 70:
+            score += 2
+        sapm = ec.get('sig_strikes_absorbed_per_min', 0)
+        if 0 < sapm <= 3.0:
+            score += 2  # recibe poco daño
+        elif sapm >= 5.5:
+            score -= 2  # absorbe demasiado
+
+        # 11. VOLUMEN OFENSIVO (SLpM)
+        slpm = ec.get('sig_strikes_landed_per_min', 0)
+        if slpm >= 5.0:
+            score += 3
+        elif slpm >= 4.0:
+            score += 2
+
         return score
     
+    def _cargar_calibracion(self):
+        """Carga la calibración generada por el backtester (si existe)."""
+        import json, os
+        path = os.path.join("data", "ufc_calibracion.json")
+        try:
+            if os.path.exists(path):
+                mtime = os.path.getmtime(path)
+                if getattr(self, '_calib_mtime', None) != mtime:
+                    with open(path, encoding="utf-8") as f:
+                        self._calibracion = json.load(f)
+                    self._calib_mtime = mtime
+                return self._calibracion
+        except Exception:
+            pass
+        return {}
+
     def predict_method(self, winner_data, loser_data):
+        """Predicción de método con señales reales: KO rate, sub rate/avg,
+        tiempo promedio de pelea y % de decisiones. Confianza calibrada por
+        backtest cuando hay muestras suficientes."""
         ko_rate = winner_data.get('ko_rate', 0)
         if ko_rate > 1: ko_rate /= 100
-        
         sub_rate = winner_data.get('sub_rate', 0)
         if sub_rate > 1: sub_rate /= 100
-        
-        exp = winner_data.get('wins', 0) + winner_data.get('losses', 0)
-        
-        if ko_rate >= 0.70:
-            return "KO/TKO", 70
-        elif ko_rate >= 0.50:
-            return "KO/TKO", 55
-        elif sub_rate >= 0.40:
-            return "Sumisión", 65
-        elif exp >= 25 and ko_rate < 0.40:
-            return "Decisión", 60
-        else:
-            return "Decisión", 50
-    
+
+        ec_w = winner_data.get('estadisticas_carrera', {}) or {}
+        ec_l = loser_data.get('estadisticas_carrera', {}) or {}
+        slpm = ec_w.get('sig_strikes_landed_per_min', 0)
+        sub_avg = ec_w.get('sub_avg_per_15min', 0)
+        avg_time_w = ec_w.get('avg_fight_time', 0)
+        dec_pct_w = ec_w.get('decision_pct', 0)
+        dec_pct_l = ec_l.get('decision_pct', 0)
+        rival_koed = loser_data.get('was_koed_recently', False)
+        rival_ko_losses = loser_data.get('ko_losses', 0)
+
+        # Puntaje por método (señales acumulativas)
+        score_ko = (ko_rate * 60) + max(0, slpm - 3.0) * 8 \
+                   + (8 if rival_koed else 0) + min(rival_ko_losses, 4) * 2
+        score_sub = (sub_rate * 50) + sub_avg * 12
+        score_dec = (dec_pct_w * 0.45) + (dec_pct_l * 0.25) \
+                    + max(0, avg_time_w - 10) * 2.5
+
+        scores = {"KO/TKO": score_ko, "Sumisión": score_sub, "Decisión": score_dec}
+        metodo = max(scores, key=scores.get)
+        total = sum(scores.values()) or 1
+        conf = round(scores[metodo] / total * 100)
+        conf = max(40, min(80, conf))
+
+        # Ajuste con precisión real medida por el backtester
+        calib = self._cargar_calibracion()
+        precision = calib.get('metodo_precision', {}).get(metodo)
+        if precision is not None and calib.get('muestras', 0) >= 15:
+            conf = round((conf + precision) / 2)
+
+        # Guardar el desglose normalizado para mostrar las 3 probabilidades
+        self._ultimo_desglose_metodo = {
+            k: round(v / total * 100) for k, v in scores.items()
+        }
+        return metodo, conf
+
+    def desglose_metodo(self, winner_data, loser_data):
+        """Probabilidades de los 3 métodos (KO/TKO, Sumisión, Decisión)."""
+        self.predict_method(winner_data, loser_data)
+        return getattr(self, '_ultimo_desglose_metodo', {})
+
+    def totales_rounds(self, p1_data, p2_data, rounds_programados=3):
+        """Over/Under de rounds (1.5, 2.5, 3.5...) con probabilidad y pick.
+
+        Deriva del tiempo promedio de pelea de ambos y el poder de finalización.
+        """
+        def _ec(p):
+            return p.get('estadisticas_carrera', {}) or {}
+        t1 = _ec(p1_data).get('avg_fight_time', 0)
+        t2 = _ec(p2_data).get('avg_fight_time', 0)
+        tiempos = [t for t in (t1, t2) if t > 0]
+        # Minutos esperados de pelea (si no hay datos, ~60% de la duración máxima)
+        dur_max = rounds_programados * 5
+        avg_min = sum(tiempos) / len(tiempos) if tiempos else dur_max * 0.6
+        rounds_esperados = avg_min / 5.0  # cada round = 5 min
+
+        resultado = []
+        for linea in [1.5, 2.5, 3.5, 4.5][:rounds_programados + 1]:
+            if linea >= rounds_programados + 0.5:
+                continue
+            # Prob de superar la línea según rounds esperados (curva suave)
+            diff = rounds_esperados - linea
+            prob_over = max(8, min(92, 50 + diff * 28))
+            pick = "OVER" if prob_over >= 50 else "UNDER"
+            conf = round(max(prob_over, 100 - prob_over))
+            resultado.append({
+                'linea': linea, 'pick': pick,
+                'prob_over': round(prob_over), 'confianza': conf,
+                'etiqueta': f"{pick} {linea} rounds",
+            })
+        return resultado
+
+    def predecir_duracion(self, p1_data, p2_data, rounds=3):
+        """¿La pelea llega a decisión (dura todos los rounds)?
+
+        Señales: tiempo promedio de pelea de ambos, % de decisiones,
+        poder de KO combinado y amenaza de sumisión.
+        """
+        def _ec(p):
+            return p.get('estadisticas_carrera', {}) or {}
+
+        ko1 = p1_data.get('ko_rate', 0)
+        ko2 = p2_data.get('ko_rate', 0)
+        if ko1 > 1: ko1 /= 100
+        if ko2 > 1: ko2 /= 100
+
+        t1 = _ec(p1_data).get('avg_fight_time', 0)
+        t2 = _ec(p2_data).get('avg_fight_time', 0)
+        dec1 = _ec(p1_data).get('decision_pct', 0)
+        dec2 = _ec(p2_data).get('decision_pct', 0)
+        sub1 = _ec(p1_data).get('sub_avg_per_15min', 0)
+        sub2 = _ec(p2_data).get('sub_avg_per_15min', 0)
+
+        dur_max = rounds * 5
+        tiempos = [t for t in (t1, t2) if t > 0]
+        avg_time = sum(tiempos) / len(tiempos) if tiempos else dur_max * 0.6
+
+        # Base histórica UFC: ~48% de las peleas llegan a decisión
+        p = 0.48
+        p += (avg_time / dur_max - 0.55) * 0.55          # peleas largas → decisión
+        p += ((dec1 + dec2) / 2 - 30) * 0.004            # historial de decisiones
+        p -= max(ko1, ko2) * 0.28                        # poder de KO
+        p -= (sub1 + sub2) * 0.03                        # amenaza de sumisión
+
+        # Offset medido por el backtester
+        calib = self._cargar_calibracion()
+        p += calib.get('distancia_offset', 0)
+
+        p = max(0.10, min(0.90, p))
+        va_decision = p >= 0.5
+        return {
+            'va_a_decision': va_decision,
+            'prob': round(p * 100),
+            'pick': f"LLEGA A DECISIÓN ({rounds} rounds)" if va_decision
+                    else "NO llega a decisión (termina antes)",
+            'confianza': round(max(p, 1 - p) * 100),
+        }
+
     def calculate_probability(self, p1, p2):
+        """Probabilidad de victoria de p1. Amplifica la diferencia de scores
+
+        para evitar que todo quede comprimido en 50-55% (ambos parten de 50).
+        """
         score1 = self.calculate_score(p1, p2)
         score2 = self.calculate_score(p2, p1)
-        total = score1 + score2
-        return round((score1 / total) * 100) if total > 0 else 50
+        # La diferencia de scores manda; cada punto vale ~1.6% (centrado en 50)
+        prob = 50 + (score1 - score2) * 1.6
+        return round(max(12, min(88, prob)))
     
     def analizar_combate(self, p1_data, p2_data):
         prob = self.calculate_probability(p1_data, p2_data)
@@ -166,9 +318,46 @@ class UFCAnalyzer:
             decision = f"📈 LIGERA VENTAJA {winner_name}"
             etiqueta = False
         
+        # Predicción de duración (¿llega a decisión?)
+        duracion = self.predecir_duracion(p1_data, p2_data)
+        conf_ganador = prob if prob >= 50 else 100 - prob
+
+        # Mercados extra (estilo sportsbook)
+        metodo_probs = self.desglose_metodo(winner_data, loser_data)
+        rounds_totales = self.totales_rounds(p1_data, p2_data)
+
+        # ── MEJOR APUESTA: comparar los 3 mercados y recomendar el más fuerte ──
+        # Calibración del backtest ajusta la confianza real de cada mercado.
+        calib = self._cargar_calibracion()
+        prec_metodo = calib.get('metodo_precision', {}).get(method, 100)
+        # Solo recortamos por precisión histórica si hay muestra suficiente
+        if calib.get('muestras', 0) >= 15:
+            method_conf_real = round((method_conf + prec_metodo) / 2)
+        else:
+            method_conf_real = method_conf
+
+        mercados = [
+            {
+                'mercado': 'GANADOR (Moneyline)',
+                'apuesta': f"Gana {winner_name}",
+                'confianza': conf_ganador,
+            },
+            {
+                'mercado': 'MÉTODO',
+                'apuesta': f"{winner_name} por {method}",
+                'confianza': method_conf_real,
+            },
+            {
+                'mercado': 'DISTANCIA',
+                'apuesta': duracion.get('pick', ''),
+                'confianza': duracion.get('confianza', 0),
+            },
+        ]
+        mejor_apuesta = max(mercados, key=lambda m: m['confianza'])
+
         return {
             'recomendacion': decision,
-            'confianza': prob if prob >= 50 else 100 - prob,
+            'confianza': conf_ganador,
             'metodo': f"{method} ({method_conf}%)",
             'etiqueta_verde': etiqueta,
             'probabilidad_raw': prob / 100,
@@ -176,5 +365,11 @@ class UFCAnalyzer:
             'score1': score1,
             'score2': score2,
             'is_close': is_close,
-            'method_detail': {'type': method, 'confidence': method_conf}
+            'method_detail': {'type': method, 'confidence': method_conf},
+            'duracion': duracion,
+            'mercados': mercados,
+            'mejor_apuesta': mejor_apuesta,
+            'metodo_probs': metodo_probs,       # {KO/TKO: %, Sumisión: %, Decisión: %}
+            'rounds_totales': rounds_totales,    # [{linea, pick, prob_over, ...}]
+            'ganador_por_metodo': f"{winner_name} por {method}",
         }

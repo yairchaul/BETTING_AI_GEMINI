@@ -17,7 +17,7 @@ def test_deepseek_key_from_env():
 
     if not deepseek_api_key:
         print("❌ DEEPSEEK_API_KEY no encontrada en el archivo .env.")
-        print("Asegúrate de que tu archivo .env contenga una línea como: DEEPSEEK_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+        print("Asegúrate de que tu archivo .env contenga una línea como: DEEPSEEK_API_KEY=***REMOVED_SECRET***")
         return False
 
     print(f"\n--- Probando la API Key de DeepSeek cargada del .env (últimos 4 dígitos: ****{deepseek_api_key[-4:]}) ---")

@@ -1,0 +1,754 @@
+{
+  "timestamp": "2026-06-12T18:34:38.407454",
+  "dias": 10,
+  "juegos": 128,
+  "moneyline": {
+    "precision_global": 56.2,
+    "por_tramo_record": {
+      "gap 8-14%": {
+        "juegos": 39,
+        "aciertos": 21,
+        "precision": 53.8
+      },
+      "gap <8%": {
+        "juegos": 65,
+        "aciertos": 35,
+        "precision": 53.8
+      },
+      "gap 15%+": {
+        "juegos": 24,
+        "aciertos": 16,
+        "precision": 66.7
+      }
+    }
+  },
+  "over_under": {
+    "linea": 8.5,
+    "juegos": 128,
+    "tasa_over": 56.2,
+    "tasa_under": 43.8,
+    "sesgo": "OVER"
+  },
+  "detalle": [
+    {
+      "fecha": "2026-06-11",
+      "juego": "St. Louis Cardinals @ New York Mets",
+      "marcador": "4-5",
+      "total": 9,
+      "pred_ml": "St. Louis Cardinals",
+      "ganador": "New York Mets",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-11",
+      "juego": "Minnesota Twins @ Detroit Tigers",
+      "marcador": "0-11",
+      "total": 11,
+      "pred_ml": "Detroit Tigers",
+      "ganador": "Detroit Tigers",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-11",
+      "juego": "Arizona Diamondbacks @ Miami Marlins",
+      "marcador": "0-2",
+      "total": 2,
+      "pred_ml": "Miami Marlins",
+      "ganador": "Miami Marlins",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-11",
+      "juego": "Texas Rangers @ Kansas City Royals",
+      "marcador": "4-2",
+      "total": 6,
+      "pred_ml": "Texas Rangers",
+      "ganador": "Texas Rangers",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-11",
+      "juego": "Chicago Cubs @ Colorado Rockies",
+      "marcador": "9-3",
+      "total": 12,
+      "pred_ml": "Chicago Cubs",
+      "ganador": "Chicago Cubs",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-11",
+      "juego": "Los Angeles Dodgers @ Pittsburgh Pirates",
+      "marcador": "8-6",
+      "total": 14,
+      "pred_ml": "Los Angeles Dodgers",
+      "ganador": "Los Angeles Dodgers",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-11",
+      "juego": "Seattle Mariners @ Baltimore Orioles",
+      "marcador": "5-7",
+      "total": 12,
+      "pred_ml": "Seattle Mariners",
+      "ganador": "Baltimore Orioles",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "juego": "Boston Red Sox @ Tampa Bay Rays",
+      "marcador": "5-7",
+      "total": 12,
+      "pred_ml": "Tampa Bay Rays",
+      "ganador": "Tampa Bay Rays",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-10",
+      "juego": "New York Yankees @ Cleveland Guardians",
+      "marcador": "8-4",
+      "total": 12,
+      "pred_ml": "New York Yankees",
+      "ganador": "New York Yankees",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-10",
+      "juego": "Washington Nationals @ San Francisco Giants",
+      "marcador": "10-11",
+      "total": 21,
+      "pred_ml": "Washington Nationals",
+      "ganador": "San Francisco Giants",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "juego": "Cincinnati Reds @ San Diego Padres",
+      "marcador": "4-5",
+      "total": 9,
+      "pred_ml": "San Diego Padres",
+      "ganador": "San Diego Padres",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-10",
+      "juego": "Seattle Mariners @ Baltimore Orioles",
+      "marcador": "2-7",
+      "total": 9,
+      "pred_ml": "Seattle Mariners",
+      "ganador": "Baltimore Orioles",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "juego": "Los Angeles Dodgers @ Pittsburgh Pirates",
+      "marcador": "8-9",
+      "total": 17,
+      "pred_ml": "Los Angeles Dodgers",
+      "ganador": "Pittsburgh Pirates",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "juego": "Minnesota Twins @ Detroit Tigers",
+      "marcador": "6-4",
+      "total": 10,
+      "pred_ml": "Minnesota Twins",
+      "ganador": "Minnesota Twins",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-10",
+      "juego": "Arizona Diamondbacks @ Miami Marlins",
+      "marcador": "0-8",
+      "total": 8,
+      "pred_ml": "Miami Marlins",
+      "ganador": "Miami Marlins",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-10",
+      "juego": "Philadelphia Phillies @ Toronto Blue Jays",
+      "marcador": "7-4",
+      "total": 11,
+      "pred_ml": "Philadelphia Phillies",
+      "ganador": "Philadelphia Phillies",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-10",
+      "juego": "St. Louis Cardinals @ New York Mets",
+      "marcador": "9-2",
+      "total": 11,
+      "pred_ml": "St. Louis Cardinals",
+      "ganador": "St. Louis Cardinals",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-10",
+      "juego": "Texas Rangers @ Kansas City Royals",
+      "marcador": "6-4",
+      "total": 10,
+      "pred_ml": "Texas Rangers",
+      "ganador": "Texas Rangers",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-10",
+      "juego": "Atlanta Braves @ Chicago White Sox",
+      "marcador": "1-2",
+      "total": 3,
+      "pred_ml": "Atlanta Braves",
+      "ganador": "Chicago White Sox",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "juego": "Chicago Cubs @ Colorado Rockies",
+      "marcador": "2-3",
+      "total": 5,
+      "pred_ml": "Chicago Cubs",
+      "ganador": "Colorado Rockies",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "juego": "Milwaukee Brewers @ Athletics",
+      "marcador": "3-4",
+      "total": 7,
+      "pred_ml": "Milwaukee Brewers",
+      "ganador": "Athletics",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "juego": "Houston Astros @ Los Angeles Angels",
+      "marcador": "2-3",
+      "total": 5,
+      "pred_ml": "Houston Astros",
+      "ganador": "Los Angeles Angels",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "juego": "Seattle Mariners @ Baltimore Orioles",
+      "marcador": "6-5",
+      "total": 11,
+      "pred_ml": "Seattle Mariners",
+      "ganador": "Seattle Mariners",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-09",
+      "juego": "Los Angeles Dodgers @ Pittsburgh Pirates",
+      "marcador": "12-3",
+      "total": 15,
+      "pred_ml": "Los Angeles Dodgers",
+      "ganador": "Los Angeles Dodgers",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-09",
+      "juego": "Boston Red Sox @ Tampa Bay Rays",
+      "marcador": "3-4",
+      "total": 7,
+      "pred_ml": "Tampa Bay Rays",
+      "ganador": "Tampa Bay Rays",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-09",
+      "juego": "Minnesota Twins @ Detroit Tigers",
+      "marcador": "4-10",
+      "total": 14,
+      "pred_ml": "Detroit Tigers",
+      "ganador": "Detroit Tigers",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-09",
+      "juego": "Arizona Diamondbacks @ Miami Marlins",
+      "marcador": "6-10",
+      "total": 16,
+      "pred_ml": "Arizona Diamondbacks",
+      "ganador": "Miami Marlins",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "juego": "New York Yankees @ Cleveland Guardians",
+      "marcador": "3-2",
+      "total": 5,
+      "pred_ml": "New York Yankees",
+      "ganador": "New York Yankees",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-09",
+      "juego": "Philadelphia Phillies @ Toronto Blue Jays",
+      "marcador": "2-3",
+      "total": 5,
+      "pred_ml": "Philadelphia Phillies",
+      "ganador": "Toronto Blue Jays",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "juego": "St. Louis Cardinals @ New York Mets",
+      "marcador": "7-0",
+      "total": 7,
+      "pred_ml": "St. Louis Cardinals",
+      "ganador": "St. Louis Cardinals",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-09",
+      "juego": "Texas Rangers @ Kansas City Royals",
+      "marcador": "3-5",
+      "total": 8,
+      "pred_ml": "Texas Rangers",
+      "ganador": "Kansas City Royals",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "juego": "Atlanta Braves @ Chicago White Sox",
+      "marcador": "5-6",
+      "total": 11,
+      "pred_ml": "Atlanta Braves",
+      "ganador": "Chicago White Sox",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "juego": "Chicago Cubs @ Colorado Rockies",
+      "marcador": "3-7",
+      "total": 10,
+      "pred_ml": "Chicago Cubs",
+      "ganador": "Colorado Rockies",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "juego": "Houston Astros @ Los Angeles Angels",
+      "marcador": "1-10",
+      "total": 11,
+      "pred_ml": "Houston Astros",
+      "ganador": "Los Angeles Angels",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "juego": "Cincinnati Reds @ San Diego Padres",
+      "marcador": "5-3",
+      "total": 8,
+      "pred_ml": "San Diego Padres",
+      "ganador": "Cincinnati Reds",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "juego": "Washington Nationals @ San Francisco Giants",
+      "marcador": "6-3",
+      "total": 9,
+      "pred_ml": "Washington Nationals",
+      "ganador": "Washington Nationals",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-09",
+      "juego": "Milwaukee Brewers @ Athletics",
+      "marcador": "5-7",
+      "total": 12,
+      "pred_ml": "Milwaukee Brewers",
+      "ganador": "Athletics",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-08",
+      "juego": "Seattle Mariners @ Baltimore Orioles",
+      "marcador": "6-3",
+      "total": 9,
+      "pred_ml": "Seattle Mariners",
+      "ganador": "Seattle Mariners",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-08",
+      "juego": "Boston Red Sox @ Tampa Bay Rays",
+      "marcador": "1-3",
+      "total": 4,
+      "pred_ml": "Tampa Bay Rays",
+      "ganador": "Tampa Bay Rays",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-08",
+      "juego": "New York Yankees @ Cleveland Guardians",
+      "marcador": "7-5",
+      "total": 12,
+      "pred_ml": "New York Yankees",
+      "ganador": "New York Yankees",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-08",
+      "juego": "Philadelphia Phillies @ Toronto Blue Jays",
+      "marcador": "5-2",
+      "total": 7,
+      "pred_ml": "Philadelphia Phillies",
+      "ganador": "Philadelphia Phillies",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-08",
+      "juego": "Houston Astros @ Los Angeles Angels",
+      "marcador": "5-4",
+      "total": 9,
+      "pred_ml": "Houston Astros",
+      "ganador": "Houston Astros",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-08",
+      "juego": "Cincinnati Reds @ San Diego Padres",
+      "marcador": "2-6",
+      "total": 8,
+      "pred_ml": "San Diego Padres",
+      "ganador": "San Diego Padres",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-08",
+      "juego": "Washington Nationals @ San Francisco Giants",
+      "marcador": "4-3",
+      "total": 7,
+      "pred_ml": "Washington Nationals",
+      "ganador": "Washington Nationals",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-08",
+      "juego": "Milwaukee Brewers @ Athletics",
+      "marcador": "15-14",
+      "total": 29,
+      "pred_ml": "Milwaukee Brewers",
+      "ganador": "Milwaukee Brewers",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Pittsburgh Pirates @ Atlanta Braves",
+      "marcador": "2-3",
+      "total": 5,
+      "pred_ml": "Atlanta Braves",
+      "ganador": "Atlanta Braves",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Chicago White Sox @ Philadelphia Phillies",
+      "marcador": "5-9",
+      "total": 14,
+      "pred_ml": "Philadelphia Phillies",
+      "ganador": "Philadelphia Phillies",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Boston Red Sox @ New York Yankees",
+      "marcador": "1-6",
+      "total": 7,
+      "pred_ml": "New York Yankees",
+      "ganador": "New York Yankees",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Baltimore Orioles @ Toronto Blue Jays",
+      "marcador": "4-6",
+      "total": 10,
+      "pred_ml": "Toronto Blue Jays",
+      "ganador": "Toronto Blue Jays",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Seattle Mariners @ Detroit Tigers",
+      "marcador": "4-5",
+      "total": 9,
+      "pred_ml": "Seattle Mariners",
+      "ganador": "Detroit Tigers",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Tampa Bay Rays @ Miami Marlins",
+      "marcador": "1-4",
+      "total": 5,
+      "pred_ml": "Tampa Bay Rays",
+      "ganador": "Miami Marlins",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Athletics @ Houston Astros",
+      "marcador": "5-0",
+      "total": 5,
+      "pred_ml": "Houston Astros",
+      "ganador": "Athletics",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Kansas City Royals @ Minnesota Twins",
+      "marcador": "6-5",
+      "total": 11,
+      "pred_ml": "Minnesota Twins",
+      "ganador": "Kansas City Royals",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Cincinnati Reds @ St. Louis Cardinals",
+      "marcador": "3-5",
+      "total": 8,
+      "pred_ml": "St. Louis Cardinals",
+      "ganador": "St. Louis Cardinals",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Cleveland Guardians @ Texas Rangers",
+      "marcador": "0-10",
+      "total": 10,
+      "pred_ml": "Cleveland Guardians",
+      "ganador": "Texas Rangers",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Milwaukee Brewers @ Colorado Rockies",
+      "marcador": "12-4",
+      "total": 16,
+      "pred_ml": "Milwaukee Brewers",
+      "ganador": "Milwaukee Brewers",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Washington Nationals @ Arizona Diamondbacks",
+      "marcador": "1-5",
+      "total": 6,
+      "pred_ml": "Arizona Diamondbacks",
+      "ganador": "Arizona Diamondbacks",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Los Angeles Angels @ Los Angeles Dodgers",
+      "marcador": "13-5",
+      "total": 18,
+      "pred_ml": "Los Angeles Dodgers",
+      "ganador": "Los Angeles Angels",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "New York Mets @ San Diego Padres",
+      "marcador": "7-3",
+      "total": 10,
+      "pred_ml": "San Diego Padres",
+      "ganador": "New York Mets",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "San Francisco Giants @ Chicago Cubs",
+      "marcador": "2-1",
+      "total": 3,
+      "pred_ml": "Chicago Cubs",
+      "ganador": "San Francisco Giants",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Seattle Mariners @ Detroit Tigers",
+      "marcador": "4-0",
+      "total": 4,
+      "pred_ml": "Seattle Mariners",
+      "ganador": "Seattle Mariners",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Kansas City Royals @ Minnesota Twins",
+      "marcador": "3-2",
+      "total": 5,
+      "pred_ml": "Minnesota Twins",
+      "ganador": "Kansas City Royals",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Cincinnati Reds @ St. Louis Cardinals",
+      "marcador": "5-6",
+      "total": 11,
+      "pred_ml": "St. Louis Cardinals",
+      "ganador": "St. Louis Cardinals",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "San Francisco Giants @ Chicago Cubs",
+      "marcador": "2-3",
+      "total": 5,
+      "pred_ml": "Chicago Cubs",
+      "ganador": "Chicago Cubs",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Baltimore Orioles @ Toronto Blue Jays",
+      "marcador": "4-6",
+      "total": 10,
+      "pred_ml": "Toronto Blue Jays",
+      "ganador": "Toronto Blue Jays",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Chicago White Sox @ Philadelphia Phillies",
+      "marcador": "6-3",
+      "total": 9,
+      "pred_ml": "Philadelphia Phillies",
+      "ganador": "Chicago White Sox",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Washington Nationals @ Arizona Diamondbacks",
+      "marcador": "6-1",
+      "total": 7,
+      "pred_ml": "Arizona Diamondbacks",
+      "ganador": "Washington Nationals",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Athletics @ Houston Astros",
+      "marcador": "2-13",
+      "total": 15,
+      "pred_ml": "Houston Astros",
+      "ganador": "Houston Astros",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Pittsburgh Pirates @ Atlanta Braves",
+      "marcador": "3-6",
+      "total": 9,
+      "pred_ml": "Atlanta Braves",
+      "ganador": "Atlanta Braves",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Tampa Bay Rays @ Miami Marlins",
+      "marcador": "3-4",
+      "total": 7,
+      "pred_ml": "Tampa Bay Rays",
+      "ganador": "Miami Marlins",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Cleveland Guardians @ Texas Rangers",
+      "marcador": "6-0",
+      "total": 6,
+      "pred_ml": "Cleveland Guardians",
+      "ganador": "Cleveland Guardians",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Milwaukee Brewers @ Colorado Rockies",
+      "marcador": "7-1",
+      "total": 8,
+      "pred_ml": "Milwaukee Brewers",
+      "ganador": "Milwaukee Brewers",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Los Angeles Angels @ Los Angeles Dodgers",
+      "marcador": "2-9",
+      "total": 11,
+      "pred_ml": "Los Angeles Dodgers",
+      "ganador": "Los Angeles Dodgers",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "New York Mets @ San Diego Padres",
+      "marcador": "2-3",
+      "total": 5,
+      "pred_ml": "San Diego Padres",
+      "ganador": "San Diego Padres",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "San Francisco Giants @ Chicago Cubs",
+      "marcador": "18-3",
+      "total": 21,
+      "pred_ml": "Chicago Cubs",
+      "ganador": "San Francisco Giants",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "Seattle Mariners @ Detroit Tigers",
+      "marcador": "3-7",
+      "total": 10,
+      "pred_ml": "Seattle Mariners",
+      "ganador": "Detroit Tigers",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "Chicago White Sox @ Philadelphia Phillies",
+      "marcador": "6-8",
+      "total": 14,
+      "pred_ml": "Philadelphia Phillies",
+      "ganador": "Philadelphia Phillies",
+      "ml_ok": true
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "Boston Red Sox @ New York Yankees",
+      "marcador": "5-3",
+      "total": 8,
+      "pred_ml": "New York Yankees",
+      "ganador": "Boston Red Sox",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "Baltimore Orioles @ Toronto Blue Jays",
+      "marcador": "13-3",
+      "total": 16,
+      "pred_ml": "Toronto Blue Jays",
+      "ganador": "Baltimore Orioles",
+      "ml_ok": false
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "Tampa Bay Rays @ Miami Marlins",
+      "marcador": "6-0",
+      "total": 6,
+      "pred_ml": "Tampa Bay Rays",
+      "ganador": "Tampa Bay Rays",
+      "ml_ok": true
+    }
+  ]
+}

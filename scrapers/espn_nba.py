@@ -71,7 +71,9 @@ class ESPN_NBA:
                     # Récords - IMPORTANTE: extraer del campo correcto
                     record_local = '0-0'
                     record_visit = '0-0'
-                    
+                    local_streak = ''
+                    visit_streak = ''
+
                     # Los records están en 'records' como lista
                     if competitors[0].get('records'):
                         records_list = competitors[0].get('records', [])
@@ -80,7 +82,7 @@ class ESPN_NBA:
                                 record_local = r.get('summary', '0-0')
                                 local_streak = r.get('streak', {}).get('abbreviation', '')
                                 break
-                    
+
                     if competitors[1].get('records'):
                         records_list = competitors[1].get('records', [])
                         for r in records_list:
@@ -102,11 +104,15 @@ class ESPN_NBA:
                         'visitante_id': visit_id,
                         'local_logo': local_logo,
                         'visitante_logo': visit_logo,
+                        'local_record': record_local,
+                        'visitante_record': record_visit,
+                        'local_streak': local_streak,
+                        'visitante_streak': visit_streak,
                         'records': {
-                            'local': record_local, # e.g., "10-5"
+                            'local': record_local,
                             'visitante': record_visit,
-                            'local_streak': local_streak, # e.g., "W3"
-                            'visitante_streak': visit_streak
+                            'local_streak': local_streak,
+                            'visitante_streak': visit_streak,
                         },
                         'game_id': event.get('id') # Añadir game_id
                     })

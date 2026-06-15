@@ -2,55 +2,15 @@
 import streamlit as st
 from database_manager import db
 
-# Importar el radar de triples con datos reales
 try:
-    from balldontlie_client import balldontlie
-    BALLDONTLIE_AVAILABLE = True
+    from radar_triples_nba import radar_triples # Importar la instancia unificada
+    RADAR_AVAILABLE = True
 except ImportError:
-    BALLDONTLIE_AVAILABLE = False
+    RADAR_AVAILABLE = False
 
 class VisualNBAMejorado:
     def __init__(self):
         pass
-    
-    def get_top_tripleros_reales(self, team_name, limit=3):
-        """Obtiene los mejores tripleros de un equipo usando Balldontlie API"""
-        if not BALLDONTLIE_AVAILABLE:
-            return []
-        
-        # Mapeo de nombres de equipos a IDs de Balldontlie
-        team_ids = {
-            "Lakers": 14, "Warriors": 15, "Celtics": 2, "Bucks": 16,
-            "Nets": 17, "Suns": 21, "76ers": 20, "Mavericks": 6,
-            "Nuggets": 7, "Heat": 12, "Knicks": 18, "Clippers": 13,
-            "Grizzlies": 29, "Kings": 19, "Pelicans": 23, "Magic": 22,
-            "Pacers": 24, "Bulls": 4, "Hawks": 1, "Hornets": 30,
-            "Cavaliers": 5, "Pistons": 8, "Raptors": 28, "Timberwolves": 25,
-            "Trail Blazers": 26, "Thunder": 27, "Jazz": 31, "Spurs": 3,
-            "Rockets": 10, "Wizards": 32
-        }
-        
-        team_id = next((tid for name, tid in team_ids.items() if name.lower() in team_name.lower()), None)
-        if not team_id: return []
-        
-        try:
-            players_data = balldontlie.get_players(team_id=team_id)
-            players = players_data.get('data', [])
-            tripleros = []
-            for player in players:
-                player_id = player.get('id')
-                if player_id:
-                    stats = balldontlie.get_player_props(player_id)
-                    if stats and stats.get('fg3a', 0) >= 2:
-                        tripleros.append({
-                            "nombre": f"{player.get('first_name')} {player.get('last_name')}",
-                            "triples_por_partido": stats.get('fg3a', 0),
-                            "porcentaje_triple": stats.get('fg3_pct', 0) * 100
-                        })
-            tripleros.sort(key=lambda x: x["triples_por_partido"], reverse=True)
-            return tripleros[:limit]
-        except:
-            return []
 
     def render(self, partido, idx, tracker, analisis_heuristico=None, analisis_gemini=None, analisis_premium=None, **kwargs):
         """Renderiza partido NBA con estilo NEON"""
@@ -61,34 +21,44 @@ class VisualNBAMejorado:
         visitante = partido.get('visitante', '')
         odds = partido.get('odds', {})
         records = partido.get('records', {})
-        
+        rec_l = partido.get('local_record') or records.get('local', '0-0')
+        rec_v = partido.get('visitante_record') or records.get('visitante', '0-0')
+
+        # Logos
+        logo_l = partido.get('local_logo', '')
+        logo_v = partido.get('visitante_logo', '')
+        img_l = f'<img src="{logo_l}" width="46" style="margin-bottom:6px;">' if logo_l else ''
+        img_v = f'<img src="{logo_v}" width="46" style="margin-bottom:6px;">' if logo_v else ''
+
         # Extraer datos
         spread_local = odds.get('spread', {}).get('local', 'N/A')
         spread_visit = odds.get('spread', {}).get('visitante', 'N/A')
         over_under = odds.get('over_under', 'N/A')
         ml_local = odds.get('moneyline', {}).get('local', 'N/A')
         ml_visit = odds.get('moneyline', {}).get('visitante', 'N/A')
-        
+
         # Estilo de tarjeta
         st.markdown(f"""
-        <div style='background: linear-gradient(135deg, #0f0f1a 0%, #1a1f2a 100%); 
-                    border-radius: 15px; 
-                    padding: 20px; 
-                    margin: 15px 0; 
+        <div style='background: linear-gradient(135deg, #0f0f1a 0%, #1a1f2a 100%);
+                    border-radius: 15px;
+                    padding: 20px;
+                    margin: 15px 0;
                     border: 1px solid #00ff41;
                     box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);'>
             <div style='display: flex; justify-content: space-between; align-items: center;'>
                 <div style='text-align: center; flex: 1;'>
+                    {img_l}
                     <h2 style='color: #fff; text-shadow: 0 0 5px #ff6600; margin: 0;'>{local}</h2>
-                    <p style='color: #ff6600; margin: 0;'>{records.get('local', '0-0')}</p>
+                    <p style='color: #ff6600; margin: 0;'>{rec_l}</p>
                     <p style='color: #00ff41; font-size: 14px;'>ML: {ml_local}</p>
                 </div>
                 <div style='text-align: center; flex: 0.5;'>
                     <h1 style='color: #00ff41; text-shadow: 0 0 10px #00ff41; margin: 0;'>VS</h1>
                 </div>
                 <div style='text-align: center; flex: 1;'>
+                    {img_v}
                     <h2 style='color: #fff; text-shadow: 0 0 5px #ff6600; margin: 0;'>{visitante}</h2>
-                    <p style='color: #ff6600; margin: 0;'>{records.get('visitante', '0-0')}</p>
+                    <p style='color: #ff6600; margin: 0;'>{rec_v}</p>
                     <p style='color: #00ff41; font-size: 14px;'>ML: {ml_visit}</p>
                 </div>
             </div>
@@ -116,7 +86,7 @@ class VisualNBAMejorado:
             st.markdown("---")
             
             recomendacion = analisis_heuristico.get('recomendacion', 'N/A')
-            ev = analisis_heuristico.get('ev_mejor', 0)
+            ev = analisis_heuristico.get('ev', analisis_heuristico.get('ev_mejor', 0))
             confianza = analisis_heuristico.get('confianza', 0)
             total_proyectado = analisis_heuristico.get('total_proyectado', 0)
             detalle = analisis_heuristico.get('detalle', '')
@@ -160,7 +130,25 @@ class VisualNBAMejorado:
             
             # Barra de progreso de confianza
             st.progress(confianza / 100)
-            
+
+            # ── Los 3 mercados (Ganador / Hándicap / Total) ──
+            mercados = analisis_heuristico.get('mercados', [])
+            if mercados:
+                mejor = analisis_heuristico.get('mejor_mercado', {})
+                cols_m = st.columns(len(mercados))
+                for cm, m in zip(cols_m, mercados):
+                    es_mejor = m.get('mercado') == mejor.get('mercado')
+                    borde = "#00ff41" if es_mejor else "#334155"
+                    estrella = " ⭐" if es_mejor else ""
+                    cm.markdown(
+                        f"<div style='background:#0f1419;border:1px solid {borde};border-radius:8px;padding:8px;text-align:center'>"
+                        f"<div style='color:#888;font-size:10px'>{m.get('mercado')}{estrella}</div>"
+                        f"<div style='color:#fff;font-weight:700;font-size:13px'>{m.get('pick')}</div>"
+                        f"<div style='color:#00ff41;font-size:12px'>{m.get('confianza')}%</div>"
+                        f"</div>",
+                        unsafe_allow_html=True,
+                    )
+
             if etiqueta_verde or ev >= 8:
                 st.success("🔥 PICK DE ALTA CONFIANZA - Valor positivo detectado")
             
@@ -177,10 +165,6 @@ class VisualNBAMejorado:
                 else:
                     st.write(str(analisis_premium))
         
-        # 🤖 CONSULTAR IA
-        if st.button("🤖 CONSULTAR IA", key=f"btn_ia_nba_{idx}"):
-            if hasattr(st.session_state, 'gemini') and st.session_state.gemini:
-                st.info("Gemini: Análisis en desarrollo")
         
         # 🏀 RADAR DE TRIPLES (NBA PROPS)
         st.markdown("---")
@@ -197,18 +181,25 @@ class VisualNBAMejorado:
             
             with [col_p1, col_p2][i]:
                 st.markdown(f"**🔥 {team}**")
-                lideres = db.get_top_player_stat(team, "three_pm", limit=2, deporte="nba")
+                if RADAR_AVAILABLE:
+                    lideres = radar_triples.get_top_tripleros(team, limit=2)
+                else:
+                    lideres = db.get_top_player_stat(team, "three_pm", limit=2, deporte="nba")
                 if lideres:
                     for player in lideres:
-                        # Simulación: Si supera 3.0 triples/g, lo consideramos "Hot" (Racha 4/5)
-                        is_hot = player.get('triples_por_partido', 0) >= 3.0
-                        css_class = "prop-hot-purple" if is_hot else ""
-                        
-                        prob = min(95, (player['triples_por_partido'] * 20) * mult_defensa)
-                        
-                        st.markdown(f"""<div class='{css_class}'>
-                            🏀 <b>{player['nombre']}</b>: {player['triples_por_partido']} 3PM/g (Prob: {prob:.0f}%)
-                            {"<br><small style='color:#bc13fe;'>🔥 Racha: 4/5 HITS</small>" if is_hot else ""}
-                        </div>""", unsafe_allow_html=True)
-                        st.progress(prob/100)
+                        tpp = player.get('triples_por_partido', 0)
+                        is_hot = tpp >= 3.0
+                        prob = min(95, (tpp * 20) * mult_defensa)
+                        # Línea de props sugerida: medio triple por debajo del promedio
+                        linea = max(0.5, round(tpp - 0.5, 1))
+                        nombre = player.get('nombre', 'N/A')
+                        hot_txt = " 🔥 Racha caliente" if is_hot else ""
+                        # Sin HTML indentado (Markdown lo tomaría como bloque de código)
+                        st.markdown(
+                            f"🏀 **{nombre}** — {tpp} triples/g · "
+                            f"Línea sugerida **OVER {linea}** · Prob: **{prob:.0f}%**{hot_txt}"
+                        )
+                        st.progress(prob / 100)
+                else:
+                    st.caption("Sin datos de tripleros para este equipo.")
         return None

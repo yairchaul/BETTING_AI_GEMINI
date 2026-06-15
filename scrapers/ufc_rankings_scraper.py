@@ -25,12 +25,12 @@ class UFCRankingsScraper:
                     
                     rankings = cache.get('rankings', {})
                     if rankings.get('campeones') and datetime.now() - last_update < self.cache_duration:
-                        print(f"📦 Usando caché ({last_update.strftime('%Y-%m-%d %H:%M')})")
+                        print(f"[rankings] Usando cache ({last_update.strftime('%Y-%m-%d %H:%M')})")
                         return rankings
             except:
                 pass
-        
-        print("🌐 Descargando rankings...")
+
+        print("[rankings] Descargando rankings...")
         return self._fetch_rankings_ufcstats()
     
     def _fetch_rankings_ufcstats(self):
@@ -75,7 +75,7 @@ class UFCRankingsScraper:
     
     def force_refresh(self):
         """Fuerza la actualización de rankings"""
-        print("🔄 Forzando actualización de rankings...")
+        print("[rankings] Forzando actualizacion de rankings...")
         self.rankings = self._fetch_rankings_ufcstats()
         return self.rankings
     

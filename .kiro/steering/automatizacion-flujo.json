@@ -1,0 +1,27 @@
+{
+  "hooks": [
+    {
+      "name": "Cierre Diario de Caja",
+      "trigger": "on_startup",
+      "command": "python auditor_resultados.py",
+      "description": "Busca resultados del día anterior y actualiza el backtesting al abrir el IDE."
+    },
+    {
+      "name": "Sync Clima",
+      "trigger": "on_file_change",
+      "path": "resultados_finales_corregidos.json",
+      "command": "python update_clima_data.py"
+    },
+    {
+      "name": "Health Check Datos",
+      "trigger": "on_file_change",
+      "path": "data/stats_lanzadores_hoy.json",
+      "command": "python test_scrapers_integrity.py"
+    },
+    {
+      "name": "Mantenimiento Logs",
+      "trigger": "on_startup",
+      "command": "python -c \"import os; open('data/aprendizaje_fallos.log', 'w').close() if os.path.exists('data/aprendizaje_fallos.log') and os.path.getsize('data/aprendizaje_fallos.log') > 1024*500 else None\""
+    }
+  ]
+}

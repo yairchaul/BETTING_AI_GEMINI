@@ -1,198 +1,128 @@
 # -*- coding: utf-8 -*-
-"""
-VISUAL FÚTBOL MEJORADO - Con estadísticas reales de equipos
-Versión unificada para local y cloud
-"""
-
+"""VISUAL FÚTBOL — Streamlit nativo (logos, cuotas, récords, fase) V25."""
 import streamlit as st
-import sqlite3
-import logging
 
-logger = logging.getLogger(__name__)
 
 class VisualFutbolTriple:
     def __init__(self):
-        self.db_path = 'data/betting_stats.db'
-    
-    def _obtener_historial_equipo(self, equipo):
-        """Obtiene últimos 5 partidos del equipo desde BD"""
-        if not equipo:
-            return None
-        
-        try:
-            conn = sqlite3.connect(self.db_path)
-            cursor = conn.cursor()
-            cursor.execute('''
-                SELECT puntos_favor, puntos_contra, fecha 
-                FROM historial_equipos 
-                WHERE nombre_equipo = ? AND deporte = 'futbol'
-                ORDER BY fecha DESC LIMIT 5
-            ''', (equipo,))
-            rows = cursor.fetchall()
-            conn.close()
-            
-            if rows and len(rows) >= 3:
-                partidos = []
-                goles_favor = []
-                goles_contra = []
-                for r in rows:
-                    g_f = int(r[0]) if r[0] else 0
-                    g_c = int(r[1]) if r[1] else 0
-                    partidos.append({'goles_favor': g_f, 'goles_contra': g_c})
-                    goles_favor.append(g_f)
-                    goles_contra.append(g_c)
-                
-                return {
-                    'partidos': partidos,
-                    'goles_favor': goles_favor,
-                    'goles_contra': goles_contra,
-                    'promedio_favor': sum(goles_favor) / len(goles_favor),
-                    'victorias': sum(1 for i in range(len(partidos)) if partidos[i]['goles_favor'] > partidos[i]['goles_contra'])
-                }
-        except Exception as e:
-            logger.debug(f"Error obteniendo historial de {equipo}: {e}")
-        
-        return None
-    
-    def _obtener_datos_mock(self, equipo):
-        """Genera datos mock para equipos sin historial"""
-        equipos_fuertes = ["Manchester", "Liverpool", "Arsenal", "Chelsea", "Barcelona", 
-                          "Real Madrid", "Bayern", "PSG", "Juventus", "Milan", "Inter"]
-        
-        if any(fuerte in equipo for fuerte in equipos_fuertes):
-            return {
-                'goles_favor': [3, 2, 4, 1, 3],
-                'goles_contra': [1, 1, 2, 1, 0],
-                'promedio_favor': 2.6,
-                'victorias': 4
-            }
-        else:
-            return {
-                'goles_favor': [1, 0, 1, 1, 0],
-                'goles_contra': [2, 1, 2, 1, 2],
-                'promedio_favor': 0.8,
-                'victorias': 1
-            }
-    
-    def render(self, partido, idx, liga, tracker, stats_data=None, 
-               analisis_heurístico=None, analisis_gemini=None, analisis_premium=None):
-        
-        local = partido.get('local', partido.get('home', ''))
-        visitante = partido.get('visitante', partido.get('away', ''))
-        fecha = partido.get('fecha', '')
-        
-        # Obtener historial real
-        historial_local = self._obtener_historial_equipo(local) or self._obtener_datos_mock(local)
-        historial_visit = self._obtener_historial_equipo(visitante) or self._obtener_datos_mock(visitante)
-        
-        # Tarjeta NEON
-        st.markdown(f"""
-        <div style='background: linear-gradient(135deg, #0f0f1a 0%, #1a1f2a 100%); 
-                    border-radius: 15px; 
-                    padding: 20px; 
-                    margin: 15px 0; 
-                    border: 1px solid #00ff41;'>
-            <div style='display: flex; justify-content: space-between;'>
-                <div style='text-align: center; flex: 1;'>
-                    <h2 style='color: #fff;'>{local}</h2>
-                    <p style='color: #ff6600;'>{liga}</p>
-                </div>
-                <div style='text-align: center; flex: 0.5;'>
-                    <h1 style='color: #00ff41;'>VS</h1>
-                </div>
-                <div style='text-align: center; flex: 1;'>
-                    <h2 style='color: #fff;'>{visitante}</h2>
-                    <p style='color: #ff6600;'>{liga}</p>
-                </div>
-            </div>
-            <div style='text-align: center; margin-top: 8px;'>
-                <span style='color: #888;'>📅 {fecha[:10] if fecha else 'Fecha por definir'}</span>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # ÚLTIMOS 5 PARTIDOS
-        st.markdown("### 📊 ÚLTIMOS 5 PARTIDOS")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown(f"**🔴 {local}**")
-            if historial_local and historial_local.get('goles_favor'):
-                resultados = []
-                for i in range(min(5, len(historial_local['goles_favor']))):
-                    g_f = historial_local['goles_favor'][i]
-                    g_c = historial_local['goles_contra'][i] if i < len(historial_local.get('goles_contra', [])) else 0
-                    resultados.append(f"{g_f}-{g_c}")
-                
-                st.write(f"📈 {' | '.join(resultados)}")
-                st.caption(f"⚽ Promedio: {historial_local.get('promedio_favor', 0):.1f} goles")
-                st.caption(f"📈 Racha: {historial_local.get('victorias', 0)}W / {5 - historial_local.get('victorias', 0)}L")
-            else:
-                st.caption("📊 Datos no disponibles")
-        
-        with col2:
-            st.markdown(f"**🔵 {visitante}**")
-            if historial_visit and historial_visit.get('goles_favor'):
-                resultados = []
-                for i in range(min(5, len(historial_visit['goles_favor']))):
-                    g_f = historial_visit['goles_favor'][i]
-                    g_c = historial_visit['goles_contra'][i] if i < len(historial_visit.get('goles_contra', [])) else 0
-                    resultados.append(f"{g_f}-{g_c}")
-                
-                st.write(f"📈 {' | '.join(resultados)}")
-                st.caption(f"⚽ Promedio: {historial_visit.get('promedio_favor', 0):.1f} goles")
-                st.caption(f"📈 Racha: {historial_visit.get('victorias', 0)}W / {5 - historial_visit.get('victorias', 0)}L")
-            else:
-                st.caption("📊 Datos no disponibles")
-        
-        # Botón ANALIZAR
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            if st.button("🔥 ANALIZAR FÚTBOL", key=f"fut_analizar_{liga}_{idx}", use_container_width=True):
-                return "analizar"
-        
-        # Mostrar resultados del análisis a la par (Heurístico + Gemini)
-        if analisis_heurístico or analisis_gemini:
-            st.markdown("---")
-            col_res1, col_res2 = st.columns(2)
-            
-            with col_res1:
-                if analisis_heurístico:
-                    recomendacion = analisis_heurístico.get('recomendacion', 'N/A')
-                    confianza = analisis_heurístico.get('confianza', 0)
-                    total_proyectado = analisis_heurístico.get('total_proyectado', 0)
-                    
-                    st.markdown(f"""
-                    <div style='background: #1a1f2a; border-radius: 12px; padding: 15px; border-left: 4px solid #00ff41; height: 100%;'>
-                        <span style='color: #888; font-size: 12px;'>📊 ANÁLISIS TÉCNICO</span>
-                        <h4 style='color: #00ff41; margin: 5px 0;'>⚽ {recomendacion}</h4>
-                        <p style='color: #888; font-size: 11px; margin: 0;'>CONFIANZA: {confianza}% | PROY: {total_proyectado} goles</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
-                    # Mostrar recomendación de córners si existe
-                    corners_proyectados = partido.get('corners_proyectados', 'N/A')
-                    corners_line = partido.get('corners_line', 'N/A')
-                    
-                    if corners_proyectados != 'N/A' and corners_line != 'N/A':
-                        st.markdown(f"""
-                        <div style='background: #1a1f2a; border-radius: 12px; padding: 10px; margin-top: 10px; border-left: 4px solid #f59e0b;'>
-                            <span style='color: #888; font-size: 11px;'>⚽ CÓRNERS</span>
-                            <p style='color: #f1f5f9; margin: 5px 0;'>Proyectados: <b>{corners_proyectados}</b> | Línea: <b>{corners_line}</b></p>
-                        </div>
-                        """, unsafe_allow_html=True)
+        pass
 
-                    # Mostrar recomendación de córners si es el pick principal
-                    # (Esta parte ya existía y se mantiene, pero ahora la sección de arriba es independiente)
-                    if "Córners" in recomendacion:
-                        st.markdown(f"""
-                        <div style='background: #1a1f2a; border-radius: 12px; padding: 10px; margin-top: 10px; border-left: 4px solid #3b82f6;'>
-                            <span style='color: #888; font-size: 11px;'>⚽ MERCADO ADICIONAL</span>
-                            <p style='color: #3b82f6; margin: 5px 0;'>{recomendacion}</p>
-                        </div>
-                    """, unsafe_allow_html=True)
-                else:
-                    st.caption("⏳ Análisis IA pendiente...")
-        
+    def render(self, partido, idx, liga, tracker=None,
+               analisis_heuristico=None, analisis_ia=None, **kwargs):
+        # Acepta el nombre con o sin acento (compatibilidad con código viejo)
+        if analisis_heuristico is None:
+            analisis_heuristico = kwargs.get('analisis_heurístico') or kwargs.get('analisis_gemini')
+
+        local = partido.get('home') or partido.get('local', 'Local')
+        visitante = partido.get('away') or partido.get('visitante', 'Visitante')
+        fecha = partido.get('fecha_partido', '') or partido.get('fecha', '')
+        odds = partido.get('odds', {}) or {}
+        moneyline = odds.get('moneyline', {}) if isinstance(odds.get('moneyline'), dict) else {}
+        ml_loc = moneyline.get('home', moneyline.get('local', 'N/A'))
+        ml_emp = moneyline.get('draw', 'N/A')
+        ml_vis = moneyline.get('away', moneyline.get('visitante', 'N/A'))
+        ou = odds.get('over_under', 'N/A')
+        detalles = odds.get('detalles', '')
+        fase = partido.get('fase', '')
+        logo_l = partido.get('local_logo', '')
+        logo_v = partido.get('visitante_logo', '')
+        rec_l = partido.get('local_record', '')
+        rec_v = partido.get('visitante_record', '')
+
+        # ── Encabezado ──────────────────────────────────────────────────────
+        left, mid, right = st.columns([5, 2, 5])
+        with left:
+            if logo_l:
+                st.image(logo_l, width=34)
+            st.markdown(f"**{local}** " + (f"`{rec_l}`" if rec_l and rec_l != '0-0-0' else ""))
+        with mid:
+            marcador = partido.get('marcador', '')
+            if marcador and partido.get('completado'):
+                st.markdown(f"<div style='text-align:center;color:#fff;font-weight:800;font-size:1.4rem'>{marcador}</div>"
+                            "<div style='text-align:center;color:#22c55e;font-size:0.7rem'>✅ FINAL</div>",
+                            unsafe_allow_html=True)
+            elif marcador and partido.get('en_vivo'):
+                st.markdown(f"<div style='text-align:center;color:#fff;font-weight:800;font-size:1.4rem'>{marcador}</div>"
+                            "<div style='text-align:center;color:#ef4444;font-size:0.7rem'>🔴 EN VIVO</div>",
+                            unsafe_allow_html=True)
+            else:
+                st.markdown("<div style='text-align:center;color:#9ca3af;font-weight:700'>vs</div>",
+                            unsafe_allow_html=True)
+            if fecha:
+                st.caption(f"📅 {fecha}")
+            if fase:
+                st.caption(f"🏆 {fase}")
+        with right:
+            if logo_v:
+                st.image(logo_v, width=34)
+            st.markdown(f"**{visitante}** " + (f"`{rec_v}`" if rec_v and rec_v != '0-0-0' else ""))
+
+        # Estadio
+        venue = partido.get('venue', '')
+        if venue:
+            st.caption(f"🏟️ {venue}")
+
+        # ── Cuotas (1X2 + O/U) ──────────────────────────────────────────────
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric(f"🏠 {local[:12]}", ml_loc if ml_loc not in ('N/A', None) else '—')
+        c2.metric("🤝 Empate", ml_emp if ml_emp not in ('N/A', None) else '—')
+        c3.metric(f"✈️ {visitante[:12]}", ml_vis if ml_vis not in ('N/A', None) else '—')
+        c4.metric("⚽ O/U goles", str(ou))
+        if detalles:
+            st.caption(f"📋 {detalles}")
+
+        # ── Análisis heurístico (auto-mostrado) ─────────────────────────────
+        if analisis_heuristico:
+            pick = analisis_heuristico.get('pick') or analisis_heuristico.get('recomendacion', 'N/A')
+            conf = analisis_heuristico.get('confianza', 0)
+            regla = analisis_heuristico.get('regla', '')
+            nota = analisis_heuristico.get('nota', '')
+            if conf >= 60:
+                st.success(f"🎯 **Pick:** {pick}  |  Confianza: {conf:.0f}%" + (f"  |  Regla #{regla}" if regla else ""))
+            elif conf >= 40:
+                st.warning(f"📊 **Pick:** {pick}  |  Confianza: {conf:.0f}%" + (f"  |  Regla #{regla}" if regla else ""))
+            else:
+                st.info(f"⚪ {pick} (confianza baja: {conf:.0f}%)")
+            if nota:
+                st.caption(f"ℹ️ {nota}")
+
+            # ── Resultado del pick (si el partido ya terminó) ────────────────
+            if partido.get('completado') and partido.get('goles_local') is not None:
+                gl = int(partido.get('goles_local', 0))
+                gv = int(partido.get('goles_visitante', 0))
+                total_g = gl + gv
+                pl = str(pick).lower()
+                acierto = None
+                if 'btts' in pl or 'ambos' in pl:
+                    acierto = gl > 0 and gv > 0
+                elif 'over 2.5' in pl or 'over 3.5' in pl:
+                    linea_g = 2.5 if '2.5' in pl else 3.5
+                    acierto = total_g > linea_g
+                elif 'over 1.5' in pl:
+                    acierto = total_g > 1.5
+                elif 'empate' in pl:
+                    acierto = gl == gv
+                elif local.lower() in pl:
+                    acierto = gl > gv
+                elif visitante.lower() in pl:
+                    acierto = gv > gl
+                if acierto is True:
+                    st.success(f"✅ PICK ACERTADO — resultado {gl}-{gv}")
+                elif acierto is False:
+                    st.error(f"❌ Pick fallado — resultado {gl}-{gv}")
+
+        # ── Análisis IA ─────────────────────────────────────────────────────
+        if analisis_ia:
+            pick_ia = analisis_ia.get('pick', 'N/A')
+            conf_ia = analisis_ia.get('confianza', 0)
+            razon_ia = analisis_ia.get('razon', '')
+            st.success(f"🤖 **IA:** {pick_ia} ({conf_ia}%)" + (f" — {razon_ia}" if razon_ia else ""))
+
+        # ── Botón IA ────────────────────────────────────────────────────────
+        col_btn, _ = st.columns([2, 3])
+        with col_btn:
+            lbl = "🔄 Actualizar IA" if analisis_ia else "🤖 Análisis IA"
+            if st.button(lbl, key=f"futbol_btn_{liga}_{idx}", use_container_width=True):
+                return "analizar"
+
         return None

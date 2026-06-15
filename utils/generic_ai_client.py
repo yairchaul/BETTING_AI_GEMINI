@@ -7,14 +7,8 @@ Soporta: Gemini (google.genai), Groq, DeepSeek, OpenAI-compatible, Anthropic (Cl
 import os
 import json
 import logging
+import requests
 from openai import OpenAI, APITimeoutError, APIConnectionError, AuthenticationError
-
-try:
-    import google.genai as genai
-    from google.genai import types as genai_types
-except ImportError:
-    genai = None
-    genai_types = None
 
 try:
     import anthropic as anthropic_sdk
@@ -43,10 +37,9 @@ class GenericAIClient:
                 self.logger.info(f"✅ Cliente {self.client_type} listo — modelo: {self.model_name}")
 
             elif self.client_type == "gemini":
-                if not genai:
-                    raise ImportError("Instala 'google-genai': pip install google-genai")
-                self.client = genai.Client(api_key=self.api_key)
-                self.logger.info(f"✅ Cliente Gemini listo — modelo: {self.model_name}")
+                self.api_url = f"https://generativelanguage.googleapis.com/v1/models/{self.model_name}:generateContent?key={self.api_key}"
+                self.client = True # Marcador de cliente activo
+                self.logger.info(f"✅ Cliente Gemini (REST) listo — modelo: {self.model_name}")
 
             elif self.client_type == "anthropic":
                 if not anthropic_sdk:
@@ -73,11 +66,15 @@ class GenericAIClient:
                     timeout=10,
                 )
             elif self.client_type == "gemini":
-                self.client.models.generate_content(
-                    model=self.model_name,
-                    contents="test",
-                    config=genai_types.GenerateContentConfig(max_output_tokens=1),
-                )
+                payload = {
+                    "contents": [{"parts": [{"text": "test"}]}],
+                    "generationConfig": {"maxOutputTokens": 1}
+                }
+                response = requests.post(self.api_url, json=payload, timeout=15)
+                if response.status_code != 200:
+                    raise APIConnectionError(
+                        f"Gemini test failed with status {response.status_code}: {response.text[:100]}"
+                    )
             elif self.client_type == "anthropic":
                 self.client.messages.create(
                     model=self.model_name,
@@ -117,22 +114,30 @@ class GenericAIClient:
                         {"role": "user", "content": prompt_content},
                     ],
                     temperature=0.0,
-                    max_tokens=500,
+                    max_tokens=800,
                     response_format={"type": "json_object"},
                 )
                 res_text = response.choices[0].message.content
 
             elif self.client_type == "gemini":
+                # Usar la API REST directamente, como en CerebroGeminiPro
                 full_prompt = f"{self._system_persona()}\n\n---\n\nDATOS:\n{prompt_content}"
-                response = self.client.models.generate_content(
-                    model=self.model_name,
-                    contents=full_prompt,
-                    config=genai_types.GenerateContentConfig(
-                        temperature=0.0,
-                        max_output_tokens=500,
-                    ),
-                )
-                res_text = response.text
+                payload = {
+                    "contents": [{"parts": [{"text": full_prompt}]}],
+                    "generationConfig": {
+                        "temperature": 0.0,
+                        "maxOutputTokens": 800,
+                        "responseMimeType": "application/json", # Forzar salida JSON
+                    }
+                }
+                response = requests.post(self.api_url, json=payload, timeout=30)
+                response.raise_for_status() # Lanza error si no es 2xx
+                data = response.json()
+                # Extraer texto de la respuesta JSON
+                res_text = data.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
+                if not res_text:
+                    # Si el texto está vacío, puede que la respuesta entera sea el JSON
+                    res_text = json.dumps(data)
 
             elif self.client_type == "anthropic":
                 response = self.client.messages.create(
@@ -140,7 +145,7 @@ class GenericAIClient:
                     system=self._system_persona(),
                     messages=[{"role": "user", "content": prompt_content}],
                     temperature=0.0,
-                    max_tokens=500,
+                    max_tokens=800,
                 )
                 res_text = response.content[0].text
 
@@ -153,6 +158,19 @@ class GenericAIClient:
             elif "```" in res_text:
                 res_text = res_text.split("```")[1].split("```")[0].strip()
 
+            # Extracción robusta: tomar el primer objeto {...} balanceado
+            inicio = res_text.find("{")
+            if inicio >= 0:
+                profundidad = 0
+                for i in range(inicio, len(res_text)):
+                    if res_text[i] == "{":
+                        profundidad += 1
+                    elif res_text[i] == "}":
+                        profundidad -= 1
+                        if profundidad == 0:
+                            res_text = res_text[inicio:i + 1]
+                            break
+
             json.loads(res_text)  # Validar JSON
             return res_text.strip()
 
@@ -164,3 +182,17 @@ class GenericAIClient:
             if "429" in str(e) or "quota" in str(e).lower():
                 self.logger.critical(f"Rate limit / cuota agotada en {self.client_type}")
             return json.dumps({"error": f"Error en {self.client_type}: {str(e)}"})
+
+    def orquestrar_decision_final(self, deporte: str, partido, resultado_heuristico, resumen_contexto=None) -> str:
+        """Compatibilidad con CerebroGeminiPro/DeepSeek: construye el prompt y llama a orquestrar_decision."""
+        rec  = resultado_heuristico if isinstance(resultado_heuristico, str) else str(resultado_heuristico)[:400]
+        part = partido if isinstance(partido, str) else str(partido)[:400]
+        ctx  = f"\nContexto adicional: {str(resumen_contexto)[:200]}" if resumen_contexto else ""
+        prompt = (
+            f"Deporte: {deporte}\n"
+            f"Partido: {part}\n"
+            f"Análisis heurístico previo: {rec}"
+            f"{ctx}\n\n"
+            "Confirma o corrige el pick. Responde SOLO en JSON con: pick, confianza, stake, razon, mercado."
+        )
+        return self.orquestrar_decision(prompt)

@@ -15,18 +15,24 @@ logger = logging.getLogger(__name__)
 _RESPONSE_SCHEMA = '{"pick":"<texto>","confianza":<0-100>,"stake":<1-3>,"razon":"<texto>","mercado":"MONEYLINE|OVER_UNDER|STRIKEOUTS|HOME_RUN|BTTS|HANDICAP"}'
 
 _SYSTEM_PERSONA = (
-    "Eres el 'Analista Deportivo BETTING_AI', experto senior en apuestas deportivas. "
-    "Maximiza el ROI con análisis técnico riguroso. "
-    "IMPORTANTE: Tu respuesta DEBE ser ÚNICAMENTE un objeto JSON válido, sin texto adicional, "
-    "sin bloques de código markdown, sin explicaciones fuera del JSON. "
+    "Eres el 'Analista Deportivo BETTING_AI', experto senior en apuestas deportivas con enfoque cuantitativo. "
+    "Tu trabajo: de TODOS los mercados disponibles del partido, elegir el ÚNICO con mayor valor esperado (EV) y probabilidad real, "
+    "no solo el ganador. Pondera el análisis heurístico que recibes (ya trae datos reales) y corrígelo solo si tienes razón técnica. "
+    "Reglas por deporte: "
+    "MLB → compara Moneyline vs Over/Under vs Home Run (bateador concreto) vs Strikeouts del pitcher; el HR paga más pero exige bateador con poder real vs pitcher vulnerable. "
+    "NBA → Moneyline vs Hándicap vs Total (O/U) vs props de triples. "
+    "UFC → Ganador (Moneyline) vs Método (KO/Sumisión/Decisión) vs Distancia (si llega o no a decisión). "
+    "Fútbol → 1X2 vs Doble oportunidad vs BTTS vs Over/Under goles. "
+    "Sé conservador con la confianza: 50-60% pick dudoso, 60-72% sólido, 73%+ solo con ventaja clara. "
+    "IMPORTANTE: Responde ÚNICAMENTE con un objeto JSON válido, sin texto adicional, sin markdown, sin explicaciones fuera del JSON. "
     f"Estructura OBLIGATORIA: {_RESPONSE_SCHEMA}"
 )
 
 _MODEL_KEYS = {
+    "Claude": "claude",
+    "DeepSeek": "deepseek",
     "Gemini": "gemini",
     "Groq": "groq",
-    "DeepSeek": "deepseek",
-    "Claude": "claude",
     "OpenAI": "openai",
 }
 
@@ -61,24 +67,25 @@ class AnalistaTotal:
 
     def __init__(
         self,
+        claude_client=None,
+        deepseek_client=None,
         gemini_client=None,
         groq_client=None,
-        deepseek_client=None,
         new_ai_client=None,
-        claude_client=None,
         openai_client=None,
         selected_model: str = "Heurístico",
         conservative_mode: bool = False,
         token_log: list = None,
         token_alert_threshold: int = 5000,
     ):
+        # Diccionario de clientes de IA disponibles, ordenado alfabéticamente.
         self._clients = {
+            "claude": claude_client,
+            "deepseek": deepseek_client,
             "gemini": gemini_client,
             "groq": groq_client,
-            "deepseek": deepseek_client,
-            "claude": claude_client,
+            "new_ai": new_ai_client,  # Considerar refactorizar a un nombre de proveedor estándar
             "openai": openai_client,
-            "new_ai": new_ai_client,
         }
         self.selected_model = selected_model
         self.conservative_mode = conservative_mode
@@ -187,82 +194,112 @@ class AnalistaTotal:
     # ------------------------------------------------------------------ #
 
     def _prompt_nba(self, partido: dict, heuristica: dict) -> str:
+        local = partido.get('local', 'Local')
+        visit = partido.get('visitante', 'Visitante')
+        rec_l = partido.get('local_record') or partido.get('record_local', 'N/A')
+        rec_v = partido.get('visitante_record') or partido.get('record_visit', 'N/A')
+        odds = partido.get('odds', {}) or {}
+        ml = odds.get('moneyline', {}) if isinstance(odds.get('moneyline'), dict) else {}
+        ou = odds.get('overUnder') or odds.get('over_under', 'N/A')
         if self.conservative_mode:
-            return (
-                f"NBA: {partido.get('local')} vs {partido.get('visitante')}. "
-                f"Pick heurístico: {heuristica.get('recomendacion', 'N/A')} "
-                f"({heuristica.get('confianza', 0)}%). Confirma o corrige. JSON."
-            )
+            return (f"NBA: {local} ({rec_l}) vs {visit} ({rec_v}). "
+                    f"Pick heurístico: {heuristica.get('recomendacion', 'N/A')} "
+                    f"({heuristica.get('confianza', 0)}%). Confirma o corrige. JSON.")
         return (
             f"Deporte: NBA\n"
-            f"Partido: {partido.get('local')} vs {partido.get('visitante')}\n"
-            f"Record local: {partido.get('record_local', 'N/A')} | "
-            f"Record visitante: {partido.get('record_visit', 'N/A')}\n"
-            f"Racha local: {partido.get('racha_local', 'N/A')} | "
-            f"Racha visitante: {partido.get('racha_visitante', 'N/A')}\n"
-            f"Lesiones: {partido.get('lesiones', 'N/A')}\n"
-            f"Cuota: {partido.get('cuota_local', 'N/A')} / {partido.get('cuota_visitante', 'N/A')}\n"
-            f"Total O/U: {partido.get('total_ou', 'N/A')}\n"
-            f"Análisis heurístico: {json.dumps(heuristica, ensure_ascii=False)[:600]}\n"
-            "Proporciona tu recomendación final en JSON."
+            f"Partido: {local} (local, {rec_l}) vs {visit} (visita, {rec_v})\n"
+            f"Racha local: {partido.get('local_streak', 'N/A')} | Racha visitante: {partido.get('visitante_streak', 'N/A')}\n"
+            f"Moneyline: local={ml.get('local', 'N/A')} / visitante={ml.get('visitante', 'N/A')}\n"
+            f"Total O/U: {ou}\n"
+            f"Análisis heurístico (motores propios): {json.dumps(heuristica, ensure_ascii=False)[:700]}\n"
+            "Elige el mejor mercado (Moneyline, Hándicap o Total) y da tu recomendación final en JSON."
         )
 
     def _prompt_mlb(self, partido: dict, heur: dict, hr_candidates: list,
                     clima: dict, k_proj: dict, ou_analysis) -> str:
+        local = partido.get('local', 'Local')
+        visit = partido.get('visitante', 'Visitante')
+        pit = partido.get('pitchers', {}) or {}
+        p_loc = pit.get('local', {}).get('nombre', 'TBD') if isinstance(pit.get('local'), dict) else 'TBD'
+        p_vis = pit.get('visitante', {}).get('nombre', 'TBD') if isinstance(pit.get('visitante'), dict) else 'TBD'
+        odds = partido.get('odds', {}) or {}
+        # Los candidatos HR pueden venir del argumento o dentro del heurístico (motor v25)
+        hrs = hr_candidates or heur.get('hr_candidates', []) or []
+        hr_desc = [f"{c.get('jugador', c.get('player', '?'))} ({c.get('probabilidad', c.get('prob', 0))}%)" for c in hrs[:4]]
+        k_picks = heur.get('k_picks', [])
         if self.conservative_mode:
-            return (
-                f"MLB: {partido.get('local')} vs {partido.get('visitante')}. "
-                f"Pick: {heur.get('pick', 'N/A')} ({heur.get('confianza', 0)}%). "
-                f"HR candidatos: {len(hr_candidates)}. JSON."
-            )
-        hr_names = [c.get("jugador", c.get("player", "?")) for c in (hr_candidates or [])[:3]]
+            return (f"MLB: {visit} @ {local}. Pick: {heur.get('pick', 'N/A')} ({heur.get('confianza', 0)}%). "
+                    f"HR candidatos: {len(hrs)}. O/U: {heur.get('ou_pick', 'N/A')}. JSON.")
         return (
             f"Deporte: MLB\n"
-            f"Partido: {partido.get('local')} vs {partido.get('visitante')}\n"
-            f"Pitcher local: {partido.get('pitcher_local', 'N/A')} | "
-            f"Pitcher visitante: {partido.get('pitcher_visitante', 'N/A')}\n"
-            f"ERA local: {partido.get('era_local', 'N/A')} | "
-            f"ERA visitante: {partido.get('era_visit', 'N/A')}\n"
-            f"Clima: {json.dumps(clima, ensure_ascii=False)[:200] if clima else 'N/A'}\n"
-            f"Candidatos HR: {', '.join(hr_names) if hr_names else 'ninguno'}\n"
-            f"Proyecciones K: local={k_proj.get('local', 'N/A')}, visit={k_proj.get('visit', 'N/A')}\n"
-            f"Análisis O/U: {str(ou_analysis)[:200] if ou_analysis else 'N/A'}\n"
-            f"Análisis heurístico: {json.dumps(heur, ensure_ascii=False)[:600]}\n"
-            "Proporciona tu recomendación final en JSON."
+            f"Partido: {visit} (visita) @ {local} (local)\n"
+            f"Récords: local={partido.get('local_record', 'N/A')} / visitante={partido.get('visitante_record', 'N/A')}\n"
+            f"Pitcher local: {p_loc} | Pitcher visitante: {p_vis}\n"
+            f"Línea O/U carreras: {odds.get('over_under', 'N/A')}\n"
+            f"Clima: {json.dumps(clima, ensure_ascii=False)[:180] if clima else 'N/A'}\n"
+            f"Candidatos a HOME RUN (bateador + prob real): {', '.join(hr_desc) if hr_desc else 'ninguno detectado'}\n"
+            f"Picks de Strikeouts (pitcher): {json.dumps(k_picks, ensure_ascii=False)[:200] if k_picks else 'N/A'}\n"
+            f"O/U heurístico: {heur.get('ou_pick', 'N/A')} ({heur.get('ou_confianza', 0)}%)\n"
+            f"Análisis heurístico completo: {json.dumps(heur, ensure_ascii=False)[:700]}\n"
+            "De TODOS los mercados (Moneyline, O/U carreras, Home Run de un bateador concreto, Strikeouts del pitcher), "
+            "elige el de mayor probabilidad/valor y justifícalo. Recomendación final en JSON."
         )
 
-    def _prompt_ufc(self, combate: dict, resultado: dict) -> str:
+    def _prompt_ufc(self, combate: dict, resultado: dict, mercados_disponibles: Optional[str] = None) -> str:
+        # El combate trae peleador1/peleador2 (cada uno dict con stats reales)
+        p1 = combate.get('peleador1', {}) if isinstance(combate.get('peleador1'), dict) else {}
+        p2 = combate.get('peleador2', {}) if isinstance(combate.get('peleador2'), dict) else {}
+        n1 = p1.get('nombre') or combate.get('peleador_a', 'Peleador A')
+        n2 = p2.get('nombre') or combate.get('peleador_b', 'Peleador B')
+
+        def _resumen(p):
+            ec = p.get('estadisticas_carrera', {}) or {}
+            return (f"record {p.get('record', 'N/A')}, KO {int((p.get('ko_rate', 0) or 0)*100)}%, "
+                    f"edad {p.get('edad', '?')}, SLpM {ec.get('sig_strikes_landed_per_min', 0)}, "
+                    f"racha {p.get('streak', 0)}W")
+
         if self.conservative_mode:
-            return (
-                f"UFC: {combate.get('peleador_a')} vs {combate.get('peleador_b')}. "
-                f"Pick heurístico: {resultado.get('pick', 'N/A')} "
-                f"({resultado.get('confianza', 0)}%). JSON."
-            )
+            return (f"UFC: {n1} vs {n2}. Pick: {resultado.get('ganador', resultado.get('pick', 'N/A'))} "
+                    f"({resultado.get('confianza', 0)}%). JSON.")
+
+        mercados_prompt = ""
+        if mercados_disponibles:
+            mercados_prompt = f"\nMercados/cuotas: {mercados_disponibles}\n"
+        mejor = resultado.get('mejor_apuesta', {})
+
         return (
             f"Deporte: UFC/MMA\n"
-            f"Pelea: {combate.get('peleador_a')} vs {combate.get('peleador_b')}\n"
-            f"Stats A: {json.dumps(combate.get('stats_a', {}), ensure_ascii=False)[:300]}\n"
-            f"Stats B: {json.dumps(combate.get('stats_b', {}), ensure_ascii=False)[:300]}\n"
-            f"Análisis heurístico: {json.dumps(resultado, ensure_ascii=False)[:500]}\n"
-            "Proporciona tu recomendación final en JSON."
+            f"Pelea: {n1} vs {n2}\n"
+            f"{n1}: {_resumen(p1)}\n"
+            f"{n2}: {_resumen(p2)}\n"
+            f"Heurístico → ganador: {resultado.get('ganador', 'N/A')} ({resultado.get('confianza', 0)}%), "
+            f"método: {resultado.get('metodo', 'N/A')}, "
+            f"mejor mercado: {mejor.get('mercado', 'N/A')} → {mejor.get('apuesta', 'N/A')} ({mejor.get('confianza', 0)}%)\n"
+            f"{mercados_prompt}"
+            "Evalúa Ganador vs Método (KO/Sumisión/Decisión) vs Distancia (¿llega a decisión?) y elige el de mayor valor. "
+            "Recomendación final en JSON."
         )
 
     def _prompt_futbol(self, partido: dict, heur: dict, jerarquico: dict) -> str:
+        local = partido.get('home') or partido.get('local', 'Local')
+        visit = partido.get('away') or partido.get('visitante', 'Visitante')
+        odds = partido.get('odds', {}) or {}
+        ml = odds.get('moneyline', {}) if isinstance(odds.get('moneyline'), dict) else {}
+        es_torneo = partido.get('es_torneo', False)
+        fase = partido.get('fase', '')
         if self.conservative_mode:
-            return (
-                f"Fútbol: {partido.get('local')} vs {partido.get('visitante')}. "
-                f"Pick: {heur.get('pick', 'N/A')}. JSON."
-            )
+            return (f"Fútbol: {local} vs {visit}. Pick: {heur.get('pick', 'N/A')}. JSON.")
         return (
-            f"Deporte: Fútbol\n"
-            f"Partido: {partido.get('local')} vs {partido.get('visitante')}\n"
-            f"Liga: {partido.get('liga', 'N/A')}\n"
-            f"Forma local: {partido.get('forma_local', 'N/A')} | "
-            f"Forma visitante: {partido.get('forma_visitante', 'N/A')}\n"
-            f"Cuotas: {partido.get('cuota_local', 'N/A')} / empate {partido.get('cuota_empate', 'N/A')} / {partido.get('cuota_visitante', 'N/A')}\n"
-            f"Análisis heurístico: {json.dumps(heur, ensure_ascii=False)[:400]}\n"
-            f"Análisis jerárquico: {json.dumps(jerarquico, ensure_ascii=False)[:400]}\n"
-            "Proporciona tu recomendación final en JSON."
+            f"Deporte: Fútbol{' (TORNEO eliminatoria)' if es_torneo else ''}\n"
+            f"Partido: {local} (local) vs {visit} (visita)\n"
+            f"Liga/Torneo: {partido.get('liga', 'N/A')}" + (f" | Fase: {fase}\n" if fase else "\n") +
+            f"Récords: local={partido.get('local_record', 'N/A')} / visitante={partido.get('visitante_record', 'N/A')}\n"
+            f"Cuotas 1X2: local={ml.get('home', ml.get('local', 'N/A'))} / "
+            f"empate={ml.get('draw', 'N/A')} / visita={ml.get('away', ml.get('visitante', 'N/A'))}\n"
+            f"O/U goles: {odds.get('over_under', 'N/A')}\n"
+            f"Análisis heurístico jerárquico: {json.dumps(heur, ensure_ascii=False)[:500]}\n"
+            "Evalúa 1X2 vs Doble oportunidad vs BTTS vs Over/Under goles y elige el de mayor valor. "
+            "Recomendación final en JSON."
         )
 
     # ------------------------------------------------------------------ #
@@ -279,8 +316,8 @@ class AnalistaTotal:
             self._prompt_mlb(partido, heur_res, hr_candidates or [], clima or {}, k_projections or {}, ou_analysis)
         )
 
-    def analizar_ufc(self, combate: dict, resultado: dict) -> dict:
-        return self._dispatch(self._prompt_ufc(combate, resultado))
+    def analizar_ufc(self, combate: dict, resultado: dict, mercados_disponibles: Optional[str] = None) -> dict:
+        return self._dispatch(self._prompt_ufc(combate, resultado, mercados_disponibles))
 
     def analizar_futbol(self, partido: dict, heur_result: dict, jerarquico_result: dict) -> dict:
         return self._dispatch(self._prompt_futbol(partido, heur_result, jerarquico_result))

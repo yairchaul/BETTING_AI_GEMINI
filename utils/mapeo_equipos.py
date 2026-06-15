@@ -30,3 +30,18 @@ def traducir_equipo(nombre_es):
 def obtener_abreviatura(nombre_en):
     """Obtiene abreviatura de equipo en inglés"""
     return EQUIPOS_A_ABREV.get(nombre_en, nombre_en[:3].upper())
+
+
+def normalizar_equipo(nombre):
+    """Normaliza un nombre de equipo para matching robusto.
+
+    - Traduce español→inglés si aplica.
+    - Quita acentos, pasa a minúsculas y recorta espacios.
+    Usado por scrapers/odds_scraper para cruzar equipos entre fuentes.
+    """
+    import unicodedata
+    if not nombre:
+        return ""
+    n = traducir_equipo(str(nombre).strip())
+    n = unicodedata.normalize('NFD', n).encode('ascii', 'ignore').decode('utf-8')
+    return n.strip().lower()

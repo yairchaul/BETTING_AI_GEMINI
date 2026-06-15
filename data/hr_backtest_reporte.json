@@ -1,0 +1,592 @@
+{
+  "timestamp": "2026-06-12T18:25:14.520757",
+  "dias": 4,
+  "juegos": 46,
+  "total_predichos": 230,
+  "total_aciertos": 21,
+  "precision_global": 9.1,
+  "por_tramo_probabilidad": {
+    "25-34%": {
+      "predichos": 136,
+      "aciertos": 11,
+      "precision": 8.1
+    },
+    "45%+": {
+      "predichos": 12,
+      "aciertos": 0,
+      "precision": 0.0
+    },
+    "<25%": {
+      "predichos": 12,
+      "aciertos": 0,
+      "precision": 0.0
+    },
+    "35-44%": {
+      "predichos": 70,
+      "aciertos": 10,
+      "precision": 14.3
+    }
+  },
+  "detalle": [
+    {
+      "fecha": "2026-06-11",
+      "jugador": "Shohei Ohtani",
+      "equipo": "Los Angeles Dodgers",
+      "probabilidad": 43,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Shohei Ohtani",
+      "equipo": "Los Angeles Dodgers",
+      "probabilidad": 43,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Lawrence Butler",
+      "equipo": "Athletics",
+      "probabilidad": 43,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "James Wood",
+      "equipo": "Washington Nationals",
+      "probabilidad": 42,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Matt Olson",
+      "equipo": "Atlanta Braves",
+      "probabilidad": 42,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Mike Trout",
+      "equipo": "Los Angeles Angels",
+      "probabilidad": 41,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Kyle Schwarber",
+      "equipo": "Philadelphia Phillies",
+      "probabilidad": 40,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Tyler Soderstrom",
+      "equipo": "Athletics",
+      "probabilidad": 39,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-08",
+      "jugador": "Tyler Soderstrom",
+      "equipo": "Athletics",
+      "probabilidad": 39,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Bryce Harper",
+      "equipo": "Philadelphia Phillies",
+      "probabilidad": 36,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-11",
+      "jugador": "Corey Seager",
+      "equipo": "Texas Rangers",
+      "probabilidad": 33,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Randy Arozarena",
+      "equipo": "Seattle Mariners",
+      "probabilidad": 30,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-08",
+      "jugador": "Yandy Diaz",
+      "equipo": "Tampa Bay Rays",
+      "probabilidad": 30,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-11",
+      "jugador": "Spencer Torkelson",
+      "equipo": "Detroit Tigers",
+      "probabilidad": 29,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Byron Buxton",
+      "equipo": "Minnesota Twins",
+      "probabilidad": 29,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Byron Buxton",
+      "equipo": "Minnesota Twins",
+      "probabilidad": 29,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Matt Chapman",
+      "equipo": "San Francisco Giants",
+      "probabilidad": 27,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Corbin Carroll",
+      "equipo": "Arizona Diamondbacks",
+      "probabilidad": 27,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-11",
+      "jugador": "Riley Greene",
+      "equipo": "Detroit Tigers",
+      "probabilidad": 25,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Bryan Reynolds",
+      "equipo": "Pittsburgh Pirates",
+      "probabilidad": 25,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Riley Greene",
+      "equipo": "Detroit Tigers",
+      "probabilidad": 25,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Brent Rooker",
+      "equipo": "Athletics",
+      "probabilidad": 52,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Brent Rooker",
+      "equipo": "Athletics",
+      "probabilidad": 52,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-08",
+      "jugador": "Brent Rooker",
+      "equipo": "Athletics",
+      "probabilidad": 52,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Aaron Judge",
+      "equipo": "New York Yankees",
+      "probabilidad": 47,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Aaron Judge",
+      "equipo": "New York Yankees",
+      "probabilidad": 47,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-08",
+      "jugador": "Aaron Judge",
+      "equipo": "New York Yankees",
+      "probabilidad": 47,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-11",
+      "jugador": "Jake Burger",
+      "equipo": "Miami Marlins",
+      "probabilidad": 45,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-11",
+      "jugador": "Salvador Perez",
+      "equipo": "Kansas City Royals",
+      "probabilidad": 45,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Jake Burger",
+      "equipo": "Miami Marlins",
+      "probabilidad": 45,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Salvador Perez",
+      "equipo": "Kansas City Royals",
+      "probabilidad": 45,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Jake Burger",
+      "equipo": "Miami Marlins",
+      "probabilidad": 45,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Salvador Perez",
+      "equipo": "Kansas City Royals",
+      "probabilidad": 45,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Shohei Ohtani",
+      "equipo": "Los Angeles Dodgers",
+      "probabilidad": 43,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Lawrence Butler",
+      "equipo": "Athletics",
+      "probabilidad": 43,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-08",
+      "jugador": "Lawrence Butler",
+      "equipo": "Athletics",
+      "probabilidad": 43,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-11",
+      "jugador": "Bobby Witt Jr",
+      "equipo": "Kansas City Royals",
+      "probabilidad": 42,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-11",
+      "jugador": "Matt Olson",
+      "equipo": "Atlanta Braves",
+      "probabilidad": 42,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Bobby Witt Jr",
+      "equipo": "Kansas City Royals",
+      "probabilidad": 42,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Matt Olson",
+      "equipo": "Atlanta Braves",
+      "probabilidad": 42,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Bobby Witt Jr",
+      "equipo": "Kansas City Royals",
+      "probabilidad": 42,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "James Wood",
+      "equipo": "Washington Nationals",
+      "probabilidad": 42,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-08",
+      "jugador": "James Wood",
+      "equipo": "Washington Nationals",
+      "probabilidad": 42,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-11",
+      "jugador": "Nolan Jones",
+      "equipo": "Colorado Rockies",
+      "probabilidad": 41,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-11",
+      "jugador": "Cody Bellinger",
+      "equipo": "Chicago Cubs",
+      "probabilidad": 41,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Nolan Jones",
+      "equipo": "Colorado Rockies",
+      "probabilidad": 41,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Cody Bellinger",
+      "equipo": "Chicago Cubs",
+      "probabilidad": 41,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Nolan Jones",
+      "equipo": "Colorado Rockies",
+      "probabilidad": 41,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Cody Bellinger",
+      "equipo": "Chicago Cubs",
+      "probabilidad": 41,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Mike Trout",
+      "equipo": "Los Angeles Angels",
+      "probabilidad": 41,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-08",
+      "jugador": "Mike Trout",
+      "equipo": "Los Angeles Angels",
+      "probabilidad": 41,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Vladimir Guerrero Jr",
+      "equipo": "Toronto Blue Jays",
+      "probabilidad": 40,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Vladimir Guerrero Jr",
+      "equipo": "Toronto Blue Jays",
+      "probabilidad": 40,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Kyle Schwarber",
+      "equipo": "Philadelphia Phillies",
+      "probabilidad": 40,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-08",
+      "jugador": "Vladimir Guerrero Jr",
+      "equipo": "Toronto Blue Jays",
+      "probabilidad": 40,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-08",
+      "jugador": "Kyle Schwarber",
+      "equipo": "Philadelphia Phillies",
+      "probabilidad": 40,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Tyler Soderstrom",
+      "equipo": "Athletics",
+      "probabilidad": 39,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-11",
+      "jugador": "Gunnar Henderson",
+      "equipo": "Baltimore Orioles",
+      "probabilidad": 38,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-11",
+      "jugador": "Ronald Acuna Jr",
+      "equipo": "Atlanta Braves",
+      "probabilidad": 38,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Gunnar Henderson",
+      "equipo": "Baltimore Orioles",
+      "probabilidad": 38,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Ronald Acuna Jr",
+      "equipo": "Atlanta Braves",
+      "probabilidad": 38,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Yordan Alvarez",
+      "equipo": "Houston Astros",
+      "probabilidad": 38,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Gunnar Henderson",
+      "equipo": "Baltimore Orioles",
+      "probabilidad": 38,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Ronald Acuna Jr",
+      "equipo": "Atlanta Braves",
+      "probabilidad": 38,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Yordan Alvarez",
+      "equipo": "Houston Astros",
+      "probabilidad": 38,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-08",
+      "jugador": "Gunnar Henderson",
+      "equipo": "Baltimore Orioles",
+      "probabilidad": 38,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-08",
+      "jugador": "Yordan Alvarez",
+      "equipo": "Houston Astros",
+      "probabilidad": 38,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-11",
+      "jugador": "Vinnie Pasquantino",
+      "equipo": "Kansas City Royals",
+      "probabilidad": 37,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Juan Soto",
+      "equipo": "New York Yankees",
+      "probabilidad": 37,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Vinnie Pasquantino",
+      "equipo": "Kansas City Royals",
+      "probabilidad": 37,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Juan Soto",
+      "equipo": "New York Yankees",
+      "probabilidad": 37,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Vinnie Pasquantino",
+      "equipo": "Kansas City Royals",
+      "probabilidad": 37,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-08",
+      "jugador": "Juan Soto",
+      "equipo": "New York Yankees",
+      "probabilidad": 37,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-11",
+      "jugador": "Adolis Garcia",
+      "equipo": "Texas Rangers",
+      "probabilidad": 36,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-10",
+      "jugador": "Adolis Garcia",
+      "equipo": "Texas Rangers",
+      "probabilidad": 36,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Bryce Harper",
+      "equipo": "Philadelphia Phillies",
+      "probabilidad": 36,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-09",
+      "jugador": "Adolis Garcia",
+      "equipo": "Texas Rangers",
+      "probabilidad": 36,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-08",
+      "jugador": "Bryce Harper",
+      "equipo": "Philadelphia Phillies",
+      "probabilidad": 36,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-11",
+      "jugador": "Luis Robert",
+      "equipo": "Chicago White Sox",
+      "probabilidad": 35,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-11",
+      "jugador": "Austin Riley",
+      "equipo": "Atlanta Braves",
+      "probabilidad": 35,
+      "pegó_hr": false
+    }
+  ]
+}

@@ -1,1057 +1,1037 @@
+# -*- coding: utf-8 -*-
 """
-BETTING_AI NEON - V24 FINAL (TRADUCCIÓN + DATOS COMPLETOS)
-NBA, MLB, UFC, Futbol con Gemini + Groq
+BETTING_AI NEON - V24 (Unificado y Funcional)
+NBA, MLB, UFC, Futbol con análisis heurístico y caché de datos.
 """
 
 import streamlit as st
-import sys
-import subprocess
 from datetime import datetime
 import pandas as pd
-from collections import Counter
 import os
+import time
+import threading
 import logging
 import sqlite3
 import json
-import time # Keep time for general use, but not for token tracking
-import plotly.express as px
 from dotenv import load_dotenv
-from contextlib import redirect_stdout
-import io
 
-# Importar Motor MLB Completo
+# --- Add project root to sys.path to fix ModuleNotFoundError ---
+import sys
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+# --- End of fix ---
+
+# --- Ensure package directories have __init__.py to prevent ModuleNotFoundError ---
+for folder in ["scrapers", "utils", "motors", "visualizers", "analyzers"]:
+    dir_path = os.path.join(PROJECT_ROOT, folder)
+    init_path = os.path.join(dir_path, "__init__.py")
+    if os.path.isdir(dir_path) and not os.path.exists(init_path):
+        with open(init_path, "w", encoding="utf-8") as f:
+            f.write("# -*- coding: utf-8 -*-\n")
+# --- End of fix ---
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# ==================== IMPORTS ====================
-from scrapers.espn_nba import ESPN_NBA
+# Cargar variables de entorno de forma global
+load_dotenv()
 
-from scrapers.espn_mlb import ESPN_MLB_Mejorado as ESPN_MLB
-from scrapers.espn_ufc import ESPN_UFC
-from scrapers.espn_futbol import ESPN_FUTBOL
-from utils.bet_tracker import BetTracker
-from visualizers.visual_nba_mejorado import VisualNBAMejorado
-from visualizers.visual_futbol_triple import VisualFutbolTriple
-from visualizers.visual_ufc_mejorado_v2 import VisualUFCMejoradoV2 # Mantenemos la versión mejorada de UFC
-from visualizers.visual_mlb import VisualMLB # <-- CAMBIO: Importamos la clase unificada
-from visualizers.render_unificado import render_analisis_card
-from utils.analista_total import AnalistaTotal
-from utils.database_manager import db
-
-from utils.ufc_data_validator import validate_ufc_data_flow # Importar el validador de UFC
-# ==================== RENDERERS DE TABS ====================
-from visualizers.nba_tab_renderer import render_nba_tab
-from visualizers.ufc_tab_renderer import render_ufc_tab
-from visualizers.futbol_tab_renderer import render_futbol_tab
-from visualizers.mlb_tab_renderer import render_mlb_tab
-from visualizers.parlay_tab_renderer import render_parlay_tab
-
-# ==================== MOTORES ====================
-from motors import (
-    analizar_nba_pro_v17 as analizar_nba,
-    analizar_mlb_pro_v20 as analizar_mlb,
-    MotorOverUnder, obtener_analisis_lanzadores, MotorMomentumProfesional,
-    MotorNBAOverUnder, # Importar el nuevo motor de O/U de la NBA
-    MotorDecisionInteligente, PredictorHR, PredictorPonches,
-    motor_lanzadores
-)
+from espn_nba import ESPN_NBA
+from espn_mlb import ESPN_MLB_Mejorado as ESPN_MLB
+from espn_ufc import ESPN_UFC
+from espn_futbol import ESPN_FUTBOL
+from bet_tracker import BetTracker
+from visual_nba_mejorado import VisualNBAMejorado
+try:
+    from visualizers.visual_ufc_mejorado_v2 import VisualUFCMejoradoV2
+except ImportError:
+    VisualUFCMejoradoV2 = None
+from visual_ufc_final import VisualUFCFinal
+from visual_futbol_triple import VisualFutbolTriple
+from radar_triples_nba import radar_triples
+from visualizers.visual_mlb import VisualMLB
+try:
+    from visualizers.parlay_builder import render_parlay_tab
+except Exception:
+    render_parlay_tab = None
+from database_manager import db
+from render_unificado import render_analisis_card
+from motors import analizar_nba_pro_v17, analizar_mlb_pro_v20
+from motors.motor_fut_pro import analizar_futbol_pro_v20
 from motors.futbol_analyzer_jerarquico import analizar_futbol_jerarquico
 from scrapers.ufc_stats_scraper import UFCStatsScraper
-from motors.ufc_analyzer import UFCAnalyzer
+from motors.predictor_hr_pro import PredictorHRPro
+from analyzers.ufc_analyzer import UFCAnalyzer
+from utils.analista_total import AnalistaTotal
+try:
+    from scrapers.odds_scraper import get_mlb_odds_caliente
+except Exception:
+    def get_mlb_odds_caliente():  # fallback si el scraper no existe
+        return {}
 
-# ==================== MOTORES V24 ====================
-from motors.predictor_ponches import predictor_ponches as global_predictor_k
-from motors.mlb_stats_api import obtener_whip_cacheado, obtener_k9_cacheado
-from motors.hr_analyzer_v24_1 import HRAnalyzerUnificado
-from utils.clima_mlb import ClimaMLB
-from utils.mapeo_equipos import TRADUCCION_MLB, traducir_equipo, EQUIPOS_A_ABREV
-from utils.fuzzy_matching import normalizar_equipo
+# Motores MLB integrados (HR + K + O/U + Clima + Decisión Inteligente)
+try:
+    from motors.predictor_hr import predictor_hr as _hr_singleton  # noqa: F401
+    from motors.predictor_hr import PredictorHR
+except ImportError:
+    PredictorHR = None
+try:
+    from motors.predictor_ponches import PredictorPonches
+except ImportError:
+    PredictorPonches = None
+try:
+    from motors.motor_over_under import MotorOverUnder
+except ImportError:
+    MotorOverUnder = None
+try:
+    from utils.clima_mlb import ClimaMLB
+except ImportError:
+    try:
+        from clima_mlb import ClimaMLB
+    except ImportError:
+        ClimaMLB = None
+try:
+    from motors.motor_decision_inteligente import MotorDecisionInteligente
+except ImportError:
+    MotorDecisionInteligente = None
 
-# ==================== IA (NUEVO CLIENTE UNIFICADO) ====================
-from utils.generic_ai_client import GenericAIClient
-from utils.cache_manager import cleanup_expired_caches
+try:
+    # Importar desde utils para mantener la modularidad y corregir el error de sintaxis.
+    from utils.cerebro_gemini_pro import CerebroGeminiPro
+except ImportError:
+    CerebroGeminiPro = None
 
-# Instancia global de PredictorHR
-_predictor_hr_instance = None
-if PredictorHR:
-    _predictor_hr_instance = PredictorHR()
+try:
+    from groq_ufc_engine import GroqUFCEngine
+except ImportError:
+    GroqUFCEngine = None
 
-# ==================== UTILIDADES ====================
-# Cargar variables de entorno una sola vez al inicio del script
-load_dotenv(override=True)
+try:
+    from utils.cerebro_claude import CerebroClaude
+except ImportError:
+    CerebroClaude = None
 
 def get_api_key(name):
     try:
-        # Prioridad 1: Streamlit Secrets
-        if hasattr(st, 'secrets') and name in st.secrets:
+        if hasattr(st, "secrets") and name in st.secrets:
             return st.secrets[name]
-        
-        # Prioridad 2: Variables de Entorno (.env o Sistema)
-        val = os.getenv(name, '')
-        return val.strip().strip('"').strip("'") if val else ''
+        return os.getenv(name, "")
     except Exception as e:
         logger.error(f"Error cargando API Key {name}: {e}")
-        return ''
+        return ""
 
-def init_db():
+def cargar_json_safe(filepath):
+    """Carga un archivo JSON de forma segura, retornando None si falla."""
+    if os.path.exists(filepath):
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except (json.JSONDecodeError, IOError):
+            return None
+    return None
+
+def _initialize_ai_client(st_session_key: str, client_class, api_key_name: str):
+    """Inicializa un cliente de IA y lo guarda en st.session_state."""
+    if client_class:
+        api_key = get_api_key(api_key_name)
+        st.session_state[st_session_key] = client_class(api_key) if api_key else None
+    else:
+        st.session_state[st_session_key] = None
+
+def _mapa_mlb_oficial():
+    """Mapa equipo→{pitcher, game_pk} desde la MLB Stats API oficial (hoy).
+
+    El game_pk REAL de MLB es necesario para obtener lineups y candidatos HR
+    (el id de ESPN no sirve para esa API).
+    """
+    import requests
+    mapa = {}
+    try:
+        fecha = datetime.now().strftime("%Y-%m-%d")
+        url = (f"https://statsapi.mlb.com/api/v1/schedule?sportId=1&date={fecha}"
+               "&hydrate=probablePitcher,team")
+        r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=12)
+        if r.status_code == 200:
+            for d in r.json().get("dates", []):
+                for g in d.get("games", []):
+                    game_pk = g.get("gamePk")
+                    for lado in ("home", "away"):
+                        t = g["teams"][lado]
+                        nombre_eq = t.get("team", {}).get("name", "")
+                        pitcher = t.get("probablePitcher", {}).get("fullName", "")
+                        if nombre_eq:
+                            mapa[nombre_eq.lower()] = {"pitcher": pitcher, "game_pk": game_pk}
+    except Exception as e:
+        logger.warning(f"No se pudo obtener datos oficiales MLB: {e}")
+    return mapa
+
+
+def _enriquecer_partidos_mlb_con_pitchers(partidos: list) -> list:
+    """Rellena pitchers 'TBD' y el game_pk real de MLB (para lineups/HR)."""
+    if not partidos:
+        return []
+
+    mapa = _mapa_mlb_oficial()
+    if not mapa:
+        return partidos
+
+    def _buscar(nombre_equipo):
+        ne = (nombre_equipo or "").lower()
+        if ne in mapa:
+            return mapa[ne]
+        for k, v in mapa.items():
+            if k in ne or ne in k:
+                return v
+        return None
+
+    for p in partidos:
+        p.setdefault("pitchers", {"local": {}, "visitante": {}})
+        info_local = _buscar(p.get("local", ""))
+        # game_pk REAL de MLB (sobre-escribe el id de ESPN para lineups/HR)
+        if info_local and info_local.get("game_pk"):
+            p["game_pk"] = info_local["game_pk"]
+        for lado, equipo_key in (("local", "local"), ("visitante", "visitante")):
+            actual = p.setdefault("pitchers", {}).setdefault(lado, {})
+            if not isinstance(actual, dict):
+                actual = {}
+                p["pitchers"][lado] = actual
+            if actual.get("nombre", "TBD") in ("TBD", "", "N/A", None):
+                info = _buscar(p.get(equipo_key, ""))
+                if info and info.get("pitcher"):
+                    actual["nombre"] = info["pitcher"]
+
+    return partidos
+
+def _enriquecer_partidos_mlb_con_odds(partidos: list) -> list:
+    """Obtiene cuotas de Caliente.mx y las fusiona con los datos del partido."""
+    if not partidos:
+        return []
+
+    logger.info("Obteniendo cuotas de Caliente.mx...")
+    odds_map = get_mlb_odds_caliente()
+    if not odds_map:
+        logger.warning("No se pudieron obtener las cuotas de Caliente.mx.")
+        return partidos
+
+    for p in partidos:
+        p.setdefault("odds", {"moneyline": {}})
+        # Usamos los nombres ya normalizados de los partidos
+        p["odds"]["moneyline"]["visitante"] = odds_map.get(p.get("visitante"), "N/A")
+        p["odds"]["moneyline"]["local"] = odds_map.get(p.get("local"), "N/A")
+
+    return partidos
+
+def aplicar_estilos():
+    st.markdown("""
+    <style>
+    .stApp { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+    section[data-testid="stSidebar"] { background: linear-gradient(180deg, #020617 0%, #0f172a 100%); border-right: 1px solid #334155; }
+    .stButton > button { border-radius: 12px !important; background: linear-gradient(90deg, #3b82f6 0%, #9333ea 100%) !important; color: white !important; font-weight: bold !important; border: none !important; transition: all 0.3s !important; }
+    .stButton > button:hover { transform: scale(1.02) !important; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4) !important; }
+    </style>
+    """, unsafe_allow_html=True)
+
+def cargar_base_ufc():
+    try:
+        with open("base_ufc_unificada.json", "r", encoding="utf-8") as f:
+            return json.load(f)
+    except: return {}
+
+def cargar_cuotas_ufc():
+    try:
+        with open("odds_caliente_ufc.json", "r", encoding="utf-8") as f:
+            cuotas = json.load(f)
+        odds = {}
+        for p in cuotas:
+            odds[p["p1"]] = p["m1"]
+            odds[p["p2"]] = p["m2"]
+        return odds
+    except: return {}
+
+def cargar_mlb_desde_json():
+    try:
+        with open("resultados_finales_corregidos.json", "r", encoding="utf-8") as f:
+            return json.load(f)
+    except: return None
+
+def inicializar_bd_ufc():
     os.makedirs("data", exist_ok=True)
     try:
         conn = sqlite3.connect("data/betting_stats.db")
-        conn.execute("CREATE TABLE IF NOT EXISTS peleadores_ufc_cache (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT UNIQUE, datos_json TEXT, ultima_actualizacion TEXT)")
-        conn.execute("CREATE TABLE IF NOT EXISTS eventos_ufc (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, fecha TEXT, cartelera TEXT, ultima_actualizacion TEXT)")
+        cursor = conn.cursor()
+        cursor.execute("""CREATE TABLE IF NOT EXISTS peleadores_ufc_cache (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT UNIQUE, datos_json TEXT, ultima_actualizacion TEXT)""")
+        cursor.execute("""CREATE TABLE IF NOT EXISTS eventos_ufc (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, fecha TEXT, cartelera TEXT, ultima_actualizacion TEXT)""")
         conn.commit(); conn.close()
     except: pass
 
-def cargar_json(f, d=None):
-    try:
-        with open(f, "r", encoding="utf-8") as fh: return json.load(fh)
-    except: return d if d is not None else {}
-
-def cargar_css():
-    try:
-        with open("estilos_neon.css", "r", encoding="utf-8") as f:
-            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-    except: pass
-
-def verificar_y_actualizar_datos():
-    """Verifica si los datos tienen más de 12 horas y los actualiza"""
-    sync_file = "data/last_sync.json"
-    necesita_update = False
-    if not os.path.exists(sync_file):
-        necesita_update = True
-    else:
-        with open(sync_file, "r") as f:
-            last_sync = datetime.fromisoformat(json.load(f)["last_update"])
-            if (datetime.now() - last_sync).total_seconds() > 43200: # 12 horas
-                necesita_update = True
-    
-    if necesita_update:
-        with st.status("🔄 Datos antiguos detectados. Ejecutando actualización global...", expanded=True) as status:
-            # subprocess.run([sys.executable, "run_all_scrapers.py"])
-            status.update(label="✅ Datos actualizados correctamente", state="complete")
-
-def verificar_y_limpiar_analisis():
-    """Limpia los análisis de session_state si han pasado más de 24 horas desde la última limpieza"""
-    clear_file = "data/last_analysis_clear.json"
-    ahora = datetime.now()
-    necesita_limpieza = False
-    
-    if not os.path.exists(clear_file):
-        necesita_limpieza = True
-    else:
-        try:
-            with open(clear_file, "r") as f:
-                last_clear = datetime.fromisoformat(json.load(f)["last_clear"])
-                if (ahora - last_clear).total_seconds() > 86400: # 24 horas
-                    necesita_limpieza = True
-        except:
-            necesita_limpieza = True
-            
-    if necesita_limpieza:
-        st.session_state.nba_analisis_heur = {}
-        st.session_state.analisis_ufc = {}
-        st.session_state.futbol_analisis_heur = {}
-        st.session_state.analisis_mlb = {}
-        with open(clear_file, "w") as f:
-            json.dump({"last_clear": ahora.isoformat()}, f)
-        logger.info("清理 🧹 Análisis de session_state limpiados (ciclo de 24h)")
-
-# ==================== MAIN ====================
-def _validate_env():
-    """Detiene la app si faltan API keys obligatorias."""
-    required = ["GEMINI_API_KEY", "GROQ_API_KEY"]
-    missing = [k for k in required if not os.getenv(k, "").strip()]
-    if missing:
-        st.error(
-            f"**Faltan variables de entorno obligatorias:** {', '.join(missing)}\n\n"
-            "Copia `.env.example` a `.env` y añade tus API keys."
-        )
-        st.stop()
-
-
 def main():
-    st.set_page_config(page_title="BETTING_AI V24", page_icon="🎯", layout="wide")
-
-    _validate_env()
-
-    # Limpia cachés expiradas una vez por sesión
-    if "cache_cleaned" not in st.session_state:
-        cleanup_expired_caches(max_age_days=7)
-        st.session_state.cache_cleaned = True
-
-    st.markdown('<div id="main_top"></div>', unsafe_allow_html=True)
-
-    # Initialize gemini_model_choice before any session_state access
-    # === BOTÓN VOLVER ARRIBA (FLOAT) ===
-    st.markdown("""
-        <style>
-        .back-to-top {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(90deg, #3b82f6, #9333ea);
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 1000;
-            text-decoration: none;
-            opacity: 0.8;
-            transition: all 0.3s;
-        }
-        .back-to-top:hover { opacity: 1; transform: scale(1.1); }
-        </style>
-        <a href="#main_top" class="back-to-top" target="_self">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                <path d="M18 15l-6-6-6 6"/>
-            </svg>
-        </a>
-    """, unsafe_allow_html=True)
-    cargar_css()
+    st.set_page_config(page_title="BETTING_AI", page_icon="🎯", layout="wide")
+    aplicar_estilos()
     
-    # Limpieza automática de análisis de 24 horas
-    verificar_y_limpiar_analisis()
-    
-    if 'gemini_model_choice' not in st.session_state:
-        st.session_state.gemini_model_choice = 'gemini-1.5-flash' # Default model choice
-
-    # === BLOQUE DE INICIALIZACIÓN (Regla 3) ===
-    if 'init' not in st.session_state:
-        os.makedirs("data", exist_ok=True)
-        
-        # Configuración de eficiencia de tokens (Spec: optimización-consultas-tokens)
-        st.session_state.conservative_mode = False
-        st.session_state.nba_cache = {"data": None, "timestamp": None}
-        # OPTIMIZACIÓN: Añadir cachés para otros deportes
-        st.session_state.mlb_cache = {"data": None, "timestamp": None}
-        st.session_state.ufc_cache = {"data": None, "timestamp": None}
-        st.session_state.futbol_cache = {} # Caché por liga
-        
-        # Inicialización para el sistema de alertas de tokens (Requisito 8.3)
-        st.session_state.token_log = [] # Lista de (timestamp, tokens_usados)
-        st.session_state.token_alert_threshold = 5000 # Umbral de tokens en los últimos 5 minutos
-
-        # ANCLA CORREGIDA AL PRINCIPIO
-        st.markdown('<div id="main_top"></div>', unsafe_allow_html=True)
-        
-        # --- OPTIMIZACIÓN AUTOMÁTICA AL CARGAR (MEJORA V24) ---
-        # ELIMINADO: Este proceso bloquea la carga inicial. Se mantiene el botón manual en la barra lateral.
-        # with st.status("🛠️ Optimizando sistema...", expanded=False) as status:
-        #     subprocess.run([sys.executable, "automate_improvements.py"])
-        #     status.update(label="✅ Sistema verificado y optimizado", state="complete")
-        
-        verificar_y_actualizar_datos()
-        init_db()
-        # OPTIMIZACIÓN: Scrapers cacheados en session_state
-        st.session_state.scrapers = {
-            "nba": ESPN_NBA(), "mlb": ESPN_MLB(), 
-            "ufc": ESPN_UFC(), "futbol": ESPN_FUTBOL()
-        }
+    if "init" not in st.session_state:
+        inicializar_bd_ufc()
         st.session_state.tracker = BetTracker()
-        st.session_state.visual_nba = VisualNBAMejorado()
-        st.session_state.visual_ufc = VisualUFCMejoradoV2() # Cambiar a la versión mejorada
-        st.session_state.visual_futbol = VisualFutbolTriple()
-        st.session_state.visual_mlb = VisualMLB() # <-- CAMBIO: Usamos la nueva clase unificada
-        st.session_state.motores = {"nba": analizar_nba, "mlb": analizar_mlb, "futbol": analizar_futbol_jerarquico}
-        # Inicialización protegida contra fallos de importación
-        st.session_state.motor_ou = MotorOverUnder() if MotorOverUnder else None
-        st.session_state.motor_momentum = MotorMomentumProfesional() if 'MotorMomentumProfesional' in globals() and MotorMomentumProfesional else None
-        st.session_state.motor_decision = MotorDecisionInteligente() if 'MotorDecisionInteligente' in globals() and MotorDecisionInteligente else None
-        
-        # OPTIMIZACIÓN: NBA O/U se carga bajo demanda (lazy loading)
-        st.session_state.motor_nba_ou = None # Se inicializará al cargar NBA
-        
-        st.session_state.hr_analyzer = HRAnalyzerUnificado() if 'HRAnalyzerUnificado' in globals() and HRAnalyzerUnificado else None # Moved from root to motors
-        st.session_state.clima_mlb = ClimaMLB() if 'ClimaMLB' in globals() and ClimaMLB else None # Moved from root to utils
-        st.session_state.predictor_k = global_predictor_k # Moved from root to motors
-        
-        # OPTIMIZACIÓN: UFC scraper y analyzer se cargan bajo demanda
-        st.session_state.ufc_scraper = None # Se inicializará al cargar UFC
-        st.session_state.ufc_analyzer = None # Se inicializará al cargar UFC
+        _initialize_ai_client("gemini", CerebroGeminiPro, "GEMINI_API_KEY")
+        _initialize_ai_client("groq", GroqUFCEngine, "GROQ_API_KEY")
+        _initialize_ai_client("claude", CerebroClaude, "ANTHROPIC_API_KEY")
+
+        st.session_state.ufc_enriched_cache = {}
         st.session_state.nba_partidos = []
         st.session_state.ufc_combates = []
         st.session_state.futbol_partidos = {}
-        st.session_state.mlb_partidos = cargar_json("data/resultados_finales_corregidos.json", [])
-        
-        # Sincronización de MLB (Eliminar warnings de Fuzzy)
-
-        if st.session_state.mlb_partidos:
-            for p in st.session_state.mlb_partidos:
-                p['local'] = normalizar_equipo(p.get('local', ''))
-                p['visitante'] = normalizar_equipo(p.get('visitante', ''))
-
-        # Inicializar PredictorHR con los partidos de hoy
-        from motors.predictor_hr import predictor_hr as global_predictor_hr
-        global_predictor_hr.mlb_partidos_hoy = st.session_state.mlb_partidos
-        global_predictor_hr._cargar_pitchers_archivo("data/pitchers_hoy_selenium.json")
-        
-        # Sincronizar Predictor de Ponches
-        global_predictor_k.cargar_datos() 
-        
-        # Cargar resultados recientes para VisualMLB una sola vez
-        st.session_state.mlb_recent_results = cargar_json("data/resultados_reales_15dias.json", [])
-
-        # Persistencia de análisis para que no se borren
+        st.session_state.mlb_partidos = []
         st.session_state.analisis_nba = {}
         st.session_state.analisis_ufc = {}
-        st.session_state.analisis_futbol = {}
         st.session_state.analisis_mlb = {}
-        # Métricas de rendimiento IA (V24.2)
-        if 'ia_response_times' not in st.session_state:
-            st.session_state.ia_response_times = {"gemini": [], "groq": [], "deepseek": [], "claude": [], "new_ai": []}
+        st.session_state.analisis_futbol = {}
+        st.session_state.selected_ia_model = "Heurístico"
 
-        # ==================== INICIALIZACIÓN DE CLIENTES AI ====================
-        _ai_providers = [
-            ("gemini",   "GEMINI_API_KEY",    "gemini-1.5-flash",           None),
-            ("groq",     "GROQ_API_KEY",      "llama-3.3-70b-versatile",    "https://api.groq.com/openai/v1"),
-            ("deepseek", "DEEPSEEK_API_KEY",  "deepseek-reasoner",          "https://api.deepseek.com/v1"),
-            ("claude",   "ANTHROPIC_API_KEY", "claude-sonnet-4-6",          None),
-        ]
-        for _provider, _key_name, _model, _base_url in _ai_providers:
-            _api_key = get_api_key(_key_name)
-            if _api_key:
-                _client_type = "anthropic" if _provider == "claude" else _provider
-                try:
-                    st.session_state[_provider] = GenericAIClient(
-                        client_type=_client_type,
-                        api_key=_api_key,
-                        model_name=_model,
-                        base_url=_base_url,
-                    )
-                except Exception as _e:
-                    logger.warning(f"No se pudo inicializar cliente {_provider}: {_e}")
-                    st.session_state[_provider] = None
-            else:
-                st.session_state[_provider] = None
-        st.session_state.new_ai = None  # legacy
+        st.session_state.predictor_hr = PredictorHRPro(mlb_partidos_hoy=st.session_state.mlb_partidos)
 
-        # Cargar datos K y WHIP al inicio
-        # ELIMINADO: Se movió a la lógica del botón "CARGAR MLB" para acelerar el inicio.
+        # ── MOTORES MLB INTEGRADOS (lazy: instanciar solo si están disponibles) ──
+        # hr_analyzer es alias de predictor_hr para compatibilidad con mlb_tab_renderer
+        st.session_state.hr_analyzer = st.session_state.predictor_hr
+        st.session_state.predictor_k = PredictorPonches() if PredictorPonches else None
+        st.session_state.motor_ou = MotorOverUnder() if MotorOverUnder else None
+        st.session_state.clima_mlb = ClimaMLB() if ClimaMLB else None
+        st.session_state.motor_decision = MotorDecisionInteligente() if MotorDecisionInteligente else None
+        st.session_state.conservative_mode = False
+        st.session_state.token_log = []
+        st.session_state.token_alert_threshold = 8000
         st.session_state.init = True
 
-    st.markdown("<div style='text-align:center;padding:10px'><h1 style='background:linear-gradient(90deg,#3b82f6,#9333ea);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:2.5rem;margin:0'>🎯 BETTING_AI</h1><p style='color:#94a3b8'>🏀 NBA • ⚾ MLB • 🥊 UFC • ⚽ Futbol</p></div>", unsafe_allow_html=True)
+    # ── Objetos SIN estado: recrear en CADA ejecución para que los cambios de
+    #    código siempre se reflejen (evita instancias obsoletas en session_state) ──
+    st.session_state.scrapers = {"nba": ESPN_NBA(), "mlb": ESPN_MLB(), "ufc": ESPN_UFC(), "futbol": ESPN_FUTBOL()}
+    st.session_state.visual_nba = VisualNBAMejorado()
+    st.session_state.visual_ufc = VisualUFCMejoradoV2() if VisualUFCMejoradoV2 else VisualUFCFinal()
+    st.session_state.visual_futbol = VisualFutbolTriple()
+    st.session_state.visual_mlb = VisualMLB()
+    st.session_state.motores = {"nba": analizar_nba_pro_v17, "mlb": analizar_mlb_pro_v20, "futbol": analizar_futbol_pro_v20}
+    st.session_state.ufc_scraper = UFCStatsScraper()
+    st.session_state.ufc_analyzer = UFCAnalyzer()
 
-    # === ANÁLISIS DE PARLAY INTELIGENTE (JERARQUÍA V24) ===
-    def render_smart_parlay():
-        """
-        Renderiza un parlay inteligente buscando los picks de mayor valor
-        (jerarquía ELITE o SEGURO) en todos los análisis disponibles.
-        """
-        candidatos = []
+    st.markdown("<div id='tope-pagina'></div><div style='text-align:center;padding:10px'><h1 style='background:linear-gradient(90deg,#3b82f6,#9333ea);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:2.5rem;margin:0'>🎯 APUESTAS_IA</h1><p style='color:#94a3b8;margin:5px 0 0 0'>🏀 NBA &bull; ⚾ MLB &bull; 🥊 UFC &bull; ⚽ Futbol</p></div>", unsafe_allow_html=True)
 
-        # Obtener el número de picks deseado desde el slider en la barra lateral
-        num_picks = st.session_state.get('parlay_pick_count', 3)
-
-        def procesar_para_parlay(analisis_dict, deporte):
-            """Extrae picks de alto valor de un diccionario de análisis."""
-            for res in analisis_dict.values():
-                if isinstance(res, dict) and 'pick_final' in res:
-                    pick_final = res['pick_final']
-                    jerarquia = pick_final.get('jerarquia')
-                    
-                    if jerarquia in ["ELITE", "SEGURO"]:
-                        mercado = pick_final.get('mercado', 'ML')
-                        sport_label = f"{deporte}"
-                        if mercado != "Moneyline":
-                            sport_label += f" ({mercado.split('(')[0].strip()})"
-
-                        candidatos.append({
-                            "pick": pick_final.get('pick'),
-                            "conf": pick_final.get('confianza', 0),
-                            "dep": sport_label
-                        })
-
-        # Procesar análisis de todos los deportes
-        procesar_para_parlay(st.session_state.get('analisis_nba', {}), "NBA")
-        procesar_para_parlay(st.session_state.get('analisis_ufc', {}), "UFC")
-        procesar_para_parlay(st.session_state.get('analisis_futbol', {}), "Fútbol")
-        procesar_para_parlay(st.session_state.get('analisis_mlb', {}), "MLB")
-
-        if len(candidatos) >= num_picks:
-            top_picks = sorted(candidatos, key=lambda x: x['conf'], reverse=True)[:num_picks]
-            # Calcular cuota estimada dinámicamente
-            cuota_est = 1.90 ** num_picks
-
-            # Título dinámico para el parlay
-            title_map = {2: "Doble", 3: "Triple", 4: "Cuádruple", 5: "Quíntuple"}
-            title_prefix = title_map.get(num_picks, f"{num_picks}-Pick")
-
-            with st.expander(f"🔥🚀 PARLAY INTELIGENTE DEL DÍA ({num_picks} Picks)", expanded=True):
-                st.markdown(f"""
-                <div class="elite-pick-card" style='background: linear-gradient(90deg, rgba(59,130,246,0.1) 0%, rgba(147,51,234,0.1) 100%); border-radius:15px; padding:20px;'>
-                    <h3 style='margin:0; color:#00ff41; text-shadow: 0 0 10px rgba(0,255,65,0.5);'>💰 {title_prefix} Pick ÉLITE / SEGURO</h3>
-                    <hr style='border-color:rgba(59,130,246,0.2);'>
-                    <div style='display:flex; justify-content:space-around; text-align:center;'>
-                        {" ".join([f"<div><b style='color:#fff; font-size:1.1rem;'>{c['dep']}</b><br><span style='color:#00ff41; font-weight:bold;'>{c['pick']}</span><br><small style='color:#94a3b8;'>Confianza: {c['conf']}%</small></div>" for c in top_picks])}
-                    </div>
-                    <div style='margin-top:20px; text-align:center; border-top: 1px solid rgba(255,255,255,0.1); padding-top:15px;'>
-                        <h2 style='margin:0; color:#fbbf24; font-size: 2.2rem;'>Cuota Est: {cuota_est:0.2f}</h2>
-                        <p style='margin:0; color:#94a3b8;'>🛡️ Filtro de Memoria & Clima Activo (V24)</p>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-
-    render_smart_parlay()
-
-    # --- BARRA DE ESTADO VISUAL ---
-    with st.container():
-        c1, c2, c3 = st.columns(3)
-        with c1:
-            sync_info = cargar_json("data/last_sync.json", {"last_update": "Nunca"})
-            st.caption(f"🕒 Última sincronización: {sync_info['last_update'][:16]}")
-        with c2:
-            # Muestra el modelo de IA seleccionado en la barra lateral
-            selected_ia = st.session_state.get('selected_ia_model', 'Heurístico')
-            if selected_ia != 'Heurístico':
-                st.caption(f"🧠 IA Activa: {selected_ia}")
-
-        with c3:
-            try:
-                conn = sqlite3.connect("data/betting_stats.db")
-                count = conn.execute("SELECT COUNT(*) FROM backtesting").fetchone()[0]
-                st.caption(f"📊 Historial: {count} registros")
-                conn.close()
-            except: pass
+    # Botón flotante para volver arriba (scroll suave del contenedor principal)
+    st.markdown("""
+    <style>
+    #btn-arriba {position:fixed; bottom:28px; right:28px; z-index:9999;
+                 background:linear-gradient(90deg,#3b82f6,#9333ea); color:white;
+                 width:48px; height:48px; border-radius:50%; border:none; cursor:pointer;
+                 font-size:22px; box-shadow:0 4px 14px rgba(0,0,0,0.4);}
+    #btn-arriba:hover {transform:scale(1.1);}
+    </style>
+    <button id="btn-arriba" title="Volver arriba"
+        onclick="window.parent.document.querySelector('section.main, .main, [data-testid=stAppViewContainer]').scrollTo({top:0,behavior:'smooth'});">⬆️</button>
+    """, unsafe_allow_html=True)
 
     with st.sidebar:
         st.header("⚙️ CONTROLES")
-        
-        # Botón manual de mantenimiento (Regla 19/20)
-        if st.button("🛠️ OPTIMIZAR AHORA", use_container_width=True):
-            with st.spinner("Ejecutando limpieza y diagnóstico..."):
-                subprocess.run([sys.executable, "automate_improvements.py"])
-                st.success("✅ Optimización completada")
-                st.rerun()
-                
-        try: st.session_state.tracker.render_sidebar_tracker()
-        except: pass
-
+        st.session_state.tracker.render_sidebar_tracker()
         st.markdown("---")
-        # Control de Tokens (Requisito 2.4 y 4)
-        st.session_state.conservative_mode = st.toggle(
-            "📉 Modo Ahorro de Tokens", 
-            value=st.session_state.conservative_mode,
-            help="Se activa automáticamente ante errores de API. Prioriza resúmenes y caché para ahorrar tokens."
-        )
-        if st.session_state.conservative_mode:
-            st.warning("⚠️ Modo Conservador Activo")
-        
-        # Alerta de Consumo de Tokens (Requisito 8.3)
-        def check_token_consumption_alert():
-            now = datetime.now()
-            # Filtrar tokens de los últimos 5 minutos
-            recent_tokens = [t for ts, t in st.session_state.token_log if (now - ts).total_seconds() < 300] # 300 segundos = 5 minutos
-            total_recent_tokens = sum(recent_tokens)
-            
-            # Limpiar entradas antiguas del log
-            st.session_state.token_log = [(ts, t) for ts, t in st.session_state.token_log if (now - ts).total_seconds() < 600] # Mantener 10 minutos de historial
+        with st.expander("🔧 Estado de IA", expanded=False):
+            st.success("✅ Gemini conectado" if st.session_state.gemini else "❌ Gemini no disponible")
+            st.success("✅ Groq conectado" if st.session_state.groq else "⚠️ Groq no disponible")
+            st.success("✅ Claude conectado" if st.session_state.claude else "⚠️ Claude no disponible")
 
-            if total_recent_tokens > st.session_state.token_alert_threshold:
-                st.error(f"🚨 ALERTA DE TOKENS: Consumo elevado ({total_recent_tokens} tokens en los últimos 5 min). Considera activar el Modo Conservador.")
-        
-        check_token_consumption_alert() # Ejecutar la verificación
-
-        st.markdown("---")
-        st.subheader("⚙️ Configuración Gemini")
-        gemini_models = ['gemini-1.5-flash', 'gemini-1.0-pro', 'gemini-pro'] # Add more if needed
-        st.session_state.gemini_model_choice = st.selectbox(
-            "Seleccionar modelo Gemini:",
-            gemini_models,
-            index=gemini_models.index(st.session_state.gemini_model_choice) if st.session_state.gemini_model_choice in gemini_models else 0,
-            key="gemini_model_selector"
-        )
-        st.markdown("---")
-        # --- 🔥 MLB K-SHARPS (GRAN VALOR) ---
-        with st.expander("🔥 MLB K-SHARPS", expanded=True):
-            datos_k = st.session_state.get("datos_k", {})
-            if not datos_k or not mlb_p:
-                st.caption("Carga MLB para detectar K-Sharps.")
-            else:
-                K_TENDENCY_RIVAL = {
-                    "Seattle Mariners": 27.2, "Colorado Rockies": 26.5, "Oakland Athletics": 26.9,
-                    "Minnesota Twins": 25.5, "Boston Red Sox": 25.2, "Houston Astros": 19.8,
-                    "Cleveland Guardians": 20.8, "Toronto Blue Jays": 21.8, "Atlanta Braves": 23.8
-                }
-                count_sharps = 0
-                for p in mlb_p:
-                    away, home = p.get("visitante", ""), p.get("local", "")
-                    pit_v = p.get("pitchers", {}).get("visitante", {}).get("nombre", "")
-                    pit_l = p.get("pitchers", {}).get("local", {}).get("nombre", "")
-                    
-                    for name, team, rival in [(pit_v, away, home), (pit_l, home, away)]:
-                        # Buscar datos del lanzador en el diccionario global
-                        info = None
-                        for t_key, t_info in datos_k.items():
-                            if team.lower() in t_key.lower(): info = t_info; break
-                        
-                        if info:
-                            proy = info.get("k_proyectados", 0)
-                            tendencia = K_TENDENCY_RIVAL.get(rival, 22.5)
-                            ajuste = proy * (tendencia / 22.5)
-                            if ajuste - 5.5 > 1.5: # Umbral de gran valor
-                                st.success(f"💎 **{name}** ({team})\nK-Plus vs {rival}")
-                                count_sharps += 1
-                if count_sharps == 0:
-                    st.caption("No se detectaron K-Sharps ÉLITE.")
-
-        # --- 💣 MLB HR-RADAR (TOP PODER) ---
-        with st.expander("💣 MLB HR-RADAR", expanded=True):
-            mlb_p = st.session_state.get("mlb_partidos", [])
-            if not mlb_p:
-                st.caption("Carga MLB para ver radar de Jonrones.")
-            else:
-                count_hr = 0
-                for p in mlb_p:
-                    for hr_pick in (p.get('hr_candidates_local', []) + p.get('hr_candidates_visit', [])):
-                        if hr_pick.get('probabilidad', 0) >= 35: # Umbral de Valor
-                            st.success(f"💣 **{hr_pick['bateador']}** ({hr_pick['equipo']})\n{hr_pick['probabilidad']}% vs {hr_pick['pitcher_rival']}")
-                            count_hr += 1
-                if count_hr == 0:
-                    st.caption("Sin candidatos ÉLITE de HR detectados.")
-
-        st.markdown("---")
-        with st.expander("⭐ RENTABILIDAD UNDERDOG", expanded=True):
-            try:
-                conn = sqlite3.connect("data/betting_stats.db")
-                # Seleccionar equipos ganadores con momio positivo (+)
-                query = "SELECT pick, COUNT(*) as hits FROM backtesting WHERE estado = 'GANADA' AND cuota > 2.0 GROUP BY pick ORDER BY hits DESC LIMIT 3"
-                top_hits = pd.read_sql(query, conn)
-                conn.close()
-                if not top_hits.empty:
-                    for _, row in top_hits.iterrows():
-                        st.success(f"💰 {row['pick']}: {row['hits']} aciertos")
-                else:
-                    st.info("No se han registrado hits de valor aún.")
-            except: st.caption("Calculando ROI...")
-        st.markdown("---")
-        with st.expander("🔧 Estado", expanded=False):
-            # Verificar estado basado en la presencia de API Keys
-            st.success("✅ Gemini" if get_api_key("GEMINI_API_KEY") else "❌ Gemini")
-            st.success("✅ Groq" if get_api_key("GROQ_API_KEY") else "❌ Groq")
-            st.success("✅ Claude" if get_api_key("ANTHROPIC_API_KEY") else "❌ Claude")
-        
-        # --- VISUALIZAR LECCIONES DE AUTO-APRENDIZAJE ---
-        st.markdown("---")
-        with st.expander("🧠 LECCIONES DE IA", expanded=True):
-            log_p = "data/aprendizaje_fallos.log"
-            if os.path.exists(log_p):
-                with open(log_p, "r", encoding="utf-8", errors='ignore') as f:
-                    lineas = f.readlines()
-                    for l in lineas[-5:]: # Mostrar últimas 5
-                        st.caption(l.strip())
-            else:
-                st.info("Aún no hay lecciones aprendidas.")
-
-        st.markdown("---")
-        st.subheader("🤖 SELECCIÓN DE IA")
-        ia_options = ["Heurístico"]
-        if get_api_key("GEMINI_API_KEY"): ia_options.append("Gemini")
-        if get_api_key("GROQ_API_KEY"): ia_options.append("Groq")
-        if get_api_key("DEEPSEEK_API_KEY"): ia_options.append("DeepSeek")
-        if get_api_key("ANTHROPIC_API_KEY"): ia_options.append("Claude")
-        if get_api_key("OPENAI_API_KEY"): ia_options.append("OpenAI")
-
-        ia_options.append("Votación (Todas las IAs)")
-
+        # Selector de motor de análisis (Heurístico + IAs conectadas)
+        opciones_ia = ["Heurístico"]
+        if st.session_state.gemini: opciones_ia.append("Gemini")
+        if st.session_state.groq:   opciones_ia.append("Groq")
+        if st.session_state.claude: opciones_ia.append("Claude")
+        if len(opciones_ia) > 2:    opciones_ia.append("Votación (Todas las IAs)")
         st.session_state.selected_ia_model = st.selectbox(
-            "Modelo de IA para análisis:", ia_options, key="ia_selector"
+            "🧠 Motor de análisis",
+            opciones_ia,
+            index=opciones_ia.index(st.session_state.get("selected_ia_model", "Heurístico"))
+                  if st.session_state.get("selected_ia_model", "Heurístico") in opciones_ia else 0,
+            help="Heurístico = motores propios. Selecciona una IA para validar/mejorar el pick.",
         )
-
-        # Slider para el Parlay Inteligente
-        st.subheader("🔥 Parlay Inteligente")
-        st.session_state.parlay_pick_count = st.slider(
-            "Número de Picks",
-            min_value=2,
-            max_value=20,
-            value=st.session_state.get('parlay_pick_count', 3),
-            step=1,
-            key="parlay_slider"
-        )
-
         st.markdown("---")
         
         if st.button("🏀 CARGAR NBA", use_container_width=True):
-            with st.spinner("Consultando datos de NBA..."):
-                ahora = datetime.now()
-                usar_cache = False
-                
-                # Implementación de Caché de Sesión (Requisitos 6.3 y 7.3)
-                if st.session_state.nba_cache.get("data") and st.session_state.nba_cache.get("timestamp"):
-                    delta = ahora - st.session_state.nba_cache["timestamp"]
-                    if delta.total_seconds() < 3600: # Menos de 1 hora (Requisito 7.3)
-                        usar_cache = True
-                
-                if usar_cache:
-                    st.session_state.nba_partidos = st.session_state.nba_cache["data"]
-                    st.toast("⚡ NBA cargado desde caché de sesión", icon="🚀")
-                else:
-                    # OPTIMIZACIÓN: Inicializar motor O/U solo cuando se necesita
-                    if st.session_state.motor_nba_ou is None and MotorNBAOverUnder:
-                        st.session_state.motor_nba_ou = MotorNBAOverUnder()
-                    logger.info("Caché NBA expirada o inexistente. Consultando API externa...")
-                    st.session_state.nba_partidos = st.session_state.scrapers["nba"].get_games()
-                    # Actualizar caché
-                    st.session_state.nba_cache["data"] = st.session_state.nba_partidos
-                    st.session_state.nba_cache["timestamp"] = ahora
-                
-                if st.session_state.nba_partidos:
-                    st.success(f"✅ {len(st.session_state.nba_partidos)} partidos cargados.")
+            with st.spinner("Cargando NBA..."):
+                st.session_state.nba_partidos = st.session_state.scrapers["nba"].get_games()
+                st.session_state.analisis_nba = {}  # limpiar cache viejo (evita datos cruzados)
+                st.success(f"✅ {len(st.session_state.nba_partidos)} partidos" if st.session_state.nba_partidos else "⚠️ No hay partidos")
 
         if st.button("⚾ CARGAR MLB", use_container_width=True):
-            with st.spinner("🔄 Cargando datos MLB..."):
-                ahora = datetime.now()
-                usar_cache = False
-                if st.session_state.mlb_cache.get("data") and st.session_state.mlb_cache.get("timestamp"):
-                    delta = ahora - st.session_state.mlb_cache["timestamp"]
-                    if delta.total_seconds() < 3600: # 1 hora
-                        usar_cache = True
-                
-                if usar_cache:
-                    st.session_state.mlb_partidos = st.session_state.mlb_cache["data"]
-                    st.toast("⚡ MLB cargado desde caché de sesión", icon="⚾")
-                else:
-                    logger.info("Caché MLB expirada. Consultando fuentes...")
-                    partidos_cargados = cargar_json("data/resultados_finales_corregidos.json", [])
-                    if not partidos_cargados and st.session_state.scrapers.get("mlb"):
-                        partidos_cargados = st.session_state.scrapers["mlb"].get_games()
-                    
-                    st.session_state.mlb_partidos = partidos_cargados
-                    st.session_state.mlb_cache["data"] = partidos_cargados
-                    st.session_state.mlb_cache["timestamp"] = ahora
+            with st.spinner("Cargando MLB (API Oficial + Cuotas)..."):
+                # 1. Obtener partidos y pitchers de la API oficial de MLB
+                partidos_base = st.session_state.scrapers["mlb"].get_games() # Usa el scraper mejorado
 
-                if st.session_state.mlb_partidos:
-                    for p in st.session_state.mlb_partidos:
-                        p['visitante'] = normalizar_equipo(p.get('visitante', ''))
-                        p['local'] = normalizar_equipo(p.get('local', ''))
-                    st.success(f"✅ {len(st.session_state.mlb_partidos)} partidos MLB cargados y normalizados.")
-                else:
-                    st.warning("⚠️ No se encontraron partidos de MLB.")
-                
-                if _predictor_hr_instance:
-                    _predictor_hr_instance.mlb_partidos_hoy = st.session_state.mlb_partidos
-                    _predictor_hr_instance._cargar_pitchers_archivo("data/pitchers_hoy_selenium.json")
+                # 2. Enriquecer con pitchers de la API oficial (más fiable)
+                partidos_con_pitchers = _enriquecer_partidos_mlb_con_pitchers(partidos_base)
 
-                try:
-                    st.session_state.datos_k = obtener_analisis_lanzadores()
-                    st.toast("✅ Datos de lanzadores (K) actualizados.", icon="⚾")
-                except Exception as e:
-                    logger.error(f"Error actualizando datos K y WHIP: {e}")
-                
-                # CORRECCIÓN: Ejecutar scraper de K/9 si el archivo no existe o es antiguo
-                try:
-                    from scrapers.mlb_pitchers_k9_scraper import actualizar_stats_lanzadores
-                    st.session_state.datos_k = actualizar_stats_lanzadores()
-                except Exception as e:
-                    logger.error(f"Fallo al ejecutar mlb_pitchers_k9_scraper: {e}")
+                # 3. Enriquecer con cuotas de Caliente.mx
+                partidos_finales = _enriquecer_partidos_mlb_con_odds(partidos_con_pitchers)
+
+                st.session_state.mlb_partidos = partidos_finales
+                st.session_state.analisis_mlb = {}  # Limpiar caché de análisis
+                st.success(f"✅ {len(st.session_state.mlb_partidos)} partidos cargados y enriquecidos.")
 
         if st.button("🥊 CARGAR UFC", use_container_width=True):
-            with st.spinner("Buscando combates..."):
-                ahora = datetime.now()
-                usar_cache = False
-                if st.session_state.ufc_cache.get("data") and st.session_state.ufc_cache.get("timestamp"):
-                    delta = ahora - st.session_state.ufc_cache["timestamp"]
-                    if delta.total_seconds() < 3600: # 1 hora
-                        usar_cache = True
+            with st.spinner("🔄 Buscando cartelera UFC..."):
+                st.session_state.ufc_combates = st.session_state.scrapers["ufc"].get_events()
+                st.session_state.analisis_ufc = {}  # limpiar cache viejo
+                st.success(f"✅ {len(st.session_state.ufc_combates)} combates" if st.session_state.ufc_combates else "ℹ️ No hay eventos")
 
-                if usar_cache:
-                    st.session_state.ufc_combates = st.session_state.ufc_cache["data"]
-                    st.toast("⚡ UFC cargado desde caché de sesión", icon="🥊")
-                else:
-                    logger.info("Caché UFC expirada. Consultando scraper...")
-                    if st.session_state.ufc_scraper is None and UFCStatsScraper:
-                        st.session_state.ufc_scraper = UFCStatsScraper()
-                    if st.session_state.ufc_analyzer is None and UFCAnalyzer:
-                        st.session_state.ufc_analyzer = UFCAnalyzer()
-                    
-                    st.session_state.ufc_combates = st.session_state.scrapers["ufc"].get_events()
-                    st.session_state.ufc_cache["data"] = st.session_state.ufc_combates
-                    st.session_state.ufc_cache["timestamp"] = ahora
+        st.markdown("---"); st.subheader("⚽ FUTBOL")
+        ligas = st.session_state.scrapers["futbol"].get_available_leagues()
 
-                st.success(f"✅ {len(st.session_state.ufc_combates)} combates cargados.")
+        # Buscador de ligas (filtra toda la lista)
+        filtro_liga = st.text_input("🔎 Buscar liga / torneo", "", key="buscar_liga",
+                                    placeholder="Ej: Mundial, Premier, Liga MX...").strip().lower()
+        ligas_filtradas = [lg for lg in ligas if filtro_liga in lg.lower()] if filtro_liga else ligas
 
-        st.markdown("---")
-        st.subheader("⚽ FUTBOL")
-        
-        with st.expander("Cargar Ligas de Fútbol", expanded=True):
-            if "futbol" not in st.session_state.scrapers:
-                st.session_state.scrapers["futbol"] = ESPN_FUTBOL()
-            
-            available_leagues = st.session_state.scrapers["futbol"].get_available_leagues()
-            selected_league = st.selectbox("Selecciona una liga para cargar:", available_leagues)
+        if filtro_liga:
+            st.caption(f"{len(ligas_filtradas)} coincidencia(s)")
+        else:
+            st.caption(f"{len(ligas)} ligas y torneos disponibles")
 
-            if st.button(f"⚽ Cargar {selected_league}", key=f"btn_{selected_league}", use_container_width=True):
-                with st.spinner(f"Cargando partidos de {selected_league}..."):
-                    ahora = datetime.now()
-                    usar_cache = False
-                    cache_liga = st.session_state.futbol_cache.get(selected_league)
-                    if cache_liga and cache_liga.get("timestamp"):
-                        delta = ahora - cache_liga["timestamp"]
-                        if delta.total_seconds() < 3600: # 1 hora
-                            usar_cache = True
-                    
-                    if usar_cache:
-                        st.session_state.futbol_partidos = {selected_league: cache_liga["data"]}
-                        st.toast(f"⚡ {selected_league} cargada desde caché", icon="⚽")
-                    else:
-                        logger.info(f"Caché para {selected_league} expirada. Consultando scraper...")
-                        partidos_cargados = st.session_state.scrapers["futbol"].get_games(selected_league)
-                        st.session_state.futbol_partidos = {selected_league: partidos_cargados}
-                        st.session_state.futbol_cache[selected_league] = {
-                            "data": partidos_cargados,
-                            "timestamp": ahora
-                        }
-                    st.success(f"✅ {len(st.session_state.futbol_partidos.get(selected_league, []))} partidos cargados.")
+        def _cargar_liga(lg):
+            """Carga partidos + puebla historial (últimos 5) para análisis con datos reales."""
+            partidos_lg = st.session_state.scrapers["futbol"].get_games(lg)
+            st.session_state.futbol_partidos[lg] = partidos_lg
+            if partidos_lg:
+                try:
+                    st.session_state.scrapers["futbol"].poblar_historial(partidos_lg)
+                except Exception as _he:
+                    logger.warning(f"Poblar historial {lg}: {_he}")
+            return partidos_lg
 
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab_parlays = st.tabs(["🏀 NBA", "🥊 UFC", "⚽ FUTBOL", "⚾ MLB", "🎯 Radar de Precisión", "📊 Backtesting MLB", "🛠️ Debug", "📈 Backtesting UFC", "🎰 PARLAYS"])
+        # Botón para cargar TODAS las filtradas de golpe (útil para 'Mundial' o 'Qualifying')
+        if filtro_liga and 1 < len(ligas_filtradas) <= 8:
+            if st.button(f"⚡ Cargar las {len(ligas_filtradas)} coincidencias", use_container_width=True):
+                for lg in ligas_filtradas:
+                    with st.spinner(f"Cargando {lg} + historial..."):
+                        _cargar_liga(lg)
+                # Limpiar análisis viejos para re-analizar con el historial nuevo
+                st.session_state.analisis_futbol = {}
+
+        with st.container(height=320):
+            for liga in ligas_filtradas:
+                if st.button(f"⚽ {liga}", key=f"btn_{liga}", use_container_width=True):
+                    with st.spinner(f"Cargando {liga} + últimos 5 de cada equipo..."):
+                        partidos_lg = _cargar_liga(liga)
+                        st.session_state.analisis_futbol = {}
+                        st.success(f"✅ {len(partidos_lg)} partidos · historial actualizado")
+
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["🏀 NBA", "🥊 UFC", "⚽ FUTBOL", "⚾ MLB", "📊 Backtesting", "🎰 PARLAYS"])
 
     with tab1:
-        render_nba_tab()
-        # Herramienta de depuración para NBA (solo visible si hay datos)
         if st.session_state.nba_partidos:
-            with st.expander("🛠️ Inspector de Datos NBA (Debug)", expanded=False):
-                st.write(st.session_state.nba_partidos)
+            for idx, p in enumerate(st.session_state.nba_partidos):
+                game_key = f"nba_{p.get('local', '')}_{p.get('visitante', '')}"
+                res_nba = st.session_state.analisis_nba.get(game_key)
+
+                # Auto-análisis heurístico (sin botón): ganador + hándicap + O/U + puntos
+                if res_nba is None:
+                    try:
+                        res_nba = analizar_nba_pro_v17(p)
+                        st.session_state.analisis_nba[game_key] = res_nba
+                        db.guardar_backtesting("NBA", f"{p['local']} vs {p['visitante']}", res_nba.get('recomendacion', ''))
+                    except Exception as _ne:
+                        logger.warning(f"Auto-análisis NBA: {_ne}")
+
+                accion = st.session_state.visual_nba.render(p, idx, st.session_state.tracker, analisis_heuristico=res_nba)
+
+                if accion == "analizar":
+                    with st.spinner("🚀 Ejecutando Análisis de NBA..."):
+                        resultado_heuristico = analizar_nba_pro_v17(p)
+                        
+                        # Si se selecciona una IA, usar AnalistaTotal
+                        if st.session_state.get("selected_ia_model", "Heurístico") != "Heurístico":
+                            analista = AnalistaTotal(
+                                claude_client=st.session_state.claude,
+                                gemini_client=st.session_state.gemini,
+                                groq_client=st.session_state.groq,
+                                # ... otros clientes
+                                selected_model=st.session_state.selected_ia_model
+                            )
+                            resultado_final = analista.analizar_nba(p, resultado_heuristico)
+                            st.session_state.analisis_nba[game_key] = resultado_final
+                            db.guardar_backtesting("NBA", f"{p['local']} vs {p['visitante']}", resultado_final.get('pick', ''))
+                        else:
+                            # Si no, usar solo el resultado heurístico
+                            st.session_state.analisis_nba[game_key] = resultado_heuristico
+                            db.guardar_backtesting("NBA", f"{p['local']} vs {p['visitante']}", resultado_heuristico.get('recomendacion', ''))
+                        
+                        # Forzar la recarga de la página para mostrar el resultado
+                        st.rerun()
+
+
+                with st.expander("🎯 Radar de Triples (Jugadores Clave)", expanded=False):
+                    radar_triples.render(p.get('local', ''), p.get('visitante', ''))
+
+                # ── Props de jugador (Puntos / Asistencias / Triples) ────────
+                with st.expander("🏀 Props de jugador (Puntos · Asistencias · Triples)", expanded=False):
+                    try:
+                        from motors.nba_props import obtener_props_partido
+                        props = obtener_props_partido(p.get('local', ''), p.get('visitante', ''), db=db)
+                        ic = {"puntos": "🎯", "rebotes": "🏀", "asistencias": "🎁", "triples": "🏹", "doble-doble": "⭐"}
+                        col_pl, col_pv = st.columns(2)
+                        for col, lado, eq in ((col_pl, "local", p.get('local','')), (col_pv, "visitante", p.get('visitante',''))):
+                            with col:
+                                st.markdown(f"**{eq}**")
+                                if props[lado]:
+                                    for pr in props[lado]:
+                                        prom_txt = f"prom {pr['promedio']} · " if pr.get('promedio') else ""
+                                        st.markdown(
+                                            f"{ic.get(pr['tipo'],'•')} **{pr['jugador']}** — "
+                                            f"**{pr['pick']}** "
+                                            f"<span style='color:#64748b;font-size:0.75rem'>({prom_txt}{pr['confianza']}%)</span>",
+                                            unsafe_allow_html=True)
+                                else:
+                                    st.caption("Sin datos de jugadores.")
+                    except Exception as _npe:
+                        st.caption(f"Props no disponibles: {_npe}")
+                st.markdown("---")
+        else: st.info("👈 Carga NBA en el sidebar")
 
     with tab2:
-        render_ufc_tab()
+        # ── Backtest del motor UFC (ganador / método / distancia) ──────────
+        with st.expander("🧪 Backtest del Motor UFC — ¿qué tan bien predice?", expanded=False):
+            calib_path = os.path.join("data", "ufc_calibracion.json")
+            rep_path = os.path.join("data", "ufc_backtest_reporte.json")
+
+            col_bt1, col_bt2, col_bt3 = st.columns([2, 1, 1])
+            with col_bt2:
+                bt_dias = st.number_input("Días", 30, 365, 90, step=30, key="ufc_bt_dias")
+            with col_bt3:
+                bt_max = st.number_input("Máx peleas", 20, 200, 50, step=10, key="ufc_bt_max")
+            with col_bt1:
+                st.write("")
+                if st.button("▶️ EJECUTAR BACKTEST UFC", use_container_width=True, key="ufc_bt_run"):
+                    barra = st.progress(0, text="Descargando peleas históricas...")
+                    def _prog(i, n, txt):
+                        barra.progress(i / max(n, 1), text=f"({i}/{n}) {txt}")
+                    try:
+                        from motors.ufc_backtester import UFCBacktester
+                        bt = UFCBacktester()
+                        bt.ejecutar_backtest(dias=int(bt_dias), max_peleas=int(bt_max), progreso_cb=_prog)
+                        barra.empty()
+                        st.success("✅ Backtest completado — calibración guardada y aplicada al motor.")
+                        st.rerun()
+                    except Exception as _bte:
+                        barra.empty()
+                        st.error(f"Error en backtest: {_bte}")
+
+            if os.path.exists(rep_path):
+                try:
+                    with open(rep_path, encoding="utf-8") as f:
+                        rep = json.load(f)
+                    g = rep.get('ganador', {})
+                    me = rep.get('metodo', {})
+                    di = rep.get('distancia', {})
+                    st.caption(f"Último backtest: {rep.get('timestamp', '')[:16].replace('T', ' ')} · "
+                               f"{rep.get('muestras', 0)} peleas evaluadas")
+                    m1, m2, m3 = st.columns(3)
+                    m1.metric("🏆 Ganador", f"{g.get('precision', 0)}%",
+                              f"{g.get('aciertos', 0)}/{rep.get('muestras', 0)} aciertos")
+                    mp = me.get('precision_por_metodo', {})
+                    m2.metric("🥊 Método", " · ".join(f"{k.split('/')[0]} {v}%" for k, v in mp.items()) or "—")
+                    m3.metric("⏱️ Distancia", f"{di.get('precision', 0)}%",
+                              f"decisiones reales: {di.get('tasa_real_decisiones', 0)}%")
+
+                    conf_bk = g.get('por_confianza', {})
+                    if conf_bk:
+                        st.markdown("**Precisión por nivel de confianza del motor:**")
+                        st.table([{ 'Confianza': k, 'Peleas': v['peleas'], 'Precisión': f"{v['precision']}%"}
+                                  for k, v in conf_bk.items()])
+
+                    confusion = me.get('confusion', {})
+                    if confusion:
+                        st.markdown("**Matriz método (predicho → real):**")
+                        st.table([{'Predicho': m, **reales} for m, reales in confusion.items()])
+                except Exception as _re:
+                    st.caption(f"No se pudo leer el reporte: {_re}")
+            else:
+                st.info("Ejecuta el backtest para medir la precisión del motor y calibrarlo automáticamente.")
+
+        base_ufc = cargar_base_ufc()
+        odds_ufc = cargar_cuotas_ufc()
+        
+        if st.session_state.ufc_combates:
+            for idx, c in enumerate(st.session_state.ufc_combates):
+                if isinstance(c, dict):
+                    p1_raw = c.get('peleador1', {})
+                    p2_raw = c.get('peleador2', {})
+                    p1_nombre = p1_raw.get('nombre', '')
+                    p2_nombre = p2_raw.get('nombre', '')
+                else: continue
+                if not p1_nombre or not p2_nombre: continue
+                
+                fight_key = f"{p1_nombre}_vs_{p2_nombre}"
+                if fight_key in st.session_state.ufc_enriched_cache:
+                    p1_stats, p2_stats = st.session_state.ufc_enriched_cache[fight_key]
+                else:
+                    with st.spinner(f"🔄 Cargando stats de {p1_nombre} y {p2_nombre}..."):
+                        p1_stats = st.session_state.ufc_scraper.get_fighter_stats(p1_nombre)
+                        p2_stats = st.session_state.ufc_scraper.get_fighter_stats(p2_nombre)
+                        if p1_stats and p2_stats:
+                            st.session_state.ufc_enriched_cache[fight_key] = (p1_stats, p2_stats)
+                
+                p1_base = next((p for p in base_ufc if p.get('nombre','') == p1_nombre), {})
+                p2_base = next((p for p in base_ufc if p.get('nombre','') == p2_nombre), {})
+                
+                # ESPN (p_stats) tiene prioridad sobre el JSON legacy (p_base)
+                partido_visual = {
+                    'peleador1': {**p1_base, **p1_stats, 'nombre': p1_nombre, 'odds': str(odds_ufc.get(p1_nombre, 'N/A'))},
+                    'peleador2': {**p2_base, **p2_stats, 'nombre': p2_nombre, 'odds': str(odds_ufc.get(p2_nombre, 'N/A'))}
+                }
+                
+                res_ufc = st.session_state.analisis_ufc.get(fight_key)
+
+                # Auto-análisis: con los datos cargados, el motor da el pick sin botón
+                if res_ufc is None:
+                    try:
+                        res_ufc = st.session_state.ufc_analyzer.analizar_combate(
+                            partido_visual['peleador1'], partido_visual['peleador2'])
+                        st.session_state.analisis_ufc[fight_key] = res_ufc
+                        db.guardar_backtesting("UFC", f"{p1_nombre} vs {p2_nombre}", res_ufc.get('ganador', ''))
+                    except Exception as _e:
+                        logger.warning(f"Auto-análisis UFC falló ({p1_nombre} vs {p2_nombre}): {_e}")
+
+                # Análisis de Claude para la columna "Premium Analytics" (si está conectado)
+                claude_key = f"{fight_key}_claude"
+                res_claude = st.session_state.analisis_ufc.get(claude_key)
+
+                accion = st.session_state.visual_ufc.render(
+                    c, idx, st.session_state.tracker,
+                    datos_peleador1=partido_visual['peleador1'],
+                    datos_peleador2=partido_visual['peleador2'],
+                    analisis_ufc=res_ufc,
+                    analisis_premium=res_claude,
+                )
+
+                if accion == "analizar":
+                    with st.spinner("🚀 Ejecutando Análisis de UFC..."):
+                        resultado_heuristico = st.session_state.ufc_analyzer.analizar_combate(partido_visual['peleador1'], partido_visual['peleador2'])
+
+                        if st.session_state.get("selected_ia_model", "Heurístico") != "Heurístico":
+                            analista = AnalistaTotal(
+                                claude_client=st.session_state.claude,
+                                gemini_client=st.session_state.gemini,
+                                groq_client=st.session_state.groq,
+                                selected_model=st.session_state.selected_ia_model
+                            )
+                            resultado_final = analista.analizar_ufc(partido_visual, resultado_heuristico)
+                            st.session_state.analisis_ufc[fight_key] = resultado_final
+                            db.guardar_backtesting("UFC", f"{p1_nombre} vs {p2_nombre}", resultado_final.get('pick', ''))
+                        else:
+                            st.session_state.analisis_ufc[fight_key] = resultado_heuristico
+                            db.guardar_backtesting("UFC", f"{p1_nombre} vs {p2_nombre}", resultado_heuristico.get('ganador', ''))
+
+                        # Claude SIEMPRE (si está conectado) para la columna Premium, independiente del modelo elegido
+                        if st.session_state.get("claude"):
+                            try:
+                                analista_claude = AnalistaTotal(claude_client=st.session_state.claude, selected_model="Claude")
+                                st.session_state.analisis_ufc[claude_key] = analista_claude.analizar_ufc(partido_visual, resultado_heuristico)
+                            except Exception as _ce:
+                                logger.warning(f"Claude UFC falló: {_ce}")
+
+                        st.rerun()
+
+
+
+                st.markdown("---")
+        else: st.info("👈 Carga UFC en el sidebar")
 
     with tab3:
-        render_futbol_tab()
-        # Debug de conexión de fútbol
         if st.session_state.futbol_partidos:
-            with st.expander("⚽ Verificador de Enlace Fútbol", expanded=False):
-                st.write("Ligas cargadas:", list(st.session_state.futbol_partidos.keys()))
-                st.json(st.session_state.futbol_partidos)
+            for liga, partidos in st.session_state.futbol_partidos.items():
+                if partidos:
+                    st.markdown(f"### ⚽ {liga}")
+                    for idx, p in enumerate(partidos):
+                        key_fut = f"fut_{liga}_{idx}"
+                        res_fut = st.session_state.analisis_futbol.get(key_fut)
 
-    with tab5:
-        st.header("🎯 Radar de Precisión y ROI (HR)")
-        st.info("Análisis de rentabilidad por Jerarquía (Basado en el Motor Inteligente V2).")
-        
-        try:
-            conn = sqlite3.connect("data/betting_stats.db")
-            df_roi = pd.read_sql("SELECT fecha, jugador, probabilidad, resultado FROM hr_candidates_history WHERE resultado != 'PENDIENTE'", conn)
-            conn.close()
-            
-            if not df_roi.empty:
-                # Cálculo ROI (Cuota fija HR +250 / 3.50)
-                cuota_estimada = 3.50
-                df_roi['ganancia'] = df_roi['resultado'].apply(lambda x: (cuota_estimada - 1) if x == 'GANADA' else -1.0)
-                
-                # Clasificación por Jerarquía del Motor
-                def asignar_jerarquia(p):
-                    if p >= 72: return "1. ÉLITE"
-                    if p >= 60: return "2. ALTA"
-                    if p >= 45: return "3. MEDIA"
-                    return "4. BAJA"
-                
-                df_roi['jerarquia'] = df_roi['probabilidad'].apply(asignar_jerarquia)
-                df_roi = df_roi.sort_values('fecha')
-                df_roi['profit_u'] = df_roi['ganancia'].cumsum()
-                
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.metric("Total Picks HR", len(df_roi))
-                    wr_global = (len(df_roi[df_roi['resultado'] == 'GANADA']) / len(df_roi) * 100)
-                    st.metric("Win Rate Global", f"{wr_global:0.1f}%")
-                with col2:
-                    st.metric("Profit Acumulado", f"{df_roi['ganancia'].sum():0.2f}u")
-                    roi_perc = (df_roi['ganancia'].sum() / len(df_roi) * 100)
-                    st.metric("ROI Total", f"{roi_perc:+0.1f}%")
+                        # Auto-análisis jerárquico (con fallback FIFA para el Mundial)
+                        if res_fut is None:
+                            try:
+                                res_fut = analizar_futbol_jerarquico(
+                                    p.get('home') or p.get('local', ''),
+                                    p.get('away') or p.get('visitante', ''),
+                                    es_torneo=p.get('es_torneo', False),
+                                    fase=p.get('fase', ''),
+                                )
+                                st.session_state.analisis_futbol[key_fut] = res_fut
+                                pick_f = res_fut.get('pick', '')
+                                if pick_f and 'revisar' not in pick_f.lower():
+                                    db.guardar_backtesting("SOCCER", f"{p.get('home')} vs {p.get('away')}", pick_f)
+                            except Exception as _fe:
+                                logger.warning(f"Auto-análisis fútbol {liga} {idx}: {_fe}")
 
-                st.divider()
-                st.subheader("📊 Rendimiento por Jerarquía")
-                # Agrupación por nivel para ver efectividad real
-                hier_summary = df_roi.groupby('jerarquia').agg(
-                    Picks=('resultado', 'count'),
-                    Hits=('resultado', lambda x: (x == 'GANADA').sum()),
-                    Profit=('ganancia', 'sum')
-                )
-                hier_summary['WinRate'] = (hier_summary['Hits'] / hier_summary['Picks'] * 100).map('{:0.1f}%'.format)
-                st.table(hier_summary)
-
-                st.subheader("📈 Curva de Profit (Unidades)")
-                st.line_chart(df_roi.set_index('fecha')['profit_u'])
-            else:
-                st.warning("Ejecuta `auditor_hr.py` para procesar resultados y ver el ROI aquí.")
-        except Exception as e:
-            st.error(f"Error al cargar el Radar de ROI: {e}")
-                
-        # --- NUEVA SECCIÓN: PRECISIÓN DE PONCHES (K-ACCURACY) ---
-        st.markdown("---")
-        st.subheader("🧤 Radar de Precisión: Ponches (K)")
-        try:
-            path_res = "data/resultados_reales_15dias.json"
-            if os.path.exists(path_res):
-                with open(path_res, "r", encoding="utf-8") as f:
-                    reales = json.load(f)
-                
-                k_stats = {"hits": 0, "total": 0, "error_avg": []}
-                for r in reales:
-                    if "pitchers_k" in r:
-                        for side, data in r["pitchers_k"].items():
-                            # Aquí comparamos con la bitácora si guardaste la proyección
-                            # Por ahora, mostramos la distribución de Ks reales detectados
-                            k_stats["total"] += 1
-                            k_stats["error_avg"].append(data["k"])
-                
-                if k_stats["total"] > 0:
-                    c_k1, c_k2, c_k3 = st.columns(3)
-                    with c_k1:
-                        st.metric("Partidos Auditados (K)", k_stats["total"])
-                    with c_k2:
-                        avg_k_real = sum(k_stats["error_avg"]) / len(k_stats["error_avg"])
-                        st.metric("Promedio K Real", f"{avg_k_real:0.1f}")
-                    with c_k3:
-                        # Simulación de acierto O/U K (basado en bitácora)
-                        st.metric("Win Rate K-Props (Est.)", "74.2%")
-                    
-                    df_k_dist = pd.DataFrame({"Ks Reales": k_stats["error_avg"]})
-                    fig_k = px.histogram(df_k_dist, x="Ks Reales", title="Distribución de Ponches Reales (Últimos 15d)", 
-                                         nbins=15, template="plotly_dark", color_discrete_sequence=['#60a5fa'])
-                    st.plotly_chart(fig_k, use_container_width=True)
-        except Exception as e:
-            st.caption(f"Error cargando auditoría de Ks: {e}")
+                        accion_fut = st.session_state.visual_futbol.render(
+                            p, idx, liga, st.session_state.tracker,
+                            analisis_heuristico=res_fut,
+                        )
+                        if accion_fut == "analizar" and st.session_state.get("selected_ia_model", "Heurístico") != "Heurístico":
+                            with st.spinner(f"Consultando IA ({st.session_state.selected_ia_model})..."):
+                                analista = AnalistaTotal(
+                                    claude_client=st.session_state.claude,
+                                    gemini_client=st.session_state.gemini,
+                                    groq_client=st.session_state.groq,
+                                    selected_model=st.session_state.selected_ia_model,
+                                )
+                                st.session_state.analisis_futbol[f"{key_fut}_ia"] = analista.analizar_futbol(p, res_fut, res_fut)
+                                st.rerun()
+                        st.markdown("---")
+        else: st.info("👈 Carga ligas en el sidebar")
 
     with tab4:
-        render_mlb_tab() # <-- CAMBIO: Ya no se pasa el predictor HR como argumento
+        if st.session_state.mlb_partidos:
+            for idx, p in enumerate(st.session_state.mlb_partidos):
+                # Clave única por equipos (evita colisión de game_pk → datos cruzados)
+                game_key = f"mlb_{p.get('visitante','')}_{p.get('local','')}_{idx}"
+                res_mlb = st.session_state.analisis_mlb.get(game_key)
+
+                # Auto-análisis (sin botón): pick + candidatos HR + O/U automáticos
+                if res_mlb is None:
+                    try:
+                        res_mlb = analizar_mlb_pro_v20(p, game_pk=p.get('game_pk'), predictor_hr=st.session_state.predictor_hr)
+                        st.session_state.analisis_mlb[game_key] = res_mlb
+                        evento_mlb = f"{p.get('visitante','?')} @ {p.get('local','?')}"
+                        # Guardar TODOS los picks para que el sistema aprenda (backtesting)
+                        db.guardar_backtesting("MLB", evento_mlb, f"Gana {res_mlb.get('pick', '')}")
+                        if res_mlb.get('ou_pick'):
+                            db.guardar_backtesting("MLB-OU", evento_mlb, f"{res_mlb['ou_pick']} {res_mlb.get('ou_linea_ajustada','')}")
+                        for _kp in res_mlb.get('k_picks', []):
+                            db.guardar_backtesting("MLB-K", evento_mlb, f"{_kp.get('pitcher','')}: {_kp.get('prediccion','')} {_kp.get('linea','')} K")
+                        for _hr in res_mlb.get('hr_candidates', [])[:3]:
+                            if _hr.get('probabilidad', 0) >= 30:
+                                db.guardar_backtesting("MLB-HR", evento_mlb, f"{_hr.get('jugador','')} HR ({_hr.get('probabilidad',0):.0f}%)")
+                    except Exception as _me:
+                        logger.warning(f"Auto-análisis MLB: {_me}")
+
+                accion = st.session_state.visual_mlb.render(p, idx, st.session_state.tracker, analisis_mlb=res_mlb)
+
+                if accion == "analizar":
+                    with st.spinner("🚀 Ejecutando Análisis Dinámico de MLB..."):
+                        resultado_heuristico = analizar_mlb_pro_v20(
+                            p,
+                            game_pk=p.get('game_pk'),
+                            predictor_hr=st.session_state.predictor_hr
+                        )
+                        
+                        if st.session_state.get("selected_ia_model", "Heurístico") != "Heurístico":
+                            analista = AnalistaTotal(
+                                claude_client=st.session_state.claude,
+                                gemini_client=st.session_state.gemini,
+                                groq_client=st.session_state.groq,
+                                selected_model=st.session_state.selected_ia_model
+                            )
+                            resultado_ia = analista.analizar_mlb(p, resultado_heuristico)
+                            # FUSIONAR: conservar HR/K/O-U del motor + agregar la decisión IA
+                            resultado_final = dict(resultado_heuristico)
+                            resultado_final['ia'] = resultado_ia
+                            if resultado_ia.get('pick'):
+                                resultado_final['pick_ia'] = resultado_ia.get('pick')
+                                resultado_final['confianza_ia'] = resultado_ia.get('confianza', 0)
+                                resultado_final['razon_ia'] = resultado_ia.get('razon', '')
+                                resultado_final['mercado_ia'] = resultado_ia.get('mercado', '')
+                            st.session_state.analisis_mlb[game_key] = resultado_final
+                            db.guardar_backtesting("MLB", f"{p['local']} vs {p['visitante']}", resultado_ia.get('pick', resultado_heuristico.get('pick', '')))
+                        else:
+                            st.session_state.analisis_mlb[game_key] = resultado_heuristico
+                            db.guardar_backtesting("MLB", f"{p['local']} vs {p['visitante']}", resultado_heuristico.get('pick', ''))
+
+                        st.rerun()
+
+                st.markdown("---")
+        else: st.info("👈 Carga MLB en el sidebar")
+
+    with tab5:
+        st.header("📊 Reporte de Backtesting Universal")
+        st.caption("Resultados del rendimiento histórico de los motores de análisis.")
+
+        # ── BACKTEST REAL MLB (scraper oficial → auditor → efectividad) ──────
+        # ── BACKTEST REAL DEL MOTOR (corre el motor sobre cada juego histórico) ──
+        with st.expander("🎯 BACKTEST REAL DEL MOTOR — corre el motor sobre los últimos N días", expanded=True):
+            st.caption("Reconstruye cada juego de los últimos N días con los datos de ESE día (récords, pitchers, estadio), "
+                       "corre el MOTOR COMPLETO igual que la app, y compara contra el resultado real. "
+                       "Mide si el moneyline ganó, si el O/U acertó y cuáles candidatos a HR conectaron ese día.")
+            col_br1, col_br2 = st.columns([3, 1])
+            with col_br2:
+                dias_real = st.number_input("Días", 5, 30, 15, step=1, key="br_dias")
+            with col_br1:
+                st.write("")
+                if st.button("🎯 EJECUTAR BACKTEST REAL DEL MOTOR", use_container_width=True, type="primary", key="br_run"):
+                    barra_br = st.progress(0, text="Corriendo el motor sobre cada juego histórico...")
+                    def _pbr(i, txt):
+                        barra_br.progress(min(0.99, i / 300), text=txt[:60])
+                    try:
+                        from motors.mlb_backtest_real import ejecutar_backtest_real
+                        ejecutar_backtest_real(dias=int(dias_real), progreso_cb=_pbr)
+                        barra_br.empty()
+                        st.success("✅ Backtest real completado.")
+                    except Exception as _bre:
+                        barra_br.empty()
+                        st.error(f"Error: {_bre}")
+                        logger.exception(_bre)
+
+            br = cargar_json_safe(os.path.join("data", "mlb_backtest_real.json"))
+            if br:
+                st.caption(f"Último: {br.get('timestamp','')[:16].replace('T',' ')} · {br.get('juegos',0)} juegos analizados con el motor")
+                mlb_, ou_, hr_ = br.get("moneyline", {}), br.get("over_under", {}), br.get("home_runs", {})
+                m1, m2, m3 = st.columns(3)
+                m1.metric("🏆 Moneyline", f"{mlb_.get('precision_global',0)}%", f"{mlb_.get('aciertos',0)}/{mlb_.get('total',0)}")
+                m2.metric("📊 Over/Under", f"{ou_.get('precision',0)}%", f"{ou_.get('aciertos',0)}/{ou_.get('total',0)}")
+                m3.metric("💣 Home Runs", f"{hr_.get('precision_global',0)}%", f"{hr_.get('aciertos',0)}/{hr_.get('predichos',0)}")
+
+                pc = mlb_.get("por_confianza_motor", {})
+                if pc:
+                    st.markdown("**Moneyline por confianza del motor** (a mayor confianza, debe acertar más):")
+                    st.table([{"Confianza motor": k, "Juegos": v["n"], "Aciertos": v["ok"], "Precisión": f"{v['precision']}%"}
+                              for k, v in sorted(pc.items(), reverse=True)])
+                ht = hr_.get("por_tramo", {})
+                if ht:
+                    st.markdown("**Home Runs por probabilidad del motor:**")
+                    st.table([{"Probabilidad": k, "Candidatos": v["pred"], "Conectaron": v["ok"], "Precisión": f"{v['precision']}%"}
+                              for k, v in sorted(ht.items(), reverse=True)])
+
+        # ── BACKTEST REAL NBA + UFC (corre los motores sobre juegos pasados) ──
+        with st.expander("🏀 BACKTEST REAL NBA — corre el motor NBA sobre los últimos N días", expanded=False):
+            st.caption("Reconstruye cada juego NBA de los últimos N días (récords + marcador real) y corre el motor "
+                       "para medir si el moneyline ganó, el O/U acertó y el hándicap cubrió.")
+            col_nb1, col_nb2 = st.columns([3, 1])
+            with col_nb2:
+                dias_nba = st.number_input("Días", 5, 45, 30, step=5, key="nba_br_dias")
+            with col_nb1:
+                st.write("")
+                if st.button("🏀 EJECUTAR BACKTEST REAL NBA", use_container_width=True, key="nba_br_run"):
+                    barra_nb = st.progress(0, text="Corriendo el motor NBA sobre juegos pasados...")
+                    try:
+                        from motors.nba_backtest_real import ejecutar_nba_backtest_real
+                        ejecutar_nba_backtest_real(dias=int(dias_nba),
+                                                   progreso_cb=lambda i, t: barra_nb.progress(min(0.99, i/80), text=t[:55]))
+                        barra_nb.empty()
+                        st.success("✅ Backtest NBA completado.")
+                    except Exception as _ne:
+                        barra_nb.empty()
+                        st.error(f"Error: {_ne}")
+
+            nbr = cargar_json_safe(os.path.join("data", "nba_backtest_real.json"))
+            if nbr:
+                st.caption(f"Último: {nbr.get('timestamp','')[:16].replace('T',' ')} · {nbr.get('juegos',0)} juegos")
+                n1, n2, n3 = st.columns(3)
+                n1.metric("🏆 Moneyline", f"{nbr['moneyline']['precision_global']}%", f"{nbr['moneyline']['aciertos']}/{nbr['moneyline']['total']}")
+                n2.metric("📊 Over/Under", f"{nbr['over_under']['precision']}%", f"{nbr['over_under']['aciertos']}/{nbr['over_under']['total']}")
+                n3.metric("🎯 Hándicap", f"{nbr['handicap']['precision']}%", f"{nbr['handicap']['aciertos']}/{nbr['handicap']['total']}")
+                pcn = nbr['moneyline'].get("por_confianza_motor", {})
+                if pcn:
+                    st.table([{"Confianza motor": k, "Juegos": v["n"], "Aciertos": v["ok"], "Precisión": f"{v['precision']}%"}
+                              for k, v in sorted(pcn.items(), reverse=True)])
+
+        with st.expander("🥊 BACKTEST REAL UFC — corre el motor UFC sobre peleas pasadas", expanded=False):
+            st.caption("Descarga peleas reales recientes y mide si el motor acertó el ganador, el método y la distancia.")
+            col_uf1, col_uf2 = st.columns([3, 1])
+            with col_uf2:
+                dias_ufc_bt = st.number_input("Días", 30, 180, 90, step=30, key="ufc_br_dias")
+                max_ufc = st.number_input("Máx peleas", 20, 120, 40, step=10, key="ufc_br_max")
+            with col_uf1:
+                st.write("")
+                if st.button("🥊 EJECUTAR BACKTEST REAL UFC", use_container_width=True, key="ufc_br_run"):
+                    barra_uf = st.progress(0, text="Corriendo el motor UFC sobre peleas pasadas...")
+                    try:
+                        from motors.ufc_backtester import UFCBacktester
+                        UFCBacktester().ejecutar_backtest(dias=int(dias_ufc_bt), max_peleas=int(max_ufc),
+                                                          progreso_cb=lambda i, n, t: barra_uf.progress(min(0.99, i/max(n,1)), text=t[:50]))
+                        barra_uf.empty()
+                        st.success("✅ Backtest UFC completado (calibración aplicada al motor).")
+                    except Exception as _ue:
+                        barra_uf.empty()
+                        st.error(f"Error: {_ue}")
+
+            ubr = cargar_json_safe(os.path.join("data", "ufc_backtest_reporte.json"))
+            if ubr:
+                st.caption(f"Último: {ubr.get('timestamp','')[:16].replace('T',' ')} · {ubr.get('muestras',0)} peleas")
+                u1, u2, u3 = st.columns(3)
+                u1.metric("🏆 Ganador", f"{ubr.get('ganador',{}).get('precision',0)}%")
+                mp_ufc = ubr.get('metodo', {}).get('precision_por_metodo', {})
+                u2.metric("🥊 Método", " · ".join(f"{k.split('/')[0]} {v}%" for k, v in mp_ufc.items()) or "—")
+                u3.metric("⏱️ Distancia", f"{ubr.get('distancia',{}).get('precision',0)}%")
+
+        with st.expander("⚾ Backtest por picks guardados (efectividad acumulada HR / ML / O-U / K)", expanded=False):
+            st.caption("Descarga resultados reales de la MLB Stats API, cruza tus picks pendientes y mide qué tan efectivo es cada mercado.")
+            col_mlb_bt1, col_mlb_bt2 = st.columns([3, 1])
+            with col_mlb_bt2:
+                dias_mlb = st.number_input("Días", 7, 45, 15, step=1, key="mlb_real_bt_dias")
+            with col_mlb_bt1:
+                st.write("")
+                if st.button("▶️ EJECUTAR BACKTEST REAL MLB", use_container_width=True, key="mlb_real_bt_run"):
+                    try:
+                        from scrapers.mlb_resultados_scraper import MLBResultadosScraper
+                        from motors.mlb_backtest_auditor import MLBBacktestAuditor
+                        from motors.mlb_effectiveness import EffectivenessCalculator
+                        with st.spinner("1/3 Descargando resultados reales de MLB..."):
+                            MLBResultadosScraper(dias=int(dias_mlb)).collect_last_n_days(int(dias_mlb))
+                        with st.spinner("2/3 Auditando picks pendientes contra resultados reales..."):
+                            reporte_audit = MLBBacktestAuditor(db=db).audit_pending(dias=int(dias_mlb))
+                        with st.spinner("3/3 Calculando efectividad por tipo de pick..."):
+                            EffectivenessCalculator(db=db).persist(dias=int(dias_mlb))
+                        st.success("✅ Backtest REAL MLB completado.")
+                        st.session_state["_mlb_real_bt_done"] = True
+                    except Exception as _mbe:
+                        st.error(f"Error en backtest real MLB: {_mbe}")
+                        logger.exception(_mbe)
+
+            # ── Backtest específico de CANDIDATOS A HR (vs HR reales) ──────────
+            st.markdown("**💣 Backtest de candidatos a Home Run (precisión real):**")
+            col_hr1, col_hr2 = st.columns([3, 1])
+            with col_hr2:
+                dias_hr = st.number_input("Días HR", 5, 20, 15, step=1, key="hr_bt_dias")
+            with col_hr1:
+                st.write("")
+                if st.button("💣 EJECUTAR BACKTEST DE HR", use_container_width=True, key="hr_bt_run"):
+                    barra_hr = st.progress(0, text="Cruzando candidatos vs HR reales...")
+                    def _phr(i, txt):
+                        barra_hr.progress(min(0.99, i / 150), text=txt[:60])
+                    try:
+                        from motors.hr_backtester import ejecutar_hr_backtest
+                        ejecutar_hr_backtest(dias=int(dias_hr), progreso_cb=_phr)
+                        barra_hr.empty()
+                        st.success("✅ Backtest de HR completado.")
+                    except Exception as _he:
+                        barra_hr.empty()
+                        st.error(f"Error: {_he}")
+
+            hr_rep = cargar_json_safe(os.path.join("data", "hr_backtest_reporte.json"))
+            if hr_rep:
+                st.caption(f"Último: {hr_rep.get('timestamp','')[:16].replace('T',' ')} · "
+                           f"{hr_rep.get('juegos',0)} juegos · precisión global {hr_rep.get('precision_global',0)}%")
+                tramos = hr_rep.get("por_tramo_probabilidad", {})
+                if tramos:
+                    st.table([{"Probabilidad del motor": k, "Predichos": v["predichos"],
+                               "Acertaron HR": v["aciertos"], "Precisión real": f"{v['precision']}%"}
+                              for k, v in sorted(tramos.items(), reverse=True)])
+                    st.caption("💡 Si el tramo '45%+' acierta mucho menos que 45%, el motor está inflando probabilidades. "
+                               "Lo importante es el ORDEN: los de mayor probabilidad deben acertar más que los de menor.")
+
+            # ── Backtest de MONEYLINE + OVER/UNDER (vs resultados reales) ──────
+            st.markdown("**🏆 Backtest de Moneyline y Over/Under (precisión real):**")
+            col_ml1, col_ml2 = st.columns([3, 1])
+            with col_ml2:
+                dias_ml = st.number_input("Días ML", 5, 30, 15, step=1, key="ml_bt_dias")
+            with col_ml1:
+                st.write("")
+                if st.button("🏆 EJECUTAR BACKTEST ML + O/U", use_container_width=True, key="ml_bt_run"):
+                    barra_ml = st.progress(0, text="Cruzando picks vs marcadores reales...")
+                    def _pml(i, txt):
+                        barra_ml.progress(min(0.99, i / 250), text=txt[:60])
+                    try:
+                        from motors.mlb_motor_backtester import ejecutar_mlb_backtest
+                        ejecutar_mlb_backtest(dias=int(dias_ml), progreso_cb=_pml)
+                        barra_ml.empty()
+                        st.success("✅ Backtest ML + O/U completado (calibración guardada).")
+                    except Exception as _mle:
+                        barra_ml.empty()
+                        st.error(f"Error: {_mle}")
+
+            ml_rep = cargar_json_safe(os.path.join("data", "mlb_motor_backtest.json"))
+            if ml_rep:
+                mlb_data = ml_rep.get("moneyline", {})
+                ou_data = ml_rep.get("over_under", {})
+                st.caption(f"Último: {ml_rep.get('timestamp','')[:16].replace('T',' ')} · {ml_rep.get('juegos',0)} juegos")
+                cmm1, cmm2 = st.columns(2)
+                cmm1.metric("🏆 Moneyline (global)", f"{mlb_data.get('precision_global',0)}%")
+                cmm2.metric(f"📊 O/U {ou_data.get('linea',8.5)}", f"{ou_data.get('tasa_over',0)}% OVER",
+                            delta=f"sesgo {ou_data.get('sesgo','')}")
+                tramos_ml = mlb_data.get("por_tramo_record", {})
+                if tramos_ml:
+                    st.table([{"Diferencia de récord": k, "Juegos": v["juegos"],
+                               "Aciertos": v["aciertos"], "Precisión": f"{v['precision']}%"}
+                              for k, v in sorted(tramos_ml.items(), reverse=True)])
+                    st.caption("💡 El moneyline atina mucho más cuando hay gran diferencia de récord. "
+                               "En juegos parejos es casi 50/50 — ahí conviene hándicap o evitar.")
+
+            # Mostrar efectividad guardada
+            efect_path = os.path.join("data", "backtesting_cache", "pick_type_performance.json")
+            efect = cargar_json_safe(efect_path)
+            if efect:
+                filas = []
+                for tipo, m in efect.items():
+                    if isinstance(m, dict) and m.get("total", 0) > 0:
+                        filas.append({
+                            "Tipo": tipo,
+                            "Picks": m.get("total", 0),
+                            "Aciertos": m.get("hits", m.get("ganadas", 0)),
+                            "Win Rate": f"{m.get('win_rate', 0):.1f}%",
+                            "ROI": f"{m.get('roi', 0):+.1f}%",
+                            "Clasif.": m.get("classification", m.get("clasificacion", "—")),
+                        })
+                if filas:
+                    st.markdown("**Efectividad por tipo de pick (datos reales):**")
+                    st.table(filas)
+                else:
+                    st.info("Aún no hay picks auditados. Genera picks en MLB y vuelve a ejecutar.")
+            else:
+                st.caption("Ejecuta el backtest para ver la efectividad real por tipo de apuesta.")
+
+        st.markdown("---")
+
+        if st.button("🔄 Ejecutar Backtest Completo (15 días)", use_container_width=True):
+            with st.spinner("Ejecutando backtesting... Esto puede tardar varios minutos."):
+                try:
+                    import subprocess
+                    # Usamos sys.executable para asegurar que se usa el intérprete correcto
+                    result = subprocess.run(
+                        [sys.executable, "run_backtest.py"],
+                        capture_output=True, text=True, timeout=300, encoding='utf-8'
+                    )
+                    st.code(result.stdout + "\n" + result.stderr, language="bash")
+                    st.success("Backtest finalizado. El reporte se ha actualizado.")
+                except Exception as e:
+                    st.error(f"Error al ejecutar el backtest: {e}")
+
+        reporte_path = os.path.join("data", "aprendizaje_backtest.json")
+        reporte = cargar_json_safe(reporte_path)
+
+        if reporte:
+            st.markdown(f"**Última actualización:** `{reporte.get('timestamp', 'N/A')}`")
+            
+            metricas = reporte.get("metricas", {})
+            global_metrics = metricas.get("GLOBAL", {})
+            
+            if global_metrics:
+                st.markdown("---")
+                st.subheader("🌎 Rendimiento Global")
+                col1, col2, col3, col4 = st.columns(4)
+                col1.metric("Total Picks", global_metrics.get("total", 0))
+                col2.metric("Win Rate", f"{global_metrics.get('win_rate', 0):.1f}%")
+                col3.metric("Profit (Unidades)", f"{global_metrics.get('profit_u', 0):+.2f}u")
+                col4.metric("ROI", f"{global_metrics.get('roi_pct', 0):.1f}%")
+
+            st.markdown("---")
+            st.subheader("📈 Rendimiento por Deporte")
+            
+            data_deportes = [
+                {"Deporte": k, **v} for k, v in metricas.items() if k != "GLOBAL"
+            ]
+            
+            if data_deportes:
+                df_reporte = pd.DataFrame(data_deportes)
+                st.dataframe(df_reporte, use_container_width=True)
+            
+            pesos = reporte.get("pesos", {})
+            if pesos:
+                with st.expander("⚙️ Pesos de Motores Auto-Ajustados"):
+                    st.json(pesos)
+        else:
+            st.info("No se ha encontrado un reporte de backtesting. Ejecuta el backtest para generar uno.")
 
     with tab6:
-        from visualizers.backtest_tab_renderer import render_backtest_tab
-        render_backtest_tab()
-
-    with tab7:
-        st.header("🛠️ Diagnóstico de Motores y Conexiones")
-        
-        # --- BOTONES DE ACCIÓN RÁPIDA ---
-        col_act1, col_act2, col_act3 = st.columns(3)
-        with col_act1:
-            if st.button("🔑 RECARGAR LLAVES IA", width='stretch'):
-                # Clear session state for IA clients to force re-initialization
-                for key in ["gemini", "groq", "deepseek", "new_ai"]:
-                    if key in st.session_state:
-                        del st.session_state[key]
-                st.rerun()
-        with col_act2:
-            if st.button("🔄 FORZAR RECARGA DE SCRAPERS", width='stretch'):
-                st.session_state.scrapers = {
-                    "nba": ESPN_NBA(), "mlb": ESPN_MLB(), 
-                    "ufc": ESPN_UFC(), "futbol": ESPN_FUTBOL()
-                }
-                st.success("Scrapers reinicializados correctamente.")
-        with col_act3:
-            if st.button("🧹 LIMPIAR CACHÉ DE ANÁLISIS", width='stretch'):
-                st.session_state.analisis_nba = {}
-                st.session_state.analisis_ufc = {}
-                st.session_state.analisis_futbol = {}
-                st.session_state.analisis_mlb = {}
-                st.rerun()
-
-        # --- HERRAMIENTA DE DIAGNÓSTICO UNIFICADA (V24.5) ---
-        st.subheader("🕵️ Diagnóstico Maestro de Integridad")
-        if st.button("🚀 EJECUTAR TEST DE ESTRÉS Y CONEXIÓN", width='stretch'):
-            with st.status("Analizando salud del sistema...", expanded=True) as status:
-                # 1. Test de IAs
-                st.write("📡 Probando conectividad con modelos...")
-                from utils.api_validator import validar_todas_las_apis
-                reporte_api = validar_todas_las_apis()
-                st.json(reporte_api)
-                
-                # 2. Comparación Heurística vs IA (Sample MLB)
-                st.write("🔬 Verificando alineación de motores (MLB Sample)...")
-                sample = {"local": "NY Yankees", "visitante": "Boston Red Sox", 
-                          "pitchers": {"local": {"nombre": "Gerrit Cole"}, "visitante": {"nombre": "Brayan Bello"}}}
-                try:
-                    from motors.motor_mlb_pro import analizar_mlb_pro_v20
-                    res_h = analizar_mlb_pro_v20(sample)
-                    st.write(f"✅ Motor Heurístico: {res_h['pick']} ({res_h['confianza']}%)")
-                except Exception as e:
-                    st.error(f"❌ Error en Motor MLB: {e}")
-
-                # 3. Integridad de archivos
-                st.write("📂 Verificando archivos de datos...")
-                for f in ["data/betting_stats.db", "data/aprendizaje_semanal.json"]:
-                    if os.path.exists(f): st.write(f"✔️ {f} detectado.")
-                    else: st.warning(f"⚠️ {f} no encontrado.")
-                
-                status.update(label="✅ Diagnóstico finalizado", state="complete")
-
-        # --- ACCIONES DE MANTENIMIENTO DE DATOS ---
-        st.subheader("📦 Mantenimiento de Datos")
-        with st.expander("Ejecutar Scrapers Manualmente"):
-            st.warning("Usa estos botones solo si los datos parecen desactualizados y la carga automática falló.")
-            col_m1, col_m2, col_m3 = st.columns(3)
-            with col_m1:
-                if st.button("🔄 Recolectar Resultados MLB (15 días)"):
-                    with st.spinner("Ejecutando `mlb_resultados_scraper.py`..."):
-                        subprocess.run([sys.executable, "-m", "scrapers.mlb_resultados_scraper"])
-                        st.success("Resultados MLB actualizados.")
-            with col_m2:
-                if st.button("⚙️ Auditar Candidatos HR"):
-                    with st.spinner("Ejecutando `auditor_hr.py`..."):
-                        subprocess.run([sys.executable, "auditor_hr.py"])
-                        st.success("Auditoría de HR completada.")
-            with col_m3:
-                if st.button("⚾ Actualizar K/9 de Pitchers"):
-                    subprocess.run([sys.executable, "-m", "scrapers.mlb_pitchers_k9_scraper"])
-                    st.success("Stats de K/9 actualizadas.")
-
-        # --- GRÁFICO COMPARATIVO DE RENDIMIENTO (V24.3) ---
-        # --- UFC DATA VALIDATOR ---
-        st.subheader("🥊 Verificador de Datos UFC")
-        if st.button("✅ VALIDAR DATOS UFC", use_container_width=True):
-            with st.spinner("Ejecutando validación de datos UFC..."):
-                # Capturar la salida estándar para mostrarla en Streamlit
-                old_stdout = sys.stdout
-                redirected_output = io.StringIO()
-                sys.stdout = redirected_output
-                
-                try:
-                    validate_ufc_data_flow()
-                finally:
-                    sys.stdout = old_stdout # Restaurar la salida estándar
-                
-                st.code(redirected_output.getvalue(), language="bash")
-                st.success("Validación de datos UFC completada.")
-
-        st.subheader("📈 Rendimiento Comparativo por Deporte")
-        try:
-            if os.path.exists("data/bitacora_maestra.csv"):
-                df_bit = pd.read_csv("data/bitacora_maestra.csv")
-                if not df_bit.empty and 'acierto' in df_bit.columns:
-                    # Solo analizar picks que ya tienen resultado real (No Pendientes)
-                    df_res = df_bit[df_bit['Resultado_Real'].astype(str).str.lower() != 'pendiente'].copy()
-                    if not df_res.empty:
-                        # Convertir 'acierto' a numérico para promediar
-                        df_res['val'] = df_res['acierto'].apply(lambda x: 1 if str(x).lower() == 'true' else 0)
-                        stats_deporte = df_res.groupby('Deporte').agg(
-                            Picks=('val', 'count'),
-                            WinRate=('val', lambda x: x.mean() * 100)
-                        ).reset_index()
-                        
-                        fig_comp = px.bar(stats_deporte, x='Deporte', y='WinRate', text='WinRate',
-                                         title="Win Rate % por Deporte (Basado en Bitácora Real)",
-                                         color='Deporte', template="plotly_dark",
-                                         labels={'WinRate': 'Win Rate %'})
-                        fig_comp.update_traces(texttemplate='%{text:0.1f}%', textposition='outside')
-                        fig_comp.update_layout(yaxis_range=[0, 110], height=400)
-                        st.plotly_chart(fig_comp, use_container_width=True)
-        except Exception as e:
-            st.caption(f"No se pudo cargar el comparativo: {e}")
-
-        # 1. Estado de IAs
-        st.subheader("🤖 Clientes de Inteligencia Artificial")
-        ia_cols = st.columns(4)
-        ias_to_check = ["Gemini", "Groq", "DeepSeek", "Claude"]
-        for i, name in enumerate(ias_to_check):
-            with ia_cols[i % 4]:
-                api_key_name = f"{name.upper()}_API_KEY"
-                if name == "Claude": api_key_name = "ANTHROPIC_API_KEY"
-
-                api_key = get_api_key(api_key_name)
-                if api_key:
-                    st.success(f"✅ {name}\n(Key OK)")
-                    # La prueba de conexión real se hace en el script de diagnóstico.
-                    # Aquí solo verificamos que la key está configurada.
-                    # El siguiente código es un placeholder de cómo se podría hacer una prueba rápida.
-                    '''
-                    # Verificar si la conexión es realmente válida
-                    is_valid = False
-                    if hasattr(client, 'test_connection'):
-                        # Intentamos capturar si hay un error de cuota o auth
-                        try:
-                            is_valid = client.test_connection()
-                        except Exception as e:
-                            st.session_state[f"error_{key}"] = str(e)
-                            is_valid = False
-                    
-                    else: is_valid = True # Si no tiene test, asumimos OK si hay cliente
-                    
-                    # Calcular tiempo promedio (promedio móvil de las últimas 10 llamadas)
-                    times = st.session_state.ia_response_times.get(key, [])
-                    avg_time = sum(times) / len(times) if times else 0
-                    time_label = f"⏱️ Avg: {avg_time:0.2f}s" if avg_time > 0 else "⏱️ N/A"
-
-                    if is_valid:
-                        st.success(f"✅ {name}\n({origin} - OK)\n{time_label}")
-                    '''
-                else:
-                    st.error(f"❌ {name}\n(No Key)")
-
-        # 2. Estado de Scrapers
-        st.subheader("📡 Scrapers de Datos")
-        sc_cols = st.columns(4)
-        scrapers_debug = st.session_state.get("scrapers", {})
-        for i, sport in enumerate(["nba", "mlb", "ufc", "futbol"]):
-            with sc_cols[i % 4]:
-                s = scrapers_debug.get(sport)
-                if s:
-                    st.success(f"✅ {sport.upper()}\n(Cargado)")
-                else:
-                    st.error(f"❌ {sport.upper()}\n(Error)")
-
-        # 3. Estado de Motores de Análisis
-        st.subheader("⚙️ Motores de Decisión")
-        mot_cols = st.columns(3)
-        motores_debug = [
-            ("Over/Under", "motor_ou"), 
-            ("Momentum", "motor_momentum"), 
-            ("Decisión Int.", "motor_decision")
-        ]
-        for i, (name, key) in enumerate(motores_debug):
-            with mot_cols[i % 3]:
-                m = st.session_state.get(key)
-                if m:
-                    st.success(f"✅ {name}")
-                else:
-                    st.error(f"❌ {name}")
-
-        # 4. Archivos Críticos
-        st.subheader("💾 Integridad de Archivos")
-        archivos_debug = [
-            "data/betting_stats.db", 
-            "data/resultados_finales_corregidos.json",
-            "data/aprendizaje_semanal.json",
-            "data/inteligencia_umpires.json"
-        ]
-        for file_path in archivos_debug:
-            if os.path.exists(file_path):
-                size = os.path.getsize(file_path) / 1024
-                st.write(f"✅ `{file_path}` ({size:0.1f} KB)")
-            else:
-                st.write(f"❌ `{file_path}` (Faltante)")
-
-    with tab_parlays:
-        render_parlay_tab()
-
-    # --- ELEMENTOS FINALES DE LA INTERFAZ ---
-    with st.sidebar:
-        try:
-            if os.path.exists("data/bitacora_maestra.csv"):
-                df = pd.read_csv("data/bitacora_maestra.csv")
-                if 'acierto' in df.columns:
-                    g = len(df[df['acierto'] == True]); p_loss = len(df[df['acierto'] == False])
-                    if g + p_loss > 0:
-                        profit = ((g * 0.90) - p_loss) * 10
-                        color_prof = "#00ff41" if profit >= 0 else "#ff4b4b"
-                        st.markdown(f"""<div style='background:#1c2128;border-radius:12px;padding:15px;text-align:center;margin:10px 0;border:1px solid #30363d'><span>Profit</span><h2 style='color:{color_prof};margin:0'>${profit:0.2f}</h2><span>{g}W / {p_loss}L</span></div>""", unsafe_allow_html=True)
-        except Exception as e: # Captura el error para evitar el SyntaxError
-            logger.error(f"Error en visualización de profit: {e}")
-            pass
-
-    st.markdown("""
-        <a href="#main_top" class="back-to-top" id="backToTop" target="_self">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
-        </a>
-        <style>
-            .back-to-top { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(90deg, #3b82f6, #9333ea); 
-                           width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; 
-                           justify-content: center; text-decoration: none; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000; }
-            .back-to-top:hover { transform: translateY(-5px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5); }
-        </style>
-    """, unsafe_allow_html=True)
+        if render_parlay_tab:
+            try:
+                render_parlay_tab()
+            except Exception as _pe:
+                st.error(f"Error en el generador de parlays: {_pe}")
+                logger.exception(_pe)
+        else:
+            st.error("El generador de parlays no se pudo cargar. Reinicia la app por completo.")
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "MLB Frequent Queries Optimizer",
+  "description": "Hook para optimizar consultas frecuentes de MLB usando caché y respuestas precompiladas",
+  "version": "1",
+  "when": {
+    "type": "promptSubmit"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "El usuario está haciendo una consulta frecuente de MLB. Verifica si es una de estas consultas comunes y optimiza la respuesta:\n\nCONSULTAS FRECUENTES MLB:\n1. \"picks mlb hoy\" / \"mlb picks today\" / \"apuestas mlb\"\n2. \"análisis [equipo1] vs [equipo2]\"\n3. \"home runs hoy\" / \"hr picks\"\n4. \"pitcher stats [nombre]\"\n5. \"resultados mlb ayer\"\n\nSI ES UNA CONSULTA FRECUENTE:\n- Usa el sistema de caché (check data/mlb_cache.json)\n- Si hay datos cacheados <5 minutos, úsalos\n- Usa plantillas optimizadas para reducir tokens\n- Mantén precisión >95%\n- Responde en ≤150 tokens para picks simples\n- Usa emojis para indicar confianza: 🔥 alta, ✅ media, 📊 baja\n\nSI NO ES FRECUENTE:\n- Procesa normalmente con el motor completo\n- Considera cachear la respuesta para futuras consultas similares\n\nPLANTILLA OPTIMIZADA PARA PICKS MLB:\n\"🔥/✅/📊 [EQUIPO] [TIPO] @ [CONF]% | [STAKE]u ([RAZÓN_CORTA])\"\n\nEJEMPLO OPTIMIZADO:\n\"🔥 NYY ML @ 68% | 3u (Power: 145, Pitcher vulnerable)\"\n\"✅ LAD -1.5 @ 55% | 2u (Home advantage, hot streak)\"\n\"📊 O 8.5 @ 52% | 1u (Wind Out 15mph)\""
+  }
+}

@@ -14,6 +14,56 @@ logger = logging.getLogger(__name__)
 # ─── Reglas adicionales para partidos de torneo (eliminación directa) ─────────
 TORNEO_BOOST = 0.95   # Los equipos se vuelven más cautelosos → ligero sesgo UNDER
 
+# ─── Ranking FIFA aproximado jun-2026 (para fallback sin DB) ──────────────────
+_FIFA_RANK = {
+    "Argentina": 1, "France": 2, "England": 3, "Belgium": 4,
+    "Brazil": 5, "Portugal": 6, "Netherlands": 7, "Spain": 8,
+    "Croatia": 9, "Italy": 10, "USA": 11, "United States": 11,
+    "Mexico": 12, "Switzerland": 13, "Uruguay": 14, "Colombia": 15,
+    "Germany": 16, "Morocco": 17, "Senegal": 18, "Japan": 19,
+    "South Korea": 20, "Denmark": 21, "Austria": 22, "Ecuador": 23,
+    "Australia": 24, "Hungary": 25, "Poland": 26, "Serbia": 27,
+    "Venezuela": 28, "Ukraine": 29, "Canada": 30, "Turkey": 31,
+    "Czech Republic": 32, "Czechia": 32, "Slovakia": 33,
+    "Romania": 34, "Egypt": 35, "Sweden": 36, "Algeria": 37,
+    "Wales": 38, "Costa Rica": 40, "Bolivia": 45, "Paraguay": 46,
+    "South Africa": 48, "Jamaica": 52, "Honduras": 55,
+    "El Salvador": 60, "Panama": 65, "New Zealand": 70,
+    "Guatemala": 75, "Trinidad and Tobago": 78,
+}
+
+
+def _analisis_ranking_fifa(local: str, visitante: str, fase: str = "") -> dict:
+    """Fallback: análisis basado en ranking FIFA cuando no hay historial en DB."""
+    r_l = next((v for k, v in _FIFA_RANK.items() if k.lower() in local.lower() or local.lower() in k.lower()), 60)
+    r_v = next((v for k, v in _FIFA_RANK.items() if k.lower() in visitante.lower() or visitante.lower() in k.lower()), 60)
+    diff = r_v - r_l  # positivo = local mejor ranked
+
+    es_elim = fase and any(x in fase.lower() for x in ["octavo", "cuarto", "semi", "final"])
+
+    if abs(diff) >= 25:
+        fav = local if diff > 0 else visitante
+        conf = min(68, 52 + abs(diff) // 3)
+        pick = f"Gana {fav}" if not es_elim else f"Gana {fav} (incluye prórroga)"
+    elif abs(diff) >= 10:
+        fav = local if diff > 0 else visitante
+        conf = 50
+        if es_elim:
+            pick = f"Gana {fav} o Empate"
+        else:
+            pick = f"BTTS + {fav} anota"
+    else:
+        conf = 42
+        pick = "Empate (equipos parejos)" if not es_elim else "Partido cerrado — Over 1.5"
+
+    return {
+        "pick": pick,
+        "confianza": conf,
+        "regla": -1,
+        "todas_opciones": [],
+        "nota": f"Fallback ranking FIFA: #{r_l} {local} vs #{r_v} {visitante}. Sin historial en DB.",
+    }
+
 
 def _pct(lista: list, condicion) -> float:
     """Porcentaje de elementos que cumplen la condición. Devuelve 0 si lista vacía."""
@@ -51,12 +101,7 @@ def analizar_futbol_jerarquico(
     s_v = db.get_team_stats_detailed(visitante, "soccer")
 
     if not s_l or not s_v:
-        return {
-            "pick": "Datos insuficientes para análisis jerárquico.",
-            "confianza": 0,
-            "regla": 0,
-            "todas_opciones": [],
-        }
+        return _analisis_ranking_fifa(local, visitante, fase)
 
     gl = s_l.get("goles_favor", [])
     gc = s_l.get("goles_contra", [])
@@ -68,12 +113,7 @@ def analizar_futbol_jerarquico(
 
     # Mínimo 2 partidos por equipo para continuar
     if len(gl) < 2 or len(gv) < 2:
-        return {
-            "pick": "Muestra insuficiente (< 2 partidos por equipo).",
-            "confianza": 0,
-            "regla": 0,
-            "todas_opciones": [],
-        }
+        return _analisis_ranking_fifa(local, visitante, fase)
 
     total_partidos = len(gl) + len(gv)
 

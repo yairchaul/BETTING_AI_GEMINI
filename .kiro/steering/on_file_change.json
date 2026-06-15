@@ -1,0 +1,11 @@
+{
+  "name": "Actualizar Inteligencia Umpires",
+  "description": "Ejecuta el script de inteligencia de umpires cuando se actualiza resultados_reales_15dias.json",
+  "events": [
+    {
+      "type": "onFileChange",
+      "path": "resultados_reales_15dias.json",
+      "command": "python generar_inteligencia_umpires.py"
+    }
+  ]
+}

@@ -32,25 +32,23 @@ def render_ufc_tab():
                     if fight_key in st.session_state.ufc_enriched_cache:
                         p1_data, p2_data = st.session_state.ufc_enriched_cache[fight_key]
                     else:
-                        # MEJORA: Mostrar estado de carga
-                        with st.spinner(f"🔄 Cargando stats de {p1_name} y {p2_name}..."):
-                            p1_stats = st.session_state.ufc_scraper.get_fighter_stats(p1_name)
-                            p2_stats = st.session_state.ufc_scraper.get_fighter_stats(p2_name)
-                        
-                        # Fusionar datos de ESPN (odds, fotos) con los datos detallados de UFCStats
                         p1_data = c.get('peleador1', {}).copy()
-                        if p1_stats and 'error' not in p1_stats:
-                            p1_data.update(p1_stats)
-                        else:
-                            # Si hay error, mantener los datos básicos de ESPN
-                            logger.warning(f"No se pudieron cargar stats de UFCStats para {p1_name}")
-                        
                         p2_data = c.get('peleador2', {}).copy()
-                        if p2_stats and 'error' not in p2_stats:
-                            p2_data.update(p2_stats)
-                        else:
-                            logger.warning(f"No se pudieron cargar stats de UFCStats para {p2_name}")
-                        
+
+                        # Enriquecer con stats de UFCStats solo si el scraper está disponible
+                        ufc_scraper = st.session_state.get('ufc_scraper')
+                        if ufc_scraper:
+                            with st.spinner(f"🔄 Cargando stats de {p1_name} y {p2_name}..."):
+                                try:
+                                    p1_stats = ufc_scraper.get_fighter_stats(p1_name)
+                                    p2_stats = ufc_scraper.get_fighter_stats(p2_name)
+                                    if p1_stats and 'error' not in p1_stats:
+                                        p1_data.update(p1_stats)
+                                    if p2_stats and 'error' not in p2_stats:
+                                        p2_data.update(p2_stats)
+                                except Exception as _e:
+                                    logger.warning(f"Scraper UFC falló: {_e}")
+
                         # Guardar en caché de sesión
                         st.session_state.ufc_enriched_cache[fight_key] = (p1_data, p2_data)
 

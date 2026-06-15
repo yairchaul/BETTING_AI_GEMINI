@@ -1,43 +1,47 @@
 # -*- coding: utf-8 -*-
 """
-UFC STATS SCRAPER - Datos reales de UFCStats.com con fight details
+UFC STATS SCRAPER V3 - Fuente: ESPN MMA API (gratuita, sin key)
+
+UFCStats.com añadió protección anti-bot (challenge JavaScript), por lo que la
+fuente principal ahora es ESPN:
+  - search v2          → encontrar el athlete_id del peleador
+  - athlete bio        → altura, peso, alcance, postura, edad, récord, KO/SUB
+  - core statistics    → SLpM, precisión de golpeo, TD avg/acc, sub avg
+  - overview + status  → historial: tiempo de pelea, racha, derrota por KO reciente
+
+Mantiene la misma clase/método (UFCStatsScraper.get_fighter_stats) y el mismo
+esquema de salida para no romper main, renderers ni el analyzer.
 """
 
 import requests
-from bs4 import BeautifulSoup
 import re
 import time
 import json
 import os
 import unicodedata
-from datetime import datetime
-import re
+
 try:
     from rapidfuzz import process, fuzz
     RAPIDFUZZ_OK = True
 except ImportError:
     RAPIDFUZZ_OK = False
 
+from database_manager import db
+
+_SEARCH_URL = "https://site.web.api.espn.com/apis/search/v2"
+_BIO_URL = "https://site.web.api.espn.com/apis/common/v3/sports/mma/ufc/athletes/{aid}"
+_CORE_STATS_URL = "https://sports.core.api.espn.com/v2/sports/mma/athletes/{aid}/statistics"
+_OVERVIEW_URL = "https://site.web.api.espn.com/apis/common/v3/sports/mma/ufc/athletes/{aid}/overview"
+_COMP_URL = "https://sports.core.api.espn.com/v2/sports/mma/leagues/ufc/events/{eid}/competitions/{cid}"
+
+_UFC_COM_URL = "https://www.ufc.com/athlete/{slug}"
+
+
 class UFCStatsScraper:
     def __init__(self):
         self.headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
-        self.cache_file = "data/ufc_stats_cache.json"
         os.makedirs("data", exist_ok=True)
-        self.cache = self._load_cache()
         self.caliente_odds_cache = self._load_caliente_odds_cache()
-    
-    def _load_cache(self):
-        if os.path.exists(self.cache_file):
-            try:
-                with open(self.cache_file, 'r', encoding='utf-8') as f:
-                    return json.load(f)
-            except:
-                pass
-        return {}
-    
-    def _save_cache(self):
-        with open(self.cache_file, 'w', encoding='utf-8') as f:
-            json.dump(self.cache, f, indent=2, ensure_ascii=False)
 
     def _load_caliente_odds_cache(self):
         odds_file = "data/odds_caliente_ufc.json"
@@ -46,309 +50,424 @@ class UFCStatsScraper:
                 return json.load(f)
         return {}
 
-    
     def _normalize_name(self, name):
         text = unicodedata.normalize('NFD', name)
         text = text.encode('ascii', 'ignore').decode("utf-8")
         return text.strip().lower().replace(' ', '-')
-    
-    def _parse_record(self, record_str):
-        if not record_str or record_str == 'N/A':
-            return {'wins': 0, 'losses': 0, 'draws': 0}
-        # Eliminar texto como "Pro" o "Am"
-        record_str = re.sub(r'\s*(Pro|Am)\s*', '', record_str, flags=re.IGNORECASE).strip()
-        # Si el formato es solo "W-L", asumir 0 draws
-        if re.match(r'^\d+-\d+$', record_str):
-            record_str += '-0'
-        # Si el formato es "W-L-D"
-        elif not re.match(r'^\d+-\d+-\d+$', record_str):
-            return {'wins': 0, 'losses': 0, 'draws': 0}
 
-        if not record_str:
-            return {'wins': 0, 'losses': 0, 'draws': 0}
-        parts = record_str.split('-')
-        return {
-            'wins': int(parts[0]) if len(parts) > 0 else 0,
-            'losses': int(parts[1]) if len(parts) > 1 else 0,
-            'draws': int(parts[2]) if len(parts) > 2 else 0
-        }
-    
-    def _extract_fight_details(self, fight_url, fighter_name):
-        """Extrae estadisticas detalladas de una pelea especifica"""
+    def _get_json(self, url, timeout=12):
         try:
-            res = requests.get(fight_url, headers=self.headers, timeout=10)
-            soup = BeautifulSoup(res.text, 'html.parser')
-            
-            stats = {
-                'strikes_landed': 0, 'strikes_attempted': 0,
-                'td_landed': 0, 'td_attempted': 0, 'knockdowns': 0
-            }
-            
-            rows = soup.find_all('tr', class_='b-fight-details__table-row')
-            
-            for row in rows:
-                name_cell = row.find('td', class_='b-fight-details__table-col')
-                if name_cell:
-                    link = name_cell.find('a')
-                    if link and fighter_name.lower() in link.get_text(strip=True).lower():
-                        cols = row.find_all('td')
-                        for i, col in enumerate(cols):
-                            text = col.get_text(strip=True)
-                            
-                            # Strikes
-                            if 'of' in text and i == 2:
-                                match = re.search(r'(\d+)\s*of\s*(\d+)', text)
-                                if match:
-                                    stats['strikes_landed'] = int(match.group(1))
-                                    stats['strikes_attempted'] = int(match.group(2))
-                            
-                            # Takedowns
-                            if 'of' in text and i == 5:
-                                match = re.search(r'(\d+)\s*of\s*(\d+)', text)
-                                if match:
-                                    stats['td_landed'] = int(match.group(1))
-                                    stats['td_attempted'] = int(match.group(2))
-                            
-                            # Knockdowns
-                            if text.isdigit() and i == 1:
-                                stats['knockdowns'] = int(text)
-                        
-                        break
-            
-            return stats
-        except:
+            res = requests.get(url, headers=self.headers, timeout=timeout)
+            if res.status_code == 200:
+                return res.json()
+        except Exception:
+            pass
+        return None
+
+    # ──────────────────────────────────────────────────────────────────────
+    # ESPN: BÚSQUEDA E IDENTIFICACIÓN
+    # ──────────────────────────────────────────────────────────────────────
+
+    def _find_athlete_id(self, name):
+        """Busca el athlete_id de MMA en ESPN. uid formato 's:3301~a:<id>'.
+
+        Si hay homónimos (ej. dos 'Steve Garcia'), desempata prefiriendo al
+        peleador activo con más victorias.
+        """
+        data = self._get_json(f"{_SEARCH_URL}?query={requests.utils.quote(name)}&limit=10")
+        if not data:
             return None
-    
-    def get_fighter_stats(self, name):
-        """Obtiene estadisticas COMPLETAS de un peleador"""
+
+        candidatos = []          # lista de (displayName, id) — admite homónimos
+        for grp in data.get('results', []):
+            if grp.get('type') != 'player':
+                continue
+            for item in grp.get('contents', []):
+                uid = item.get('uid', '')
+                if 's:3301' not in uid:          # 3301 = MMA
+                    continue
+                m = re.search(r'a:(\d+)', uid)
+                if m:
+                    candidatos.append((item.get('displayName', ''), m.group(1)))
+
+        if not candidatos:
+            return None
+
+        def _similitud(disp):
+            if RAPIDFUZZ_OK:
+                return fuzz.WRatio(name, disp)
+            d, n = disp.lower(), name.lower()
+            return 100 if (n in d or d in n) else 0
+
+        puntuados = sorted(
+            ((_similitud(d), d, aid) for d, aid in candidatos), reverse=True
+        )
+        mejor_sim = puntuados[0][0]
+        if mejor_sim < 80:
+            return None
+
+        finalistas = [(d, aid) for sim, d, aid in puntuados if sim >= mejor_sim - 5]
+        if len(finalistas) == 1:
+            print(f"    Match ESPN: {finalistas[0][0]} ({mejor_sim:.0f}%)")
+            return finalistas[0][1]
+
+        # Homónimos: elegir al activo con más victorias
+        mejor_id, mejor_puntaje, mejor_disp = None, -1, ''
+        for disp, aid in finalistas[:4]:
+            bio = self._get_json(_BIO_URL.format(aid=aid)) or {}
+            a = bio.get('athlete', {})
+            wins = 0
+            for s in a.get('statsSummary', {}).get('statistics', []):
+                if s.get('name') == 'wins-losses-draws':
+                    mm = re.match(r'(\d+)', s.get('displayValue', '0'))
+                    wins = int(mm.group(1)) if mm else 0
+            puntaje = (1000 if a.get('active') else 0) + wins
+            if puntaje > mejor_puntaje:
+                mejor_puntaje, mejor_id, mejor_disp = puntaje, aid, disp
+        print(f"    Match ESPN (desambiguado entre {len(finalistas)}): {mejor_disp} -> id {mejor_id}")
+        return mejor_id
+
+    # ──────────────────────────────────────────────────────────────────────
+    # ESPN: BIO + CAREER STATS + HISTORIAL
+    # ──────────────────────────────────────────────────────────────────────
+
+    def _parse_bio(self, aid, stats):
+        """Bio: altura, peso, alcance, postura, edad, récord y conteos KO/SUB."""
+        data = self._get_json(_BIO_URL.format(aid=aid))
+        if not data:
+            return
+        a = data.get('athlete', {})
+
+        if a.get('displayHeight'):
+            stats['altura'] = a['displayHeight']             # ej. 5' 11"
+        if a.get('displayWeight'):
+            stats['peso'] = a['displayWeight']               # ej. 145 lbs
+        if a.get('displayReach'):
+            stats['alcance'] = a['displayReach']             # ej. 72.5"
+        if a.get('stance'):
+            stance = a['stance']
+            stance_txt = stance.get('text', '') if isinstance(stance, dict) else str(stance)
+            if stance_txt and stance_txt != '--':
+                stats['stance'] = stance_txt
+        if a.get('age'):
+            stats['edad'] = int(a['age'])
+        if a.get('weightClass'):
+            wc = a['weightClass']
+            stats['division'] = wc.get('text', '') if isinstance(wc, dict) else str(wc)
+        if a.get('headshot'):
+            hs = a['headshot']
+            stats['photo'] = hs.get('href', '') if isinstance(hs, dict) else str(hs)
+
+        ko_wins = sub_wins = ko_losses = 0
+        for s in a.get('statsSummary', {}).get('statistics', []):
+            nombre_stat = s.get('name', '')
+            valor = s.get('displayValue', '')
+            if nombre_stat == 'wins-losses-draws':
+                m = re.match(r'(\d+)-(\d+)-(\d+)', valor)
+                if m:
+                    stats['record'] = valor
+                    stats['wins'] = int(m.group(1))
+                    stats['losses'] = int(m.group(2))
+            elif nombre_stat == 'tkos-tkoLosses':
+                m = re.match(r'(\d+)-(\d+)', valor)
+                if m:
+                    ko_wins, ko_losses = int(m.group(1)), int(m.group(2))
+            elif nombre_stat == 'submissions-submissionLosses':
+                m = re.match(r'(\d+)-(\d+)', valor)
+                if m:
+                    sub_wins = int(m.group(1))
+
+        if stats.get('wins', 0) > 0:
+            stats['ko_rate'] = round(ko_wins / stats['wins'], 2)
+            stats['sub_rate'] = round(sub_wins / stats['wins'], 2)
+        stats['ko_losses'] = ko_losses
+
+    def _parse_career_stats(self, aid, stats):
+        """Cuadro de carrera: SLpM, precisión, TD avg/acc, sub avg."""
+        data = self._get_json(_CORE_STATS_URL.format(aid=aid))
+        career = stats['estadisticas_carrera']
+        if not data:
+            return
+        for cat in data.get('splits', {}).get('categories', []):
+            for s in cat.get('stats', []):
+                n, v = s.get('name'), s.get('value', 0) or 0
+                if n == 'strikeLPM':
+                    career['sig_strikes_landed_per_min'] = round(v, 2)
+                elif n == 'strikeAccuracy':
+                    career['sig_strike_accuracy'] = round(v, 1)      # %
+                elif n == 'takedownAvg':
+                    career['td_avg_per_15min'] = round(v, 2)
+                elif n == 'takedownAccuracy':
+                    career['td_accuracy'] = round(v, 1)              # %
+                elif n == 'submissionAvg':
+                    career['sub_avg_per_15min'] = round(v, 2)
+
+    def _parse_fight_history(self, aid, stats, max_fights=5):
+        """Últimas peleas vía overview: tiempo promedio, racha, KO reciente."""
+        data = self._get_json(_OVERVIEW_URL.format(aid=aid))
+        if not data:
+            return
+        uids = data.get('fightHistory', []) or []
+
+        tiempos = []
+        racha = 0
+        racha_activa = True
+        completadas = 0
+
+        for uid in uids[:max_fights]:
+            m = re.search(r'e:(\d+)~c:(\d+)', str(uid))
+            if not m:
+                continue
+            comp = self._get_json(_COMP_URL.format(eid=m.group(1), cid=m.group(2)))
+            if not comp:
+                continue
+
+            es_ganador = None
+            for cc in comp.get('competitors', []):
+                if str(cc.get('id')) == str(aid):
+                    es_ganador = bool(cc.get('winner', False))
+                    break
+            if es_ganador is None:
+                continue
+
+            status_ref = comp.get('status', {}).get('$ref', '')
+            status = self._get_json(status_ref) if status_ref else None
+            if not status or not status.get('type', {}).get('completed', False):
+                continue
+
+            completadas += 1
+            metodo = status.get('result', {}).get('displayName', '')
+            ronda = int(status.get('period', 0) or 0)
+            reloj = status.get('displayClock', '0:00')
+
+            # Tiempo total de pelea en minutos
+            m_t = re.match(r'(\d+):(\d+)', str(reloj))
+            if ronda > 0 and m_t:
+                tiempos.append((ronda - 1) * 5 + int(m_t.group(1)) + int(m_t.group(2)) / 60)
+
+            # Racha de victorias (peleas más recientes primero)
+            if racha_activa:
+                if es_ganador:
+                    racha += 1
+                else:
+                    racha_activa = False
+
+            # ¿Su derrota más reciente fue por KO/TKO?
+            if completadas == 1 and not es_ganador and re.search(r'KO|TKO', metodo, re.IGNORECASE):
+                stats['was_koed_recently'] = True
+
+            if len(stats['last_fights']) < 5:
+                stats['last_fights'].append({
+                    'oponente': '',
+                    'resultado': 'win' if es_ganador else 'loss',
+                    'metodo': metodo,
+                    'ronda': str(ronda),
+                    'tiempo': str(reloj),
+                    'fecha': comp.get('date', '')[:10],
+                })
+            time.sleep(0.1)
+
+        stats['streak'] = racha
+        if tiempos:
+            stats['estadisticas_carrera']['avg_fight_time'] = round(sum(tiempos) / len(tiempos), 2)
+
+    # ──────────────────────────────────────────────────────────────────────
+    # SEGUNDA FUENTE: ufc.com (datos reales, no inventados)
+    # ──────────────────────────────────────────────────────────────────────
+
+    def _scrape_ufc_com(self, name):
+        """Extrae datos REALES de ufc.com/athlete/<slug>. None si no encuentra."""
+        slug = self._normalize_name(name)  # ya devuelve 'josh-hokit'
+        try:
+            r = requests.get(_UFC_COM_URL.format(slug=slug), headers=self.headers, timeout=12)
+            if r.status_code != 200:
+                return None
+            t = r.text
+        except Exception:
+            return None
+
+        def _num_antes_de(label):
+            idx = t.find(label)
+            if idx < 0:
+                return None
+            antes = re.sub(r'<[^>]+>', ' ', t[max(0, idx - 160):idx])
+            nums = re.findall(r'\b(\d+\.?\d*)\b', antes)
+            return float(nums[-1]) if nums else None
+
+        # Record (formato '9-0-0 (W-L-D)')
+        m_rec = re.search(r'(\d+)-(\d+)-(\d+)\s*\(', t)
+        if not m_rec:
+            return None
+        wins, losses, draws = int(m_rec.group(1)), int(m_rec.group(2)), int(m_rec.group(3))
+
+        datos = {'fuente': 'ufc.com', 'record': f"{wins}-{losses}-{draws}",
+                 'wins': wins, 'losses': losses}
+
+        # Físicos: tomar el primer número DESPUÉS del label (con tags en medio)
+        def _num_despues_de(label):
+            idx = t.find(label)
+            if idx < 0:
+                return None
+            despues = re.sub(r'<[^>]+>', ' ', t[idx + len(label):idx + len(label) + 120])
+            nums = re.findall(r'(\d+\.?\d*)', despues)
+            return float(nums[0]) if nums else None
+
+        peso = _num_despues_de('Peso')
+        if peso:
+            datos['peso'] = f"{int(peso)} lbs"
+        alcance = _num_despues_de('Alcance')
+        if alcance:
+            datos['alcance'] = f'{alcance}"'
+        estatura = _num_despues_de('Estatura')
+        if estatura:
+            datos['altura'] = f"{int(estatura // 12)}' {int(estatura % 12)}\""
+
+        # Victorias por método → KO/SUB rate reales
+        ko_w = _num_antes_de('Victorias por nocaut') or _num_antes_de('Wins by Knockout') or 0
+        sub_w = _num_antes_de('Gana por Sumisión') or _num_antes_de('Wins by Submission') or 0
+        if wins > 0:
+            datos['ko_rate'] = round(ko_w / wins, 2)
+            datos['sub_rate'] = round(sub_w / wins, 2)
+            dec_w = max(0, wins - ko_w - sub_w)
+            datos.setdefault('estadisticas_carrera', {})['decision_pct'] = round(dec_w / wins * 100, 1)
+
+        # SLpM (primer número del comparador de stats)
+        compare = re.findall(r'c-stat-compare__number[^>]*>\s*([\d.]+)', t)
+        if compare:
+            slpm = float(compare[0])
+            datos['slpm_avg'] = slpm
+            datos.setdefault('estadisticas_carrera', {})['sig_strikes_landed_per_min'] = slpm
+
+        return datos
+
+    # ──────────────────────────────────────────────────────────────────────
+    # API PRINCIPAL (misma firma de siempre)
+    # ──────────────────────────────────────────────────────────────────────
+
+    def get_fighter_stats(self, name, light=False, athlete_id=None):
+        """Obtiene estadísticas de un peleador (fuente: ESPN).
+
+        Args:
+            name:       Nombre del peleador.
+            light:      True = solo bio + career stats (sin historial de peleas).
+                        Usado por el backtester para minimizar requests.
+            athlete_id: ID de ESPN si ya se conoce (evita la búsqueda por nombre).
+        """
         normalized = self._normalize_name(name)
-        
-        # Verificar cache (valido por 3 dias)
-        if normalized in self.cache:
-            cached = self.cache[normalized]
-            cached_date = datetime.fromisoformat(cached.get('cached_date', '2000-01-01'))
-            if (datetime.now() - cached_date).days < 3:
-                print(f"  Usando cache para {name}")
+
+        # Caché DB (3 días). El modo completo exige formato 'espn';
+        # el modo light acepta también 'espn-light'.
+        cached = db.get_ufc_fighter_from_cache(normalized, max_age_days=3)
+        if cached and cached.get('estadisticas_carrera', {}).get('sig_strikes_landed_per_min') is not None:
+            fuente_cache = cached.get('fuente', '')
+            if fuente_cache == 'espn' or (light and fuente_cache == 'espn-light'):
+                print(f"  Usando cache de DB para {name}")
                 return cached
-        
-        print(f"  Buscando {name} en UFCStats...")
-        
+
+        print(f"  Buscando {name} en ESPN MMA...")
+
         stats = {
             'nombre': name,
+            'fuente': 'espn-light' if light else 'espn',
             'record': 'N/A',
             'wins': 0, 'losses': 0,
-            'altura': 0, 'alcance': 0,
-            'ko_rate': 0, 'sub_rate': 0,
+            'altura': 'N/A', 'alcance': 'N/A', 'peso': 'N/A',
+            'edad': 0, 'division': '',
+            'ko_rate': 0, 'sub_rate': 0, 'ko_losses': 0,
             'striking_accuracy': 0, 'takedown_accuracy': 0,
             'stance': 'Orthodox',
-            'knockdowns_avg': 0,
+            'streak': 0,
             'was_koed_recently': False,
             'last_fights': [],
-            'slpm': 0.0,
-            'str_acc': 0,
-            'td_avg': 0.0
+            'slpm_avg': 0.0,
+            'td_avg': 0.0,
+            'photo': '',
+            'estadisticas_carrera': {
+                'sig_strikes_landed_per_min': 0.0,
+                'sig_strike_accuracy': 0.0,
+                'td_avg_per_15min': 0.0,
+                'td_accuracy': 0.0,
+                'sub_avg_per_15min': 0.0,
+                'avg_fight_time': 0.0,
+            },
         }
-        
+
         try:
-            # Buscar en la lista de peleadores
-            parts = name.split()
-            if len(parts) == 0:
-                return stats
-            
-            last_name = parts[-1]
-            letter = last_name[0].lower()
-            
-            url = f"http://ufcstats.com/statistics/fighters?char={letter}&page=all"
-            res = requests.get(url, headers=self.headers, timeout=10)
-            soup = BeautifulSoup(res.text, 'html.parser')
-            
-            rows = soup.find_all('tr')
-            fighters_in_page = {} # Nombre: URL
+            aid = athlete_id or self._find_athlete_id(name)
+            if not aid:
+                # 2ª fuente: ufc.com (datos verificados)
+                ufc_data = self._scrape_ufc_com(name)
+                if ufc_data:
+                    print(f"    Datos reales obtenidos de ufc.com para {name}")
+                    stats.update(ufc_data)
+                    db.save_ufc_fighter_to_cache(normalized, stats)
+                    return stats
+                # 3ª fuente: tapology (también datos reales)
+                try:
+                    from scrapers.tapology_scraper import buscar_peleador
+                    tap = buscar_peleador(name)
+                    if tap:
+                        print(f"    Datos reales obtenidos de tapology para {name}")
+                        stats.update(tap)
+                        db.save_ufc_fighter_to_cache(normalized, stats)
+                        return stats
+                except Exception:
+                    pass
+                print(f"    No encontrado en ESPN, ufc.com ni tapology")
+                return stats          # sin cachear: permitir reintento
 
-            for row in rows:
-                cols = row.find_all('td')
-                if len(cols) > 3:
-                    link = cols[0].find('a')
-                    if link:
-                        first_name = cols[0].get_text(strip=True)
-                        last_name_col = cols[1].get_text(strip=True)
-                        full_name = f"{first_name} {last_name_col}"
-                        fighters_in_page[full_name] = link['href']
+            self._parse_bio(aid, stats)
+            self._parse_career_stats(aid, stats)
+            if not light:
+                self._parse_fight_history(aid, stats)
 
-            profile_url = None
-            if fighters_in_page:
-                if RAPIDFUZZ_OK:
-                    # Usar RapidFuzz para encontrar la mejor coincidencia (umbral 85%)
-                    match = process.extractOne(name, fighters_in_page.keys(), scorer=fuzz.WRatio)
-                    if match and match[1] >= 85:
-                        print(f"    🎯 Coincidencia Fuzzy: {match[0]} ({match[1]:.1f}%)")
-                        profile_url = fighters_in_page[match[0]]
-                else:
-                    # Fallback simple si no está instalado
-                    for fn, url_f in fighters_in_page.items():
-                        if name.lower() in fn.lower() or fn.lower() in name.lower():
-                            profile_url = url_f
-                            break
-            
-            if not profile_url:
-                print(f"    No encontrado en UFCStats")
-                stats['cached_date'] = datetime.now().isoformat()
-                self.cache[normalized] = stats
-                self._save_cache()
-                return stats
-            
-            # Obtener perfil completo
-            res = requests.get(profile_url, headers=self.headers, timeout=10)
-            soup = BeautifulSoup(res.text, 'html.parser')
-            
-            # Record
-            record_span = soup.find('span', class_='b-content__title-record')
-            if record_span:
-                record_text = record_span.get_text(strip=True)
-                match = re.search(r'Record:\s*(\d+)-(\d+)-(\d+)', record_text)
-                if match:
-                    stats['record'] = f"{match.group(1)}-{match.group(2)}-{match.group(3)}"
-                    stats['wins'] = int(match.group(1))
-                    stats['losses'] = int(match.group(2))
-                    print(f"    Record: {stats['record']}")
-            
-            # Altura y alcance
-            bio_div = soup.find('div', class_='b-list__info-box')
-            if bio_div:
-                for li in bio_div.find_all('li'):
-                    text = li.get_text(strip=True)
-                    if 'Height:' in text:
-                        match = re.search(r"Height:\s*(\d+)'\s*(\d+)?\"?", text)
-                        if match:
-                            feet = int(match.group(1))
-                            inches = int(match.group(2)) if match.group(2) else 0
-                            stats['altura'] = int((feet * 30.48) + (inches * 2.54))
-                    elif 'Reach:' in text:
-                        match = re.search(r'Reach:\s*(\d+\.?\d*)\"?', text)
-                        if match:
-                            stats['alcance'] = int(float(match.group(1)) * 2.54)
-                    elif 'STANCE:' in text:
-                        stance = text.replace('STANCE:', '').strip()
-                        stats['stance'] = stance if stance else 'Orthodox'
-            
-            # Historial de peleas
-            fight_rows = soup.find_all('tr', class_='b-fight-details__table-row')
-            
-            # Reiniciar contadores para promedios
-            total_strikes_landed = 0
-            total_strikes_attempted = 0
-            total_td_landed = 0
-            total_td_attempted = 0
-            total_control_time = 0 # Nuevo: tiempo de control
-            total_sig_strikes_per_min = 0 # Nuevo: SLpM
-            total_knockdowns = 0
-            ko_wins = 0
-            sub_wins = 0
-            total_wins = 0
-            fights_analyzed = 0
-            
-            for row in fight_rows[:10]:
-                cols = row.find_all('td')
-                if len(cols) >= 8:
-                    result_cell = cols[0]
-                    result_text = result_cell.get_text(strip=True).lower()
-                    is_win = 'win' in result_text
-                    method_cell = cols[7]
-                    method_text = method_cell.get_text(strip=True).upper()
-                    
-                    # Detectar si la última pelea fue una derrota por KO/TKO
-                    if fights_analyzed == 0 and not is_win and (stats['wins'] + stats['losses'] > 0): # Solo si tiene al menos una pelea
-                        if 'KO' in method_text or 'TKO' in method_text:
-                            stats['was_koed_recently'] = True
+            career = stats['estadisticas_carrera']
+            # Claves planas para el motor de análisis (compatibilidad)
+            stats['slpm_avg'] = career.get('sig_strikes_landed_per_min', 0.0)
+            stats['td_avg'] = career.get('td_avg_per_15min', 0.0)
+            if career.get('sig_strike_accuracy'):
+                stats['striking_accuracy'] = round(career['sig_strike_accuracy'] / 100, 2)
+            if career.get('td_accuracy'):
+                stats['takedown_accuracy'] = round(career['td_accuracy'] / 100, 2)
+            # % de victorias por decisión (consistente con KO/SUB del récord)
+            if stats['wins'] > 0:
+                dec_wins = stats['wins'] - round(stats['ko_rate'] * stats['wins']) - round(stats['sub_rate'] * stats['wins'])
+                career['decision_pct'] = round(max(0, dec_wins) / stats['wins'] * 100, 1)
 
-                    if is_win:
-                        total_wins += 1
-                        if 'KO' in method_text or 'TKO' in method_text:
-                            ko_wins += 1
-                        elif 'SUB' in method_text:
-                            sub_wins += 1
-                    
-                    fight_link = cols[0].find('a')
-                    if fight_link and fight_link.get('href'):
-                        fight_url = fight_link['href']
-                        # Extraer detalles de la pelea (strikes, takedowns, etc.)
-                        fight_stats = self._extract_fight_details(fight_url, name) 
-                        
-                        if fight_stats:
-                            total_strikes_landed += fight_stats.get('strikes_landed', 0)
-                            total_strikes_attempted += fight_stats.get('strikes_attempted', 0)
-                            total_td_landed += fight_stats.get('td_landed', 0)
-                            total_td_attempted += fight_stats.get('td_attempted', 0)
-                            total_control_time += fight_stats.get('control_time', 0)
-                            total_sig_strikes_per_min += fight_stats.get('slpm', 0)
-                            total_knockdowns += fight_stats.get('knockdowns', 0)
-                            fights_analyzed += 1
-                            stats['last_fights'].append({ # Guardar un resumen de la pelea
-                                'oponente': cols[2].get_text(strip=True),
-                                'resultado': result_text,
-                                'metodo': method_text,
-                                'ronda': cols[8].get_text(strip=True),
-                                'tiempo': cols[9].get_text(strip=True)
-                            })
-                    
-                    time.sleep(0.3)
-            
-            # Calcular promedios
-            if fights_analyzed > 0:
-                if total_strikes_attempted > 0:
-                    stats['striking_accuracy'] = round(total_strikes_landed / total_strikes_attempted, 2)
-                if total_td_attempted > 0:
-                    stats['takedown_accuracy'] = round(total_td_landed / total_td_attempted, 2)
-                stats['knockdowns_avg'] = round(total_knockdowns / fights_analyzed, 1)
-                stats['control_time_avg'] = round(total_control_time / fights_analyzed, 1)
-                stats['slpm_avg'] = round(total_sig_strikes_per_min / fights_analyzed, 1)
-            
-            if total_wins > 0:
-                stats['ko_rate'] = round(ko_wins / total_wins, 2)
-                stats['sub_rate'] = round(sub_wins / total_wins, 2)
-            
-            print(f"    KO Rate: {int(stats['ko_rate']*100)}%")
-            print(f"    SLpM Avg: {stats['slpm_avg']:.1f}")
-            print(f"    Control Time Avg: {stats['control_time_avg']:.1f} min")
-            
+            print(f"    Record: {stats['record']} | KO: {int(stats['ko_rate']*100)}% | "
+                  f"SLpM: {stats['slpm_avg']:.2f} | Racha: {stats['streak']}W | "
+                  f"Edad: {stats['edad']} | T.pelea: {career.get('avg_fight_time', 0):.1f}min")
+
+            db.save_ufc_fighter_to_cache(normalized, stats)
+
         except Exception as e:
             print(f"    Error: {e}")
-        
-        stats['cached_date'] = datetime.now().isoformat()
-        self.cache[normalized] = stats
-        self._save_cache()
+
         return stats
 
     def get_ufc_odds_caliente(self):
         """Retorna las odds de UFC de Caliente.mx desde el caché"""
-        # Este método asume que las odds ya fueron scrapeadas y guardadas
-        # por un scraper de Caliente específico para UFC.
-        # Por ahora, devuelve el caché cargado en __init__
         return self.caliente_odds_cache
 
-
-    
     def get_rankings(self):
-        """Obtiene rankings P4P"""
+        """Rankings P4P desde ESPN (ufcstats.com está bloqueado por anti-bot)."""
         rankings = []
         try:
-            url = "http://ufcstats.com/rankings"
-            response = requests.get(url, headers=self.headers, timeout=10)
-            if response.status_code == 200:
-                soup = BeautifulSoup(response.text, 'html.parser')
-                table = soup.find('table', class_='b-list__table')
-                if table:
-                    rows = table.find_all('tr')[1:16]
-                    for i, row in enumerate(rows, 1):
-                        cols = row.find_all('td')
-                        if len(cols) > 1:
-                            name = cols[1].text.strip()
-                            rankings.append({'rank': i, 'name': name})
-        except:
+            data = self._get_json("https://site.web.api.espn.com/apis/common/v3/sports/mma/ufc/rankings")
+            if data:
+                for rk in data.get('rankings', []):
+                    if 'pound' in rk.get('name', '').lower() or 'p4p' in rk.get('shortName', '').lower():
+                        for i, comp in enumerate(rk.get('ranks', [])[:15], 1):
+                            nombre = comp.get('athlete', {}).get('displayName', '')
+                            if nombre:
+                                rankings.append({'rank': i, 'name': nombre})
+                        break
+        except Exception:
             pass
         return rankings
 
+
 if __name__ == "__main__":
     scraper = UFCStatsScraper()
-    test = scraper.get_fighter_stats("Jon Jones")
-    print(json.dumps(test, indent=2, default=str))
+    test = scraper.get_fighter_stats("Diego Lopes")
+    print(json.dumps(test, indent=2, default=str, ensure_ascii=False))

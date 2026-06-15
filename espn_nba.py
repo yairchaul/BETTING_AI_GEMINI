@@ -66,24 +66,31 @@ class ESPN_NBA:
                     visitante = visit_team.get('displayName', 'Visitante')
                     local_id = local_team.get('id')
                     visit_id = visit_team.get('id')
-                    
+                    # Logos del equipo
+                    local_logo = local_team.get('logo', '')
+                    visit_logo = visit_team.get('logo', '')
+
                     # Récords - IMPORTANTE: extraer del campo correcto
                     record_local = '0-0'
                     record_visit = '0-0'
-                    
+                    local_streak = ''
+                    visit_streak = ''
+
                     # Los records están en 'records' como lista
                     if competitors[0].get('records'):
                         records_list = competitors[0].get('records', [])
                         for r in records_list:
                             if r.get('type') == 'total':
                                 record_local = r.get('summary', '0-0')
+                                local_streak = r.get('streak', {}).get('abbreviation', '') if isinstance(r.get('streak'), dict) else ''
                                 break
-                    
+
                     if competitors[1].get('records'):
                         records_list = competitors[1].get('records', [])
                         for r in records_list:
                             if r.get('type') == 'total':
                                 record_visit = r.get('summary', '0-0')
+                                visit_streak = r.get('streak', {}).get('abbreviation', '') if isinstance(r.get('streak'), dict) else ''
                                 break
                     
                     # Odds - extraer todos los campos
@@ -137,6 +144,12 @@ class ESPN_NBA:
                         'odds': odds,
                         'local_id': local_id,
                         'visitante_id': visit_id,
+                        'local_logo': local_logo,
+                        'visitante_logo': visit_logo,
+                        'local_record': record_local,
+                        'visitante_record': record_visit,
+                        'local_streak': local_streak,
+                        'visitante_streak': visit_streak,
                         'records': {
                             'local': record_local,
                             'visitante': record_visit

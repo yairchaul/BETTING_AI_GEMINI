@@ -96,7 +96,23 @@ class DatabaseManager:
                 creado_en TEXT
             )
         ''')
-        
+
+        # Tabla de trazabilidad de auditoría (Task 9.1 — backtesting-real-mlb)
+        # No rompe el esquema existente: tabla nueva, todos los campos nullable
+        # excepto pick_id (PK). Permite trazar qué game_pk se cruzó con qué pick,
+        # qué personId (HR/K) intervino, y la cuota usada en el momento de auditar.
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS backtesting_audit (
+                pick_id      INTEGER PRIMARY KEY,
+                game_pk      INTEGER,
+                pick_type    TEXT,
+                person_id    INTEGER,
+                resultado    TEXT,
+                cuota_usada  REAL,
+                auditado_en  TEXT
+            )
+        ''')
+
         conn.commit()
         conn.close()
 

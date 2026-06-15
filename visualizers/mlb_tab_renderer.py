@@ -96,17 +96,49 @@ def render_mlb_tab():
                             except Exception as e:
                                 logger.error(f"Error en análisis O/U: {e}")
                         
-                        # 5. Decisión inteligente (jerarquía)
+                        # 5. Decisión inteligente (jerarquía HR > K > O/U > Moneyline)
                         if st.session_state.motor_decision:
                             try:
-                                decision = st.session_state.motor_decision.decidir_pick(heur_res)
+                                # Firma real: decidir_mejor_apuesta(partido, resultado_heuristico, candidatos_hr, clima)
+                                candidatos_hr_combinados = (
+                                    heur_res.get('hr_candidates_local', []) +
+                                    heur_res.get('hr_candidates_visit', [])
+                                )
+                                decision = st.session_state.motor_decision.decidir_mejor_apuesta(
+                                    p,
+                                    heur_res,
+                                    candidatos_hr_combinados,
+                                    heur_res.get('clima', {})
+                                )
                                 heur_res['pick_final'] = decision
                             except Exception as e:
                                 logger.error(f"Error en decisión inteligente: {e}")
                         
                         st.session_state.analisis_mlb[idx] = heur_res
-                        db.guardar_backtesting("MLB", f"{p['local']} vs {p['visitante']}", heur_res.get('pick', ''))
-                        
+                        evento_mlb = f"{p.get('visitante','?')} @ {p.get('local','?')}"
+                        db.guardar_backtesting("MLB", evento_mlb, heur_res.get('pick', ''))
+
+                        # Registrar props K al backtesting
+                        for lado, pitcher_key in [('k_projection_local', 'local'), ('k_projection_visit', 'visitante')]:
+                            kp = heur_res.get(lado, {})
+                            if kp and kp.get('linea') and kp.get('prediccion'):
+                                pitcher_nm = p.get('pitchers', {}).get(pitcher_key, {}).get('nombre', 'TBD')
+                                if pitcher_nm != 'TBD':
+                                    db.guardar_backtesting("MLB-K", evento_mlb,
+                                        f"K {kp['prediccion']} {kp['linea']} — {pitcher_nm}")
+
+                        # Registrar HR candidates al backtesting
+                        all_hr = heur_res.get('hr_candidates_local', []) + heur_res.get('hr_candidates_visit', [])
+                        for hr in all_hr:
+                            if hr.get('probabilidad', 0) >= 35:
+                                db.guardar_backtesting("MLB-HR", evento_mlb,
+                                    f"HR+ {hr.get('jugador','?')} (prob {hr.get('probabilidad',0):.0f}%)")
+
+                        # Registrar Over/Under al backtesting
+                        ou = heur_res.get('over_under_analysis', {})
+                        if ou and ou.get('pick'):
+                            db.guardar_backtesting("MLB-OU", evento_mlb, f"O/U: {ou['pick']}")
+
                         # 6. Validación con IA (opcional)
                         if st.session_state.selected_ia_model != "Heurístico":
                             with st.spinner(f"🤖 Validando con {st.session_state.selected_ia_model}..."):

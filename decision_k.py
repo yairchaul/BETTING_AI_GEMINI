@@ -27,19 +27,18 @@ def decidir_apuesta_k(pitcher_name, proy_k, linea_casa=4.5):
             "motivo": "Línea muy ajustada a la proyección"
         }
 
-# Ejemplo de prueba con tus datos de hoy
-test_pitchers = [
-    {"name": "Ranger Suarez", "proy": 7.5, "linea": 5.5},
-    {"name": "Luis Castillo", "proy": 4.2, "linea": 5.5},
-    {"name": "Dylan Cease", "proy": 5.0, "linea": 5.5}
-]
-
-print("\n" + "📋 RECOMENDACIONES DE PONCHES (K-PROPS)".center(50, "="))
-for p in test_pitchers:
-    decision = decidir_apuesta_k(p['name'], p['proy'], p['linea'])
-    print(f"🧤 {p['name']} | Línea: {p['linea']} | Proy: {p['proy']}")
-    print(f"   Resultado: {decision['jugada']} ({decision['motivo']})")
-    print("-" * 50)
+if __name__ == "__main__":
+    test_pitchers = [
+        {"name": "Ranger Suarez", "proy": 7.5, "linea": 5.5},
+        {"name": "Luis Castillo", "proy": 4.2, "linea": 5.5},
+        {"name": "Dylan Cease", "proy": 5.0, "linea": 5.5}
+    ]
+    print("\n" + "RECOMENDACIONES DE PONCHES (K-PROPS)".center(50, "="))
+    for p in test_pitchers:
+        decision = decidir_apuesta_k(p['name'], p['proy'], p['linea'])
+        print(f"{p['name']} | Linea: {p['linea']} | Proy: {p['proy']}")
+        print(f"   Resultado: {decision['jugada']} ({decision['motivo']})")
+        print("-" * 50)
 
 
 def generar_recomendaciones_k():

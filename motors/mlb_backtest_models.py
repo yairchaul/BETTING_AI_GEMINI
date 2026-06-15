@@ -3,14 +3,32 @@
 Modelos de datos compartidos para backtesting de MLB.
 
 Este módulo define las estructuras de datos principales para el sistema
-de backtesting de MLB según las especificaciones del diseño.
+de backtesting de MLB según las especificaciones del diseño:
+`.kiro/specs/backtesting-real-mlb/design.md` (sección Data Models).
 
-Requisitos: 1.2, 2.1, 3.1
+Mantiene el módulo auto-contenido: solo importa de la stdlib (`dataclasses`,
+`enum`, `typing`) para evitar ciclos en `motors/__init__.py` y permitir su
+uso directo vía `from motors.mlb_backtest_models import ...`.
+
+Requisitos cubiertos: 1.2 (conservación del marcador), 2.1 (HR por personId),
+3.1 (cota de win_rate).
 """
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Tuple
+
+__all__ = [
+    "HomeRunRecord",
+    "StrikeoutRecord",
+    "GameResult",
+    "BacktestPick",
+    "Metrics",
+    "Classification",
+    "PickType",
+    "validate_game_result_consistency",
+    "calculate_win_rate_roi",
+]
 
 
 @dataclass
@@ -50,19 +68,43 @@ class GameResult:
 
     def __post_init__(self):
         """Validar las reglas de integridad del GameResult."""
+        # Validar que game_pk sea un entero positivo (clave única e idempotente)
+        if not isinstance(self.game_pk, int) or isinstance(self.game_pk, bool):
+            raise ValueError(
+                f"game_pk debe ser un entero, no {type(self.game_pk).__name__}"
+            )
+        if self.game_pk <= 0:
+            raise ValueError(
+                f"game_pk debe ser un entero positivo, no {self.game_pk}"
+            )
+
+        # Validar que los marcadores sean enteros no negativos
+        if not isinstance(self.away_score, int) or isinstance(self.away_score, bool):
+            raise ValueError(
+                f"away_score debe ser entero, no {type(self.away_score).__name__}"
+            )
+        if not isinstance(self.home_score, int) or isinstance(self.home_score, bool):
+            raise ValueError(
+                f"home_score debe ser entero, no {type(self.home_score).__name__}"
+            )
+        if self.away_score < 0:
+            raise ValueError(f"away_score debe ser >= 0, no {self.away_score}")
+        if self.home_score < 0:
+            raise ValueError(f"home_score debe ser >= 0, no {self.home_score}")
+
         # Validar que total_runs sea igual a away_score + home_score
         if self.total_runs != self.away_score + self.home_score:
             raise ValueError(
                 f"total_runs ({self.total_runs}) debe ser igual a "
                 f"away_score ({self.away_score}) + home_score ({self.home_score})"
             )
-        
+
         # Validar que winner sea away o home
         if self.winner not in [self.away, self.home]:
             raise ValueError(
                 f"winner ({self.winner}) debe ser 'away' ({self.away}) o 'home' ({self.home})"
             )
-        
+
         # Validar que winner tenga el marcador más alto
         if self.winner == self.away and self.away_score <= self.home_score:
             raise ValueError(
@@ -74,7 +116,7 @@ class GameResult:
                 f"winner={self.home} pero home_score ({self.home_score}) "
                 f"no es mayor que away_score ({self.away_score})"
             )
-        
+
         # Validar que margin sea |away_score - home_score|
         calculated_margin = abs(self.away_score - self.home_score)
         if self.margin != calculated_margin:
@@ -82,7 +124,7 @@ class GameResult:
                 f"margin ({self.margin}) debe ser |away_score ({self.away_score}) - "
                 f"home_score ({self.home_score})| = {calculated_margin}"
             )
-        
+
         # Validar que todos los HR tengan home_runs >= 1
         for hr in self.home_runs:
             if hr.home_runs < 1:
@@ -179,7 +221,7 @@ def validate_game_result_consistency(results: List[GameResult]) -> bool:
     return True
 
 
-def calculate_win_rate_roi(hits: int, total: int, profit: float) -> tuple[float, float]:
+def calculate_win_rate_roi(hits: int, total: int, profit: float) -> Tuple[float, float]:
     """
     Calcular win_rate y ROI de forma consistente.
     
@@ -189,7 +231,7 @@ def calculate_win_rate_roi(hits: int, total: int, profit: float) -> tuple[float,
         profit: Ganancia/pérdida total en unidades
         
     Returns:
-        tuple[float, float]: (win_rate, roi)
+        Tuple[float, float]: (win_rate, roi)
     """
     if total == 0:
         return 0.0, 0.0
