@@ -102,6 +102,52 @@ class GestorLigasUniversal:
         self._ligas_cache = list(LIGAS_IDS.keys())
         return self._ligas_cache
 
+    # Subconjunto relevante para detectar "ligas con juegos hoy" rápido
+    LIGAS_POPULARES = [
+        "FIFA World Cup", "UEFA Champions League", "UEFA Europa League",
+        "World Cup Qualifying - UEFA", "World Cup Qualifying - CONMEBOL",
+        "World Cup Qualifying - CONCACAF", "Copa Libertadores", "Copa Sudamericana",
+        "Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1",
+        "Eredivisie", "Primeira Liga", "Championship", "Liga MX", "MLS",
+        "Brazilian Serie A", "Argentine Liga Profesional", "Saudi Pro League",
+        "Turkish Super Lig", "Belgian Pro League", "Scottish Premiership",
+        "Colombian Primera A", "J1 League", "K League 1",
+    ]
+
+    def ligas_con_juegos_hoy(self, max_resultados=5):
+        """Devuelve [(liga, n_juegos_hoy)] de las ligas populares con partidos HOY.
+
+        Consulta en paralelo el scoreboard de cada liga y cuenta los eventos
+        cuya fecha es hoy. Ordena por cantidad de juegos (desc).
+        """
+        from datetime import datetime
+        from concurrent.futures import ThreadPoolExecutor
+        hoy = datetime.now().strftime('%Y-%m-%d')
+
+        def _contar(liga):
+            info = LIGAS_IDS.get(liga)
+            if not info:
+                return (liga, 0)
+            league_id = info[0]
+            url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league_id}/scoreboard"
+            try:
+                r = requests.get(url, headers=self.headers, timeout=8)
+                if r.status_code != 200:
+                    return (liga, 0)
+                eventos = r.json().get('events', [])
+                n = sum(1 for e in eventos if (e.get('date', '')[:10] == hoy))
+                return (liga, n)
+            except Exception:
+                return (liga, 0)
+
+        resultados = []
+        with ThreadPoolExecutor(max_workers=10) as ex:
+            for liga, n in ex.map(_contar, self.LIGAS_POPULARES):
+                if n > 0:
+                    resultados.append((liga, n))
+        resultados.sort(key=lambda x: x[1], reverse=True)
+        return resultados[:max_resultados]
+
     def _parse_odds(self, comp):
         """Extrae moneyline (home/draw/away), línea O/U y detalle del scoreboard.
 
@@ -344,6 +390,9 @@ class ESPN_FUTBOL:
 
     def get_available_leagues(self):
         return self.gestor.obtener_ligas()
+
+    def ligas_con_juegos_hoy(self, max_resultados=5):
+        return self.gestor.ligas_con_juegos_hoy(max_resultados)
 
     def get_games(self, liga):
         return self.gestor.obtener_partidos(liga)

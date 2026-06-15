@@ -17,6 +17,7 @@ si falta un dato, el motor degrada con elegancia en vez de fallar.
 import re
 import os
 import json
+import math
 import logging
 
 logger = logging.getLogger(__name__)
@@ -123,12 +124,16 @@ def _candidatos_hr_equipo(equipo, pitcher_rival, venue=""):
         hr = stats.get("hr", 0)
         if hr < 1:
             continue
-        # Probabilidad CALIBRADA con el backtest real (un HR/juego es raro: ~5-18%).
-        # El backtest mostró que los valores antiguos (hasta 52%) estaban inflados ~3x.
-        hr_rate = hr / 15.0
+        # Probabilidad = P(al menos 1 HR) modelada por Poisson sobre la tasa
+        # REAL de HR por juego (hr_por_juego del dataset de temporada). Es el
+        # modelo correcto: P(>=1) = 1 - e^(-tasa). Más agresivo con sluggers.
+        hpg = stats.get("hr_por_juego")
+        if not hpg or hpg <= 0:
+            hpg = hr / 60.0  # fallback si no hay tasa (temporada ~ /60 juegos)
         ops = stats.get("ops", 0.7) or 0.7
-        prob_base = 4 + hr_rate * 14 + max(0, ops - 0.70) * 15
-        prob = round(min(22, prob_base * pf))  # tope realista 22%
+        prob_base = (1 - math.exp(-float(hpg))) * 100      # base Poisson
+        prob_base += max(0, ops - 0.80) * 12               # bono por poder (OPS)
+        prob = round(min(40, prob_base * pf))              # park factor; tope 40%
         cands.append({
             "jugador": nombre.strip(), "nombre": nombre.strip(), "equipo": equipo,
             "hr_total": hr, "probabilidad": prob, "pitcher_rival": pitcher_rival,

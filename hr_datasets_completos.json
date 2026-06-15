@@ -1,377 +1,2108 @@
 {
+  "actualizado": "2026-06-15T12:10:37.239072",
+  "temporada": 2026,
   "bateadores": {
-    "Aaron Judge": {
-      "equipo": "NYY",
-      "hr": 9,
-      "hr_por_juego": 0.6
-    },
-    "Juan Soto": {
-      "equipo": "NYY",
-      "hr": 6,
-      "hr_por_juego": 0.4
-    },
-    "Giancarlo Stanton": {
-      "equipo": "NYY",
-      "hr": 5,
-      "hr_por_juego": 0.33
-    },
-    "Jazz Chisholm Jr": {
-      "equipo": "NYY",
-      "hr": 3,
-      "hr_por_juego": 0.2
-    },
-    "Anthony Volpe": {
-      "equipo": "NYY",
-      "hr": 2,
-      "hr_por_juego": 0.13
-    },
-    "Shohei Ohtani": {
-      "equipo": "LAD",
-      "hr": 8,
-      "hr_por_juego": 0.53
-    },
-    "Mookie Betts": {
-      "equipo": "LAD",
-      "hr": 5,
-      "hr_por_juego": 0.33
-    },
-    "Freddie Freeman": {
-      "equipo": "LAD",
-      "hr": 4,
-      "hr_por_juego": 0.27
-    },
-    "Ronald Acuna Jr": {
-      "equipo": "ATL",
-      "hr": 6,
-      "hr_por_juego": 0.4
-    },
-    "Matt Olson": {
-      "equipo": "ATL",
-      "hr": 7,
-      "hr_por_juego": 0.47
-    },
-    "Austin Riley": {
-      "equipo": "ATL",
-      "hr": 5,
-      "hr_por_juego": 0.33
-    },
-    "Ozzie Albies": {
-      "equipo": "ATL",
-      "hr": 3,
-      "hr_por_juego": 0.2
-    },
-    "Bryce Harper": {
-      "equipo": "PHI",
-      "hr": 5,
-      "hr_por_juego": 0.33
+    "Yordan Alvarez": {
+      "equipo": "HOU",
+      "equipo_nombre": "Houston Astros",
+      "hr": 24,
+      "hr_por_juego": 0.333,
+      "avg": 0.326,
+      "ops": 1.084
     },
     "Kyle Schwarber": {
       "equipo": "PHI",
-      "hr": 6,
-      "hr_por_juego": 0.4
-    },
-    "Trea Turner": {
-      "equipo": "PHI",
-      "hr": 3,
-      "hr_por_juego": 0.2
-    },
-    "Manny Machado": {
-      "equipo": "SD",
-      "hr": 5,
-      "hr_por_juego": 0.33
-    },
-    "Fernando Tatis Jr": {
-      "equipo": "SD",
-      "hr": 6,
-      "hr_por_juego": 0.4
-    },
-    "Xander Bogaerts": {
-      "equipo": "SD",
-      "hr": 3,
-      "hr_por_juego": 0.2
-    },
-    "Mike Trout": {
-      "equipo": "LAA",
-      "hr": 7,
-      "hr_por_juego": 0.47
-    },
-    "Yordan Alvarez": {
-      "equipo": "HOU",
-      "hr": 6,
-      "hr_por_juego": 0.4
-    },
-    "Jose Altuve": {
-      "equipo": "HOU",
-      "hr": 4,
-      "hr_por_juego": 0.27
-    },
-    "Kyle Tucker": {
-      "equipo": "HOU",
-      "hr": 5,
-      "hr_por_juego": 0.33
-    },
-    "Rafael Devers": {
-      "equipo": "BOS",
-      "hr": 5,
-      "hr_por_juego": 0.33
-    },
-    "Vladimir Guerrero Jr": {
-      "equipo": "TOR",
-      "hr": 6,
-      "hr_por_juego": 0.4
-    },
-    "Bo Bichette": {
-      "equipo": "TOR",
-      "hr": 3,
-      "hr_por_juego": 0.2
-    },
-    "Julio Rodriguez": {
-      "equipo": "SEA",
-      "hr": 4,
-      "hr_por_juego": 0.27
-    },
-    "Randy Arozarena": {
-      "equipo": "SEA",
-      "hr": 3,
-      "hr_por_juego": 0.2
-    },
-    "Cal Raleigh": {
-      "equipo": "SEA",
-      "hr": 3,
-      "hr_por_juego": 0.2
-    },
-    "Corey Seager": {
-      "equipo": "TEX",
-      "hr": 5,
-      "hr_por_juego": 0.33
-    },
-    "Marcus Semien": {
-      "equipo": "TEX",
-      "hr": 4,
-      "hr_por_juego": 0.27
-    },
-    "Adolis Garcia": {
-      "equipo": "TEX",
-      "hr": 6,
-      "hr_por_juego": 0.4
-    },
-    "Jose Ramirez": {
-      "equipo": "CLE",
-      "hr": 5,
-      "hr_por_juego": 0.33
-    },
-    "Josh Naylor": {
-      "equipo": "CLE",
-      "hr": 3,
-      "hr_por_juego": 0.2
-    },
-    "Steven Kwan": {
-      "equipo": "CLE",
-      "hr": 1,
-      "hr_por_juego": 0.07
-    },
-    "Carlos Correa": {
-      "equipo": "MIN",
-      "hr": 3,
-      "hr_por_juego": 0.2
+      "equipo_nombre": "Philadelphia Phillies",
+      "hr": 24,
+      "hr_por_juego": 0.353,
+      "avg": 0.247,
+      "ops": 0.931
     },
     "Byron Buxton": {
       "equipo": "MIN",
-      "hr": 4,
-      "hr_por_juego": 0.27
+      "equipo_nombre": "Minnesota Twins",
+      "hr": 22,
+      "hr_por_juego": 0.361,
+      "avg": 0.276,
+      "ops": 0.936
     },
-    "Paul Goldschmidt": {
+    "Hunter Goodman": {
+      "equipo": "COL",
+      "equipo_nombre": "Colorado Rockies",
+      "hr": 20,
+      "hr_por_juego": 0.303,
+      "avg": 0.25,
+      "ops": 0.857
+    },
+    "Munetaka Murakami": {
+      "equipo": "CHW",
+      "equipo_nombre": "Chicago White Sox",
+      "hr": 20,
+      "hr_por_juego": 0.351,
+      "avg": 0.24,
+      "ops": 0.938
+    },
+    "Matt Olson": {
+      "equipo": "ATL",
+      "equipo_nombre": "Atlanta Braves",
+      "hr": 20,
+      "hr_por_juego": 0.282,
+      "avg": 0.27,
+      "ops": 0.894
+    },
+    "James Wood": {
+      "equipo": "WSH",
+      "equipo_nombre": "Washington Nationals",
+      "hr": 20,
+      "hr_por_juego": 0.278,
+      "avg": 0.281,
+      "ops": 0.972
+    },
+    "Ben Rice": {
+      "equipo": "NYY",
+      "equipo_nombre": "New York Yankees",
+      "hr": 19,
+      "hr_por_juego": 0.292,
+      "avg": 0.293,
+      "ops": 0.998
+    },
+    "Shea Langeliers": {
+      "equipo": "ATH",
+      "equipo_nombre": "Athletics",
+      "hr": 18,
+      "hr_por_juego": 0.281,
+      "avg": 0.281,
+      "ops": 0.883
+    },
+    "Christian Walker": {
+      "equipo": "HOU",
+      "equipo_nombre": "Houston Astros",
+      "hr": 18,
+      "hr_por_juego": 0.25,
+      "avg": 0.247,
+      "ops": 0.816
+    },
+    "Jordan Walker": {
       "equipo": "STL",
-      "hr": 4,
-      "hr_por_juego": 0.27
+      "equipo_nombre": "St. Louis Cardinals",
+      "hr": 18,
+      "hr_por_juego": 0.265,
+      "avg": 0.294,
+      "ops": 0.902
     },
-    "Nolan Arenado": {
-      "equipo": "STL",
-      "hr": 4,
-      "hr_por_juego": 0.27
+    "Aaron Judge": {
+      "equipo": "NYY",
+      "equipo_nombre": "New York Yankees",
+      "hr": 17,
+      "hr_por_juego": 0.288,
+      "avg": 0.248,
+      "ops": 0.908
     },
-    "Nolan Gorman": {
-      "equipo": "STL",
-      "hr": 5,
-      "hr_por_juego": 0.33
-    },
-    "Spencer Torkelson": {
-      "equipo": "DET",
-      "hr": 4,
-      "hr_por_juego": 0.27
-    },
-    "Riley Greene": {
-      "equipo": "DET",
-      "hr": 3,
-      "hr_por_juego": 0.2
-    },
-    "Bryan Reynolds": {
+    "Brandon Lowe": {
       "equipo": "PIT",
-      "hr": 3,
-      "hr_por_juego": 0.2
+      "equipo_nombre": "Pittsburgh Pirates",
+      "hr": 17,
+      "hr_por_juego": 0.258,
+      "avg": 0.24,
+      "ops": 0.837
+    },
+    "Colson Montgomery": {
+      "equipo": "CHW",
+      "equipo_nombre": "Chicago White Sox",
+      "hr": 17,
+      "hr_por_juego": 0.254,
+      "avg": 0.223,
+      "ops": 0.801
+    },
+    "Pete Alonso": {
+      "equipo": "BAL",
+      "equipo_nombre": "Baltimore Orioles",
+      "hr": 16,
+      "hr_por_juego": 0.219,
+      "avg": 0.253,
+      "ops": 0.808
+    },
+    "Willson Contreras": {
+      "equipo": "BOS",
+      "equipo_nombre": "Boston Red Sox",
+      "hr": 16,
+      "hr_por_juego": 0.239,
+      "avg": 0.304,
+      "ops": 0.966
+    },
+    "Dillon Dingler": {
+      "equipo": "DET",
+      "equipo_nombre": "Detroit Tigers",
+      "hr": 16,
+      "hr_por_juego": 0.25,
+      "avg": 0.254,
+      "ops": 0.855
+    },
+    "Ian Happ": {
+      "equipo": "CHC",
+      "equipo_nombre": "Chicago Cubs",
+      "hr": 16,
+      "hr_por_juego": 0.235,
+      "avg": 0.224,
+      "ops": 0.815
+    },
+    "Nick Kurtz": {
+      "equipo": "ATH",
+      "equipo_nombre": "Athletics",
+      "hr": 16,
+      "hr_por_juego": 0.229,
+      "avg": 0.286,
+      "ops": 0.974
+    },
+    "Max Muncy": {
+      "equipo": "LAD",
+      "equipo_nombre": "Los Angeles Dodgers",
+      "hr": 16,
+      "hr_por_juego": 0.242,
+      "avg": 0.269,
+      "ops": 0.903
+    },
+    "Miguel Vargas": {
+      "equipo": "CHW",
+      "equipo_nombre": "Chicago White Sox",
+      "hr": 16,
+      "hr_por_juego": 0.232,
+      "avg": 0.247,
+      "ops": 0.86
+    },
+    "Junior Caminero": {
+      "equipo": "TB",
+      "equipo_nombre": "Tampa Bay Rays",
+      "hr": 15,
+      "hr_por_juego": 0.221,
+      "avg": 0.271,
+      "ops": 0.858
+    },
+    "Bryce Harper": {
+      "equipo": "PHI",
+      "equipo_nombre": "Philadelphia Phillies",
+      "hr": 15,
+      "hr_por_juego": 0.211,
+      "avg": 0.256,
+      "ops": 0.86
+    },
+    "Kazuma Okamoto": {
+      "equipo": "TOR",
+      "equipo_nombre": "Toronto Blue Jays",
+      "hr": 15,
+      "hr_por_juego": 0.214,
+      "avg": 0.235,
+      "ops": 0.761
+    },
+    "Andy Pages": {
+      "equipo": "LAD",
+      "equipo_nombre": "Los Angeles Dodgers",
+      "hr": 15,
+      "hr_por_juego": 0.211,
+      "avg": 0.273,
+      "ops": 0.817
+    },
+    "Casey Schmitt": {
+      "equipo": "SF",
+      "equipo_nombre": "San Francisco Giants",
+      "hr": 15,
+      "hr_por_juego": 0.234,
+      "avg": 0.276,
+      "ops": 0.818
+    },
+    "Juan Soto": {
+      "equipo": "NYM",
+      "equipo_nombre": "New York Mets",
+      "hr": 15,
+      "hr_por_juego": 0.278,
+      "avg": 0.293,
+      "ops": 0.948
+    },
+    "Mike Trout": {
+      "equipo": "LAA",
+      "equipo_nombre": "Los Angeles Angels",
+      "hr": 15,
+      "hr_por_juego": 0.211,
+      "avg": 0.224,
+      "ops": 0.833
+    },
+    "CJ Abrams": {
+      "equipo": "WSH",
+      "equipo_nombre": "Washington Nationals",
+      "hr": 14,
+      "hr_por_juego": 0.2,
+      "avg": 0.29,
+      "ops": 0.894
     },
     "Oneil Cruz": {
       "equipo": "PIT",
-      "hr": 4,
-      "hr_por_juego": 0.27
+      "equipo_nombre": "Pittsburgh Pirates",
+      "hr": 14,
+      "hr_por_juego": 0.219,
+      "avg": 0.264,
+      "ops": 0.822
     },
-    "Corbin Carroll": {
-      "equipo": "ARI",
-      "hr": 4,
-      "hr_por_juego": 0.27
-    },
-    "Ketel Marte": {
-      "equipo": "ARI",
-      "hr": 3,
-      "hr_por_juego": 0.2
-    },
-    "Luis Robert": {
-      "equipo": "CHW",
-      "hr": 5,
-      "hr_por_juego": 0.33
-    },
-    "Elly De La Cruz": {
-      "equipo": "CIN",
-      "hr": 3,
-      "hr_por_juego": 0.2
-    },
-    "Pete Alonso": {
-      "equipo": "NYM",
-      "hr": 4,
-      "hr_por_juego": 0.27
-    },
-    "Francisco Lindor": {
-      "equipo": "NYM",
-      "hr": 3,
-      "hr_por_juego": 0.2
-    },
-    "Christian Yelich": {
-      "equipo": "MIL",
-      "hr": 4,
-      "hr_por_juego": 0.27
-    },
-    "Willy Adames": {
-      "equipo": "SF",
-      "hr": 5,
-      "hr_por_juego": 0.33
-    },
-    "Matt Chapman": {
-      "equipo": "SF",
-      "hr": 4,
-      "hr_por_juego": 0.27
-    },
-    "Dansby Swanson": {
-      "equipo": "CHC",
-      "hr": 3,
-      "hr_por_juego": 0.2
-    },
-    "Cody Bellinger": {
-      "equipo": "CHC",
-      "hr": 5,
-      "hr_por_juego": 0.33
-    },
-    "Nolan Jones": {
-      "equipo": "COL",
-      "hr": 5,
-      "hr_por_juego": 0.33
+    "Michael Harris II": {
+      "equipo": "ATL",
+      "equipo_nombre": "Atlanta Braves",
+      "hr": 14,
+      "hr_por_juego": 0.209,
+      "avg": 0.303,
+      "ops": 0.849
     },
     "Gunnar Henderson": {
       "equipo": "BAL",
-      "hr": 5,
-      "hr_por_juego": 0.33
+      "equipo_nombre": "Baltimore Orioles",
+      "hr": 14,
+      "hr_por_juego": 0.194,
+      "avg": 0.227,
+      "ops": 0.715
+    },
+    "Shohei Ohtani": {
+      "equipo": "LAD",
+      "equipo_nombre": "Los Angeles Dodgers",
+      "hr": 14,
+      "hr_por_juego": 0.203,
+      "avg": 0.302,
+      "ops": 0.975
+    },
+    "Luke Raley": {
+      "equipo": "SEA",
+      "equipo_nombre": "Seattle Mariners",
+      "hr": 14,
+      "hr_por_juego": 0.212,
+      "avg": 0.241,
+      "ops": 0.806
+    },
+    "Drake Baldwin": {
+      "equipo": "ATL",
+      "equipo_nombre": "Atlanta Braves",
+      "hr": 13,
+      "hr_por_juego": 0.271,
+      "avg": 0.303,
+      "ops": 0.932
+    },
+    "Jake Bauers": {
+      "equipo": "MIL",
+      "equipo_nombre": "Milwaukee Brewers",
+      "hr": 13,
+      "hr_por_juego": 0.217,
+      "avg": 0.276,
+      "ops": 0.893
+    },
+    "Alec Burleson": {
+      "equipo": "STL",
+      "equipo_nombre": "St. Louis Cardinals",
+      "hr": 13,
+      "hr_por_juego": 0.191,
+      "avg": 0.287,
+      "ops": 0.848
+    },
+    "Liam Hicks": {
+      "equipo": "MIA",
+      "equipo_nombre": "Miami Marlins",
+      "hr": 13,
+      "hr_por_juego": 0.188,
+      "avg": 0.277,
+      "ops": 0.846
+    },
+    "Zach Neto": {
+      "equipo": "LAA",
+      "equipo_nombre": "Los Angeles Angels",
+      "hr": 13,
+      "hr_por_juego": 0.188,
+      "avg": 0.223,
+      "ops": 0.753
+    },
+    "Julio Rodríguez": {
+      "equipo": "SEA",
+      "equipo_nombre": "Seattle Mariners",
+      "hr": 13,
+      "hr_por_juego": 0.178,
+      "avg": 0.248,
+      "ops": 0.74
+    },
+    "Sal Stewart": {
+      "equipo": "CIN",
+      "equipo_nombre": "Cincinnati Reds",
+      "hr": 13,
+      "hr_por_juego": 0.186,
+      "avg": 0.247,
+      "ops": 0.789
+    },
+    "JJ Bleday": {
+      "equipo": "CIN",
+      "equipo_nombre": "Cincinnati Reds",
+      "hr": 12,
+      "hr_por_juego": 0.286,
+      "avg": 0.266,
+      "ops": 0.931
+    },
+    "Jake Burger": {
+      "equipo": "TEX",
+      "equipo_nombre": "Texas Rangers",
+      "hr": 12,
+      "hr_por_juego": 0.174,
+      "avg": 0.247,
+      "ops": 0.744
+    },
+    "Corbin Carroll": {
+      "equipo": "ARI",
+      "equipo_nombre": "Arizona Diamondbacks",
+      "hr": 12,
+      "hr_por_juego": 0.176,
+      "avg": 0.278,
+      "ops": 0.914
+    },
+    "Pete Crow-Armstrong": {
+      "equipo": "CHC",
+      "equipo_nombre": "Chicago Cubs",
+      "hr": 12,
+      "hr_por_juego": 0.167,
+      "avg": 0.267,
+      "ops": 0.806
+    },
+    "Elly De La Cruz": {
+      "equipo": "CIN",
+      "equipo_nombre": "Cincinnati Reds",
+      "hr": 12,
+      "hr_por_juego": 0.207,
+      "avg": 0.28,
+      "ops": 0.855
+    },
+    "Yandy Díaz": {
+      "equipo": "TB",
+      "equipo_nombre": "Tampa Bay Rays",
+      "hr": 12,
+      "hr_por_juego": 0.185,
+      "avg": 0.32,
+      "ops": 0.915
+    },
+    "Manny Machado": {
+      "equipo": "SD",
+      "equipo_nombre": "San Diego Padres",
+      "hr": 12,
+      "hr_por_juego": 0.176,
+      "avg": 0.175,
+      "ops": 0.613
+    },
+    "Mickey Moniak": {
+      "equipo": "COL",
+      "equipo_nombre": "Colorado Rockies",
+      "hr": 12,
+      "hr_por_juego": 0.279,
+      "avg": 0.28,
+      "ops": 0.942
+    },
+    "Tyler Soderstrom": {
+      "equipo": "ATH",
+      "equipo_nombre": "Athletics",
+      "hr": 12,
+      "hr_por_juego": 0.176,
+      "avg": 0.241,
+      "ops": 0.814
+    },
+    "Willy Adames": {
+      "equipo": "SF",
+      "equipo_nombre": "San Francisco Giants",
+      "hr": 11,
+      "hr_por_juego": 0.157,
+      "avg": 0.229,
+      "ops": 0.692
+    },
+    "Jonathan Aranda": {
+      "equipo": "TB",
+      "equipo_nombre": "Tampa Bay Rays",
+      "hr": 11,
+      "hr_por_juego": 0.164,
+      "avg": 0.272,
+      "ops": 0.824
+    },
+    "Jarren Duran": {
+      "equipo": "BOS",
+      "equipo_nombre": "Boston Red Sox",
+      "hr": 11,
+      "hr_por_juego": 0.172,
+      "avg": 0.211,
+      "ops": 0.655
+    },
+    "Freddie Freeman": {
+      "equipo": "LAD",
+      "equipo_nombre": "Los Angeles Dodgers",
+      "hr": 11,
+      "hr_por_juego": 0.159,
+      "avg": 0.275,
+      "ops": 0.836
+    },
+    "Brooks Lee": {
+      "equipo": "MIN",
+      "equipo_nombre": "Minnesota Twins",
+      "hr": 11,
+      "hr_por_juego": 0.159,
+      "avg": 0.236,
+      "ops": 0.706
+    },
+    "Ketel Marte": {
+      "equipo": "ARI",
+      "equipo_nombre": "Arizona Diamondbacks",
+      "hr": 11,
+      "hr_por_juego": 0.164,
+      "avg": 0.255,
+      "ops": 0.75
+    },
+    "Angel Martínez": {
+      "equipo": "CLE",
+      "equipo_nombre": "Cleveland Guardians",
+      "hr": 11,
+      "hr_por_juego": 0.167,
+      "avg": 0.239,
+      "ops": 0.718
+    },
+    "Gavin Sheets": {
+      "equipo": "SD",
+      "equipo_nombre": "San Diego Padres",
+      "hr": 11,
+      "hr_por_juego": 0.172,
+      "avg": 0.232,
+      "ops": 0.78
+    },
+    "Spencer Torkelson": {
+      "equipo": "DET",
+      "equipo_nombre": "Detroit Tigers",
+      "hr": 11,
+      "hr_por_juego": 0.157,
+      "avg": 0.209,
+      "ops": 0.717
+    },
+    "Jo Adell": {
+      "equipo": "LAA",
+      "equipo_nombre": "Los Angeles Angels",
+      "hr": 10,
+      "hr_por_juego": 0.139,
+      "avg": 0.254,
+      "ops": 0.695
+    },
+    "Ozzie Albies": {
+      "equipo": "ATL",
+      "equipo_nombre": "Atlanta Braves",
+      "hr": 10,
+      "hr_por_juego": 0.141,
+      "avg": 0.279,
+      "ops": 0.772
+    },
+    "Samuel Basallo": {
+      "equipo": "BAL",
+      "equipo_nombre": "Baltimore Orioles",
+      "hr": 10,
+      "hr_por_juego": 0.167,
+      "avg": 0.258,
+      "ops": 0.79
+    },
+    "Cody Bellinger": {
+      "equipo": "NYY",
+      "equipo_nombre": "New York Yankees",
+      "hr": 10,
+      "hr_por_juego": 0.145,
+      "avg": 0.265,
+      "ops": 0.823
+    },
+    "Dominic Canzone": {
+      "equipo": "SEA",
+      "equipo_nombre": "Seattle Mariners",
+      "hr": 10,
+      "hr_por_juego": 0.156,
+      "avg": 0.286,
+      "ops": 0.913
+    },
+    "Kody Clemens": {
+      "equipo": "MIN",
+      "equipo_nombre": "Minnesota Twins",
+      "hr": 10,
+      "hr_por_juego": 0.167,
+      "avg": 0.251,
+      "ops": 0.8
+    },
+    "J.P. Crawford": {
+      "equipo": "SEA",
+      "equipo_nombre": "Seattle Mariners",
+      "hr": 10,
+      "hr_por_juego": 0.182,
+      "avg": 0.228,
+      "ops": 0.765
+    },
+    "Curtis Mead": {
+      "equipo": "WSH",
+      "equipo_nombre": "Washington Nationals",
+      "hr": 10,
+      "hr_por_juego": 0.179,
+      "avg": 0.234,
+      "ops": 0.81
+    },
+    "Ryan O'Hearn": {
+      "equipo": "PIT",
+      "equipo_nombre": "Pittsburgh Pirates",
+      "hr": 10,
+      "hr_por_juego": 0.175,
+      "avg": 0.275,
+      "ops": 0.791
+    },
+    "José Ramírez": {
+      "equipo": "CLE",
+      "equipo_nombre": "Cleveland Guardians",
+      "hr": 10,
+      "hr_por_juego": 0.139,
+      "avg": 0.239,
+      "ops": 0.757
+    },
+    "Brent Rooker": {
+      "equipo": "ATH",
+      "equipo_nombre": "Athletics",
+      "hr": 10,
+      "hr_por_juego": 0.208,
+      "avg": 0.2,
+      "ops": 0.67
+    },
+    "Spencer Steer": {
+      "equipo": "CIN",
+      "equipo_nombre": "Cincinnati Reds",
+      "hr": 10,
+      "hr_por_juego": 0.147,
+      "avg": 0.251,
+      "ops": 0.763
+    },
+    "Seiya Suzuki": {
+      "equipo": "CHC",
+      "equipo_nombre": "Chicago Cubs",
+      "hr": 10,
+      "hr_por_juego": 0.175,
+      "avg": 0.255,
+      "ops": 0.772
+    },
+    "Brice Turang": {
+      "equipo": "MIL",
+      "equipo_nombre": "Milwaukee Brewers",
+      "hr": 10,
+      "hr_por_juego": 0.154,
+      "avg": 0.261,
+      "ops": 0.835
+    },
+    "JJ Wetherholt": {
+      "equipo": "STL",
+      "equipo_nombre": "St. Louis Cardinals",
+      "hr": 10,
+      "hr_por_juego": 0.154,
+      "avg": 0.255,
+      "ops": 0.761
+    },
+    "Kerry Carpenter": {
+      "equipo": "DET",
+      "equipo_nombre": "Detroit Tigers",
+      "hr": 9,
+      "hr_por_juego": 0.188,
+      "avg": 0.237,
+      "ops": 0.805
+    },
+    "Jazz Chisholm Jr.": {
+      "equipo": "NYY",
+      "equipo_nombre": "New York Yankees",
+      "hr": 9,
+      "hr_por_juego": 0.134,
+      "avg": 0.229,
+      "ops": 0.718
+    },
+    "Jackson Chourio": {
+      "equipo": "MIL",
+      "equipo_nombre": "Milwaukee Brewers",
+      "hr": 9,
+      "hr_por_juego": 0.257,
+      "avg": 0.322,
+      "ops": 0.942
+    },
+    "Rafael Devers": {
+      "equipo": "SF",
+      "equipo_nombre": "San Francisco Giants",
+      "hr": 9,
+      "hr_por_juego": 0.125,
+      "avg": 0.235,
+      "ops": 0.706
+    },
+    "Luis García Jr.": {
+      "equipo": "WSH",
+      "equipo_nombre": "Washington Nationals",
+      "hr": 9,
+      "hr_por_juego": 0.136,
+      "avg": 0.259,
+      "ops": 0.748
+    },
+    "Zack Gelof": {
+      "equipo": "ATH",
+      "equipo_nombre": "Athletics",
+      "hr": 9,
+      "hr_por_juego": 0.164,
+      "avg": 0.276,
+      "ops": 0.804
+    },
+    "Paul Goldschmidt": {
+      "equipo": "NYY",
+      "equipo_nombre": "New York Yankees",
+      "hr": 9,
+      "hr_por_juego": 0.2,
+      "avg": 0.295,
+      "ops": 0.898
+    },
+    "Iván Herrera": {
+      "equipo": "STL",
+      "equipo_nombre": "St. Louis Cardinals",
+      "hr": 9,
+      "hr_por_juego": 0.13,
+      "avg": 0.267,
+      "ops": 0.829
+    },
+    "Spencer Horwitz": {
+      "equipo": "PIT",
+      "equipo_nombre": "Pittsburgh Pirates",
+      "hr": 9,
+      "hr_por_juego": 0.136,
+      "avg": 0.281,
+      "ops": 0.834
+    },
+    "Nathaniel Lowe": {
+      "equipo": "CIN",
+      "equipo_nombre": "Cincinnati Reds",
+      "hr": 9,
+      "hr_por_juego": 0.167,
+      "avg": 0.257,
+      "ops": 0.844
+    },
+    "Coby Mayo": {
+      "equipo": "BAL",
+      "equipo_nombre": "Baltimore Orioles",
+      "hr": 9,
+      "hr_por_juego": 0.155,
+      "avg": 0.194,
+      "ops": 0.642
+    },
+    "Isaac Paredes": {
+      "equipo": "HOU",
+      "equipo_nombre": "Houston Astros",
+      "hr": 9,
+      "hr_por_juego": 0.136,
+      "avg": 0.229,
+      "ops": 0.725
+    },
+    "Salvador Perez": {
+      "equipo": "KC",
+      "equipo_nombre": "Kansas City Royals",
+      "hr": 9,
+      "hr_por_juego": 0.136,
+      "avg": 0.202,
+      "ops": 0.579
+    },
+    "TJ Rumfield": {
+      "equipo": "COL",
+      "equipo_nombre": "Colorado Rockies",
+      "hr": 9,
+      "hr_por_juego": 0.13,
+      "avg": 0.28,
+      "ops": 0.826
+    },
+    "Corey Seager": {
+      "equipo": "TEX",
+      "equipo_nombre": "Texas Rangers",
+      "hr": 9,
+      "hr_por_juego": 0.191,
+      "avg": 0.186,
+      "ops": 0.657
+    },
+    "Marcus Semien": {
+      "equipo": "NYM",
+      "equipo_nombre": "New York Mets",
+      "hr": 9,
+      "hr_por_juego": 0.127,
+      "avg": 0.218,
+      "ops": 0.625
+    },
+    "Jorge Soler": {
+      "equipo": "LAA",
+      "equipo_nombre": "Los Angeles Angels",
+      "hr": 9,
+      "hr_por_juego": 0.155,
+      "avg": 0.22,
+      "ops": 0.702
+    },
+    "Bobby Witt Jr.": {
+      "equipo": "KC",
+      "equipo_nombre": "Kansas City Royals",
+      "hr": 9,
+      "hr_por_juego": 0.125,
+      "avg": 0.287,
+      "ops": 0.813
+    },
+    "Wilyer Abreu": {
+      "equipo": "BOS",
+      "equipo_nombre": "Boston Red Sox",
+      "hr": 8,
+      "hr_por_juego": 0.118,
+      "avg": 0.279,
+      "ops": 0.77
+    },
+    "Nolan Arenado": {
+      "equipo": "ARI",
+      "equipo_nombre": "Arizona Diamondbacks",
+      "hr": 8,
+      "hr_por_juego": 0.121,
+      "avg": 0.243,
+      "ops": 0.729
+    },
+    "Bo Bichette": {
+      "equipo": "NYM",
+      "equipo_nombre": "New York Mets",
+      "hr": 8,
+      "hr_por_juego": 0.113,
+      "avg": 0.239,
+      "ops": 0.646
+    },
+    "Xander Bogaerts": {
+      "equipo": "SD",
+      "equipo_nombre": "San Diego Padres",
+      "hr": 8,
+      "hr_por_juego": 0.121,
+      "avg": 0.228,
+      "ops": 0.658
+    },
+    "Alec Bohm": {
+      "equipo": "PHI",
+      "equipo_nombre": "Philadelphia Phillies",
+      "hr": 8,
+      "hr_por_juego": 0.119,
+      "avg": 0.219,
+      "ops": 0.626
+    },
+    "Michael Busch": {
+      "equipo": "CHC",
+      "equipo_nombre": "Chicago Cubs",
+      "hr": 8,
+      "hr_por_juego": 0.113,
+      "avg": 0.253,
+      "ops": 0.789
+    },
+    "Jac Caglianone": {
+      "equipo": "KC",
+      "equipo_nombre": "Kansas City Royals",
+      "hr": 8,
+      "hr_por_juego": 0.121,
+      "avg": 0.269,
+      "ops": 0.782
+    },
+    "Riley Greene": {
+      "equipo": "DET",
+      "equipo_nombre": "Detroit Tigers",
+      "hr": 8,
+      "hr_por_juego": 0.113,
+      "avg": 0.297,
+      "ops": 0.84
+    },
+    "Trent Grisham": {
+      "equipo": "NYY",
+      "equipo_nombre": "New York Yankees",
+      "hr": 8,
+      "hr_por_juego": 0.121,
+      "avg": 0.232,
+      "ops": 0.747
+    },
+    "Carter Jensen": {
+      "equipo": "KC",
+      "equipo_nombre": "Kansas City Royals",
+      "hr": 8,
+      "hr_por_juego": 0.121,
+      "avg": 0.22,
+      "ops": 0.679
+    },
+    "Josh Jung": {
+      "equipo": "TEX",
+      "equipo_nombre": "Texas Rangers",
+      "hr": 8,
+      "hr_por_juego": 0.121,
+      "avg": 0.307,
+      "ops": 0.832
+    },
+    "Daylen Lile": {
+      "equipo": "WSH",
+      "equipo_nombre": "Washington Nationals",
+      "hr": 8,
+      "hr_por_juego": 0.113,
+      "avg": 0.262,
+      "ops": 0.744
+    },
+    "Brandon Marsh": {
+      "equipo": "PHI",
+      "equipo_nombre": "Philadelphia Phillies",
+      "hr": 8,
+      "hr_por_juego": 0.121,
+      "avg": 0.322,
+      "ops": 0.848
+    },
+    "Matt McLain": {
+      "equipo": "CIN",
+      "equipo_nombre": "Cincinnati Reds",
+      "hr": 8,
+      "hr_por_juego": 0.119,
+      "avg": 0.209,
+      "ops": 0.673
+    },
+    "Josh Naylor": {
+      "equipo": "SEA",
+      "equipo_nombre": "Seattle Mariners",
+      "hr": 8,
+      "hr_por_juego": 0.118,
+      "avg": 0.253,
+      "ops": 0.687
+    },
+    "Joc Pederson": {
+      "equipo": "TEX",
+      "equipo_nombre": "Texas Rangers",
+      "hr": 8,
+      "hr_por_juego": 0.121,
+      "avg": 0.239,
+      "ops": 0.782
+    },
+    "Bryan Reynolds": {
+      "equipo": "PIT",
+      "equipo_nombre": "Pittsburgh Pirates",
+      "hr": 8,
+      "hr_por_juego": 0.111,
+      "avg": 0.27,
+      "ops": 0.833
+    },
+    "Austin Riley": {
+      "equipo": "ATL",
+      "equipo_nombre": "Atlanta Braves",
+      "hr": 8,
+      "hr_por_juego": 0.113,
+      "avg": 0.203,
+      "ops": 0.635
+    },
+    "Dalton Rushing": {
+      "equipo": "LAD",
+      "equipo_nombre": "Los Angeles Dodgers",
+      "hr": 8,
+      "hr_por_juego": 0.2,
+      "avg": 0.269,
+      "ops": 0.881
     },
     "Adley Rutschman": {
       "equipo": "BAL",
-      "hr": 3,
-      "hr_por_juego": 0.2
+      "equipo_nombre": "Baltimore Orioles",
+      "hr": 8,
+      "hr_por_juego": 0.157,
+      "avg": 0.265,
+      "ops": 0.824
     },
-    "Yandy Diaz": {
-      "equipo": "TB",
-      "hr": 4,
-      "hr_por_juego": 0.27
+    "Jacob Young": {
+      "equipo": "WSH",
+      "equipo_nombre": "Washington Nationals",
+      "hr": 8,
+      "hr_por_juego": 0.114,
+      "avg": 0.237,
+      "ops": 0.688
     },
-    "Brandon Lowe": {
-      "equipo": "TB",
-      "hr": 3,
-      "hr_por_juego": 0.2
+    "Ronald Acuña Jr.": {
+      "equipo": "ATL",
+      "equipo_nombre": "Atlanta Braves",
+      "hr": 7,
+      "hr_por_juego": 0.132,
+      "avg": 0.251,
+      "ops": 0.794
+    },
+    "Randy Arozarena": {
+      "equipo": "SEA",
+      "equipo_nombre": "Seattle Mariners",
+      "hr": 7,
+      "hr_por_juego": 0.099,
+      "avg": 0.291,
+      "ops": 0.825
+    },
+    "Josh Bell": {
+      "equipo": "MIN",
+      "equipo_nombre": "Minnesota Twins",
+      "hr": 7,
+      "hr_por_juego": 0.1,
+      "avg": 0.232,
+      "ops": 0.652
+    },
+    "Carson Benge": {
+      "equipo": "NYM",
+      "equipo_nombre": "New York Mets",
+      "hr": 7,
+      "hr_por_juego": 0.103,
+      "avg": 0.257,
+      "ops": 0.709
+    },
+    "Andrew Benintendi": {
+      "equipo": "CHW",
+      "equipo_nombre": "Chicago White Sox",
+      "hr": 7,
+      "hr_por_juego": 0.111,
+      "avg": 0.236,
+      "ops": 0.704
+    },
+    "Mookie Betts": {
+      "equipo": "LAD",
+      "equipo_nombre": "Los Angeles Dodgers",
+      "hr": 7,
+      "hr_por_juego": 0.189,
+      "avg": 0.204,
+      "ops": 0.641
+    },
+    "Matt Chapman": {
+      "equipo": "SF",
+      "equipo_nombre": "San Francisco Giants",
+      "hr": 7,
+      "hr_por_juego": 0.099,
+      "avg": 0.261,
+      "ops": 0.762
+    },
+    "Ernie Clement": {
+      "equipo": "TOR",
+      "equipo_nombre": "Toronto Blue Jays",
+      "hr": 7,
+      "hr_por_juego": 0.099,
+      "avg": 0.304,
+      "ops": 0.784
+    },
+    "Colton Cowser": {
+      "equipo": "BAL",
+      "equipo_nombre": "Baltimore Orioles",
+      "hr": 7,
+      "hr_por_juego": 0.111,
+      "avg": 0.223,
+      "ops": 0.697
+    },
+    "Chase DeLauter": {
+      "equipo": "CLE",
+      "equipo_nombre": "Cleveland Guardians",
+      "hr": 7,
+      "hr_por_juego": 0.106,
+      "avg": 0.263,
+      "ops": 0.745
+    },
+    "Adolis García": {
+      "equipo": "PHI",
+      "equipo_nombre": "Philadelphia Phillies",
+      "hr": 7,
+      "hr_por_juego": 0.104,
+      "avg": 0.195,
+      "ops": 0.599
+    },
+    "Nolan Gorman": {
+      "equipo": "STL",
+      "equipo_nombre": "St. Louis Cardinals",
+      "hr": 7,
+      "hr_por_juego": 0.113,
+      "avg": 0.194,
+      "ops": 0.597
+    },
+    "Teoscar Hernández": {
+      "equipo": "LAD",
+      "equipo_nombre": "Los Angeles Dodgers",
+      "hr": 7,
+      "hr_por_juego": 0.137,
+      "avg": 0.276,
+      "ops": 0.784
+    },
+    "Brady House": {
+      "equipo": "WSH",
+      "equipo_nombre": "Washington Nationals",
+      "hr": 7,
+      "hr_por_juego": 0.159,
+      "avg": 0.227,
+      "ops": 0.681
+    },
+    "Jeremiah Jackson": {
+      "equipo": "BAL",
+      "equipo_nombre": "Baltimore Orioles",
+      "hr": 7,
+      "hr_por_juego": 0.123,
+      "avg": 0.257,
+      "ops": 0.692
+    },
+    "Ryan Jeffers": {
+      "equipo": "MIN",
+      "equipo_nombre": "Minnesota Twins",
+      "hr": 7,
+      "hr_por_juego": 0.189,
+      "avg": 0.295,
+      "ops": 0.949
+    },
+    "Ramón Laureano": {
+      "equipo": "SD",
+      "equipo_nombre": "San Diego Padres",
+      "hr": 7,
+      "hr_por_juego": 0.132,
+      "avg": 0.203,
+      "ops": 0.66
+    },
+    "Kyle Manzardo": {
+      "equipo": "CLE",
+      "equipo_nombre": "Cleveland Guardians",
+      "hr": 7,
+      "hr_por_juego": 0.113,
+      "avg": 0.239,
+      "ops": 0.726
+    },
+    "Ryan McMahon": {
+      "equipo": "NYY",
+      "equipo_nombre": "New York Yankees",
+      "hr": 7,
+      "hr_por_juego": 0.109,
+      "avg": 0.211,
+      "ops": 0.631
+    },
+    "Jackson Merrill": {
+      "equipo": "SD",
+      "equipo_nombre": "San Diego Padres",
+      "hr": 7,
+      "hr_por_juego": 0.104,
+      "avg": 0.207,
+      "ops": 0.619
+    },
+    "Brandon Nimmo": {
+      "equipo": "TEX",
+      "equipo_nombre": "Texas Rangers",
+      "hr": 7,
+      "hr_por_juego": 0.101,
+      "avg": 0.257,
+      "ops": 0.738
+    },
+    "Oswald Peraza": {
+      "equipo": "LAA",
+      "equipo_nombre": "Los Angeles Angels",
+      "hr": 7,
+      "hr_por_juego": 0.106,
+      "avg": 0.26,
+      "ops": 0.737
+    },
+    "Wenceel Pérez": {
+      "equipo": "DET",
+      "equipo_nombre": "Detroit Tigers",
+      "hr": 7,
+      "hr_por_juego": 0.135,
+      "avg": 0.184,
+      "ops": 0.6
+    },
+    "Ceddanne Rafaela": {
+      "equipo": "BOS",
+      "equipo_nombre": "Boston Red Sox",
+      "hr": 7,
+      "hr_por_juego": 0.106,
+      "avg": 0.286,
+      "ops": 0.791
+    },
+    "Cal Raleigh": {
+      "equipo": "SEA",
+      "equipo_nombre": "Seattle Mariners",
+      "hr": 7,
+      "hr_por_juego": 0.171,
+      "avg": 0.161,
+      "ops": 0.56
+    },
+    "Cam Smith": {
+      "equipo": "HOU",
+      "equipo_nombre": "Houston Astros",
+      "hr": 7,
+      "hr_por_juego": 0.097,
+      "avg": 0.218,
+      "ops": 0.659
+    },
+    "Dansby Swanson": {
+      "equipo": "CHC",
+      "equipo_nombre": "Chicago Cubs",
+      "hr": 7,
+      "hr_por_juego": 0.103,
+      "avg": 0.179,
+      "ops": 0.597
+    },
+    "Gary Sánchez": {
+      "equipo": "MIL",
+      "equipo_nombre": "Milwaukee Brewers",
+      "hr": 7,
+      "hr_por_juego": 0.171,
+      "avg": 0.227,
+      "ops": 0.843
+    },
+    "Jesús Sánchez": {
+      "equipo": "TOR",
+      "equipo_nombre": "Toronto Blue Jays",
+      "hr": 7,
+      "hr_por_juego": 0.106,
+      "avg": 0.287,
+      "ops": 0.787
+    },
+    "Trea Turner": {
+      "equipo": "PHI",
+      "equipo_nombre": "Philadelphia Phillies",
+      "hr": 7,
+      "hr_por_juego": 0.1,
+      "avg": 0.219,
+      "ops": 0.599
+    },
+    "Brandon Valenzuela": {
+      "equipo": "TOR",
+      "equipo_nombre": "Toronto Blue Jays",
+      "hr": 7,
+      "hr_por_juego": 0.149,
+      "avg": 0.254,
+      "ops": 0.792
+    },
+    "Ildemaro Vargas": {
+      "equipo": "ARI",
+      "equipo_nombre": "Arizona Diamondbacks",
+      "hr": 7,
+      "hr_por_juego": 0.115,
+      "avg": 0.267,
+      "ops": 0.721
+    },
+    "Mark Vientos": {
+      "equipo": "NYM",
+      "equipo_nombre": "New York Mets",
+      "hr": 7,
+      "hr_por_juego": 0.121,
+      "avg": 0.212,
+      "ops": 0.609
+    },
+    "Jose Altuve": {
+      "equipo": "HOU",
+      "equipo_nombre": "Houston Astros",
+      "hr": 6,
+      "hr_por_juego": 0.12,
+      "avg": 0.238,
+      "ops": 0.705
+    },
+    "Moisés Ballesteros": {
+      "equipo": "CHC",
+      "equipo_nombre": "Chicago Cubs",
+      "hr": 6,
+      "hr_por_juego": 0.105,
+      "avg": 0.235,
+      "ops": 0.696
+    },
+    "Alex Bregman": {
+      "equipo": "CHC",
+      "equipo_nombre": "Chicago Cubs",
+      "hr": 6,
+      "hr_por_juego": 0.085,
+      "avg": 0.25,
+      "ops": 0.69
+    },
+    "José Caballero": {
+      "equipo": "NYY",
+      "equipo_nombre": "New York Yankees",
+      "hr": 6,
+      "hr_por_juego": 0.102,
+      "avg": 0.258,
+      "ops": 0.715
     }
   },
   "pitchers": {
-    "Corbin Burnes": {
-      "equipo": "BAL",
-      "hr_por_juego": 0.8
-    },
-    "Zack Wheeler": {
+    "Cristopher Sánchez": {
       "equipo": "PHI",
-      "hr_por_juego": 0.7
+      "equipo_nombre": "Philadelphia Phillies",
+      "hr_por_juego": 0.55,
+      "hr_permitidos": 6
     },
-    "Logan Webb": {
-      "equipo": "SF",
-      "hr_por_juego": 0.7
+    "Sandy Alcantara": {
+      "equipo": "MIA",
+      "equipo_nombre": "Miami Marlins",
+      "hr_por_juego": 1.11,
+      "hr_permitidos": 12
     },
-    "Spencer Strider": {
+    "Cam Schlittler": {
+      "equipo": "NYY",
+      "equipo_nombre": "New York Yankees",
+      "hr_por_juego": 0.51,
+      "hr_permitidos": 5
+    },
+    "Bryce Elder": {
       "equipo": "ATL",
-      "hr_por_juego": 0.8
+      "equipo_nombre": "Atlanta Braves",
+      "hr_por_juego": 0.91,
+      "hr_permitidos": 9
     },
-    "Yoshinobu Yamamoto": {
-      "equipo": "LAD",
-      "hr_por_juego": 0.7
+    "Michael Wacha": {
+      "equipo": "KC",
+      "equipo_nombre": "Kansas City Royals",
+      "hr_por_juego": 1.02,
+      "hr_permitidos": 10
     },
-    "Pablo Lopez": {
-      "equipo": "MIN",
-      "hr_por_juego": 0.9
-    },
-    "Framber Valdez": {
-      "equipo": "HOU",
-      "hr_por_juego": 0.7
+    "Nathan Eovaldi": {
+      "equipo": "TEX",
+      "equipo_nombre": "Texas Rangers",
+      "hr_por_juego": 1.75,
+      "hr_permitidos": 17
     },
     "Kevin Gausman": {
       "equipo": "TOR",
-      "hr_por_juego": 1.0
+      "equipo_nombre": "Toronto Blue Jays",
+      "hr_por_juego": 1.03,
+      "hr_permitidos": 10
     },
-    "Gerrit Cole": {
-      "equipo": "NYY",
-      "hr_por_juego": 0.6
+    "Jacob Misiorowski": {
+      "equipo": "MIL",
+      "equipo_nombre": "Milwaukee Brewers",
+      "hr_por_juego": 0.41,
+      "hr_permitidos": 4
     },
-    "Jacob deGrom": {
-      "equipo": "TEX",
-      "hr_por_juego": 0.5
+    "José Soriano": {
+      "equipo": "LAA",
+      "equipo_nombre": "Los Angeles Angels",
+      "hr_por_juego": 0.93,
+      "hr_permitidos": 9
     },
-    "Shane McClanahan": {
-      "equipo": "TB",
-      "hr_por_juego": 0.7
+    "Gavin Williams": {
+      "equipo": "CLE",
+      "equipo_nombre": "Cleveland Guardians",
+      "hr_por_juego": 1.35,
+      "hr_permitidos": 13
+    },
+    "Yoshinobu Yamamoto": {
+      "equipo": "LAD",
+      "equipo_nombre": "Los Angeles Dodgers",
+      "hr_por_juego": 1.05,
+      "hr_permitidos": 10
+    },
+    "Max Meyer": {
+      "equipo": "MIA",
+      "equipo_nombre": "Miami Marlins",
+      "hr_por_juego": 0.74,
+      "hr_permitidos": 7
+    },
+    "Braxton Ashcraft": {
+      "equipo": "PIT",
+      "equipo_nombre": "Pittsburgh Pirates",
+      "hr_por_juego": 0.85,
+      "hr_permitidos": 8
     },
     "Tanner Bibee": {
       "equipo": "CLE",
-      "hr_por_juego": 0.8
+      "equipo_nombre": "Cleveland Guardians",
+      "hr_por_juego": 1.61,
+      "hr_permitidos": 15
     },
-    "Sonny Gray": {
+    "George Kirby": {
+      "equipo": "SEA",
+      "equipo_nombre": "Seattle Mariners",
+      "hr_por_juego": 0.86,
+      "hr_permitidos": 8
+    },
+    "Freddy Peralta": {
+      "equipo": "NYM",
+      "equipo_nombre": "New York Mets",
+      "hr_por_juego": 1.08,
+      "hr_permitidos": 10
+    },
+    "Joe Ryan": {
+      "equipo": "MIN",
+      "equipo_nombre": "Minnesota Twins",
+      "hr_por_juego": 0.87,
+      "hr_permitidos": 8
+    },
+    "Shane Baz": {
+      "equipo": "BAL",
+      "equipo_nombre": "Baltimore Orioles",
+      "hr_por_juego": 0.88,
+      "hr_permitidos": 8
+    },
+    "Paul Skenes": {
+      "equipo": "PIT",
+      "equipo_nombre": "Pittsburgh Pirates",
+      "hr_por_juego": 0.88,
+      "hr_permitidos": 8
+    },
+    "Bryan Woo": {
+      "equipo": "SEA",
+      "equipo_nombre": "Seattle Mariners",
+      "hr_por_juego": 0.99,
+      "hr_permitidos": 9
+    },
+    "Eduardo Rodriguez": {
+      "equipo": "ARI",
+      "equipo_nombre": "Arizona Diamondbacks",
+      "hr_por_juego": 0.89,
+      "hr_permitidos": 8
+    },
+    "Reid Detmers": {
+      "equipo": "LAA",
+      "equipo_nombre": "Los Angeles Angels",
+      "hr_por_juego": 0.78,
+      "hr_permitidos": 7
+    },
+    "Shota Imanaga": {
+      "equipo": "CHC",
+      "equipo_nombre": "Chicago Cubs",
+      "hr_por_juego": 1.89,
+      "hr_permitidos": 17
+    },
+    "Michael Soroka": {
+      "equipo": "ARI",
+      "equipo_nombre": "Arizona Diamondbacks",
+      "hr_por_juego": 0.67,
+      "hr_permitidos": 6
+    },
+    "Michael King": {
+      "equipo": "SD",
+      "equipo_nombre": "San Diego Padres",
+      "hr_por_juego": 1.12,
+      "hr_permitidos": 10
+    },
+    "Parker Messick": {
+      "equipo": "CLE",
+      "equipo_nombre": "Cleveland Guardians",
+      "hr_por_juego": 0.89,
+      "hr_permitidos": 8
+    },
+    "Andrew Abbott": {
+      "equipo": "CIN",
+      "equipo_nombre": "Cincinnati Reds",
+      "hr_por_juego": 1.24,
+      "hr_permitidos": 11
+    },
+    "Logan Gilbert": {
+      "equipo": "SEA",
+      "equipo_nombre": "Seattle Mariners",
+      "hr_por_juego": 1.47,
+      "hr_permitidos": 13
+    },
+    "Emerson Hancock": {
+      "equipo": "SEA",
+      "equipo_nombre": "Seattle Mariners",
+      "hr_por_juego": 1.24,
+      "hr_permitidos": 11
+    },
+    "Seth Lugo": {
+      "equipo": "KC",
+      "equipo_nombre": "Kansas City Royals",
+      "hr_por_juego": 0.79,
+      "hr_permitidos": 7
+    },
+    "Jeffrey Springs": {
+      "equipo": "ATH",
+      "equipo_nombre": "Athletics",
+      "hr_por_juego": 2.16,
+      "hr_permitidos": 19
+    },
+    "Jesús Luzardo": {
+      "equipo": "PHI",
+      "equipo_nombre": "Philadelphia Phillies",
+      "hr_por_juego": 0.92,
+      "hr_permitidos": 8
+    },
+    "Mike Burrows": {
+      "equipo": "HOU",
+      "equipo_nombre": "Houston Astros",
+      "hr_por_juego": 2.07,
+      "hr_permitidos": 18
+    },
+    "Davis Martin": {
+      "equipo": "CHW",
+      "equipo_nombre": "Chicago White Sox",
+      "hr_por_juego": 0.34,
+      "hr_permitidos": 3
+    },
+    "Michael McGreevy": {
       "equipo": "STL",
-      "hr_por_juego": 0.7
+      "equipo_nombre": "St. Louis Cardinals",
+      "hr_por_juego": 1.26,
+      "hr_permitidos": 11
+    },
+    "Chris Sale": {
+      "equipo": "ATL",
+      "equipo_nombre": "Atlanta Braves",
+      "hr_por_juego": 0.69,
+      "hr_permitidos": 6
+    },
+    "Foster Griffin": {
+      "equipo": "WSH",
+      "equipo_nombre": "Washington Nationals",
+      "hr_por_juego": 1.73,
+      "hr_permitidos": 15
+    },
+    "Nick Martinez": {
+      "equipo": "TB",
+      "equipo_nombre": "Tampa Bay Rays",
+      "hr_por_juego": 0.7,
+      "hr_permitidos": 6
+    },
+    "Framber Valdez": {
+      "equipo": "DET",
+      "equipo_nombre": "Detroit Tigers",
+      "hr_por_juego": 1.04,
+      "hr_permitidos": 9
     },
     "Mitch Keller": {
       "equipo": "PIT",
-      "hr_por_juego": 0.9
+      "equipo_nombre": "Pittsburgh Pirates",
+      "hr_por_juego": 0.7,
+      "hr_permitidos": 6
     },
-    "Brayan Bello": {
+    "Jacob deGrom": {
+      "equipo": "TEX",
+      "equipo_nombre": "Texas Rangers",
+      "hr_por_juego": 1.53,
+      "hr_permitidos": 13
+    },
+    "Nolan McLean": {
+      "equipo": "NYM",
+      "equipo_nombre": "New York Mets",
+      "hr_por_juego": 0.94,
+      "hr_permitidos": 8
+    },
+    "Ryne Nelson": {
+      "equipo": "ARI",
+      "equipo_nombre": "Arizona Diamondbacks",
+      "hr_por_juego": 2.0,
+      "hr_permitidos": 17
+    },
+    "Jack Leiter": {
+      "equipo": "TEX",
+      "equipo_nombre": "Texas Rangers",
+      "hr_por_juego": 1.42,
+      "hr_permitidos": 12
+    },
+    "Chase Burns": {
+      "equipo": "CIN",
+      "equipo_nombre": "Cincinnati Reds",
+      "hr_por_juego": 1.07,
+      "hr_permitidos": 9
+    },
+    "Connelly Early": {
       "equipo": "BOS",
-      "hr_por_juego": 1.0
+      "equipo_nombre": "Boston Red Sox",
+      "hr_por_juego": 1.67,
+      "hr_permitidos": 14
+    },
+    "Zac Gallen": {
+      "equipo": "ARI",
+      "equipo_nombre": "Arizona Diamondbacks",
+      "hr_por_juego": 1.55,
+      "hr_permitidos": 13
+    },
+    "Logan Webb": {
+      "equipo": "SF",
+      "equipo_nombre": "San Francisco Giants",
+      "hr_por_juego": 0.48,
+      "hr_permitidos": 4
+    },
+    "Cade Cavalli": {
+      "equipo": "WSH",
+      "equipo_nombre": "Washington Nationals",
+      "hr_por_juego": 0.72,
+      "hr_permitidos": 6
+    },
+    "Landen Roupp": {
+      "equipo": "SF",
+      "equipo_nombre": "San Francisco Giants",
+      "hr_por_juego": 0.48,
+      "hr_permitidos": 4
+    },
+    "Randy Vásquez": {
+      "equipo": "SD",
+      "equipo_nombre": "San Diego Padres",
+      "hr_por_juego": 1.33,
+      "hr_permitidos": 11
+    },
+    "Ryan Weathers": {
+      "equipo": "NYY",
+      "equipo_nombre": "New York Yankees",
+      "hr_por_juego": 1.82,
+      "hr_permitidos": 15
+    },
+    "Colin Rea": {
+      "equipo": "CHC",
+      "equipo_nombre": "Chicago Cubs",
+      "hr_por_juego": 1.46,
+      "hr_permitidos": 12
+    },
+    "Sean Burke": {
+      "equipo": "CHW",
+      "equipo_nombre": "Chicago White Sox",
+      "hr_por_juego": 1.1,
+      "hr_permitidos": 9
+    },
+    "Kyle Bradish": {
+      "equipo": "BAL",
+      "equipo_nombre": "Baltimore Orioles",
+      "hr_por_juego": 1.35,
+      "hr_permitidos": 11
+    },
+    "Robbie Ray": {
+      "equipo": "SF",
+      "equipo_nombre": "San Francisco Giants",
+      "hr_por_juego": 1.72,
+      "hr_permitidos": 14
+    },
+    "Tomoyuki Sugano": {
+      "equipo": "COL",
+      "equipo_nombre": "Colorado Rockies",
+      "hr_por_juego": 1.6,
+      "hr_permitidos": 13
+    },
+    "Justin Wrobleski": {
+      "equipo": "LAD",
+      "equipo_nombre": "Los Angeles Dodgers",
+      "hr_por_juego": 0.74,
+      "hr_permitidos": 6
+    },
+    "Drew Rasmussen": {
+      "equipo": "TB",
+      "equipo_nombre": "Tampa Bay Rays",
+      "hr_por_juego": 0.99,
+      "hr_permitidos": 8
+    },
+    "Slade Cecconi": {
+      "equipo": "CLE",
+      "equipo_nombre": "Cleveland Guardians",
+      "hr_por_juego": 1.24,
+      "hr_permitidos": 10
+    },
+    "Dustin May": {
+      "equipo": "STL",
+      "equipo_nombre": "St. Louis Cardinals",
+      "hr_por_juego": 0.62,
+      "hr_permitidos": 5
+    },
+    "Will Warren": {
+      "equipo": "NYY",
+      "equipo_nombre": "New York Yankees",
+      "hr_por_juego": 0.87,
+      "hr_permitidos": 7
+    },
+    "Keider Montero": {
+      "equipo": "DET",
+      "equipo_nombre": "Detroit Tigers",
+      "hr_por_juego": 1.0,
+      "hr_permitidos": 8
+    },
+    "Joey Cantillo": {
+      "equipo": "CLE",
+      "equipo_nombre": "Cleveland Guardians",
+      "hr_por_juego": 1.38,
+      "hr_permitidos": 11
+    },
+    "Taj Bradley": {
+      "equipo": "MIN",
+      "equipo_nombre": "Minnesota Twins",
+      "hr_por_juego": 1.38,
+      "hr_permitidos": 11
+    },
+    "J.T. Ginn": {
+      "equipo": "ATH",
+      "equipo_nombre": "Athletics",
+      "hr_por_juego": 1.01,
+      "hr_permitidos": 8
+    },
+    "MacKenzie Gore": {
+      "equipo": "TEX",
+      "equipo_nombre": "Texas Rangers",
+      "hr_por_juego": 0.76,
+      "hr_permitidos": 6
+    },
+    "Matthew Liberatore": {
+      "equipo": "STL",
+      "equipo_nombre": "St. Louis Cardinals",
+      "hr_por_juego": 1.78,
+      "hr_permitidos": 14
+    },
+    "Aaron Nola": {
+      "equipo": "PHI",
+      "equipo_nombre": "Philadelphia Phillies",
+      "hr_por_juego": 1.66,
+      "hr_permitidos": 13
+    },
+    "Noah Cameron": {
+      "equipo": "KC",
+      "equipo_nombre": "Kansas City Royals",
+      "hr_por_juego": 1.03,
+      "hr_permitidos": 8
+    },
+    "Ranger Suarez": {
+      "equipo": "BOS",
+      "equipo_nombre": "Boston Red Sox",
+      "hr_por_juego": 0.51,
+      "hr_permitidos": 4
+    },
+    "Andre Pallante": {
+      "equipo": "STL",
+      "equipo_nombre": "St. Louis Cardinals",
+      "hr_por_juego": 1.16,
+      "hr_permitidos": 9
+    },
+    "Dylan Cease": {
+      "equipo": "TOR",
+      "equipo_nombre": "Toronto Blue Jays",
+      "hr_por_juego": 0.66,
+      "hr_permitidos": 5
+    },
+    "Bubba Chandler": {
+      "equipo": "PIT",
+      "equipo_nombre": "Pittsburgh Pirates",
+      "hr_por_juego": 1.06,
+      "hr_permitidos": 8
+    },
+    "Miles Mikolas": {
+      "equipo": "WSH",
+      "equipo_nombre": "Washington Nationals",
+      "hr_por_juego": 1.85,
+      "hr_permitidos": 14
+    },
+    "Shohei Ohtani": {
+      "equipo": "LAD",
+      "equipo_nombre": "Los Angeles Dodgers",
+      "hr_por_juego": 0.4,
+      "hr_permitidos": 3
+    },
+    "Jameson Taillon": {
+      "equipo": "CHC",
+      "equipo_nombre": "Chicago Cubs",
+      "hr_por_juego": 2.66,
+      "hr_permitidos": 20
+    },
+    "Walker Buehler": {
+      "equipo": "SD",
+      "equipo_nombre": "San Diego Padres",
+      "hr_por_juego": 0.67,
+      "hr_permitidos": 5
     },
     "Luis Castillo": {
       "equipo": "SEA",
-      "hr_por_juego": 0.7
+      "equipo_nombre": "Seattle Mariners",
+      "hr_por_juego": 1.21,
+      "hr_permitidos": 9
     },
-    "Justin Steele": {
+    "Grant Holmes": {
+      "equipo": "ATL",
+      "equipo_nombre": "Atlanta Braves",
+      "hr_por_juego": 1.75,
+      "hr_permitidos": 13
+    },
+    "Bailey Ober": {
+      "equipo": "MIN",
+      "equipo_nombre": "Minnesota Twins",
+      "hr_por_juego": 1.62,
+      "hr_permitidos": 12
+    },
+    "Anthony Kay": {
+      "equipo": "CHW",
+      "equipo_nombre": "Chicago White Sox",
+      "hr_por_juego": 1.36,
+      "hr_permitidos": 10
+    },
+    "Erick Fedde": {
+      "equipo": "CHW",
+      "equipo_nombre": "Chicago White Sox",
+      "hr_por_juego": 1.91,
+      "hr_permitidos": 14
+    },
+    "Zack Littell": {
+      "equipo": "WSH",
+      "equipo_nombre": "Washington Nationals",
+      "hr_por_juego": 2.18,
+      "hr_permitidos": 16
+    },
+    "Trevor Rogers": {
+      "equipo": "BAL",
+      "equipo_nombre": "Baltimore Orioles",
+      "hr_por_juego": 1.23,
+      "hr_permitidos": 9
+    },
+    "Jack Flaherty": {
+      "equipo": "DET",
+      "equipo_nombre": "Detroit Tigers",
+      "hr_por_juego": 1.1,
+      "hr_permitidos": 8
+    },
+    "Kyle Harrison": {
+      "equipo": "MIL",
+      "equipo_nombre": "Milwaukee Brewers",
+      "hr_por_juego": 0.96,
+      "hr_permitidos": 7
+    },
+    "Michael Lorenzen": {
+      "equipo": "COL",
+      "equipo_nombre": "Colorado Rockies",
+      "hr_por_juego": 1.51,
+      "hr_permitidos": 11
+    },
+    "Kumar Rocker": {
+      "equipo": "TEX",
+      "equipo_nombre": "Texas Rangers",
+      "hr_por_juego": 0.82,
+      "hr_permitidos": 6
+    },
+    "Adrian Houser": {
+      "equipo": "SF",
+      "equipo_nombre": "San Francisco Giants",
+      "hr_por_juego": 1.52,
+      "hr_permitidos": 11
+    },
+    "Merrill Kelly": {
+      "equipo": "ARI",
+      "equipo_nombre": "Arizona Diamondbacks",
+      "hr_por_juego": 1.82,
+      "hr_permitidos": 13
+    },
+    "Emmet Sheehan": {
+      "equipo": "LAD",
+      "equipo_nombre": "Los Angeles Dodgers",
+      "hr_por_juego": 1.68,
+      "hr_permitidos": 12
+    },
+    "Jack Kochanowicz": {
+      "equipo": "LAA",
+      "equipo_nombre": "Los Angeles Angels",
+      "hr_por_juego": 0.98,
+      "hr_permitidos": 7
+    },
+    "Kyle Leahy": {
+      "equipo": "STL",
+      "equipo_nombre": "St. Louis Cardinals",
+      "hr_por_juego": 1.27,
+      "hr_permitidos": 9
+    },
+    "Shane McClanahan": {
+      "equipo": "TB",
+      "equipo_nombre": "Tampa Bay Rays",
+      "hr_por_juego": 0.42,
+      "hr_permitidos": 3
+    },
+    "Spencer Arrighetti": {
+      "equipo": "HOU",
+      "equipo_nombre": "Houston Astros",
+      "hr_por_juego": 0.43,
+      "hr_permitidos": 3
+    },
+    "Edward Cabrera": {
       "equipo": "CHC",
-      "hr_por_juego": 0.8
+      "equipo_nombre": "Chicago Cubs",
+      "hr_por_juego": 1.86,
+      "hr_permitidos": 13
     },
-    "Yu Darvish": {
-      "equipo": "SD",
-      "hr_por_juego": 0.9
+    "Andrew Painter": {
+      "equipo": "PHI",
+      "equipo_nombre": "Philadelphia Phillies",
+      "hr_por_juego": 1.71,
+      "hr_permitidos": 12
     },
-    "Jesus Luzardo": {
+    "Carmen Mlodzinski": {
+      "equipo": "PIT",
+      "equipo_nombre": "Pittsburgh Pirates",
+      "hr_por_juego": 0.72,
+      "hr_permitidos": 5
+    },
+    "Eury Pérez": {
       "equipo": "MIA",
-      "hr_por_juego": 1.0
+      "equipo_nombre": "Miami Marlins",
+      "hr_por_juego": 1.58,
+      "hr_permitidos": 11
+    },
+    "Luis Severino": {
+      "equipo": "ATH",
+      "equipo_nombre": "Athletics",
+      "hr_por_juego": 1.29,
+      "hr_permitidos": 9
+    },
+    "Sonny Gray": {
+      "equipo": "BOS",
+      "equipo_nombre": "Boston Red Sox",
+      "hr_por_juego": 0.87,
+      "hr_permitidos": 6
+    },
+    "Roki Sasaki": {
+      "equipo": "LAD",
+      "equipo_nombre": "Los Angeles Dodgers",
+      "hr_por_juego": 1.59,
+      "hr_permitidos": 11
+    },
+    "Ben Brown": {
+      "equipo": "CHC",
+      "equipo_nombre": "Chicago Cubs",
+      "hr_por_juego": 0.15,
+      "hr_permitidos": 1
+    },
+    "Martín Pérez": {
+      "equipo": "ATL",
+      "equipo_nombre": "Atlanta Braves",
+      "hr_por_juego": 0.87,
+      "hr_permitidos": 6
+    },
+    "Max Fried": {
+      "equipo": "NYY",
+      "equipo_nombre": "New York Yankees",
+      "hr_por_juego": 0.15,
+      "hr_permitidos": 1
+    },
+    "Brayan Bello": {
+      "equipo": "BOS",
+      "equipo_nombre": "Boston Red Sox",
+      "hr_por_juego": 1.48,
+      "hr_permitidos": 10
+    },
+    "Patrick Corbin": {
+      "equipo": "TOR",
+      "equipo_nombre": "Toronto Blue Jays",
+      "hr_por_juego": 1.03,
+      "hr_permitidos": 7
+    },
+    "David Peterson": {
+      "equipo": "NYM",
+      "equipo_nombre": "New York Mets",
+      "hr_por_juego": 0.59,
+      "hr_permitidos": 4
+    },
+    "Brady Singer": {
+      "equipo": "CIN",
+      "equipo_nombre": "Cincinnati Reds",
+      "hr_por_juego": 2.51,
+      "hr_permitidos": 17
+    },
+    "Janson Junk": {
+      "equipo": "MIA",
+      "equipo_nombre": "Miami Marlins",
+      "hr_por_juego": 1.2,
+      "hr_permitidos": 8
+    },
+    "Brandon Sproat": {
+      "equipo": "MIL",
+      "equipo_nombre": "Milwaukee Brewers",
+      "hr_por_juego": 1.8,
+      "hr_permitidos": 12
+    },
+    "Kyle Freeland": {
+      "equipo": "COL",
+      "equipo_nombre": "Colorado Rockies",
+      "hr_por_juego": 2.15,
+      "hr_permitidos": 14
+    },
+    "Peter Lambert": {
+      "equipo": "HOU",
+      "equipo_nombre": "Houston Astros",
+      "hr_por_juego": 0.79,
+      "hr_permitidos": 5
+    },
+    "Tyler Mahle": {
+      "equipo": "SF",
+      "equipo_nombre": "San Francisco Giants",
+      "hr_por_juego": 1.75,
+      "hr_permitidos": 11
+    },
+    "Zack Wheeler": {
+      "equipo": "PHI",
+      "equipo_nombre": "Philadelphia Phillies",
+      "hr_por_juego": 1.11,
+      "hr_permitidos": 7
+    },
+    "Chris Bassitt": {
+      "equipo": "BAL",
+      "equipo_nombre": "Baltimore Orioles",
+      "hr_por_juego": 0.96,
+      "hr_permitidos": 6
+    },
+    "Brandon Young": {
+      "equipo": "BAL",
+      "equipo_nombre": "Baltimore Orioles",
+      "hr_por_juego": 0.96,
+      "hr_permitidos": 6
+    },
+    "Aaron Civale": {
+      "equipo": "ATH",
+      "equipo_nombre": "Athletics",
+      "hr_por_juego": 1.94,
+      "hr_permitidos": 12
+    },
+    "Walbert Ureña": {
+      "equipo": "LAA",
+      "equipo_nombre": "Los Angeles Angels",
+      "hr_por_juego": 0.65,
+      "hr_permitidos": 4
+    },
+    "Chad Patrick": {
+      "equipo": "MIL",
+      "equipo_nombre": "Milwaukee Brewers",
+      "hr_por_juego": 0.84,
+      "hr_permitidos": 5
+    },
+    "Payton Tolle": {
+      "equipo": "BOS",
+      "equipo_nombre": "Boston Red Sox",
+      "hr_por_juego": 0.51,
+      "hr_permitidos": 3
+    },
+    "Clay Holmes": {
+      "equipo": "NYM",
+      "equipo_nombre": "New York Mets",
+      "hr_por_juego": 0.51,
+      "hr_permitidos": 3
+    },
+    "Eric Lauer": {
+      "equipo": "LAD",
+      "equipo_nombre": "Los Angeles Dodgers",
+      "hr_por_juego": 2.56,
+      "hr_permitidos": 15
+    },
+    "Jake Irvin": {
+      "equipo": "WSH",
+      "equipo_nombre": "Washington Nationals",
+      "hr_por_juego": 1.22,
+      "hr_permitidos": 7
+    },
+    "Simeon Woods Richardson": {
+      "equipo": "TOR",
+      "equipo_nombre": "Toronto Blue Jays",
+      "hr_por_juego": 1.57,
+      "hr_permitidos": 9
+    },
+    "Kai-Wei Teng": {
+      "equipo": "HOU",
+      "equipo_nombre": "Houston Astros",
+      "hr_por_juego": 1.06,
+      "hr_permitidos": 6
+    },
+    "Jacob Lopez": {
+      "equipo": "ATH",
+      "equipo_nombre": "Athletics",
+      "hr_por_juego": 1.95,
+      "hr_permitidos": 11
+    },
+    "Kris Bubic": {
+      "equipo": "KC",
+      "equipo_nombre": "Kansas City Royals",
+      "hr_por_juego": 0.72,
+      "hr_permitidos": 4
+    },
+    "Stephen Kolek": {
+      "equipo": "KC",
+      "equipo_nombre": "Kansas City Royals",
+      "hr_por_juego": 0.89,
+      "hr_permitidos": 5
+    },
+    "Connor Prielipp": {
+      "equipo": "MIN",
+      "equipo_nombre": "Minnesota Twins",
+      "hr_por_juego": 0.91,
+      "hr_permitidos": 5
+    },
+    "Sean Manaea": {
+      "equipo": "NYM",
+      "equipo_nombre": "New York Mets",
+      "hr_por_juego": 1.1,
+      "hr_permitidos": 6
+    },
+    "Chris Paddack": {
+      "equipo": "CIN",
+      "equipo_nombre": "Cincinnati Reds",
+      "hr_por_juego": 1.48,
+      "hr_permitidos": 8
+    },
+    "Tyler Phillips": {
+      "equipo": "MIA",
+      "equipo_nombre": "Miami Marlins",
+      "hr_por_juego": 0.37,
+      "hr_permitidos": 2
+    },
+    "Tarik Skubal": {
+      "equipo": "DET",
+      "equipo_nombre": "Detroit Tigers",
+      "hr_por_juego": 0.56,
+      "hr_permitidos": 3
+    },
+    "Casey Mize": {
+      "equipo": "DET",
+      "equipo_nombre": "Detroit Tigers",
+      "hr_por_juego": 0.38,
+      "hr_permitidos": 2
+    },
+    "Trey Yesavage": {
+      "equipo": "TOR",
+      "equipo_nombre": "Toronto Blue Jays",
+      "hr_por_juego": 0.57,
+      "hr_permitidos": 3
+    },
+    "Steven Matz": {
+      "equipo": "TB",
+      "equipo_nombre": "Tampa Bay Rays",
+      "hr_por_juego": 1.9,
+      "hr_permitidos": 10
+    },
+    "Rhett Lowder": {
+      "equipo": "CIN",
+      "equipo_nombre": "Cincinnati Reds",
+      "hr_por_juego": 0.57,
+      "hr_permitidos": 3
+    },
+    "Brad Lord": {
+      "equipo": "WSH",
+      "equipo_nombre": "Washington Nationals",
+      "hr_por_juego": 0.8,
+      "hr_permitidos": 4
+    },
+    "Spencer Miles": {
+      "equipo": "TOR",
+      "equipo_nombre": "Toronto Blue Jays",
+      "hr_por_juego": 0.8,
+      "hr_permitidos": 4
+    },
+    "AJ Blubaugh": {
+      "equipo": "HOU",
+      "equipo_nombre": "Houston Astros",
+      "hr_por_juego": 1.01,
+      "hr_permitidos": 5
+    },
+    "Chase Dollander": {
+      "equipo": "COL",
+      "equipo_nombre": "Colorado Rockies",
+      "hr_por_juego": 1.23,
+      "hr_permitidos": 6
+    },
+    "Griffin Jax": {
+      "equipo": "TB",
+      "equipo_nombre": "Tampa Bay Rays",
+      "hr_por_juego": 1.43,
+      "hr_permitidos": 7
+    },
+    "Drew Anderson": {
+      "equipo": "DET",
+      "equipo_nombre": "Detroit Tigers",
+      "hr_por_juego": 1.24,
+      "hr_permitidos": 6
+    },
+    "Aaron Ashby": {
+      "equipo": "MIL",
+      "equipo_nombre": "Milwaukee Brewers",
+      "hr_por_juego": 0.63,
+      "hr_permitidos": 3
+    },
+    "Zach Agnos": {
+      "equipo": "COL",
+      "equipo_nombre": "Colorado Rockies",
+      "hr_por_juego": 1.69,
+      "hr_permitidos": 8
+    },
+    "Shane Drohan": {
+      "equipo": "MIL",
+      "equipo_nombre": "Milwaukee Brewers",
+      "hr_por_juego": 0.63,
+      "hr_permitidos": 3
+    },
+    "Trevor McDonald": {
+      "equipo": "SF",
+      "equipo_nombre": "San Francisco Giants",
+      "hr_por_juego": 0.84,
+      "hr_permitidos": 4
+    },
+    "Sean Newcomb": {
+      "equipo": "CHW",
+      "equipo_nombre": "Chicago White Sox",
+      "hr_por_juego": 0.22,
+      "hr_permitidos": 1
     }
   }
 }

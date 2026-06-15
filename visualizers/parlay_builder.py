@@ -16,7 +16,26 @@ import streamlit as st
 import logging
 from datetime import datetime, timedelta
 
+try:
+    from motors.pick_memory import pick_memory
+except Exception:
+    pick_memory = None
+
 logger = logging.getLogger(__name__)
+
+
+def _deporte_code(sport: str) -> str:
+    """Normaliza '🏀 NBA' / '⚽ FÚTBOL' → código canónico (NBA/MLB/UFC/SOCCER)."""
+    s = (sport or "").upper()
+    if "FÚTBOL" in s or "FUTBOL" in s or "SOCCER" in s:
+        return "SOCCER"
+    if "NBA" in s:
+        return "NBA"
+    if "MLB" in s:
+        return "MLB"
+    if "UFC" in s:
+        return "UFC"
+    return s.split()[-1] if s else ""
 
 
 def _fecha_iso(p):
@@ -28,6 +47,37 @@ def _fecha_iso(p):
         if v:
             return str(v).replace("T", " ").strip()[:10]
     return datetime.now().strftime("%Y-%m-%d")  # sin fecha → asumir hoy
+
+
+def _no_iniciado(p):
+    """True solo si el evento AÚN NO empieza (descarta finalizados / en vivo / pasados)."""
+    if not isinstance(p, dict):
+        return True
+    # Marcadores explícitos de estado
+    if p.get("completado") or p.get("en_vivo"):
+        return False
+    estado = str(p.get("status", "")).lower()
+    if any(x in estado for x in ("final", "ft", "post", "progress", "in progress",
+                                 "en vivo", "live", "terminado", "finalizado")):
+        return False
+    # Si hay marcador con goles/puntos reales, ya empezó
+    if p.get("marcador"):
+        return False
+    # Comparar fecha+hora de inicio contra ahora (si viene con hora)
+    for campo in ("fecha_partido", "fecha", "date"):
+        v = p.get(campo)
+        if not v:
+            continue
+        txt = str(v).replace("T", " ").strip()
+        for fmt in ("%Y-%m-%d %H:%M", "%Y-%m-%d %H:%M:%S"):
+            try:
+                dt = datetime.strptime(txt[:16] if len(txt) >= 16 else txt, fmt)
+                # Margen de 10 min: si ya pasó la hora de inicio, descartar
+                return dt > (datetime.now() - timedelta(minutes=10))
+            except ValueError:
+                continue
+        break
+    return True  # sin hora parseable → asumir que sigue disponible
 
 # Cuotas por defecto cuando no hay momio del scraper (americano → decimal aprox)
 CUOTA_DEFAULT = {
@@ -69,6 +119,9 @@ def _recolectar_picks(dia_filtro=None):
     pool = []
 
     def _es_del_dia(p):
+        # Debe ser del día pedido Y no haber empezado/terminado todavía
+        if not _no_iniciado(p):
+            return False
         return (dia_filtro is None) or (_fecha_iso(p) == dia_filtro)
 
     # ── NBA ──────────────────────────────────────────────────────────────
@@ -240,6 +293,19 @@ def _recolectar_picks(dia_filtro=None):
     except Exception as e:
         logger.warning(f"Parlay fútbol: {e}")
 
+    # ── FASE 3 (Evolución): ponderar cada pick por su rendimiento histórico ──
+    # El selector se vuelve más inteligente: penaliza mercados que históricamente
+    # fallan y premia los que aciertan (factor_confianza desde la memoria).
+    if pick_memory is not None:
+        for pk in pool:
+            try:
+                pk["prob_base"] = pk["prob"]
+                factor = pick_memory.factor_confianza(_deporte_code(pk.get("sport", "")), pk.get("mercado", ""))
+                pk["factor_hist"] = factor
+                pk["prob"] = max(1, min(99, round(pk["prob"] * factor, 1)))
+            except Exception:
+                pass
+
     return pool
 
 
@@ -331,6 +397,25 @@ def render_parlay_tab():
     if not pool:
         st.warning("No se generaron picks. Asegúrate de tener juegos cargados.")
         return
+
+    # ── FASE 1 (Memoria): registrar los picks propuestos para aprender de ellos ──
+    if pick_memory is not None:
+        try:
+            registros = [{
+                "deporte": _deporte_code(pk.get("sport", "")),
+                "liga": pk.get("sport", ""),
+                "evento": pk.get("evento", ""),
+                "mercado": pk.get("mercado", ""),
+                "pick": pk.get("pick", ""),
+                "seleccion": pk.get("pick", ""),
+                "cuota": pk.get("cuota", 1.9),
+                "confianza": pk.get("prob_base", pk.get("prob", 0)),
+                "fecha_evento": _fecha_iso(pk.get("_partido", {})) if pk.get("_partido") else datetime.now().strftime("%Y-%m-%d"),
+            } for pk in pool]
+            n_log = len(pick_memory.log_varios(registros))
+            st.caption(f"🧠 {n_log} picks registrados en la memoria de aprendizaje.")
+        except Exception as _le:
+            logger.warning(f"log picks: {_le}")
 
     # Ordenar por probabilidad
     pool.sort(key=lambda x: x["prob"], reverse=True)

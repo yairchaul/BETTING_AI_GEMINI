@@ -107,6 +107,7 @@ def ejecutar_nba_backtest_real(dias=15, progreso_cb=None):
 
             # Over/Under (línea estándar 225.5)
             ou = pred.get('over_under', {})
+            ou_acierto = None
             if ou.get('pick'):
                 linea = ou.get('line', 225.5)
                 real_over = total_real > linea
@@ -116,8 +117,8 @@ def ejecutar_nba_backtest_real(dias=15, progreso_cb=None):
 
             # Hándicap: el favorito cubrió -5.5 (aprox)
             spread = pred.get('spread', {})
+            cubrio = None
             if spread.get('pick'):
-                favorito_gano_x = gano_local and (pred.get('moneyline', {}).get('pick') == partido['local'])
                 cubrio = margen >= 6 and ml_acierto
                 hcap_total += 1
                 hcap_ok += 1 if cubrio else 0
@@ -126,6 +127,8 @@ def ejecutar_nba_backtest_real(dias=15, progreso_cb=None):
                 "fecha": fecha, "juego": f"{partido['visitante']} @ {partido['local']}",
                 "marcador": f"{sa}-{sh}", "ml_pick": pick_ml, "ml_conf": conf,
                 "ml_ok": ml_acierto, "total_real": total_real,
+                "ou_pick": f"{ou.get('pick','')} {ou.get('line','')}".strip(), "ou_ok": ou_acierto,
+                "hcap_pick": spread.get('pick', ''), "hcap_ok": cubrio,
             })
             time.sleep(0.1)
 

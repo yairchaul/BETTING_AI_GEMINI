@@ -62,6 +62,10 @@ from motors.motor_fut_pro import analizar_futbol_pro_v20
 from motors.futbol_analyzer_jerarquico import analizar_futbol_jerarquico
 from scrapers.ufc_stats_scraper import UFCStatsScraper
 from motors.predictor_hr_pro import PredictorHRPro
+try:
+    from motors.pick_memory import pick_memory
+except Exception:
+    pick_memory = None
 from analyzers.ufc_analyzer import UFCAnalyzer
 from utils.analista_total import AnalistaTotal
 try:
@@ -265,6 +269,47 @@ def inicializar_bd_ufc():
         conn.commit(); conn.close()
     except: pass
 
+def _auto_resolver_futbol():
+    """Resuelve picks de fútbol pendientes cruzándolos con resultados reales de ESPN."""
+    if pick_memory is None:
+        return 0
+    from espn_futbol import ESPN_FUTBOL
+    from motors.futbol_backtest_real import _grade_pick, LIGAS_DEFAULT
+
+    scraper = ESPN_FUTBOL()
+    # Mapa de resultados: "home|away" normalizado → (gl, gv, local, visitante)
+    resultados = {}
+    for liga in LIGAS_DEFAULT:
+        try:
+            for p in scraper.gestor.obtener_partidos(liga, dias_atras=5):
+                if p.get("completado") and p.get("goles_local") is not None:
+                    h = (p.get("home") or p.get("local", "")).lower().strip()
+                    a = (p.get("away") or p.get("visitante", "")).lower().strip()
+                    resultados[f"{h}|{a}"] = (int(p["goles_local"]), int(p["goles_visitante"]),
+                                              p.get("home", ""), p.get("away", ""))
+        except Exception:
+            continue
+
+    n = 0
+    for pk in pick_memory.pendientes():
+        if (pk.get("deporte") or "").upper() != "SOCCER":
+            continue
+        evento = pk.get("evento", "")
+        if " vs " not in evento:
+            continue
+        local, visitante = [x.strip() for x in evento.split(" vs ", 1)]
+        clave = f"{local.lower()}|{visitante.lower()}"
+        if clave not in resultados:
+            continue
+        gl, gv, loc_real, vis_real = resultados[clave]
+        _, acierto = _grade_pick(pk.get("pick", ""), gl, gv, loc_real, vis_real)
+        if acierto is None:
+            continue
+        pick_memory.resolver(pk["id"], "ganado" if acierto else "perdido", f"{gl}-{gv}")
+        n += 1
+    return n
+
+
 def main():
     st.set_page_config(page_title="BETTING_AI", page_icon="🎯", layout="wide")
     aplicar_estilos()
@@ -314,21 +359,17 @@ def main():
 
     st.markdown("<div id='tope-pagina'></div><div style='text-align:center;padding:10px'><h1 style='background:linear-gradient(90deg,#3b82f6,#9333ea);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:2.5rem;margin:0'>🎯 APUESTAS_IA</h1><p style='color:#94a3b8;margin:5px 0 0 0'>🏀 NBA &bull; ⚾ MLB &bull; 🥊 UFC &bull; ⚽ Futbol</p></div>", unsafe_allow_html=True)
 
-    # Botón flotante para volver arriba (scroll suave del contenedor principal)
+    # Botón flotante para volver arriba (ancla nativa, funciona dentro de Streamlit)
     st.markdown("""
     <style>
     #btn-arriba {position:fixed; bottom:28px; right:28px; z-index:9999;
-                 background:linear-gradient(90deg,#3b82f6,#9333ea); color:white;
-                 width:48px; height:48px; border-radius:50%; border:none; cursor:pointer;
+                 display:flex; align-items:center; justify-content:center;
+                 background:linear-gradient(90deg,#3b82f6,#9333ea); color:white !important;
+                 width:48px; height:48px; border-radius:50%; text-decoration:none;
                  font-size:22px; box-shadow:0 4px 14px rgba(0,0,0,0.4);}
     #btn-arriba:hover {transform:scale(1.1);}
     </style>
-    <button id="btn-arriba" title="Volver arriba"
-        onclick="(function(){var d=window.parent&&window.parent.document?window.parent.document:document;
-        var sels=['section.main','[data-testid=stAppViewContainer]','[data-testid=stMain]','.main','.block-container'];
-        for(var i=0;i<sels.length;i++){var c=d.querySelector(sels[i]);if(c){c.scrollTo({top:0,behavior:'smooth'});}}
-        var a=d.getElementById('tope-pagina');if(a){a.scrollIntoView({behavior:'smooth',block:'start'});}
-        try{d.documentElement.scrollTo({top:0,behavior:'smooth'});window.parent.scrollTo({top:0,behavior:'smooth'});}catch(e){}})();">⬆️</button>
+    <a id="btn-arriba" href="#tope-pagina" title="Volver arriba">⬆️</a>
     """, unsafe_allow_html=True)
 
     with st.sidebar:
@@ -387,10 +428,19 @@ def main():
         st.markdown("---"); st.subheader("⚽ FUTBOL")
         ligas = st.session_state.scrapers["futbol"].get_available_leagues()
 
-        # Buscador de ligas (filtra toda la lista)
+        # Alias en español → término ESPN (que "Mundial" encuentre "FIFA World Cup")
+        _alias_es = {
+            "mundial": "world cup", "copa del mundo": "world cup",
+            "champions": "uefa champions", "libertadores": "libertadores",
+            "sudamericana": "sudamericana", "eliminatorias": "world cup qualifying",
+            "premier": "premier league",
+        }
+
+        # Buscador de ligas (filtra toda la lista, con alias en español)
         filtro_liga = st.text_input("🔎 Buscar liga / torneo", "", key="buscar_liga",
                                     placeholder="Ej: Mundial, Premier, Liga MX...").strip().lower()
-        ligas_filtradas = [lg for lg in ligas if filtro_liga in lg.lower()] if filtro_liga else ligas
+        filtro_efectivo = _alias_es.get(filtro_liga, filtro_liga)
+        ligas_filtradas = [lg for lg in ligas if filtro_efectivo in lg.lower()] if filtro_liga else ligas
 
         if filtro_liga:
             st.caption(f"{len(ligas_filtradas)} coincidencia(s)")
@@ -407,6 +457,32 @@ def main():
                 except Exception as _he:
                     logger.warning(f"Poblar historial {lg}: {_he}")
             return partidos_lg
+
+        # ── 🔥 Ligas con juegos HOY (top 5, incluido el Mundial) ─────────────
+        if "ligas_hoy" not in st.session_state:
+            with st.spinner("Buscando ligas con juegos hoy..."):
+                try:
+                    st.session_state.ligas_hoy = st.session_state.scrapers["futbol"].ligas_con_juegos_hoy(5)
+                except Exception as _lh:
+                    logger.warning(f"ligas_con_juegos_hoy: {_lh}")
+                    st.session_state.ligas_hoy = []
+
+        ch1, ch2 = st.columns([3, 1])
+        ch1.markdown("**🔥 Ligas con juegos HOY**")
+        if ch2.button("🔄", key="refresh_hoy", help="Actualizar ligas de hoy"):
+            st.session_state.pop("ligas_hoy", None)
+            st.rerun()
+
+        if st.session_state.get("ligas_hoy"):
+            for liga_h, n_h in st.session_state.ligas_hoy:
+                if st.button(f"⚽ {liga_h} · 🔴 {n_h} hoy", key=f"hoy_{liga_h}", use_container_width=True):
+                    with st.spinner(f"Cargando {liga_h} + últimos 5 de cada equipo..."):
+                        partidos_lg = _cargar_liga(liga_h)
+                        st.session_state.analisis_futbol = {}
+                        st.success(f"✅ {len(partidos_lg)} partidos · historial actualizado")
+        else:
+            st.caption("Sin juegos hoy en las ligas principales.")
+        st.markdown("---")
 
         # Botón para cargar TODAS las filtradas de golpe (útil para 'Mundial' o 'Qualifying')
         if filtro_liga and 1 < len(ligas_filtradas) <= 8:
@@ -457,9 +533,21 @@ def main():
                                 # ... otros clientes
                                 selected_model=st.session_state.selected_ia_model
                             )
-                            resultado_final = analista.analizar_nba(p, resultado_heuristico)
+                            resultado_ia = analista.analizar_nba(p, resultado_heuristico)
+                            # FUSIONAR: conservar recomendacion/EV/total/mercados del
+                            # motor heurístico y añadir la decisión de la IA encima
+                            # (evita que la tarjeta muestre EV 0% / Confianza 50% / Total 0).
+                            resultado_final = dict(resultado_heuristico)
+                            resultado_final['ia'] = resultado_ia
+                            if resultado_ia.get('pick'):
+                                resultado_final['pick_ia'] = resultado_ia.get('pick')
+                                resultado_final['confianza_ia'] = resultado_ia.get('confianza', 0)
+                                resultado_final['razon_ia'] = resultado_ia.get('razon', '')
+                                resultado_final['recomendacion'] = resultado_ia.get('pick') or resultado_final.get('recomendacion')
+                                if resultado_ia.get('confianza'):
+                                    resultado_final['confianza'] = resultado_ia['confianza']
                             st.session_state.analisis_nba[game_key] = resultado_final
-                            db.guardar_backtesting("NBA", f"{p['local']} vs {p['visitante']}", resultado_final.get('pick', ''))
+                            db.guardar_backtesting("NBA", f"{p['local']} vs {p['visitante']}", resultado_ia.get('pick', resultado_final.get('recomendacion', '')))
                         else:
                             # Si no, usar solo el resultado heurístico
                             st.session_state.analisis_nba[game_key] = resultado_heuristico
@@ -582,11 +670,15 @@ def main():
                 
                 p1_base = next((p for p in base_ufc if p.get('nombre','') == p1_nombre), {})
                 p2_base = next((p for p in base_ufc if p.get('nombre','') == p2_nombre), {})
-                
+
+                # Cuotas: 1) Caliente.mx (odds_ufc)  2) las que trae el scraper de ESPN
+                odds1 = odds_ufc.get(p1_nombre) or p1_raw.get('odds') or 'N/A'
+                odds2 = odds_ufc.get(p2_nombre) or p2_raw.get('odds') or 'N/A'
+
                 # ESPN (p_stats) tiene prioridad sobre el JSON legacy (p_base)
                 partido_visual = {
-                    'peleador1': {**p1_base, **p1_stats, 'nombre': p1_nombre, 'odds': str(odds_ufc.get(p1_nombre, 'N/A'))},
-                    'peleador2': {**p2_base, **p2_stats, 'nombre': p2_nombre, 'odds': str(odds_ufc.get(p2_nombre, 'N/A'))}
+                    'peleador1': {**p1_base, **p1_stats, 'nombre': p1_nombre, 'odds': str(odds1)},
+                    'peleador2': {**p2_base, **p2_stats, 'nombre': p2_nombre, 'odds': str(odds2)}
                 }
                 
                 res_ufc = st.session_state.analisis_ufc.get(fight_key)
@@ -708,7 +800,7 @@ def main():
                         for _kp in res_mlb.get('k_picks', []):
                             db.guardar_backtesting("MLB-K", evento_mlb, f"{_kp.get('pitcher','')}: {_kp.get('prediccion','')} {_kp.get('linea','')} K")
                         for _hr in res_mlb.get('hr_candidates', [])[:3]:
-                            if _hr.get('probabilidad', 0) >= 30:
+                            if _hr.get('probabilidad', 0) >= 25:
                                 db.guardar_backtesting("MLB-HR", evento_mlb, f"{_hr.get('jugador','')} HR ({_hr.get('probabilidad',0):.0f}%)")
                     except Exception as _me:
                         logger.warning(f"Auto-análisis MLB: {_me}")
@@ -753,6 +845,72 @@ def main():
     with tab5:
         st.header("📊 Reporte de Backtesting Universal")
         st.caption("Resultados del rendimiento histórico de los motores de análisis.")
+
+        # ── 🧠 MEMORIA DE PICKS (ciclo de aprendizaje) ───────────────────────
+        with st.expander("🧠 Aprendizaje — Memoria de picks (acierto global / por deporte / por mercado)", expanded=False):
+            if pick_memory is None:
+                st.info("Módulo de memoria no disponible.")
+            else:
+                s = pick_memory.stats()
+                g = s["global"]
+                cA, cB, cC, cD = st.columns(4)
+                cA.metric("Picks resueltos", g["total"])
+                cB.metric("Tasa de acierto", f"{g['win_rate']}%")
+                cC.metric("ROI", f"{g['roi']:+.1f}%")
+                cD.metric("Pendientes", s["pendientes"])
+
+                if s["por_deporte"]:
+                    st.markdown("**Por deporte:**")
+                    st.table([{"Deporte": k, "Picks": v["total"], "Aciertos": v["aciertos"],
+                               "Win Rate": f"{v['win_rate']}%", "ROI": f"{v['roi']:+.1f}%"}
+                              for k, v in s["por_deporte"].items()])
+                if s["por_mercado"]:
+                    st.markdown("**Por tipo de apuesta (mercado):**")
+                    st.table([{"Mercado": k, "Picks": v["total"], "Aciertos": v["aciertos"],
+                               "Win Rate": f"{v['win_rate']}%", "ROI": f"{v['roi']:+.1f}%"}
+                              for k, v in sorted(s["por_mercado"].items(),
+                                                 key=lambda x: x[1]["win_rate"], reverse=True)])
+                    st.caption("💡 El selector de Parlays ya usa estas tasas: penaliza mercados con bajo "
+                               "acierto y premia los consistentes (Fase 3 - Evolución).")
+
+                # Auto-resolver con resultados/box scores reales
+                col_r1, col_r2 = st.columns(2)
+                with col_r1:
+                    if st.button("🔄 Auto-resolver MLB + NBA (box scores reales)", use_container_width=True):
+                        try:
+                            from motors.box_score_resolver import resolver_todo
+                            with st.spinner("Cruzando picks con box scores reales..."):
+                                rr = resolver_todo()
+                            st.success(f"✅ Resueltos: {rr['mlb']} MLB + {rr['nba']} NBA = {rr['total']} picks.")
+                            st.rerun()
+                        except Exception as _be:
+                            st.error(f"Error: {_be}")
+                with col_r2:
+                    if st.button("⚽ Auto-resolver FÚTBOL (resultados reales)", use_container_width=True):
+                        try:
+                            with st.spinner("Cruzando picks de fútbol..."):
+                                resueltos = _auto_resolver_futbol()
+                            st.success(f"✅ {resueltos} picks de fútbol resueltos.")
+                            st.rerun()
+                        except Exception as _re:
+                            st.error(f"Error al auto-resolver: {_re}")
+
+                # Resolución manual de pendientes
+                pend = pick_memory.pendientes()
+                if pend:
+                    st.markdown(f"**Resolver manualmente ({len(pend)} pendientes):**")
+                    for p in pend[:25]:
+                        rc1, rc2, rc3 = st.columns([4, 1, 1])
+                        rc1.markdown(f"<span style='font-size:0.85rem'>{p['deporte']} · {p['pick']} "
+                                     f"<span style='color:#64748b'>({p['evento']})</span></span>",
+                                     unsafe_allow_html=True)
+                        if rc2.button("✅", key=f"win_{p['id']}", help="Ganado"):
+                            pick_memory.resolver(p['id'], "ganado"); st.rerun()
+                        if rc3.button("❌", key=f"loss_{p['id']}", help="Perdido"):
+                            pick_memory.resolver(p['id'], "perdido"); st.rerun()
+                else:
+                    st.caption("No hay picks pendientes. Genera parlays para llenar la memoria.")
+
 
         # ── BACKTEST REAL MLB (scraper oficial → auditor → efectividad) ──────
         # ── BACKTEST REAL DEL MOTOR (corre el motor sobre cada juego histórico) ──
@@ -832,6 +990,19 @@ def main():
                     st.table([{"Confianza motor": k, "Juegos": v["n"], "Aciertos": v["ok"], "Precisión": f"{v['precision']}%"}
                               for k, v in sorted(pcn.items(), reverse=True)])
 
+                # Detalle por juego: ML / O-U / Hándicap con aciertos
+                det_nba = nbr.get("detalle", [])
+                if det_nba:
+                    with st.expander(f"🔍 Ver {min(len(det_nba),30)} juegos (ML · O/U · Hándicap)", expanded=False):
+                        def _mk(v):
+                            return "✅" if v is True else ("❌" if v is False else "—")
+                        st.table([{
+                            "Juego": d.get("juego", ""), "Marcador": d.get("marcador", ""),
+                            "ML": f"{d.get('ml_pick','')} {_mk(d.get('ml_ok'))}",
+                            "O/U": f"{d.get('ou_pick','')} {_mk(d.get('ou_ok'))}",
+                            "Hcap": _mk(d.get("hcap_ok")),
+                        } for d in det_nba[:30]])
+
         with st.expander("🥊 BACKTEST REAL UFC — corre el motor UFC sobre peleas pasadas", expanded=False):
             st.caption("Descarga peleas reales recientes y mide si el motor acertó el ganador, el método y la distancia.")
             col_uf1, col_uf2 = st.columns([3, 1])
@@ -860,6 +1031,73 @@ def main():
                 mp_ufc = ubr.get('metodo', {}).get('precision_por_metodo', {})
                 u2.metric("🥊 Método", " · ".join(f"{k.split('/')[0]} {v}%" for k, v in mp_ufc.items()) or "—")
                 u3.metric("⏱️ Distancia", f"{ubr.get('distancia',{}).get('precision',0)}%")
+
+                # ── Última cartelera: predicciones del motor vs resultado real ──
+                detalle_ufc = ubr.get("detalle", [])
+                if detalle_ufc:
+                    # Tomar el evento más reciente (mayor fecha)
+                    ult_fecha = max((d.get("fecha", "") for d in detalle_ufc), default="")
+                    ult = [d for d in detalle_ufc if d.get("fecha", "") == ult_fecha]
+                    nombre_ev = ult[0].get("evento", "Última cartelera") if ult else "Última cartelera"
+                    aciertos_ev = sum(1 for d in ult if d.get("ganador_ok"))
+                    st.markdown(f"**🥊 Última cartelera evaluada: {nombre_ev}** "
+                                f"({ult_fecha}) — acertó {aciertos_ev}/{len(ult)} ganadores")
+                    st.table([{
+                        "Pelea": d.get("pelea", ""),
+                        "Predicción": d.get("ganador_pred", ""),
+                        "Real": d.get("ganador_real", ""),
+                        "Conf.": f"{d.get('confianza',0):.0f}%",
+                        "Método pred/real": f"{d.get('metodo_pred','?')} / {d.get('metodo_real','?')}",
+                        "Ganador": "✅" if d.get("ganador_ok") else "❌",
+                    } for d in ult])
+                    st.caption("💡 Esto alimenta la calibración del motor: aprende de qué tipo de pelea acierta o falla.")
+
+        # ── BACKTEST REAL FÚTBOL (corre el motor jerárquico sobre partidos pasados) ──
+        with st.expander("⚽ BACKTEST REAL FÚTBOL — corre el motor sobre partidos finalizados", expanded=False):
+            st.caption("Descarga partidos finalizados de las ligas principales (Premier, LaLiga, Serie A, "
+                       "Bundesliga, Ligue 1, Liga MX, MLS, etc.) en los últimos N días, corre el motor "
+                       "jerárquico y mide si acertó el Moneyline, el Over/Under de goles, el BTTS y los combinados.")
+            col_fb1, col_fb2 = st.columns([3, 1])
+            with col_fb2:
+                dias_fut = st.number_input("Días", 3, 30, 10, step=1, key="fut_br_dias")
+            with col_fb1:
+                st.write("")
+                if st.button("⚽ EJECUTAR BACKTEST REAL FÚTBOL", use_container_width=True, key="fut_br_run"):
+                    barra_fb = st.progress(0, text="Corriendo el motor de fútbol sobre partidos pasados...")
+                    def _pfb(i, n, t):
+                        barra_fb.progress(min(0.99, i / max(n, 1)), text=str(t)[:55])
+                    try:
+                        from motors.futbol_backtest_real import ejecutar_futbol_backtest_real
+                        ejecutar_futbol_backtest_real(dias=int(dias_fut), progreso_cb=_pfb)
+                        barra_fb.empty()
+                        st.success("✅ Backtest de fútbol completado.")
+                    except Exception as _fe:
+                        barra_fb.empty()
+                        st.error(f"Error: {_fe}")
+                        logger.exception(_fe)
+
+            fbr = cargar_json_safe(os.path.join("data", "futbol_backtest_real.json"))
+            if fbr and fbr.get("evaluados"):
+                st.caption(f"Último: {fbr.get('timestamp','')[:16].replace('T',' ')} · "
+                           f"{fbr.get('partidos',0)} partidos · {fbr.get('evaluados',0)} picks evaluados")
+                mk = fbr.get("mercados", {})
+                f1, f2, f3, f4 = st.columns(4)
+                f1.metric("🏆 Moneyline", f"{mk.get('moneyline',{}).get('precision',0)}%",
+                          f"{mk.get('moneyline',{}).get('aciertos',0)}/{mk.get('moneyline',{}).get('total',0)}")
+                f2.metric("⚽ Over/Under", f"{mk.get('over_under',{}).get('precision',0)}%",
+                          f"{mk.get('over_under',{}).get('aciertos',0)}/{mk.get('over_under',{}).get('total',0)}")
+                f3.metric("🤝 BTTS", f"{mk.get('btts',{}).get('precision',0)}%",
+                          f"{mk.get('btts',{}).get('aciertos',0)}/{mk.get('btts',{}).get('total',0)}")
+                f4.metric("🎰 Combo", f"{mk.get('combo',{}).get('precision',0)}%",
+                          f"{mk.get('combo',{}).get('aciertos',0)}/{mk.get('combo',{}).get('total',0)}")
+                st.markdown(f"**Precisión global del motor de fútbol: {fbr.get('precision_global',0)}%**")
+                det = fbr.get("detalle", [])
+                if det:
+                    st.table([{"Partido": d["partido"], "Pick": d["pick"],
+                               "Mercado": d["mercado"], "Conf.": f"{d['confianza']}%",
+                               "Resultado": "✅" if d["acierto"] else "❌"} for d in det[:25]])
+            elif fbr:
+                st.info(fbr.get("error", "Sin picks evaluables todavía. Ejecuta el backtest."))
 
         with st.expander("⚾ Backtest por picks guardados (efectividad acumulada HR / ML / O-U / K)", expanded=False):
             st.caption("Descarga resultados reales de la MLB Stats API, cruza tus picks pendientes y mide qué tan efectivo es cada mercado.")
@@ -1013,14 +1251,55 @@ def main():
 
             st.markdown("---")
             st.subheader("📈 Rendimiento por Deporte")
-            
+
             data_deportes = [
                 {"Deporte": k, **v} for k, v in metricas.items() if k != "GLOBAL"
             ]
-            
+
+            # ── Fusionar la precisión de los backtests reales por deporte ──────
+            # Asegura que NBA, UFC y FÚTBOL aparezcan aunque el reporte de
+            # aprendizaje aún no los incluya.
+            deportes_presentes = {d["Deporte"].upper() for d in data_deportes}
+            extra = []
+
+            def _fila_backtest(nombre, ruta, getter):
+                rep = cargar_json_safe(ruta)
+                if not rep:
+                    return None
+                try:
+                    return {"Deporte": nombre, **getter(rep)}
+                except Exception:
+                    return None
+
+            if "MLB" not in deportes_presentes:
+                f = _fila_backtest("MLB", os.path.join("data", "mlb_backtest_real.json"),
+                                   lambda r: {"Precisión ML": f"{r.get('moneyline',{}).get('precision_global',0)}%",
+                                              "Juegos": r.get("juegos", 0)})
+                if f: extra.append(f)
+            if "NBA" not in deportes_presentes:
+                f = _fila_backtest("NBA", os.path.join("data", "nba_backtest_real.json"),
+                                   lambda r: {"Precisión ML": f"{r.get('moneyline',{}).get('precision_global',0)}%",
+                                              "Juegos": r.get("juegos", 0)})
+                if f: extra.append(f)
+            if "UFC" not in deportes_presentes:
+                f = _fila_backtest("UFC", os.path.join("data", "ufc_backtest_reporte.json"),
+                                   lambda r: {"Precisión ML": f"{r.get('ganador',{}).get('precision',0)}%",
+                                              "Juegos": r.get("muestras", 0)})
+                if f: extra.append(f)
+            if "SOCCER" not in deportes_presentes and "FÚTBOL" not in deportes_presentes:
+                f = _fila_backtest("FÚTBOL", os.path.join("data", "futbol_backtest_real.json"),
+                                   lambda r: {"Precisión ML": f"{r.get('precision_global',0)}%",
+                                              "Juegos": r.get("evaluados", 0)})
+                if f: extra.append(f)
+
             if data_deportes:
                 df_reporte = pd.DataFrame(data_deportes)
                 st.dataframe(df_reporte, use_container_width=True)
+            if extra:
+                st.caption("Precisión medida por los backtests reales de cada motor:")
+                st.dataframe(pd.DataFrame(extra), use_container_width=True)
+            if not data_deportes and not extra:
+                st.info("Ejecuta los backtests reales (arriba) para ver el rendimiento por deporte.")
             
             pesos = reporte.get("pesos", {})
             if pesos:

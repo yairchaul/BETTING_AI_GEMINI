@@ -76,6 +76,11 @@ def analizar_nba_pro_v17(partido, is_back_to_back=False):
     else:
         ou_pick, ou_conf = ('OVER' if ritmo >= 1.0 else 'UNDER'), 52
 
+    # EV del O/U con las cuotas reales de ESPN (over_odds / under_odds)
+    ou_odds_pick = odds.get('over_odds') if ou_pick == 'OVER' else odds.get('under_odds')
+    p_impl_ou = _prob_implicita(ou_odds_pick)
+    ou_ev = round((ou_conf / 100 / p_impl_ou - 1) * 100, 1) if (p_impl_ou and p_impl_ou > 0) else 0
+
     # ── Hándicap (spread) ──
     spread_data = odds.get('spread', {})
     spread_val = spread_data.get('local') if isinstance(spread_data, dict) else spread_data
@@ -87,19 +92,24 @@ def analizar_nba_pro_v17(partido, is_back_to_back=False):
 
     # ── Mejor mercado: el de mayor confianza ──
     mercados = [
-        {'mercado': 'MONEYLINE', 'pick': f"Gana {pick_team}", 'confianza': ml_conf},
-        {'mercado': 'HÁNDICAP', 'pick': hcap_pick, 'confianza': hcap_conf},
-        {'mercado': 'TOTAL (O/U)', 'pick': f"{ou_pick} {ou_line}", 'confianza': ou_conf},
+        {'mercado': 'MONEYLINE', 'pick': f"Gana {pick_team}", 'confianza': ml_conf, 'ev': ev},
+        {'mercado': 'HÁNDICAP', 'pick': hcap_pick, 'confianza': hcap_conf, 'ev': 0},
+        {'mercado': 'TOTAL (O/U)', 'pick': f"{ou_pick} {ou_line}", 'confianza': ou_conf, 'ev': ou_ev},
     ]
     mejor = max(mercados, key=lambda m: m['confianza'])
+
+    # EV global: el del mejor mercado que tenga cuota (prioriza O/U, que sí trae cuota)
+    ev_global = ev
+    if ev == 0 and ou_ev != 0:
+        ev_global = ou_ev
 
     return {
         'recomendacion': f"Gana {pick_team}",
         'confianza': ml_conf,
-        'ev': ev,
+        'ev': ev_global,
         'total_proyectado': total_proyectado,
         'moneyline': {'pick': pick_team, 'confidence': ml_conf, 'ev': ev},
-        'over_under': {'pick': ou_pick, 'line': ou_line, 'confidence': ou_conf},
+        'over_under': {'pick': ou_pick, 'line': ou_line, 'confidence': ou_conf, 'ev': ou_ev},
         'spread': {'pick': hcap_pick, 'confidence': hcap_conf},
         'mercados': mercados,
         'mejor_mercado': mejor,

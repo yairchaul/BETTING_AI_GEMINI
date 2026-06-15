@@ -205,17 +205,34 @@ class PredictorHRPro:
         """Obtiene bateadores activos con filtro de lineup oficial"""
         bateadores_candidatos = []
         equipo_norm = self.normalizar(equipo_nombre)
-        
+
+        # El dataset de HR guarda el equipo como ABREVIATURA (NYY, LAD…),
+        # mientras que aquí llega el nombre completo. Calculamos la abreviatura
+        # para que el match funcione en ambos formatos.
+        try:
+            from mapeo_equipos import obtener_abreviatura
+            abrev = obtener_abreviatura(equipo_nombre)
+        except Exception:
+            abrev = equipo_nombre[:3].upper()
+        abrev_norm = self.normalizar(abrev)
+
+        def _coincide_equipo(equipo_bateador):
+            eb = self.normalizar(equipo_bateador)
+            if not eb:
+                return False
+            return (eb == equipo_norm or eb == abrev_norm
+                    or eb in equipo_norm or equipo_norm in eb)
+
         # Obtener lineup oficial si hay game_pk
         lineup_oficial = []
         if game_pk:
             lineup_oficial = self._obtener_lineup_equipo(equipo_nombre, game_pk)
-        
+
         # Buscar bateadores del equipo
         for nombre_bateador, stats in self.bateadores_stats.items():
             equipo_bateador = stats.get('equipo', '')
-            
-            if self.normalizar(equipo_bateador) != equipo_norm:
+
+            if not _coincide_equipo(equipo_bateador):
                 continue
             
             # Si hay lineup oficial, verificar que el bateador esté en él

@@ -61,8 +61,13 @@ class VisualUFCMejoradoV2:
             
             with col1:
                 odds1 = p1.get('odds', 'N/A')
-                odds1_txt = f" · 💰 {odds1}" if odds1 and str(odds1) not in ('N/A', 'None', '') else ""
-                st.markdown(f"## 🔴 {p1.get('nombre', 'Desconocido')}{odds1_txt}")
+                st.markdown(f"## 🔴 {p1.get('nombre', 'Desconocido')}")
+                if odds1 and str(odds1) not in ('N/A', 'None', ''):
+                    st.markdown(
+                        f"<div style='display:inline-block;margin:2px 0 6px 0;padding:3px 14px;border-radius:16px;"
+                        f"background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.45)'>"
+                        f"<span style='color:#3b82f6;font-weight:800;font-size:1.0rem'>🎲 {odds1}</span></div>",
+                        unsafe_allow_html=True)
                 if p1_photo:
                     st.image(p1_photo, width=100) # Display photo
                 st.markdown(f"📊 **Récord:** {p1.get('record', '0-0-0')}")
@@ -126,8 +131,13 @@ class VisualUFCMejoradoV2:
             
             with col3:
                 odds2 = p2.get('odds', 'N/A')
-                odds2_txt = f" · 💰 {odds2}" if odds2 and str(odds2) not in ('N/A', 'None', '') else ""
-                st.markdown(f"## 🔵 {p2.get('nombre', 'Desconocido')}{odds2_txt}")
+                st.markdown(f"## 🔵 {p2.get('nombre', 'Desconocido')}")
+                if odds2 and str(odds2) not in ('N/A', 'None', ''):
+                    st.markdown(
+                        f"<div style='display:inline-block;margin:2px 0 6px 0;padding:3px 14px;border-radius:16px;"
+                        f"background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.45)'>"
+                        f"<span style='color:#3b82f6;font-weight:800;font-size:1.0rem'>🎲 {odds2}</span></div>",
+                        unsafe_allow_html=True)
                 if p2_photo:
                     st.image(p2_photo, width=100) # Display photo
                 st.markdown(f"📊 **Récord:** {p2.get('record', '0-0-0')}")

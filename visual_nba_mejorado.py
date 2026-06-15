@@ -50,7 +50,9 @@ class VisualNBAMejorado:
                     {img_l}
                     <h2 style='color: #fff; text-shadow: 0 0 5px #ff6600; margin: 0;'>{local}</h2>
                     <p style='color: #ff6600; margin: 0;'>{rec_l}</p>
-                    <p style='color: #00ff41; font-size: 14px;'>ML: {ml_local}</p>
+                    <div style='display:inline-block;margin-top:6px;padding:2px 12px;border-radius:14px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.45)'>
+                        <span style='color:#3b82f6;font-weight:800;font-size:13px;'>🎲 ML {ml_local}</span>
+                    </div>
                 </div>
                 <div style='text-align: center; flex: 0.5;'>
                     <h1 style='color: #00ff41; text-shadow: 0 0 10px #00ff41; margin: 0;'>VS</h1>
@@ -59,7 +61,9 @@ class VisualNBAMejorado:
                     {img_v}
                     <h2 style='color: #fff; text-shadow: 0 0 5px #ff6600; margin: 0;'>{visitante}</h2>
                     <p style='color: #ff6600; margin: 0;'>{rec_v}</p>
-                    <p style='color: #00ff41; font-size: 14px;'>ML: {ml_visit}</p>
+                    <div style='display:inline-block;margin-top:6px;padding:2px 12px;border-radius:14px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.45)'>
+                        <span style='color:#3b82f6;font-weight:800;font-size:13px;'>🎲 ML {ml_visit}</span>
+                    </div>
                 </div>
             </div>
             <div style='display: flex; justify-content: center; gap: 30px; margin-top: 15px; padding-top: 10px; border-top: 1px solid #333;'>
@@ -91,10 +95,12 @@ class VisualNBAMejorado:
             total_proyectado = analisis_heuristico.get('total_proyectado', 0)
             detalle = analisis_heuristico.get('detalle', '')
             etiqueta_verde = analisis_heuristico.get('etiqueta_verde', False)
-            
+
             color_resultado = "#00ff41" if "OVER" in recomendacion or "GANA" in recomendacion else "#ff6600"
             icono = "📈" if "OVER" in recomendacion else ("📉" if "UNDER" in recomendacion else "🎯")
-            
+            ev_txt = f"{ev}%" if ev else "s/cuota"
+            ev_color = "#00ff41" if (isinstance(ev, (int, float)) and ev >= 5) else ("#ff6600" if ev else "#64748b")
+
             st.markdown(f"""
             <div style='background: linear-gradient(135deg, #1a1f2a 0%, #0f1419 100%); 
                         border-radius: 12px; 
@@ -111,14 +117,14 @@ class VisualNBAMejorado:
                     </div>
                     <div style='text-align: center;'>
                         <span style='color: #888; font-size: 12px;'>VALOR ESPERADO (EV)</span>
-                        <h3 style='color: {"#00ff41" if ev >= 5 else "#ff6600"}; margin: 0;'>{ev}%</h3>
+                        <h3 style='color: {ev_color}; margin: 0;'>{ev_txt}</h3>
                     </div>
                     <div style='text-align: center;'>
                         <span style='color: #888; font-size: 12px;'>CONFIANZA</span>
                         <h3 style='color: #00ff41; margin: 0;'>{confianza}%</h3>
                     </div>
                     <div style='text-align: center;'>
-                        <span style='color: #888; font-size: 12px;'>TOTAL IA</span>
+                        <span style='color: #888; font-size: 12px;'>TOTAL PROYECTADO</span>
                         <h3 style='color: #ff6600; margin: 0;'>{total_proyectado}</h3>
                     </div>
                 </div>
@@ -131,20 +137,26 @@ class VisualNBAMejorado:
             # Barra de progreso de confianza
             st.progress(confianza / 100)
 
-            # ── Los 3 mercados (Ganador / Hándicap / Total) ──
+            # ── Los 3 mercados SIEMPRE visibles (Ganador / Hándicap / Total O-U) ──
             mercados = analisis_heuristico.get('mercados', [])
             if mercados:
+                st.markdown("<div style='color:#888;font-size:12px;margin:6px 0 4px 0'>📊 MERCADOS PREDICHOS</div>",
+                            unsafe_allow_html=True)
                 mejor = analisis_heuristico.get('mejor_mercado', {})
                 cols_m = st.columns(len(mercados))
                 for cm, m in zip(cols_m, mercados):
                     es_mejor = m.get('mercado') == mejor.get('mercado')
                     borde = "#00ff41" if es_mejor else "#334155"
                     estrella = " ⭐" if es_mejor else ""
+                    ev_m = m.get('ev', 0)
+                    ev_m_txt = (f"<div style='color:{'#00ff41' if ev_m>=0 else '#ef4444'};font-size:10px'>EV {ev_m:+.0f}%</div>"
+                                if ev_m else "")
                     cm.markdown(
                         f"<div style='background:#0f1419;border:1px solid {borde};border-radius:8px;padding:8px;text-align:center'>"
                         f"<div style='color:#888;font-size:10px'>{m.get('mercado')}{estrella}</div>"
                         f"<div style='color:#fff;font-weight:700;font-size:13px'>{m.get('pick')}</div>"
                         f"<div style='color:#00ff41;font-size:12px'>{m.get('confianza')}%</div>"
+                        f"{ev_m_txt}"
                         f"</div>",
                         unsafe_allow_html=True,
                     )

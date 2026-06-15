@@ -130,19 +130,26 @@ class VisualMLB:
             
             def lookup_pitcher_data(p_name, team_name):
                 if not datos_k or p_name == "TBD": return 7.5, 4.3, 4.20, "R" # Valores MLB promedio si es TBD
-                
+
+                # Solo considerar entradas dict (algunos JSON traen metadatos string)
+                datos_validos = {k: v for k, v in datos_k.items() if isinstance(v, dict)}
+                if not datos_validos:
+                    return 7.5, 4.3, 4.20, "R"
+
                 # 1. Intento por equipo (Exacto)
-                if team_name in datos_k:
-                    return datos_k[team_name].get("k9", 7.5), datos_k[team_name].get("k_proyectados", 4.3), datos_k[team_name].get("era_reciente", 4.20), datos_k[team_name].get("pitch_hand", "R")
-                
+                if team_name in datos_validos:
+                    d = datos_validos[team_name]
+                    return d.get("k9", 7.5), d.get("k_proyectados", 4.3), d.get("era_reciente", 4.20), d.get("pitch_hand", "R")
+
                 # 2. Intento Fuzzy por nombre de lanzador
                 if RAPIDFUZZ_OK:
-                    nombres_lanzadores = {v['lanzador']: v for v in datos_k.values()}
-                    match = process.extractOne(p_name, nombres_lanzadores.keys(), scorer=fuzz.WRatio)
-                    if match and match[1] > 80:
-                        res = nombres_lanzadores[match[0]]
-                        return res.get("k9", 7.5), res.get("k_proyectados", 4.3), res.get("era_reciente", 4.20), res.get("pitch_hand", "R")
-                
+                    nombres_lanzadores = {v.get('lanzador', ''): v for v in datos_validos.values() if v.get('lanzador')}
+                    if nombres_lanzadores:
+                        match = process.extractOne(p_name, nombres_lanzadores.keys(), scorer=fuzz.WRatio)
+                        if match and match[1] > 80:
+                            res = nombres_lanzadores[match[0]]
+                            return res.get("k9", 7.5), res.get("k_proyectados", 4.3), res.get("era_reciente", 4.20), res.get("pitch_hand", "R")
+
                 return 7.5, 4.3, 4.20, "R" # Default hand if not found
 
             k9_away, k_proy_away, era_reciente_away, hand_away = lookup_pitcher_data(ap, away)
@@ -166,9 +173,9 @@ class VisualMLB:
         </style>
         <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding:25px; border-radius:15px; border:1px solid #334155; margin-bottom:20px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);">
         <div style="display:flex;justify-content:space-between; align-items:center;">
-        <div style="text-align:center;width:42%">{away_logo_html}<h2 style="color:#fff;margin:0; font-size:1.8rem;">{away}</h2><p style="color:#ff6600; font-weight:bold; margin-bottom:5px;">{away_rec}</p><p style="color:#fbbf24; font-size:1.2rem; margin:0;">🎲 {a_odds}</p><p style="color:#94a3b8;font-size:14px; margin:5px 0;">🥎 <b>{ap} ({hand_away})</b></p><p style="color:#00ff41;font-size:11px">⚡ K/9: {k9_away} | Proy: {k_proy_away}K | WHIP: {whip_away}</p></div>
+        <div style="text-align:center;width:42%">{away_logo_html}<h2 style="color:#fff;margin:0; font-size:1.8rem;">{away}</h2><p style="color:#ff6600; font-weight:bold; margin-bottom:5px;">{away_rec}</p><div style="display:inline-block;margin:4px 0;padding:3px 14px;border-radius:16px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.45)"><span style="color:#3b82f6;font-weight:800;font-size:1.05rem">🎲 {a_odds}</span></div><p style="color:#94a3b8;font-size:14px; margin:5px 0;">🥎 <b>{ap} ({hand_away})</b></p><p style="color:#00ff41;font-size:11px">⚡ K/9: {k9_away} | Proy: {k_proy_away}K | WHIP: {whip_away}</p></div>
         <div style="text-align:center;width:16%"><h1 style="color:#e94560; margin:0; font-size:2.5rem; text-shadow: 0 0 10px rgba(233,69,96,0.3);">VS</h1><p style="color:#94a3b8; margin-top:5px;">🕐 <b>{time}</b></p><p style="color:#3b82f6; font-weight:bold;">📊 O/U: {ou}</p><p style="color:#64748b;font-size:11px">🏟️ {venue}</p></div>
-        <div style="text-align:center;width:42%">{home_logo_html}<h2 style="color:#fff;margin:0; font-size:1.8rem;">{home}</h2><p style="color:#ff6600; font-weight:bold; margin-bottom:5px;">{home_rec}</p><p style="color:#fbbf24; font-size:1.2rem; margin:0;">🎲 {h_odds}</p><p style="color:#94a3b8;font-size:14px; margin:5px 0;">🥎 <b>{hp} ({hand_home})</b></p><p style="color:#00ff41;font-size:11px">⚡ K/9: {k9_home} | Proy: {k_proy_home}K | WHIP: {whip_home}</p></div>
+        <div style="text-align:center;width:42%">{home_logo_html}<h2 style="color:#fff;margin:0; font-size:1.8rem;">{home}</h2><p style="color:#ff6600; font-weight:bold; margin-bottom:5px;">{home_rec}</p><div style="display:inline-block;margin:4px 0;padding:3px 14px;border-radius:16px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.45)"><span style="color:#3b82f6;font-weight:800;font-size:1.05rem">🎲 {h_odds}</span></div><p style="color:#94a3b8;font-size:14px; margin:5px 0;">🥎 <b>{hp} ({hand_home})</b></p><p style="color:#00ff41;font-size:11px">⚡ K/9: {k9_home} | Proy: {k_proy_home}K | WHIP: {whip_home}</p></div>
         </div></div>""", unsafe_allow_html=True)
         
         # Alertas de Pitchers (ERA reciente > 5.0)

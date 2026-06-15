@@ -29,60 +29,91 @@ class VisualFutbolTriple:
         rec_l = partido.get('local_record', '')
         rec_v = partido.get('visitante_record', '')
 
-        # ── Encabezado ──────────────────────────────────────────────────────
+        # ── Encabezado (centrado, banderas grandes) ─────────────────────────
+        def _bloque_equipo(nombre, logo, record):
+            flag = (f"<img src='{logo}' width='68' height='68' "
+                    "style='object-fit:contain;display:block;margin:0 auto 8px auto;"
+                    "filter:drop-shadow(0 2px 6px rgba(0,0,0,0.4));border-radius:6px'>") if logo else \
+                   "<div style='font-size:48px;text-align:center;margin-bottom:8px'>⚽</div>"
+            rec_html = (f"<div style='color:#94a3b8;font-size:0.8rem'>{record}</div>"
+                        if record and record != '0-0-0' else "")
+            return (f"<div style='text-align:center'>{flag}"
+                    f"<div style='font-weight:800;font-size:1.1rem;color:#f1f5f9;line-height:1.2'>{nombre}</div>"
+                    f"{rec_html}</div>")
+
         left, mid, right = st.columns([5, 2, 5])
         with left:
-            if logo_l:
-                st.image(logo_l, width=34)
-            st.markdown(f"**{local}** " + (f"`{rec_l}`" if rec_l and rec_l != '0-0-0' else ""))
+            st.markdown(_bloque_equipo(local, logo_l, rec_l), unsafe_allow_html=True)
         with mid:
             marcador = partido.get('marcador', '')
             if marcador and partido.get('completado'):
-                st.markdown(f"<div style='text-align:center;color:#fff;font-weight:800;font-size:1.4rem'>{marcador}</div>"
-                            "<div style='text-align:center;color:#22c55e;font-size:0.7rem'>✅ FINAL</div>",
+                st.markdown(f"<div style='text-align:center;color:#fff;font-weight:800;font-size:1.6rem;margin-top:18px'>{marcador}</div>"
+                            "<div style='text-align:center;color:#22c55e;font-size:0.72rem'>✅ FINAL</div>",
                             unsafe_allow_html=True)
             elif marcador and partido.get('en_vivo'):
-                st.markdown(f"<div style='text-align:center;color:#fff;font-weight:800;font-size:1.4rem'>{marcador}</div>"
-                            "<div style='text-align:center;color:#ef4444;font-size:0.7rem'>🔴 EN VIVO</div>",
+                st.markdown(f"<div style='text-align:center;color:#fff;font-weight:800;font-size:1.6rem;margin-top:18px'>{marcador}</div>"
+                            "<div style='text-align:center;color:#ef4444;font-size:0.72rem'>🔴 EN VIVO</div>",
                             unsafe_allow_html=True)
             else:
-                st.markdown("<div style='text-align:center;color:#9ca3af;font-weight:700'>vs</div>",
+                st.markdown("<div style='text-align:center;color:#9ca3af;font-weight:800;font-size:1.3rem;margin-top:26px'>VS</div>",
                             unsafe_allow_html=True)
             if fecha:
-                st.caption(f"📅 {fecha}")
+                st.markdown(f"<div style='text-align:center;color:#94a3b8;font-size:0.72rem;margin-top:4px'>📅 {fecha}</div>",
+                            unsafe_allow_html=True)
             if fase:
-                st.caption(f"🏆 {fase}")
+                st.markdown(f"<div style='text-align:center;color:#94a3b8;font-size:0.72rem'>🏆 {fase}</div>",
+                            unsafe_allow_html=True)
         with right:
-            if logo_v:
-                st.image(logo_v, width=34)
-            st.markdown(f"**{visitante}** " + (f"`{rec_v}`" if rec_v and rec_v != '0-0-0' else ""))
+            st.markdown(_bloque_equipo(visitante, logo_v, rec_v), unsafe_allow_html=True)
 
         # Estadio
         venue = partido.get('venue', '')
         if venue:
-            st.caption(f"🏟️ {venue}")
+            st.markdown(f"<div style='text-align:center;color:#94a3b8;font-size:0.75rem;margin-top:4px'>🏟️ {venue}</div>",
+                        unsafe_allow_html=True)
 
-        # ── Cuotas (1X2 + O/U) ──────────────────────────────────────────────
-        c1, c2, c3, c4 = st.columns(4)
-        c1.metric(f"🏠 {local[:12]}", ml_loc if ml_loc not in ('N/A', None) else '—')
-        c2.metric("🤝 Empate", ml_emp if ml_emp not in ('N/A', None) else '—')
-        c3.metric(f"✈️ {visitante[:12]}", ml_vis if ml_vis not in ('N/A', None) else '—')
-        c4.metric("⚽ O/U goles", str(ou))
+        # ── Cuotas (1X2 + O/U) como chips con estilo ────────────────────────
+        def _fmt(v):
+            return str(v) if v not in ('N/A', None, '') else '—'
+
+        chip = lambda titulo, valor, color: (
+            f"<div style='flex:1;background:linear-gradient(160deg,#1e293b,#0f172a);"
+            f"border:1px solid #334155;border-top:3px solid {color};border-radius:10px;"
+            f"padding:8px 6px;text-align:center;margin:3px'>"
+            f"<div style='color:#94a3b8;font-size:0.68rem;text-transform:uppercase;letter-spacing:.5px'>{titulo}</div>"
+            f"<div style='color:#f1f5f9;font-size:1.15rem;font-weight:800;margin-top:2px'>{valor}</div></div>")
+
+        st.markdown(
+            "<div style='display:flex;justify-content:space-between;margin-top:6px'>"
+            + chip(f"🏠 {local[:10]}", _fmt(ml_loc), "#3b82f6")
+            + chip("🤝 Empate", _fmt(ml_emp), "#fbbf24")
+            + chip(f"✈️ {visitante[:10]}", _fmt(ml_vis), "#ef4444")
+            + chip("⚽ O/U", _fmt(ou), "#22c55e")
+            + "</div>",
+            unsafe_allow_html=True)
         if detalles:
-            st.caption(f"📋 {detalles}")
+            st.markdown(f"<div style='text-align:center;color:#64748b;font-size:0.72rem;margin-top:2px'>📋 {detalles}</div>",
+                        unsafe_allow_html=True)
 
-        # ── Análisis heurístico (auto-mostrado) ─────────────────────────────
+        # ── Análisis heurístico (auto-mostrado, banner estilizado) ──────────
         if analisis_heuristico:
             pick = analisis_heuristico.get('pick') or analisis_heuristico.get('recomendacion', 'N/A')
             conf = analisis_heuristico.get('confianza', 0)
             regla = analisis_heuristico.get('regla', '')
             nota = analisis_heuristico.get('nota', '')
             if conf >= 60:
-                st.success(f"🎯 **Pick:** {pick}  |  Confianza: {conf:.0f}%" + (f"  |  Regla #{regla}" if regla else ""))
+                acc, ico = "#22c55e", "🎯"
             elif conf >= 40:
-                st.warning(f"📊 **Pick:** {pick}  |  Confianza: {conf:.0f}%" + (f"  |  Regla #{regla}" if regla else ""))
+                acc, ico = "#fbbf24", "📊"
             else:
-                st.info(f"⚪ {pick} (confianza baja: {conf:.0f}%)")
+                acc, ico = "#64748b", "⚪"
+            regla_txt = f" · Regla #{regla}" if regla else ""
+            st.markdown(
+                f"<div style='margin-top:8px;background:linear-gradient(90deg,{acc}22,transparent);"
+                f"border-left:4px solid {acc};border-radius:8px;padding:10px 14px'>"
+                f"<span style='color:{acc};font-weight:800;font-size:1.02rem'>{ico} {pick}</span>"
+                f"<span style='color:#cbd5e1;font-size:0.85rem'>  ·  Confianza {conf:.0f}%{regla_txt}</span></div>",
+                unsafe_allow_html=True)
             if nota:
                 st.caption(f"ℹ️ {nota}")
 

@@ -1,4 +1,4 @@
-﻿﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 ESPN MLB SCRAPER - Con datos reales de la API
 """
