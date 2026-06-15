@@ -7,7 +7,8 @@ Añadido: métodos para obtener top players por estadística
 import sqlite3
 import pandas as pd
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -89,6 +90,28 @@ class DatabaseManager:
                 cuota REAL,
                 estado TEXT DEFAULT 'PENDIENTE',
                 creado_en TEXT
+            )
+        ''')
+
+        # Tabla para caché de lineups de MLB
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS lineup_cache (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                game_pk INTEGER,
+                equipo_nombre TEXT,
+                lineup_json TEXT,
+                timestamp TEXT,
+                UNIQUE(game_pk, equipo_nombre)
+            )
+        ''')
+
+        # Tabla para caché de stats de peleadores UFC
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ufc_fighter_cache (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                fighter_name_norm TEXT UNIQUE,
+                stats_json TEXT,
+                timestamp TEXT
             )
         ''')
         
@@ -213,7 +236,114 @@ class DatabaseManager:
         except Exception as e:
             logger.error(f"Error obteniendo stats de {equipo}: {e}")
             return {}
+
+    def get_lineup_from_cache(self, game_pk, equipo_nombre, max_age_minutes=30):
+        """Obtiene un lineup desde el caché de la base de datos si es reciente."""
+        try:
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT lineup_json, timestamp FROM lineup_cache WHERE game_pk = ? AND equipo_nombre = ?",
+                (game_pk, equipo_nombre)
+            )
+            row = cursor.fetchone()
+            conn.close()
+            if row:
+                lineup_json, timestamp_str = row
+                timestamp = datetime.fromisoformat(timestamp_str)
+                if datetime.now() - timestamp < timedelta(minutes=max_age_minutes):
+                    logger.info(f"Cache HIT para lineup: {equipo_nombre} (game_pk: {game_pk})")
+                    return json.loads(lineup_json)
+                else:
+                    logger.info(f"Cache STALE para lineup: {equipo_nombre} (game_pk: {game_pk})")
+        except Exception as e:
+            logger.error(f"Error obteniendo lineup de caché DB: {e}")
+        return None
+
+    def save_lineup_to_cache(self, game_pk, equipo_nombre, lineup):
+        """Guarda o actualiza un lineup en el caché de la base de datos."""
+        try:
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                INSERT OR REPLACE INTO lineup_cache (game_pk, equipo_nombre, lineup_json, timestamp)
+                VALUES (?, ?, ?, ?)
+                """,
+                (game_pk, equipo_nombre, json.dumps(lineup), datetime.now().isoformat())
+            )
+            conn.commit()
+            conn.close()
+            logger.info(f"Cache SAVED para lineup: {equipo_nombre} (game_pk: {game_pk})")
+        except Exception as e:
+            logger.error(f"Error guardando lineup en caché DB: {e}")
     
+    def get_ufc_fighter_from_cache(self, fighter_name_norm, max_age_days=3):
+        """Obtiene stats de un peleador UFC desde el caché de la DB si es reciente."""
+        try:
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT stats_json, timestamp FROM ufc_fighter_cache WHERE fighter_name_norm = ?",
+                (fighter_name_norm,)
+            )
+            row = cursor.fetchone()
+            conn.close()
+            if row:
+                stats_json, timestamp_str = row
+                timestamp = datetime.fromisoformat(timestamp_str)
+                if datetime.now() - timestamp < timedelta(days=max_age_days):
+                    logger.info(f"Cache HIT para peleador UFC: {fighter_name_norm}")
+                    return json.loads(stats_json)
+                else:
+                    logger.info(f"Cache STALE para peleador UFC: {fighter_name_norm}")
+        except Exception as e:
+            logger.error(f"Error obteniendo peleador UFC de caché DB: {e}")
+        return None
+
+    def save_ufc_fighter_to_cache(self, fighter_name_norm, stats_data):
+        """Guarda o actualiza stats de un peleador UFC en el caché de la DB."""
+        try:
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                INSERT OR REPLACE INTO ufc_fighter_cache (fighter_name_norm, stats_json, timestamp)
+                VALUES (?, ?, ?)
+                """,
+                (fighter_name_norm, json.dumps(stats_data, default=str), datetime.now().isoformat())
+            )
+            conn.commit()
+            conn.close()
+            logger.info(f"Cache SAVED para peleador UFC: {fighter_name_norm}")
+        except Exception as e:
+            logger.error(f"Error guardando peleador UFC en caché DB: {e}")
+
+    def clean_old_cache(self, lineup_days=2, ufc_days=7):
+        """Limpia registros antiguos de las tablas de caché."""
+        try:
+            conn = sqlite3.connect(self.db_path, timeout=10)
+            cursor = conn.cursor()
+            
+            # Limpiar lineup_cache
+            cutoff_lineup = (datetime.now() - timedelta(days=lineup_days)).isoformat()
+            cursor.execute("DELETE FROM lineup_cache WHERE timestamp < ?", (cutoff_lineup,))
+            lineups_deleted = cursor.rowcount
+            
+            # Limpiar ufc_fighter_cache
+            cutoff_ufc = (datetime.now() - timedelta(days=ufc_days)).isoformat()
+            cursor.execute("DELETE FROM ufc_fighter_cache WHERE timestamp < ?", (cutoff_ufc,))
+            ufc_deleted = cursor.rowcount
+            
+            conn.commit()
+            conn.close()
+            
+            logger.info(f"Limpieza de caché completada. Lineups eliminados: {lineups_deleted}. Peleadores UFC eliminados: {ufc_deleted}.")
+            return lineups_deleted, ufc_deleted
+        except Exception as e:
+            logger.error(f"Error limpiando caché antiguo: {e}")
+            return 0, 0
+
     def guardar_player_stats(self, stats_list, deporte):
         """Guarda estadísticas de jugadores en BD"""
         try:

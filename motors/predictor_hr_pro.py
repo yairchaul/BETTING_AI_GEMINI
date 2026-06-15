@@ -15,6 +15,7 @@ Características principales:
 import json, os, unicodedata, hashlib
 from datetime import datetime, timedelta
 import streamlit as st
+from database_manager import db # Importar el gestor de DB
 
 class PredictorHRPro:
     def __init__(self, data_source=None, mlb_partidos_hoy=None):
@@ -68,43 +69,21 @@ class PredictorHRPro:
     
     # ==================== CACHÉ DE LINEUPS INTELIGENTE ====================
     def _obtener_lineup_equipo(self, equipo_nombre, game_pk):
-        """Obtiene lineup oficial usando MLB Stats API con caché"""
+        """Obtiene lineup oficial usando MLB Stats API con caché en SQLite."""
         if not game_pk:
             return []
         
-        # Generar clave de caché única
-        cache_key = hashlib.md5(f"{equipo_nombre}_{game_pk}".encode()).hexdigest()
-        cache_file = os.path.join(self.cache_dir, f"lineup_{cache_key}.json")
-        
-        # Verificar caché (< 30 minutos)
-        if os.path.exists(cache_file):
-            try:
-                with open(cache_file, "r", encoding="utf-8") as f:
-                    cache_data = json.load(f)
-                
-                # Verificar timestamp
-                timestamp = datetime.fromisoformat(cache_data.get("timestamp", "2023-01-01"))
-                if datetime.now() - timestamp < timedelta(minutes=30):
-                    return cache_data.get("lineup", [])
-            except:
-                pass
-        
-        # Obtener lineup desde API
+        # 1. Verificar caché en la base de datos
+        cached_lineup = db.get_lineup_from_cache(game_pk, equipo_nombre, max_age_minutes=30)
+        if cached_lineup is not None:
+            return cached_lineup
+
+        # 2. Obtener lineup desde API si no está en caché
         lineup = self._fetch_mlb_lineup(game_pk, equipo_nombre)
         
-        # Guardar en caché
-        cache_data = {
-            "timestamp": datetime.now().isoformat(),
-            "lineup": lineup,
-            "equipo": equipo_nombre,
-            "game_pk": game_pk
-        }
-        
-        try:
-            with open(cache_file, "w", encoding="utf-8") as f:
-                json.dump(cache_data, f, indent=2, ensure_ascii=False)
-        except:
-            pass
+        # 3. Guardar en el caché de la base de datos
+        if lineup:
+            db.save_lineup_to_cache(game_pk, equipo_nombre, lineup)
         
         return lineup
     

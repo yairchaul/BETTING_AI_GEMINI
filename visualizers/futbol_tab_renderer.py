@@ -2,9 +2,6 @@
 """Módulo para renderizar la pestaña de Fútbol."""
 
 import streamlit as st
-import subprocess
-import sys
-import sqlite3
 from utils.analista_total import AnalistaTotal
 from motors.futbol_analyzer_jerarquico import analizar_futbol_jerarquico
 from utils.database_manager import db
@@ -23,47 +20,52 @@ def render_futbol_tab():
             if partidos:
                 st.markdown(f"### ⚽ {liga}")
                 for idx, p in enumerate(partidos):
-                    res_h = st.session_state.analisis_futbol.get(f"{liga}_{idx}_h")
-                    res_ia = st.session_state.analisis_futbol.get(f"{liga}_{idx}_ia")
-                    try: 
-                        accion = st.session_state.visual_futbol.render(p, idx, liga, st.session_state.tracker, analisis_heuristico=res_h, analisis_ia=res_ia)
+                    key_h  = f"{liga}_{idx}_h"
+                    key_ia = f"{liga}_{idx}_ia"
+                    res_h  = st.session_state.analisis_futbol.get(key_h)
+                    res_ia = st.session_state.analisis_futbol.get(key_ia)
+
+                    # ── Auto-análisis heurístico (sin botón) ────────────────
+                    if res_h is None:
+                        try:
+                            res_h = analizar_futbol_jerarquico(
+                                p.get('home') or p.get('local', ''),
+                                p.get('away') or p.get('visitante', ''),
+                                es_torneo=p.get('es_torneo', False),
+                                fase=p.get('fase', ''),
+                            )
+                            st.session_state.analisis_futbol[key_h] = res_h
+                            pick_auto = res_h.get('pick', '')
+                            if pick_auto and 'insuficiente' not in pick_auto.lower() and 'insuficiente' not in pick_auto.lower():
+                                db.guardar_backtesting("FUTBOL", f"{p.get('home')} vs {p.get('away')}", pick_auto)
+                        except Exception as _ae:
+                            logger.warning(f"Auto-análisis fútbol falló partido {idx}: {_ae}")
+
+                    try:
+                        accion = st.session_state.visual_futbol.render(
+                            p, idx, liga, st.session_state.tracker,
+                            analisis_heuristico=res_h, analisis_ia=res_ia
+                        )
                         if accion == "analizar":
-                            with st.spinner(f"Analizando {liga}..."):
-                                conn = sqlite3.connect("data/betting_stats.db")
-                                check = conn.execute("SELECT COUNT(*) FROM historial_equipos WHERE nombre_equipo = ?", (p.get('home'),)).fetchone()[0]
-                                if check == 0:
-                                    st.toast(f"📥 Descargando historial para {p.get('home')}...")
-                                    subprocess.run([sys.executable, "fetch_historical_soccer.py"])
-                                conn.close()
-                                
-                                jerarquico_result = analizar_futbol_jerarquico(p.get('home'), p.get('away'))
-                                heur_result = jerarquico_result 
-                                st.session_state.analisis_futbol[f"{liga}_{idx}_h"] = heur_result
-                                
-                                # Corregir KeyError si 'recomendacion' no existe
-                                recomendacion_pick = heur_result.get('recomendacion', heur_result.get('pick', 'N/A'))
-                                if recomendacion_pick != 'N/A':
-                                    db.guardar_backtesting("FUTBOL", f"{p.get('home')} vs {p.get('away')}", recomendacion_pick)
-                                
-                                if st.session_state.selected_ia_model != "Heurístico":
-                                    with st.spinner(f"Consultando IA ({st.session_state.selected_ia_model})..."):
-                                        analista_total = AnalistaTotal(
-                                            gemini_client=st.session_state.get("gemini"),
-                                            groq_client=st.session_state.get("groq"),
-                                            deepseek_client=st.session_state.get("deepseek"),
-                                            claude_client=st.session_state.get("claude"),
-                                            new_ai_client=st.session_state.get("new_ai"),
-                                            selected_model=st.session_state.selected_ia_model,
-                                            conservative_mode=st.session_state.conservative_mode,
-                                            token_log=st.session_state.token_log,
-                                            token_alert_threshold=st.session_state.token_alert_threshold,
-                                        )
-                                        ia_result = analista_total.analizar_futbol(p, heur_result, jerarquico_result)
-                                        st.session_state.analisis_futbol[f"{liga}_{idx}_ia"] = ia_result
-                                else:
-                                    st.session_state.analisis_futbol[f"{liga}_{idx}_ia"] = None
+                            if st.session_state.selected_ia_model != "Heurístico":
+                                with st.spinner(f"Consultando IA ({st.session_state.selected_ia_model})..."):
+                                    analista_total = AnalistaTotal(
+                                        gemini_client=st.session_state.get("gemini"),
+                                        groq_client=st.session_state.get("groq"),
+                                        deepseek_client=st.session_state.get("deepseek"),
+                                        claude_client=st.session_state.get("claude"),
+                                        new_ai_client=st.session_state.get("new_ai"),
+                                        selected_model=st.session_state.selected_ia_model,
+                                        conservative_mode=st.session_state.conservative_mode,
+                                        token_log=st.session_state.token_log,
+                                        token_alert_threshold=st.session_state.token_alert_threshold,
+                                    )
+                                    ia_result = analista_total.analizar_futbol(p, res_h, res_h)
+                                    st.session_state.analisis_futbol[key_ia] = ia_result
                                 st.rerun()
-                    except Exception as e: 
+                            else:
+                                st.info("Selecciona un modelo de IA en la barra lateral para análisis avanzado.")
+                    except Exception as e:
                         logger.error(f"Error renderizando Fútbol partido {idx} de {liga}: {e}")
                     st.markdown("---")
     else: 

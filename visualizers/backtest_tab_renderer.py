@@ -19,7 +19,10 @@ PESOS_PATH     = os.path.join("data", "pesos_motores.json")
 DB_PATH        = os.path.join("data", "betting_stats.db")
 HISTORICO_PATH = os.path.join("data", "historico_resultados.json")
 
-SPORT_ICONS = {"MLB": "⚾", "NBA": "🏀", "UFC": "🥊", "SOCCER": "⚽", "GLOBAL": "🌎"}
+SPORT_ICONS = {
+    "MLB": "⚾", "MLB-K": "🎳", "MLB-HR": "💣", "MLB-OU": "📊",
+    "NBA": "🏀", "UFC": "🥊", "SOCCER": "⚽", "GLOBAL": "🌎",
+}
 
 
 def _cargar_reporte() -> dict:
@@ -66,8 +69,37 @@ def _metrica_card(titulo: str, valor: str, delta: str = "", color: str = "#22c55
     )
 
 
+def _auto_run_backtest_if_stale():
+    """Ejecuta el backtest automáticamente si el reporte tiene >24h o no existe."""
+    if st.session_state.get("backtest_auto_ran"):
+        return
+    st.session_state.backtest_auto_ran = True
+
+    rep = _cargar_reporte()
+    ts_str = rep.get("timestamp", "")
+    need_run = not rep or not ts_str
+    if not need_run:
+        try:
+            from datetime import datetime
+            ts = datetime.fromisoformat(ts_str[:19])
+            need_run = (datetime.now() - ts).total_seconds() > 86400
+        except Exception:
+            need_run = True
+
+    if need_run:
+        with st.spinner("⏳ Ejecutando backtest automático (primera vez del día)..."):
+            try:
+                from utils.backtester_universal import BacktesterUniversal
+                bt = BacktesterUniversal()
+                bt.ejecutar_backtest_completo(dias=15)
+                st.toast("✅ Backtest completado.", icon="📊")
+            except Exception as _e:
+                logger.warning(f"Auto-backtest falló: {_e}")
+
+
 def render_backtest_tab():
     """Renderiza la pestaña completa de backtesting multi-sport."""
+    _auto_run_backtest_if_stale()
     st.header("📊 Backtesting Universal — Todos los Deportes")
 
     # ── Botón de ejecución ──────────────────────────────────────────────────
@@ -108,13 +140,16 @@ def render_backtest_tab():
     st.caption(f"Último reporte: {ts}  ·  {dias_rep} días  ·  {descargas} partidos descargados")
 
     # ── Tarjetas de métricas por deporte ────────────────────────────────────
-    deportes_ordenados = ["GLOBAL", "MLB", "NBA", "UFC", "SOCCER"]
-    cols = st.columns(len(deportes_ordenados))
+    deportes_ordenados = ["GLOBAL", "MLB", "MLB-K", "MLB-HR", "MLB-OU", "NBA", "UFC", "SOCCER"]
+    deportes_con_data = [d for d in deportes_ordenados if metricas.get(d, {}).get("total", 0) > 0]
+    if not deportes_con_data:
+        st.info("Sin métricas disponibles aún.")
+        _render_picks_tabla()
+        return
+    cols = st.columns(min(len(deportes_con_data), 5))
 
-    for col, dep in zip(cols, deportes_ordenados):
+    for col, dep in zip(cols, deportes_con_data):
         m = metricas.get(dep, {})
-        if not m or m.get("total", 0) == 0:
-            continue
         wr = m.get("win_rate", 0)
         roi = m.get("roi_pct", 0)
         icon = SPORT_ICONS.get(dep, "📊")
@@ -208,7 +243,7 @@ def _render_picks_tabla():
         return "color: #f59e0b"
 
     st.dataframe(
-        filtered.style.applymap(color_estado, subset=["estado"]),
+        filtered.style.map(color_estado, subset=["estado"]),
         use_container_width=True,
         hide_index=True,
     )

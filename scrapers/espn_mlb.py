@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+﻿﻿# -*- coding: utf-8 -*-
 """
 ESPN MLB SCRAPER - Con datos reales de la API
 """
@@ -84,6 +84,10 @@ class ESPN_MLB_Mejorado:
             # Nombres
             home_name = home_team.get('team', {}).get('displayName', 'Local')
             away_name = away_team.get('team', {}).get('displayName', 'Visitante')
+
+            # Logos
+            home_logo = home_team.get('team', {}).get('logo', '')
+            away_logo = away_team.get('team', {}).get('logo', '')
             
             # Récords
             home_record = home_team.get('records', [{}])[0].get('summary', '0-0')
@@ -125,8 +129,8 @@ class ESPN_MLB_Mejorado:
                 'visitante_record': away_record,
                 'local_streak': home_streak,
                 'visitante_streak': away_streak,
-                'local_logo': '',
-                'visitante_logo': '',
+                'local_logo': home_logo,
+                'visitante_logo': away_logo,
                 'odds': {
                     'moneyline': {'local': ml_home, 'visitante': ml_away},
                     'over_under': over_under

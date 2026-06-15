@@ -86,7 +86,7 @@ class CerebroGeminiPro:
                     "parts": [{"text": prompt}]
                 }],
                 "generationConfig": {
-                    "temperature": 0.7,
+                    "temperature": 0.2,
                     "maxOutputTokens": 1024
                 }
             }
@@ -105,35 +105,65 @@ class CerebroGeminiPro:
             logger.error(f"Error en generate_content: {e}")
             return f"Error: {e}"
 
-    def orquestrar_decision_final(self, deporte, datos_partido, resultado_heuristico):
-        """Genera un análisis usando Gemini."""
+    def _system_persona(self) -> str:
+        """Define la personalidad y las reglas de formato para Gemini."""
+        return """# 🧠 ROL Y OBJETIVO
+Eres un analista de datos deportivos de élite, creado para ser un consultor del proyecto BETTING_AI. Tu nombre es "Gemini-Analyst".
+
+Tu misión es analizar los datos heurísticos y de contexto para generar una predicción final con un razonamiento profundo, siguiendo un formato JSON estricto.
+
+# 📜 REGLAS DE INTERACCIÓN
+1.  **FORMATO JSON ESTRICTO:** Tu respuesta DEBE ser ÚNICAMENTE un objeto JSON válido, sin texto adicional, explicaciones fuera del JSON ni bloques de código markdown.
+2.  **Esquema Obligatorio:** El JSON debe seguir esta estructura: `{"pick":"<texto>", "confianza":<0-100>, "stake":<1-3>, "razon":"<texto>", "mercado":"MONEYLINE|OVER_UNDER|STRIKEOUTS|HOME_RUN|BTTS|HANDICAP"}`
+---
+"""
+
+    def orquestrar_decision(self, prompt_content: str):
+        """
+        Genera un análisis usando Gemini, compatible con la interfaz de AnalistaTotal.
+        """
         if not self.api_key:
-            return {"error": "API Key no configurada", "pick": "Error", "confianza": 0}
+            return json.dumps({"error": "API Key no configurada"})
 
-        prompt = f"""Eres un analista deportivo experto. Analiza el siguiente partido de {deporte}:
-
-Datos del partido: {json.dumps(datos_partido, indent=2)[:2000]}
-Análisis Heurístico: {json.dumps(resultado_heuristico, indent=2)[:500]}
-
-Responde SOLO en formato JSON con estas claves:
-- "pick": El equipo o apuesta recomendada
-- "confianza": Número del 0 al 100
-- "metodo": El método o tipo de apuesta
-- "razon": Breve explicación
-
-JSON:"""
+        full_prompt = (f"{self._system_persona()}\n**TAREA:** Analiza los siguientes datos y devuelve tu decisión "
+                       "en el formato JSON especificado. IMPORTANTE: la 'razon' DEBE ser BREVE (máximo 20 palabras) "
+                       "para no exceder el límite de respuesta.\n\n**DATOS:**\n" + prompt_content)
         
         try:
-            response_text = self.generate_content(prompt)
-            
-            # Extraer JSON de la respuesta
-            import re
-            json_match = re.search(r'\{[^{}]*\}', response_text, re.DOTALL)
-            if json_match:
-                result = json.loads(json_match.group(0))
-                return result
-            else:
-                return {"pick": "No se pudo analizar", "confianza": 50, "metodo": "N/A", "razon": response_text[:200]}
+            response_text = self.generate_content(full_prompt) or ""
+
+            # Limpiar fences markdown si vienen
+            if "```json" in response_text:
+                response_text = response_text.split("```json")[1].split("```")[0]
+            elif "```" in response_text:
+                response_text = response_text.split("```")[1].split("```")[0]
+
+            # Extracción robusta: primer objeto {...} balanceado
+            inicio = response_text.find("{")
+            json_str = ""
+            if inicio >= 0:
+                prof = 0
+                for i in range(inicio, len(response_text)):
+                    if response_text[i] == "{":
+                        prof += 1
+                    elif response_text[i] == "}":
+                        prof -= 1
+                        if prof == 0:
+                            json_str = response_text[inicio:i + 1]
+                            break
+                # Si quedó sin cerrar (truncado), intentar cerrar el objeto
+                if not json_str and prof > 0:
+                    json_str = response_text[inicio:] + ('"' if response_text.rstrip().endswith(':') else '') + "}" * prof
+
+            if json_str:
+                try:
+                    json.loads(json_str)
+                    return json_str
+                except json.JSONDecodeError:
+                    pass
+
+            logger.error(f"Gemini no devolvió un JSON válido: {response_text[:200]}")
+            return json.dumps({"error": "Respuesta no es JSON válido", "raw": response_text[:200]})
         except Exception as e:
-            logger.error(f"Error en orquestrar_decision_final: {e}")
-            return {"error": str(e), "pick": "Error", "confianza": 0}
+            logger.error(f"Error en orquestrar_decision (Gemini): {e}")
+            return json.dumps({"error": str(e)})

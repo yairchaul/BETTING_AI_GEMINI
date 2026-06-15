@@ -4,6 +4,7 @@ VISUAL UFC MEJORADO V2 - Muestra TODAS las stats extraídas del scraper
 Optimizado para mostrar: SLpM, Str.Acc, TD Avg, TD Def, Sub Avg, etc.
 """
 
+import re
 import streamlit as st
 
 class VisualUFCMejoradoV2:
@@ -59,7 +60,9 @@ class VisualUFCMejoradoV2:
             col1, col2, col3 = st.columns([2, 1, 2])
             
             with col1:
-                st.markdown(f"## 🔴 {p1.get('nombre', 'Desconocido')}")
+                odds1 = p1.get('odds', 'N/A')
+                odds1_txt = f" · 💰 {odds1}" if odds1 and str(odds1) not in ('N/A', 'None', '') else ""
+                st.markdown(f"## 🔴 {p1.get('nombre', 'Desconocido')}{odds1_txt}")
                 if p1_photo:
                     st.image(p1_photo, width=100) # Display photo
                 st.markdown(f"📊 **Récord:** {p1.get('record', '0-0-0')}")
@@ -83,25 +86,7 @@ class VisualUFCMejoradoV2:
                 """, unsafe_allow_html=True)
                 
                 # Estadísticas de carrera COMPLETAS
-                stats1 = p1.get('estadisticas_carrera', {})
-                if stats1:
-                    with st.expander("📊 ESTADÍSTICAS DE CARRERA COMPLETAS", expanded=False):
-                        col_s1, col_s2, col_s3 = st.columns(3)
-                        
-                        with col_s1:
-                            st.metric("SLpM", f"{stats1.get('sig_strikes_landed_per_min', 0):.2f}")
-                            st.metric("Precisión", f"{stats1.get('sig_strike_accuracy', 0):.1f}%")
-                            st.metric("Defensa Golpes", f"{stats1.get('sig_strike_defense', 0):.1f}%")
-                        
-                        with col_s2:
-                            st.metric("TD Avg/15min", f"{stats1.get('td_avg_per_15min', 0):.2f}")
-                            st.metric("TD Defensa", f"{stats1.get('td_defense', 0):.1f}%")
-                            st.metric("TD Precisión", f"{stats1.get('td_accuracy', 0):.1f}%")
-                        
-                        with col_s3:
-                            st.metric("Sub Avg/15min", f"{stats1.get('sub_avg_per_15min', 0):.2f}")
-                            st.metric("Control Avg", f"{stats1.get('control_avg_time', 0):.2f} min")
-                            st.metric("Tiempo Pelea", f"{stats1.get('avg_fight_time', 0):.2f} min")
+                self._render_stats_expander(p1)
             
             with col2:
                 st.markdown("<h1 style='text-align: center; color: #666;'>VS</h1>", unsafe_allow_html=True)
@@ -140,7 +125,9 @@ class VisualUFCMejoradoV2:
                     st.markdown(f"<p style='font-size: 11px; text-align: center; color: #888;'>📏 Diff Alcance: {diff_alcance:.1f} cm<br>Ventaja: {ventaja_alc}</p>", unsafe_allow_html=True)
             
             with col3:
-                st.markdown(f"## 🔵 {p2.get('nombre', 'Desconocido')}")
+                odds2 = p2.get('odds', 'N/A')
+                odds2_txt = f" · 💰 {odds2}" if odds2 and str(odds2) not in ('N/A', 'None', '') else ""
+                st.markdown(f"## 🔵 {p2.get('nombre', 'Desconocido')}{odds2_txt}")
                 if p2_photo:
                     st.image(p2_photo, width=100) # Display photo
                 st.markdown(f"📊 **Récord:** {p2.get('record', '0-0-0')}")
@@ -164,73 +151,113 @@ class VisualUFCMejoradoV2:
                 """, unsafe_allow_html=True)
                 
                 # Estadísticas de carrera COMPLETAS
-                stats2 = p2.get('estadisticas_carrera', {})
-                if stats2:
-                    with st.expander("📊 ESTADÍSTICAS DE CARRERA COMPLETAS", expanded=False):
-                        col_s1, col_s2, col_s3 = st.columns(3)
-                        
-                        with col_s1:
-                            st.metric("SLpM", f"{stats2.get('sig_strikes_landed_per_min', 0):.2f}")
-                            st.metric("Precisión", f"{stats2.get('sig_strike_accuracy', 0):.1f}%")
-                            st.metric("Defensa Golpes", f"{stats2.get('sig_strike_defense', 0):.1f}%")
-                        
-                        with col_s2:
-                            st.metric("TD Avg/15min", f"{stats2.get('td_avg_per_15min', 0):.2f}")
-                            st.metric("TD Defensa", f"{stats2.get('td_defense', 0):.1f}%")
-                            st.metric("TD Precisión", f"{stats2.get('td_accuracy', 0):.1f}%")
-                        
-                        with col_s3:
-                            st.metric("Sub Avg/15min", f"{stats2.get('sub_avg_per_15min', 0):.2f}")
-                            st.metric("Control Avg", f"{stats2.get('control_avg_time', 0):.2f} min")
-                            st.metric("Tiempo Pelea", f"{stats2.get('avg_fight_time', 0):.2f} min")
+                self._render_stats_expander(p2)
             
             st.markdown("---")
-            
+
+            # ── MEJOR APUESTA (mercado más fuerte: ganador / método / distancia) ──
+            if analisis_ufc and analisis_ufc.get('mejor_apuesta'):
+                mb = analisis_ufc['mejor_apuesta']
+                mercados = analisis_ufc.get('mercados', [])
+                conf_mb = mb.get('confianza', 0)
+                col_mb = '#4CAF50' if conf_mb >= 65 else '#FF9800' if conf_mb >= 52 else '#f44336'
+                chips = "".join(
+                    f"<span style='background:#1E1E1E;border:1px solid #444;border-radius:6px;"
+                    f"padding:3px 8px;margin-right:6px;font-size:11px;color:#bbb;'>"
+                    f"{m['mercado'].split()[0]}: <b style='color:#fff'>{m['confianza']}%</b></span>"
+                    for m in mercados
+                )
+                st.markdown(f"""
+                <div style="background:linear-gradient(135deg,#1b2a1b,#0f1a0f);
+                            border:2px solid {col_mb};border-radius:10px;padding:14px;margin-bottom:14px;">
+                    <div style="color:{col_mb};font-weight:bold;font-size:13px;">🎯 MEJOR APUESTA — {mb.get('mercado','')}</div>
+                    <div style="color:#fff;font-size:20px;font-weight:800;margin:4px 0;">{mb.get('apuesta','')}</div>
+                    <div style="color:{col_mb};font-size:14px;margin-bottom:8px;">Confianza: {conf_mb}%</div>
+                    <div>{chips}</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+            # ── MÁS MERCADOS (método, totales de rounds, se va a la distancia) ──
+            if analisis_ufc and (analisis_ufc.get('metodo_probs') or analisis_ufc.get('rounds_totales')):
+                with st.expander("📋 Más mercados (método · rounds · distancia)", expanded=False):
+                    mp = analisis_ufc.get('metodo_probs', {})
+                    if mp:
+                        st.markdown("**🥊 Método de victoria (probabilidad):**")
+                        cmp1, cmp2, cmp3 = st.columns(3)
+                        iconos = {"KO/TKO": "💥", "Sumisión": "🥋", "Decisión": "📊"}
+                        for col, (met, p) in zip([cmp1, cmp2, cmp3], mp.items()):
+                            col.metric(f"{iconos.get(met, '')} {met}", f"{p}%")
+                    rt = analisis_ufc.get('rounds_totales', [])
+                    if rt:
+                        st.markdown("**⏱️ Totales de Rounds:**")
+                        for r in rt:
+                            color_r = "#4CAF50" if r['pick'] == "OVER" else "#f44336"
+                            st.markdown(
+                                f"<span style='color:#aaa'>Over/Under {r['linea']} rounds →</span> "
+                                f"<b style='color:{color_r}'>{r['pick']} {r['linea']}</b> "
+                                f"<span style='color:#888'>({r['confianza']}%)</span>",
+                                unsafe_allow_html=True)
+                    dur = analisis_ufc.get('duracion', {})
+                    if dur:
+                        va = dur.get('va_a_decision')
+                        st.markdown(f"**🎯 ¿Se va a la distancia?** "
+                                    f"<b style='color:{'#4CAF50' if va else '#f44336'}'>"
+                                    f"{'SÍ' if va else 'NO'}</b> ({dur.get('confianza', 0)}%)",
+                                    unsafe_allow_html=True)
+
             # Análisis de los motores
             col_a1, col_a2, col_a3 = st.columns(3)
             
             with col_a1:
                 st.markdown("<h4 style='color: #FFD700;'>📊 HEURÍSTICO</h4>", unsafe_allow_html=True)
                 if analisis_ufc:
-                    apuesta = analisis_ufc.get('apuesta', 'N/A')
+                    apuesta = analisis_ufc.get('recomendacion') or analisis_ufc.get('apuesta', 'N/A')
                     confianza = analisis_ufc.get('confianza', 0)
                     metodo = analisis_ufc.get('metodo', 'N/A')
-                    
+                    dur = analisis_ufc.get('duracion', {}) or {}
+
                     color_conf = '#4CAF50' if confianza >= 70 else '#FF9800' if confianza >= 50 else '#f44336'
-                    
+                    linea_dur = (
+                        f"<p style='color: #64b5f6; font-size: 12px;'>⏱️ {dur.get('pick', '')} "
+                        f"({dur.get('prob', 0)}%)</p>"
+                    ) if dur else ""
+
                     st.markdown(f"""
                     <div style="background-color: #2A2A2A; padding: 10px; border-radius: 5px;">
                         <p style='color: #FFF; font-weight: bold;'>{apuesta}</p>
                         <p style='color: {color_conf};'>Confianza: {confianza}%</p>
                         <p style='color: #888; font-size: 12px;'>{metodo}</p>
+                        {linea_dur}
                     </div>
                     """, unsafe_allow_html=True)
                 else:
                     st.markdown("<p style='color: #888;'>Pendiente de análisis</p>", unsafe_allow_html=True)
             
             with col_a2:
-                st.markdown("<h4 style='color: #FFD700;'>🔬 PREMIUM ANALYTICS</h4>", unsafe_allow_html=True)
+                st.markdown("<h4 style='color: #FFD700;'>🧠 CLAUDE ANALYST</h4>", unsafe_allow_html=True)
                 if analisis_premium:
-                    edge = analisis_premium.get('edge_rating', 0)
-                    razones = analisis_premium.get('razones', [])
-                    
-                    # Estrellas coloridas
-                    estrellas_llegas = min(10, int(edge))
-                    estrellas = "★" * estrellas_llegas + "☆" * (10 - estrellas_llegas)
-                    
-                    st.markdown(f"""
-                    <div style="background-color: #2A2A2A; padding: 10px; border-radius: 5px;">
-                        <p style='color: #FFD700; font-weight: bold; font-size: 18px;'>{estrellas}</p>
-                        <p style='color: #FFF;'>Edge Rating: {edge}/10</p>
-                        <div style='max-height: 100px; overflow-y: auto;'>
-                    """, unsafe_allow_html=True)
-                    
-                    for razon in razones[:3]:  # Mostrar solo 3 razones
-                        st.markdown(f"<p style='color: #888; font-size: 11px; margin: 2px 0;'>• {razon[:60]}</p>", unsafe_allow_html=True)
-                    
-                    st.markdown("</div></div>", unsafe_allow_html=True)
+                    if 'error' in analisis_premium:
+                        st.markdown(f"<p style='color:#f44336;font-size:12px;'>Claude: {str(analisis_premium['error'])[:90]}</p>", unsafe_allow_html=True)
+                    elif analisis_premium.get('pick') or analisis_premium.get('razon'):
+                        # Formato del orquestador de IA (pick/confianza/razon/mercado)
+                        pick_c = analisis_premium.get('pick', 'N/A')
+                        conf_c = analisis_premium.get('confianza', 0)
+                        razon_c = analisis_premium.get('razon', '')
+                        mercado_c = analisis_premium.get('mercado', '')
+                        st.markdown(f"""
+                        <div style="background-color: #2A2A2A; padding: 10px; border-radius: 5px;">
+                            <p style='color: #d97aff; font-weight: bold;'>🎯 {pick_c}</p>
+                            <p style='color: #4CAF50;'>Confianza: {conf_c}% {('· ' + mercado_c) if mercado_c else ''}</p>
+                            <p style='color: #aaa; font-size: 11px;'>{razon_c[:160]}</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    else:
+                        # Formato legacy edge/razones
+                        edge = analisis_premium.get('edge_rating', 0)
+                        estrellas = "★" * min(10, int(edge)) + "☆" * (10 - min(10, int(edge)))
+                        st.markdown(f"<p style='color:#FFD700;font-size:18px;'>{estrellas}</p>", unsafe_allow_html=True)
                 else:
-                    st.markdown("<p style='color: #888;'>Pendiente de análisis</p>", unsafe_allow_html=True)
+                    st.markdown("<p style='color: #888;'>Selecciona Claude o pulsa Analizar</p>", unsafe_allow_html=True)
             
             with col_a3:
                 st.markdown("<h4 style='color: #FFD700;'>🤖 GEMINI IA</h4>", unsafe_allow_html=True)
@@ -288,8 +315,65 @@ class VisualUFCMejoradoV2:
                         with col_d2:
                             st.json(p2)
     
+    def _render_stats_expander(self, p):
+        """Expander con las estadísticas de carrera reales (fuente ESPN)."""
+        ec = p.get('estadisticas_carrera', {}) or {}
+        if not any(v for v in ec.values()):
+            return
+        with st.expander("📊 ESTADÍSTICAS DE CARRERA COMPLETAS", expanded=False):
+            c1, c2, c3 = st.columns(3)
+            with c1:
+                st.metric("SLpM", f"{ec.get('sig_strikes_landed_per_min', 0):.2f}")
+                st.metric("Precisión Golpes", f"{ec.get('sig_strike_accuracy', 0):.1f}%")
+                ko = p.get('ko_rate', 0)
+                ko = ko * 100 if ko <= 1 else ko
+                st.metric("Victorias por KO", f"{ko:.0f}%")
+            with c2:
+                st.metric("TD Avg/15min", f"{ec.get('td_avg_per_15min', 0):.2f}")
+                st.metric("TD Precisión", f"{ec.get('td_accuracy', 0):.1f}%")
+                st.metric("Sub Avg/15min", f"{ec.get('sub_avg_per_15min', 0):.2f}")
+            with c3:
+                st.metric("Tiempo Pelea", f"{ec.get('avg_fight_time', 0):.2f} min")
+                st.metric("Racha", f"{p.get('streak', 0)}W")
+                st.metric("Victorias Decisión", f"{ec.get('decision_pct', 0):.0f}%")
+
     def _completar_datos(self, peleador):
-        """Completa datos faltantes con valores por defecto"""
+        """Completa datos faltantes y traduce claves del scraper UFCStats al formato visual."""
+        # ── Adaptador scraper → visual (idempotente) ─────────────────────────
+        if peleador.get('stance') and not peleador.get('postura'):
+            peleador['postura'] = peleador['stance']
+
+        # altura: scraper la da como int en cm → convertir a formato pies'pulgadas
+        alt = peleador.get('altura')
+        if isinstance(alt, (int, float)):
+            if alt > 0:
+                total_in = alt / 2.54
+                peleador['altura'] = f"{int(total_in // 12)}' {round(total_in % 12)}\""
+            else:
+                peleador['altura'] = 'N/A'
+
+        # alcance: int cm → pulgadas
+        alc = peleador.get('alcance')
+        if isinstance(alc, (int, float)):
+            peleador['alcance'] = f"{alc / 2.54:.0f}\"" if alc > 0 else 'N/A'
+
+        # estadisticas_carrera desde las claves planas del scraper
+        ec = peleador.get('estadisticas_carrera') or {}
+        if not ec.get('sig_strikes_landed_per_min') and peleador.get('slpm_avg'):
+            ec['sig_strikes_landed_per_min'] = peleador['slpm_avg']
+        if not ec.get('sig_strike_accuracy') and peleador.get('striking_accuracy'):
+            acc = peleador['striking_accuracy']
+            ec['sig_strike_accuracy'] = acc * 100 if acc <= 1 else acc
+        if not ec.get('td_accuracy') and peleador.get('takedown_accuracy'):
+            td = peleador['takedown_accuracy']
+            ec['td_accuracy'] = td * 100 if td <= 1 else td
+        if not ec.get('control_avg_time') and peleador.get('control_time_avg'):
+            ec['control_avg_time'] = peleador['control_time_avg']
+        if not ec.get('td_avg_per_15min') and peleador.get('td_avg'):
+            ec['td_avg_per_15min'] = peleador['td_avg']
+        if ec:
+            peleador['estadisticas_carrera'] = ec
+
         defaults = {
             'altura': 'N/A',
             'peso': 'N/A',

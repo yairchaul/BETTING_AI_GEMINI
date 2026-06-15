@@ -25,20 +25,23 @@ def main():
     # 1. Sincronización Git
     print("\n📡 1. Sincronizando cambios con GitHub...")
     
-    # Intentar crear rama y cambiar a ella
-    run_cmd("git checkout -b version-gemini")
-    run_cmd("git checkout version-gemini")
+    branch_name = "version-gemini-migracion" # Un nombre de rama claro
+    print(f"  🔄 Preparando la rama de snapshot: '{branch_name}'...")
+    # Usamos 'checkout -B' que crea la rama si no existe, o la resetea si ya existe.
+    # Es más seguro y robusto para un script de snapshot/migración.
+    run_cmd(f"git checkout -B {branch_name}")
     
     run_cmd("git add .")
-    rc, out, err = run_cmd('git commit -m "Sincronización Pre-Migración: Versión Gemini con Lógica Local"')
+    rc, out, err = run_cmd(f'git commit -m "Snapshot de migración: {datetime.now().strftime("%Y-%m-%d %H:%M")}"')
     
     if "nothing to commit" in out.lower():
         print("  ✅ El repositorio local ya está al día.")
-    else:
+    elif rc == 0:
         print("  ✅ Cambios confirmados localmente.")
     
-    print("  📤 Subiendo rama 'version-gemini' al servidor...")
-    rc, out, err = run_cmd("git push -u origin version-gemini --force")
+    print(f"  📤 Subiendo rama '{branch_name}' al servidor...")
+    # NOTA: --force es una acción destructiva. Se usa aquí asumiendo que el propósito es crear un espejo exacto para la migración.
+    rc, out, err = run_cmd(f"git push -u origin {branch_name} --force")
     if rc == 0:
         print("  🚀 ¡GitHub actualizado con éxito!")
     else:

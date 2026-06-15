@@ -43,9 +43,21 @@ class ESPN_MLB_Mejorado:
                     away = next(c for c in competitors if c['homeAway'] == 'away')
                     home = next(c for c in competitors if c['homeAway'] == 'home')
                     odds = comp.get('odds', [{}])[0] if comp.get('odds') else {}
+
+                    def _rec(competitor):
+                        for r in competitor.get('records', []) or []:
+                            if r.get('type') == 'total':
+                                return r.get('summary', '0-0')
+                        recs = competitor.get('records', [])
+                        return recs[0].get('summary', '0-0') if recs and isinstance(recs[0], dict) else '0-0'
+
                     partidos.append({
                         'visitante': away['team']['displayName'],
                         'local': home['team']['displayName'],
+                        'local_logo': home['team'].get('logo', ''),
+                        'visitante_logo': away['team'].get('logo', ''),
+                        'local_record': _rec(home),
+                        'visitante_record': _rec(away),
                         'hora': datetime.strptime(event['date'], "%Y-%m-%dT%H:%MZ").strftime("%H:%M") if 'date' in event else "TBD",
                         'venue': comp.get('venue', {}).get('fullName', 'TBD'),
                         'odds': {

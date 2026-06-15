@@ -96,6 +96,10 @@ class VisualMLB:
         venue = p.get("venue", "TBD")
         pit = p.get("pitchers", {})
         game_pk = p.get("game_pk") # Obtener game_pk
+        # --- Logos ---
+        away_logo = p.get('visitante_logo', '')
+        home_logo = p.get('local_logo', '')
+        
         ap = pit.get("visitante", {}).get("nombre", "TBD") if isinstance(pit.get("visitante"), dict) else str(pit.get("visitante", "TBD"))
         hp = pit.get("local", {}).get("nombre", "TBD") if isinstance(pit.get("local"), dict) else str(pit.get("local", "TBD"))
         
@@ -146,11 +150,25 @@ class VisualMLB:
         except:
             pass
 
-        st.markdown(f"""<div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding:25px; border-radius:15px; border:1px solid #334155; margin-bottom:20px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);">
+        # --- HTML para logos con animación ---
+        away_logo_html = f'<img class="animated-logo" src="{away_logo}" style="height:50px; margin-bottom:10px;" alt="{away} logo">' if away_logo else ''
+        home_logo_html = f'<img class="animated-logo" src="{home_logo}" style="height:50px; margin-bottom:10px;" alt="{home} logo">' if home_logo else ''
+
+        st.markdown(f"""
+        <style>
+        @keyframes fadeInSlideUp {{
+            from {{ opacity: 0; transform: translateY(15px); }}
+            to {{ opacity: 1; transform: translateY(0); }}
+        }}
+        .animated-logo {{
+            animation: fadeInSlideUp 0.6s ease-out forwards;
+        }}
+        </style>
+        <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding:25px; border-radius:15px; border:1px solid #334155; margin-bottom:20px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);">
         <div style="display:flex;justify-content:space-between; align-items:center;">
-        <div style="text-align:center;width:42%"><h2 style="color:#fff;margin:0; font-size:1.8rem;">{away}</h2><p style="color:#ff6600; font-weight:bold; margin-bottom:5px;">{away_rec}</p><p style="color:#fbbf24; font-size:1.2rem; margin:0;">🎲 {a_odds}</p><p style="color:#94a3b8;font-size:14px; margin:5px 0;">🥎 <b>{ap} ({hand_away})</b></p><p style="color:#00ff41;font-size:11px">⚡ K/9: {k9_away} | Proy: {k_proy_away}K | WHIP: {whip_away}</p></div>
+        <div style="text-align:center;width:42%">{away_logo_html}<h2 style="color:#fff;margin:0; font-size:1.8rem;">{away}</h2><p style="color:#ff6600; font-weight:bold; margin-bottom:5px;">{away_rec}</p><p style="color:#fbbf24; font-size:1.2rem; margin:0;">🎲 {a_odds}</p><p style="color:#94a3b8;font-size:14px; margin:5px 0;">🥎 <b>{ap} ({hand_away})</b></p><p style="color:#00ff41;font-size:11px">⚡ K/9: {k9_away} | Proy: {k_proy_away}K | WHIP: {whip_away}</p></div>
         <div style="text-align:center;width:16%"><h1 style="color:#e94560; margin:0; font-size:2.5rem; text-shadow: 0 0 10px rgba(233,69,96,0.3);">VS</h1><p style="color:#94a3b8; margin-top:5px;">🕐 <b>{time}</b></p><p style="color:#3b82f6; font-weight:bold;">📊 O/U: {ou}</p><p style="color:#64748b;font-size:11px">🏟️ {venue}</p></div>
-        <div style="text-align:center;width:42%"><h2 style="color:#fff;margin:0; font-size:1.8rem;">{home}</h2><p style="color:#ff6600; font-weight:bold; margin-bottom:5px;">{home_rec}</p><p style="color:#fbbf24; font-size:1.2rem; margin:0;">🎲 {h_odds}</p><p style="color:#94a3b8;font-size:14px; margin:5px 0;">🥎 <b>{hp} ({hand_home})</b></p><p style="color:#00ff41;font-size:11px">⚡ K/9: {k9_home} | Proy: {k_proy_home}K | WHIP: {whip_home}</p></div>
+        <div style="text-align:center;width:42%">{home_logo_html}<h2 style="color:#fff;margin:0; font-size:1.8rem;">{home}</h2><p style="color:#ff6600; font-weight:bold; margin-bottom:5px;">{home_rec}</p><p style="color:#fbbf24; font-size:1.2rem; margin:0;">🎲 {h_odds}</p><p style="color:#94a3b8;font-size:14px; margin:5px 0;">🥎 <b>{hp} ({hand_home})</b></p><p style="color:#00ff41;font-size:11px">⚡ K/9: {k9_home} | Proy: {k_proy_home}K | WHIP: {whip_home}</p></div>
         </div></div>""", unsafe_allow_html=True)
         
         # Alertas de Pitchers (ERA reciente > 5.0)
@@ -175,9 +193,13 @@ class VisualMLB:
             
             st.markdown(f"""<div class="{css_class}" style="background:{color_pick}15;padding:20px;border-radius:12px;border-left:6px solid {color_pick}; margin-bottom:15px;">
             <h3 style="color:{color_pick};margin:0">🎯 PICK: {analisis_mlb.get('recomendacion', 'N/A')}</h3>
-            <p style="color:#94a3b8;margin:0">Confianza: {analisis_mlb.get('confianza', 'N/A')}%</p>
+            <p style="color:#94a3b8;margin:0">{analisis_mlb.get('decision', '')} · Confianza: {analisis_mlb.get('confianza', 'N/A')}% · Stake: {analisis_mlb.get('stake', '')}</p>
             <p style="color:#94a3b8;margin:0">Tipo: {analisis_mlb.get('tipo_apuesta', 'N/A')} {analisis_mlb.get('handicap', '')}</p>
             </div>""", unsafe_allow_html=True)
+
+            # Razones del motor (transparencia del mejor pick)
+            for _r in analisis_mlb.get('razones', [])[:3]:
+                st.caption(f"• {_r}")
 
             # Mostrar O/U del motor MLB
             if analisis_mlb.get('ou_pick'):

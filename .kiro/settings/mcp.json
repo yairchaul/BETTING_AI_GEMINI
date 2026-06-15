@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "betting-ai-local": {
+      "command": "python",
+      "args": [
+        "mcp_server_unified.py"
+      ],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "INFO"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "consultar_stats_jugador",
+        "obtener_racha_equipo",
+        "analizar_nba_jerarquico",
+        "get_server_status",
+        "limpiar_cache_llm"
+      ]
+    }
+  }
+}

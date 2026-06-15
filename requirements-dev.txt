@@ -1,0 +1,12 @@
+# Dependencias de desarrollo / testing para BETTING_AI
+# Instalar con: pip install -r requirements-dev.txt
+# Estas dependencias NO son necesarias en producción, sólo para ejecutar la
+# suite de pruebas (unit + property based) del spec backtesting-real-mlb y
+# del resto de motores.
+
+# Property-based testing usado por la suite de pruebas del spec
+# `backtesting-real-mlb` (10 Correctness Properties del diseño).
+hypothesis>=6.0
+
+# Runner de pruebas estándar del proyecto.
+pytest>=7.0

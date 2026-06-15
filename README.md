@@ -1,4 +1,4 @@
-﻿# BETTING_AI_GEMINI
+# BETTING_AI_GEMINI
 
 Sistema de análisis de apuestas deportivas con inteligencia artificial.
 
@@ -9,7 +9,7 @@ Sistema de análisis de apuestas deportivas con inteligencia artificial.
 - ⚽ **Fútbol** - Análisis de partidos, predicciones, mercados
 
 ## 🛠️ Tecnologías
-- Python 3.14
+- Python 3.11+
 - Streamlit (Interfaz web)
 - Groq / Gemini / DeepSeek (IA)
 - SQLite (Base de datos local)
@@ -22,8 +22,6 @@ BETTING_AI/
 ├── visualizers/ # Visualización
 ├── data/ # Datos locales
 └── utils/ # Utilidades
-
-text
 
 ## 🚀 Instalación
 1. Clonar repositorio

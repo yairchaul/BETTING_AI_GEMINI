@@ -23,8 +23,11 @@ class PredictorPonches:
                 with open(self.ruta_lanzadores, "r", encoding="utf-8") as f:
                     datos_api = json.load(f)
                     for equipo, info in datos_api.items():
+                        # Defensivo: algunas entradas pueden no ser dicts con 'nombre'
+                        if not isinstance(info, dict) or 'nombre' not in info:
+                            continue
                         self.pitchers_k[info['nombre']] = {
-                            "k9": info['k9'],
+                            "k9": info.get('k9', 7.5),
                             "equipo": equipo,
                             "avg_innings": info.get('avg_innings', 5.6)
                         }
@@ -75,6 +78,10 @@ class PredictorPonches:
     def obtener_top_pitchers_k(self, limite=5):
         """Retorna los pitchers con más K/9"""
         return sorted(self.pitchers_k.items(), key=lambda x: x[1]["k9"], reverse=True)[:limite]
+
+# Instancia global (singleton) para reutilización en visualizadores y tests
+predictor_ponches = PredictorPonches()
+
 
 # Prueba
 if __name__ == "__main__":

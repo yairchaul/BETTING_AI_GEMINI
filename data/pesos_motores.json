@@ -1,13 +1,13 @@
 {
-  "power_factor_ml": 5.0,
-  "ml_pitcher_vulnerable_penalty": 0.85,
+  "power_factor_ml": 4.5,
+  "ml_pitcher_vulnerable_penalty": 0.82,
   "ml_pitcher_novato_penalty": 0.88,
-  "ml_racha_fallos_penalty": 0.80,
+  "ml_racha_fallos_penalty": 0.8,
   "ml_valor_oculto_bonus": 8.0,
   "hr_ou_impact": 0.015,
   "nba_pace_weight": 0.6,
   "nba_record_weight": 0.4,
   "ufc_pillar_weight": 1.0,
   "futbol_over_threshold": 3.0,
-  "actualizado": null
+  "actualizado": "2026-06-10T15:34:08.753754"
 }

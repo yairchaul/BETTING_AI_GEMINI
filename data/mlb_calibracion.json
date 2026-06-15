@@ -1,0 +1,23 @@
+{
+  "actualizado": "2026-06-12T18:34:38.407454",
+  "juegos": 128,
+  "ml_precision_global": 56.2,
+  "ml_precision_por_gap": {
+    "gap 8-14%": {
+      "juegos": 39,
+      "aciertos": 21,
+      "precision": 53.8
+    },
+    "gap <8%": {
+      "juegos": 65,
+      "aciertos": 35,
+      "precision": 53.8
+    },
+    "gap 15%+": {
+      "juegos": 24,
+      "aciertos": 16,
+      "precision": 66.7
+    }
+  },
+  "ou_tasa_over": 56.2
+}

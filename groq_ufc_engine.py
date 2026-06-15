@@ -35,6 +35,31 @@ class GroqUFCEngine:
         except Exception as e:
             print(f"❌ Error: {e}")
             self.client = None
+
+    def orquestrar_decision(self, prompt_content: str) -> str:
+        """Interfaz genérica para AnalistaTotal: devuelve un JSON de decisión."""
+        import json as _json
+        if not self.client:
+            return _json.dumps({"error": "Groq no disponible"})
+        try:
+            sys_msg = (
+                "Eres un analista deportivo experto. Responde ÚNICAMENTE con un objeto JSON válido "
+                "(sin markdown, sin texto extra). Mantén 'razon' BREVE (máx 25 palabras). "
+                'Estructura: {"pick":"<texto>","confianza":<0-100>,"stake":<1-3>,"razon":"<breve>","mercado":"MONEYLINE|OVER_UNDER|STRIKEOUTS|HOME_RUN|BTTS|HANDICAP"}'
+            )
+            resp = self.client.chat.completions.create(
+                model=self.model,
+                messages=[{"role": "system", "content": sys_msg},
+                          {"role": "user", "content": prompt_content}],
+                temperature=0.2,
+                max_tokens=400,
+                response_format={"type": "json_object"},
+            )
+            txt = resp.choices[0].message.content
+            _json.loads(txt)  # validar
+            return txt
+        except Exception as e:
+            return _json.dumps({"error": f"Groq: {str(e)[:100]}"})
     
     def analyze_fight(self, p1_name, p1_record, p1_ko, p1_sub, p1_altura, p1_alcance,
                             p2_name, p2_record, p2_ko, p2_sub, p2_altura, p2_alcance,

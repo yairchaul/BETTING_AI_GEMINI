@@ -3,10 +3,14 @@
 import streamlit as st
 import os
 from datetime import datetime
-from mlb_stats_api import obtener_whip_cacheado
-from mapeo_equipos import traducir_equipo, obtener_abreviatura
+from motors.mlb_stats_api import obtener_whip_cacheado
+from utils.mapeo_equipos import traducir_equipo, obtener_abreviatura
 from motors.motor_lanzadores import obtener_analisis_lanzadores
-from decision_k import decidir_apuesta_k
+try:
+    from decision_k import decidir_apuesta_k
+except ImportError:
+    def decidir_apuesta_k(pitcher_name, proy_k, linea_casa=4.5):
+        return {"recomendacion": "N/A", "valor": False}
 from motors.motor_over_under import MotorOverUnder
 import sqlite3
 import json
@@ -86,7 +90,7 @@ class VisualMLB:
     def render(self, p, idx, tracker=None, analisis_mlb=None):
         away = p.get("visitante") or p.get("away", "Visitante")
         home = p.get("local") or p.get("home", "Local")
-        away_rec = p.get("visit_record") or p.get("away_record", "0-0")
+        away_rec = p.get("visit_record") or p.get("away_record") or p.get("visitante_record", "0-0")
         home_rec = p.get("local_record") or p.get("home_record", "0-0")
         odds = p.get("odds", {})
         a_odds = odds.get("moneyline", {}).get("visitante") or odds.get("moneyline", {}).get("away", "N/A")
@@ -98,6 +102,10 @@ class VisualMLB:
         game_pk = p.get("game_pk")
         ap = pit.get("visitante", {}).get("nombre", "TBD") if isinstance(pit.get("visitante"), dict) else str(pit.get("visitante", "TBD"))
         hp = pit.get("local", {}).get("nombre", "TBD") if isinstance(pit.get("local"), dict) else str(pit.get("local", "TBD"))
+        logo_v = p.get("visitante_logo", "")
+        logo_l = p.get("local_logo", "")
+        img_v = f'<img src="{logo_v}" width="45" style="margin-bottom:6px;">' if logo_v else ""
+        img_l = f'<img src="{logo_l}" width="45" style="margin-bottom:6px;">' if logo_l else ""
         
         whip_away = obtener_whip_cacheado(ap)
         whip_home = obtener_whip_cacheado(hp)
@@ -122,42 +130,163 @@ class VisualMLB:
 
         st.markdown(f"""<div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding:25px; border-radius:15px; border:1px solid #334155; margin-bottom:20px;">
         <div style="display:flex;justify-content:space-between; align-items:center;">
-        <div style="text-align:center;width:42%"><h2 style="color:#fff;margin:0;">{away}</h2><p style="color:#ff6600; font-weight:bold;">{away_rec}</p><p style="color:#fbbf24;">🎲 {a_odds}</p><p style="color:#94a3b8;font-size:14px;">🥎 <b>{ap} ({hand_away})</b></p><p style="color:{"#fbbf24" if mock_away else "#00ff41"};font-size:11px">⚡ K/9: {k9_away} | Proy: {k_proy_away}K {"⚠️" if mock_away else ""}</p></div>
+        <div style="text-align:center;width:42%">{img_v}<h2 style="color:#fff;margin:0;">{away}</h2><p style="color:#ff6600; font-weight:bold;">{away_rec}</p><p style="color:#fbbf24;">🎲 {a_odds}</p><p style="color:#94a3b8;font-size:14px;">🥎 <b>{ap} ({hand_away})</b></p><p style="color:{"#fbbf24" if mock_away else "#00ff41"};font-size:11px">⚡ K/9: {k9_away} | Proy: {k_proy_away}K {"⚠️" if mock_away else ""}</p></div>
         <div style="text-align:center;width:16%"><h1 style="color:#e94560; margin:0;">VS</h1><p style="color:#94a3b8;">🕐 <b>{time}</b></p><p style="color:#3b82f6;">📊 O/U: {ou}</p></div>
-        <div style="text-align:center;width:42%"><h2 style="color:#fff;margin:0;">{home}</h2><p style="color:#ff6600; font-weight:bold;">{home_rec}</p><p style="color:#fbbf24;">🎲 {h_odds}</p><p style="color:#94a3b8;font-size:14px;">🥎 <b>{hp} ({hand_home})</b></p><p style="color:{"#fbbf24" if mock_home else "#00ff41"};font-size:11px">⚡ K/9: {k9_home} | Proy: {k_proy_home}K {"⚠️" if mock_home else ""}</p></div>
+        <div style="text-align:center;width:42%">{img_l}<h2 style="color:#fff;margin:0;">{home}</h2><p style="color:#ff6600; font-weight:bold;">{home_rec}</p><p style="color:#fbbf24;">🎲 {h_odds}</p><p style="color:#94a3b8;font-size:14px;">🥎 <b>{hp} ({hand_home})</b></p><p style="color:{"#fbbf24" if mock_home else "#00ff41"};font-size:11px">⚡ K/9: {k9_home} | Proy: {k_proy_home}K {"⚠️" if mock_home else ""}</p></div>
         </div></div>""", unsafe_allow_html=True)
         
         if mock_away or mock_home:
             st.caption("⚠️ Algunos datos de lanzadores no se encontraron y están basados en promedios de la liga.")
 
             st.metric(f"🥎 {hp}", f"{k_proy_home} K", delta=f"{k9_home} K/9")
-        
-        col_btn1, col_btn2, col_btn3 = st.columns([1,2,1])
-        with col_btn2:
-            if st.button("🚀 ANALIZAR MLB", key=f"mlb_analizar_{idx}", use_container_width=True):
+
+        # ── Resultado del análisis previo ────────────────────────────────────
+        if analisis_mlb:
+            pick_r = analisis_mlb.get("pick") or analisis_mlb.get("recomendacion", "")
+            conf_r = analisis_mlb.get("confianza", 0)
+            stake_r = analisis_mlb.get("stake", "")
+            razon_r = analisis_mlb.get("razon", "")
+            mercado_r = analisis_mlb.get("mercado", "")
+            err_r = analisis_mlb.get("error", "")
+            if err_r:
+                st.warning(f"⚠️ IA: {err_r}")
+            elif pick_r:
+                color = "#22c55e" if conf_r >= 65 else "#f59e0b" if conf_r >= 50 else "#ef4444"
+                label = f"{'📊 HEURÍSTICO' if not mercado_r else '🤖 IA'}"
+                st.markdown(
+                    f"<div style='background:#1e293b;border-radius:10px;padding:14px;margin:8px 0'>"
+                    f"<div style='color:#94a3b8;font-size:0.75rem'>{label}</div>"
+                    f"<div style='color:{color};font-size:1.3rem;font-weight:700'>🎯 {pick_r}</div>"
+                    f"<div style='color:#fff;font-size:0.85rem'>"
+                    f"Confianza: <b>{conf_r}%</b>  ·  Stake: <b>{stake_r}</b>"
+                    f"{'  ·  Mercado: <b>' + mercado_r + '</b>' if mercado_r else ''}"
+                    f"</div>"
+                    f"{'<div style=color:#94a3b8;font-size:0.8rem;margin-top:6px>' + razon_r + '</div>' if razon_r else ''}"
+                    f"</div>",
+                    unsafe_allow_html=True,
+                )
+
+        # ── 📊 Proyecciones del motor (O/U + Hándicap) ───────────────────────
+        if analisis_mlb:
+            tp = analisis_mlb.get("total_proyectado")
+            oul = analisis_mlb.get("ou_linea_ajustada")
+            oup = analisis_mlb.get("ou_pick")
+            rl = analisis_mlb.get("run_line", {})
+            cols_proj = st.columns(2)
+            with cols_proj[0]:
+                if tp is not None and oul:
+                    flecha = "📈" if oup == "OVER" else "📉"
+                    st.metric(f"{flecha} O/U carreras",
+                              f"{oup} {oul}" if oup else f"línea {oul}",
+                              delta=f"calculo {tp} carreras")
+            with cols_proj[1]:
+                if rl and rl.get("pick"):
+                    st.metric("🎯 Hándicap (Run Line)",
+                              f"{rl['pick']} {rl.get('linea','')}",
+                              delta=f"{rl.get('confianza',0)}% confianza")
+
+        # ── Estadio + factor de HR ───────────────────────────────────────────
+        if venue and venue != "TBD":
+            pf_txt = ""
+            if all_hr_pf := (analisis_mlb.get("hr_candidates", [{}])[0].get("park_factor") if analisis_mlb and analisis_mlb.get("hr_candidates") else None):
+                if all_hr_pf >= 1.05:
+                    pf_txt = " · 🔥 favorece HR"
+                elif all_hr_pf <= 0.95:
+                    pf_txt = " · 🧊 reduce HR"
+            st.caption(f"🏟️ {venue}{pf_txt}")
+
+        # ── 💣 CANDIDATOS A HOME RUN (con barras, como el layout clásico) ────
+        all_hr = []
+        if analisis_mlb:
+            all_hr = (analisis_mlb.get("hr_candidates")
+                      or (analisis_mlb.get("hr_candidates_local", []) + analisis_mlb.get("hr_candidates_visit", [])))
+        # Fallback: pedir al predictor si el análisis no trajo candidatos
+        if not all_hr and game_pk:
+            ph = get_predictor()
+            if ph:
+                try:
+                    all_hr = ph.obtener_bateadores_activos(away, game_pk) + ph.obtener_bateadores_activos(home, game_pk)
+                except Exception:
+                    all_hr = []
+
+        if all_hr:
+            st.markdown("#### 💣 CANDIDATOS A HOME RUN")
+            top_hr = sorted(all_hr, key=lambda x: x.get("probabilidad", x.get("prob", 0)), reverse=True)[:6]
+            for hr in top_hr:
+                prob = hr.get("probabilidad", hr.get("prob", 0))
+                nombre = hr.get("jugador", hr.get("nombre", "?"))
+                equipo = hr.get("equipo", "")
+                pitcher = hr.get("pitcher_rival", hr.get("pitcher", ""))
+                col_hr1, col_hr2 = st.columns([3, 1])
+                with col_hr1:
+                    st.markdown(f"**{nombre}** <span style='color:#94a3b8;font-size:0.8rem'>({equipo})</span>"
+                                + (f" <span style='color:#a78bfa;font-size:0.75rem'>vs {pitcher}</span>" if pitcher else ""),
+                                unsafe_allow_html=True)
+                    # Barra escalada al rango realista (0-22%)
+                    st.progress(min(1.0, prob / 22))
+                with col_hr2:
+                    # Umbrales calibrados al rango real de HR (un HR/juego es raro)
+                    color_hr = "#22c55e" if prob >= 14 else "#f59e0b" if prob >= 9 else "#94a3b8"
+                    st.markdown(f"<div style='text-align:right;color:{color_hr};font-weight:800;font-size:1.2rem'>{prob:.0f}%</div>",
+                                unsafe_allow_html=True)
+
+        # ── 🏏 TOTAL DE BASES (Over 1.5 por bateador) ────────────────────────
+        tb_picks = analisis_mlb.get("tb_picks", []) if analisis_mlb else []
+        if tb_picks:
+            with st.expander("🏏 Total de bases por bateador (Over/Under 1.5)", expanded=False):
+                for tb in tb_picks:
+                    color_tb = "#22c55e" if tb.get('prediccion') == "OVER" else "#ef4444"
+                    st.markdown(
+                        f"**{tb.get('jugador','?')}** "
+                        f"<span style='color:#94a3b8;font-size:0.8rem'>({tb.get('equipo','')})</span> → "
+                        f"<b style='color:{color_tb}'>{tb.get('pick','')}</b> "
+                        f"<span style='color:#64748b;font-size:0.75rem'>{tb.get('confianza',0)}%</span>",
+                        unsafe_allow_html=True)
+
+        # ── 🎯 RUN LINE (Hándicap de carreras) ───────────────────────────────
+        rl = analisis_mlb.get("run_line", {}) if analisis_mlb else {}
+        if rl and rl.get("pick"):
+            st.caption(f"🎯 Run Line: **{rl['pick']} {rl.get('linea','')}** ({rl.get('confianza',0)}%)")
+
+        # ── ⚡ PONCHES DEL LANZADOR (Over/Under) ──────────────────────────────
+        k_picks = analisis_mlb.get("k_picks", []) if analisis_mlb else []
+        if k_picks:
+            st.markdown("#### ⚡ PONCHES DEL LANZADOR (Over/Under)")
+            for kp in k_picks:
+                pred = kp.get('prediccion', kp.get('pick', ''))
+                color_k = "#22c55e" if pred == "OVER" else "#ef4444"
+                col_k1, col_k2 = st.columns([3, 1])
+                with col_k1:
+                    st.markdown(
+                        f"🎳 **{kp.get('pitcher', '?')}** "
+                        f"<span style='color:#94a3b8;font-size:0.8rem'>(K/9: {kp.get('k9', 0)} · proy: {kp.get('proyeccion', 0)} K)</span>",
+                        unsafe_allow_html=True)
+                with col_k2:
+                    st.markdown(
+                        f"<div style='text-align:right;color:{color_k};font-weight:700'>"
+                        f"{pred} {kp.get('linea', '')} <span style='color:#64748b;font-size:0.75rem'>{kp.get('confianza', 0)}%</span></div>",
+                        unsafe_allow_html=True)
+
+        # ── Decisión de la IA (si se ejecutó) ────────────────────────────────
+        if analisis_mlb and analisis_mlb.get("pick_ia"):
+            st.markdown(
+                f"<div style='background:#1e1b4b;border-left:4px solid #818cf8;border-radius:8px;padding:10px;margin:8px 0'>"
+                f"<span style='color:#a5b4fc;font-size:0.75rem'>🤖 IA</span> "
+                f"<b style='color:#fff'>{analisis_mlb['pick_ia']}</b> "
+                f"<span style='color:#818cf8'>({analisis_mlb.get('confianza_ia', 0)}%"
+                f"{' · ' + analisis_mlb.get('mercado_ia', '') if analisis_mlb.get('mercado_ia') else ''})</span>"
+                f"{'<div style=color:#94a3b8;font-size:0.78rem;margin-top:4px>' + analisis_mlb.get('razon_ia', '') + '</div>' if analisis_mlb.get('razon_ia') else ''}"
+                f"</div>", unsafe_allow_html=True)
+
+        # ── Botones de análisis (AL FINAL, debajo de todos los datos) ────────
+        st.markdown("")
+        col_btn1, col_btn2 = st.columns(2)
+        with col_btn1:
+            btn_lbl = "🔄 ACTUALIZAR ANÁLISIS" if analisis_mlb else "🚀 ANALIZAR MLB"
+            if st.button(btn_lbl, key=f"mlb_analizar_{idx}", use_container_width=True):
                 return "analizar"
+        with col_btn2:
+            if st.button("➕ Agregar al Parlay", key=f"mlb_parlay_{idx}", use_container_width=True):
+                st.toast("Pick MLB disponible en el tab PARLAYS", icon="🎰")
 
-        # 🤖 ANÁLISIS IA (Botón interno reconectado)
-        if st.button("🤖 ANÁLISIS IA", key=f"mlb_ia_{idx}", use_container_width=True):
-            st.session_state[f"mlb_ia_click_{idx}"] = True
-        
-        if st.session_state.get(f"mlb_ia_click_{idx}"):
-            gemini = st.session_state.get("gemini")
-            if gemini:
-                with st.spinner("Consultando Gemini..."):
-                    diff, conf, pick = self._get_metricas(p)
-                    resp = gemini.orquestrar_decision_final("MLB", p, {"pick": pick, "confianza": conf})
-                    st.info(str(resp)[:600])
-
-        # 💣 CANDIDATOS HR
-        st.subheader("💣 CANDIDATOS A HOME RUN")
-        ph = get_predictor()
-        if ph and game_pk:
-            try:
-                bats = ph.obtener_bateadores_activos(away, game_pk) + ph.obtener_bateadores_activos(home, game_pk)
-                if bats:
-                    for b in sorted(bats, key=lambda x: x.get('hr_total', 0), reverse=True)[:3]:
-                        st.markdown(f"✅ **{b.get('nombre')}** ({b.get('hr_total')} HR) - Prob: {b.get('probabilidad')}%")
-            except: st.caption("Candidatos no disponibles")
-        
         return None
