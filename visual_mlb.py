@@ -91,6 +91,9 @@ class VisualMLB:
         odds = p.get("odds", {})
         a_odds = odds.get("moneyline", {}).get("visitante") or odds.get("moneyline", {}).get("away", "N/A")
         h_odds = odds.get("moneyline", {}).get("local") or odds.get("moneyline", {}).get("home", "N/A")
+        # Mostrar guion largo si la cuota no está disponible (no rompe el layout)
+        a_odds = "—" if str(a_odds) in ("N/A", "None", "") or a_odds is None else a_odds
+        h_odds = "—" if str(h_odds) in ("N/A", "None", "") or h_odds is None else h_odds
         ou = odds.get("over_under", "N/A")
         time = p.get("hora") or p.get("time", "TBD")
         venue = p.get("venue", "TBD")
