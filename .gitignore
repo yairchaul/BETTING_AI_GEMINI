@@ -30,3 +30,4 @@ Thumbs.db
 
 # Base de datos (generalmente no se versiona si contiene datos de usuario)
 data/betting_stats.db
+.streamlit/secrets.toml
