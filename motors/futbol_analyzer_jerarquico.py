@@ -61,6 +61,19 @@ def _analisis_ranking_fifa(local: str, visitante: str, fase: str = "") -> dict:
     if abs_diff >= 20:
         opciones.append({"pick": f"Gana {fav}" + (" (incluye prórroga)" if es_elim else ""),
                          "confianza": min(70, 56 + abs_diff // 5), "regla": 4})
+    # COMBINADO (mayor pago): gana favorito + Over. En mismatches grandes sigue
+    # siendo alta probabilidad y paga mucho más (caso Alemania: gana + Over 3.5).
+    if abs_diff >= 20:
+        p_gana = min(72, 56 + abs_diff // 5)
+        linea_over = "2.5" if abs_diff >= 30 else "1.5"
+        p_over = min(80, (66 if linea_over == "1.5" else 58) + abs_diff // 5)
+        conf_combo = round(p_gana / 100.0 * p_over / 100.0 * 100)
+        cuota_combo = round((100.0 / p_gana) * (100.0 / p_over), 2)
+        opciones.append({
+            "pick": f"Gana {fav} + Over {linea_over}",
+            "confianza": conf_combo, "regla": 7, "combo": True, "cuota": cuota_combo,
+        })
+
     # Caso muy parejo: Over 1.5 suave
     if not opciones:
         opciones.append({"pick": "OVER 1.5 goles", "confianza": 55, "regla": 2})
@@ -71,6 +84,8 @@ def _analisis_ranking_fifa(local: str, visitante: str, fase: str = "") -> dict:
             if "OVER" in o["pick"] or "BTTS" in o["pick"]:
                 o["confianza"] = max(50, o["confianza"] - 4)
 
+    # El pick primario es el más SEGURO (mayor confianza); el combinado queda
+    # disponible en todas_opciones para el selector que optimiza por pago.
     opciones.sort(key=lambda x: x["confianza"], reverse=True)
     best = opciones[0]
     return {
@@ -209,6 +224,20 @@ def analizar_futbol_jerarquico(
                 "confianza": round(p_under25, 1),
                 "regla": 6,
             })
+
+    # ── Regla 7 — COMBINADO (gana + Over), mayor pago ───────────────────────
+    # Si hay un favorito claro (ML) y los goles acompañan, combinar ambos.
+    ml_pick = next((p for p in viable_picks if p["regla"] == 5), None)
+    over_pick = next((p for p in viable_picks if p["regla"] in (1, 2, 4)
+                      and "OVER" in p["pick"]), None)
+    if ml_pick and over_pick and not es_eliminacion:
+        equipo = ml_pick["pick"].split("(")[-1].rstrip(")") if "(" in ml_pick["pick"] else ml_pick["pick"]
+        conf_combo = round(ml_pick["confianza"] / 100.0 * over_pick["confianza"] / 100.0 * 100)
+        cuota_combo = round((100.0 / max(1, ml_pick["confianza"])) * (100.0 / max(1, over_pick["confianza"])), 2)
+        viable_picks.append({
+            "pick": f"Gana {equipo} + {over_pick['pick']}",
+            "confianza": conf_combo, "regla": 7, "combo": True, "cuota": cuota_combo,
+        })
 
     # ── Selección primaria (jerarquía: regla más baja = más prioridad) ────────
     primary = {"pick": "REVISAR DATOS", "confianza": 0.0, "regla": 99}

@@ -14,8 +14,20 @@ No depende de que el usuario analice cada juego: ejecuta los motores al vuelo.
 
 import streamlit as st
 import logging
+from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
+
+
+def _fecha_iso(p):
+    """Extrae 'YYYY-MM-DD' de un partido/combate, sea cual sea el campo de fecha."""
+    if not isinstance(p, dict):
+        return datetime.now().strftime("%Y-%m-%d")
+    for campo in ("fecha_partido", "fecha", "date", "fecha_iso"):
+        v = p.get(campo)
+        if v:
+            return str(v).replace("T", " ").strip()[:10]
+    return datetime.now().strftime("%Y-%m-%d")  # sin fecha → asumir hoy
 
 # Cuotas por defecto cuando no hay momio del scraper (americano → decimal aprox)
 CUOTA_DEFAULT = {
@@ -47,15 +59,24 @@ def _decimal_a_americano(dec):
         return "—"
 
 
-def _recolectar_picks():
-    """Corre los motores sobre todo lo cargado y devuelve un pool de picks."""
+def _recolectar_picks(dia_filtro=None):
+    """Corre los motores sobre todo lo cargado y devuelve un pool de picks.
+
+    dia_filtro: 'YYYY-MM-DD' para quedarte solo con los juegos de ese día
+    (recalcula picks frescos del día, útil entre semana por lesiones/cambios).
+    """
     ss = st.session_state
     pool = []
+
+    def _es_del_dia(p):
+        return (dia_filtro is None) or (_fecha_iso(p) == dia_filtro)
 
     # ── NBA ──────────────────────────────────────────────────────────────
     try:
         from motors import analizar_nba_pro_v17
         for p in ss.get("nba_partidos", []) or []:
+            if not _es_del_dia(p):
+                continue
             r = analizar_nba_pro_v17(p)
             evento = f"{p.get('local','?')} vs {p.get('visitante','?')}"
             mejor = r.get("mejor_mercado", {})
@@ -89,6 +110,8 @@ def _recolectar_picks():
     try:
         from motors import analizar_mlb_pro_v20
         for p in ss.get("mlb_partidos", []) or []:
+            if not _es_del_dia(p):
+                continue
             r = analizar_mlb_pro_v20(p, game_pk=p.get("game_pk"), predictor_hr=ss.get("predictor_hr"))
             evento = f"{p.get('visitante','?')} @ {p.get('local','?')}"
             odds = p.get("odds", {}) or {}
@@ -136,6 +159,8 @@ def _recolectar_picks():
     # ── UFC ──────────────────────────────────────────────────────────────
     try:
         for idx, c in enumerate(ss.get("ufc_combates", []) or []):
+            if not _es_del_dia(c):
+                continue
             res = ss.get("analisis_ufc", {}).get(f"{c.get('peleador1',{}).get('nombre','')}_vs_{c.get('peleador2',{}).get('nombre','')}")
             if not res:
                 continue
@@ -184,6 +209,8 @@ def _recolectar_picks():
         from motors.futbol_analyzer_jerarquico import analizar_futbol_jerarquico
         for liga, partidos in (ss.get("futbol_partidos", {}) or {}).items():
             for p in partidos or []:
+                if not _es_del_dia(p):
+                    continue
                 r = analizar_futbol_jerarquico(
                     p.get("home") or p.get("local", ""),
                     p.get("away") or p.get("visitante", ""),
@@ -192,14 +219,24 @@ def _recolectar_picks():
                 pick = r.get("pick", "")
                 if not pick or "revisar" in pick.lower():
                     continue
+                evento_f = f"{p.get('home', p.get('local','?'))} vs {p.get('away', p.get('visitante','?'))}"
+                # Pick primario (el más seguro de la jerarquía)
                 pool.append({
-                    "sport": "⚽ FÚTBOL",
-                    "evento": f"{p.get('home', p.get('local','?'))} vs {p.get('away', p.get('visitante','?'))}",
+                    "sport": "⚽ FÚTBOL", "evento": evento_f,
                     "mercado": "1X2/Goles", "pick": pick,
                     "prob": r.get("confianza", 0),
                     "tipo": "SEGURO" if r.get("confianza", 0) >= 55 else "VALOR",
                     "cuota": 2.0,
                 })
+                # Pick COMBINADO (gana + Over) — mayor pago, para el parlay agresivo
+                for op in r.get("todas_opciones", []):
+                    if op.get("combo") and op.get("confianza", 0) >= 38:
+                        pool.append({
+                            "sport": "⚽ FÚTBOL", "evento": evento_f,
+                            "mercado": "COMBINADO", "pick": op["pick"],
+                            "prob": op["confianza"], "tipo": "VALOR",
+                            "cuota": op.get("cuota", 2.4),
+                        })
     except Exception as e:
         logger.warning(f"Parlay fútbol: {e}")
 
@@ -262,6 +299,15 @@ def render_parlay_tab():
         st.info("👈 Carga partidos de algún deporte en el panel de control para generar parlays.")
         return
 
+    # Filtro por día: entre semana puede haber cambios/lesiones, así que recalcula
+    # picks frescos del día elegido (hoy / mañana) en vez de usar los del fin de semana.
+    hoy = datetime.now().strftime("%Y-%m-%d")
+    manana = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
+    dia_opt = st.radio("📅 Día de los picks", ["Hoy", "Mañana", "Todos"],
+                       horizontal=True, index=0,
+                       help="Filtra los juegos por fecha y recalcula los picks de ese día.")
+    dia_filtro = {"Hoy": hoy, "Mañana": manana, "Todos": None}[dia_opt]
+
     col_cfg1, col_cfg2, col_cfg3 = st.columns(3)
     with col_cfg1:
         min_prob = st.slider("Prob. mínima por leg (%)", 45, 75, 55, step=1)
@@ -275,8 +321,12 @@ def render_parlay_tab():
         st.caption("Pulsa **Generar** para analizar todo lo cargado y armar los parlays.")
         return
 
-    with st.spinner("Analizando todos los deportes y armando parlays..."):
-        pool = _recolectar_picks()
+    with st.spinner(f"Analizando juegos ({dia_opt.lower()}) y armando parlays..."):
+        pool = _recolectar_picks(dia_filtro)
+
+    if not pool and dia_filtro is not None:
+        st.warning(f"No hay juegos para **{dia_opt}** ({dia_filtro}). Prueba con 'Todos' o carga más juegos.")
+        return
 
     if not pool:
         st.warning("No se generaron picks. Asegúrate de tener juegos cargados.")
@@ -358,6 +408,23 @@ def render_parlay_tab():
         _tarjeta_parlay(f"🟣 PARLAY GIGANTE ({len(legs_gigante)} legs)", "#a855f7",
                         "Todos los picks sólidos del día — pago enorme, probabilidad baja pero estructurada",
                         _armar_parlay(legs_gigante))
+
+    # ── PARLAY MÁXIMO PAGO: por evento, el mercado que MÁS paga (combinados) ──
+    # No se queda en el Over 0.5 seguro: prefiere el combinado gana+Over (mayor
+    # momio) por cada evento, manteniendo una probabilidad razonable.
+    candidatos_pago = [p for p in pool
+                       if p["prob"] >= max(40, min_prob - 12) and p["mercado"] != "HOME RUN"]
+    mejor_por_evento = {}
+    for p in candidatos_pago:
+        ev = p["evento"]
+        if ev not in mejor_por_evento or p["cuota"] > mejor_por_evento[ev]["cuota"]:
+            mejor_por_evento[ev] = p
+    legs_pago = sorted(mejor_por_evento.values(), key=lambda x: x["cuota"], reverse=True)[:n_legs]
+    if len(legs_pago) >= 2:
+        st.markdown("")
+        _tarjeta_parlay("💎 PARLAY MÁXIMO PAGO", "#06b6d4",
+                        "Por evento elige el mercado que MÁS paga (combinados gana+Over) sin perder calidad",
+                        _armar_parlay(legs_pago))
 
     # ── Tabla completa del pool ──────────────────────────────────────────
     st.markdown("---")
