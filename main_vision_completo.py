@@ -459,15 +459,24 @@ def main():
             st.caption(f"{len(ligas)} ligas y torneos disponibles")
 
         def _cargar_liga(lg):
-            """Carga partidos + puebla historial (últimos 5) para análisis con datos reales."""
+            """Carga partidos + puebla historial (últimos 5) para análisis con datos reales.
+
+            En la pestaña se muestran SOLO los partidos de hoy y próximos (con
+            predicción). Los ya jugados nutren el historial y viven en el Backtesting.
+            """
             partidos_lg = st.session_state.scrapers["futbol"].get_games(lg)
-            st.session_state.futbol_partidos[lg] = partidos_lg
+            # Historial con TODOS (los pasados alimentan los promedios del analizador)
             if partidos_lg:
                 try:
                     st.session_state.scrapers["futbol"].poblar_historial(partidos_lg)
                 except Exception as _he:
                     logger.warning(f"Poblar historial {lg}: {_he}")
-            return partidos_lg
+            # Mostrar solo actuales + próximos (fecha >= hoy)
+            _hoy = datetime.now().strftime("%Y-%m-%d")
+            futuros = [p for p in (partidos_lg or [])
+                       if str(p.get("fecha_partido") or p.get("fecha") or "9999")[:10] >= _hoy]
+            st.session_state.futbol_partidos[lg] = futuros
+            return futuros
 
         # ── 🔥 Ligas con juegos HOY (top 5, incluido el Mundial) ─────────────
         if "ligas_hoy" not in st.session_state:
