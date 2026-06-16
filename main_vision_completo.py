@@ -117,13 +117,18 @@ except ImportError:
     CerebroClaude = None
 
 def get_api_key(name):
+    # Prioridad 1: variables de entorno (.env o sistema) — funciona en local.
+    val = os.getenv(name, "")
+    if val:
+        return val.strip().strip('"').strip("'")
+    # Prioridad 2: Streamlit Secrets (Streamlit Cloud). Acceder a st.secrets sin
+    # secrets.toml lanza excepción; la aislamos para NO perder la key del .env.
     try:
         if hasattr(st, "secrets") and name in st.secrets:
-            return st.secrets[name]
-        return os.getenv(name, "")
-    except Exception as e:
-        logger.error(f"Error cargando API Key {name}: {e}")
-        return ""
+            return str(st.secrets[name]).strip()
+    except Exception:
+        pass
+    return ""
 
 def cargar_json_safe(filepath):
     """Carga un archivo JSON de forma segura, retornando None si falla."""
