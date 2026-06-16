@@ -17,6 +17,12 @@ from dotenv import load_dotenv
 
 # --- Add project root to sys.path to fix ModuleNotFoundError ---
 import sys
+# Consola UTF-8: evita que los print() con emoji (⚡❌🔥…) crasheen en Windows (cp1252).
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
