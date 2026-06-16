@@ -20,7 +20,19 @@ class VisualUFCMejoradoV2:
             'yellow': '#FFC107'
         }
     
-    def render(self, combate, idx, tracker=None, 
+    @staticmethod
+    def _momio_implicito(prob_pct):
+        """Convierte una probabilidad de victoria (0-100) a momio americano
+        estimado. Se usa cuando no hay odds reales del mercado."""
+        try:
+            p = max(1.0, min(99.0, float(prob_pct)))
+            if p >= 50:
+                return f"-{round(p / (100 - p) * 100)} (est)"
+            return f"+{round((100 - p) / p * 100)} (est)"
+        except Exception:
+            return None
+
+    def render(self, combate, idx, tracker=None,
                 datos_peleador1=None, datos_peleador2=None,
                 analisis_ufc=None, analisis_gemini=None, analisis_premium=None):
         
@@ -59,8 +71,11 @@ class VisualUFCMejoradoV2:
             # Peleadores con datos físicos COMPLETOS
             col1, col2, col3 = st.columns([2, 1, 2])
             
+            _pr = (analisis_ufc or {}).get('probabilidad_raw')
             with col1:
                 odds1 = p1.get('odds', 'N/A')
+                if (not odds1 or str(odds1) in ('N/A', 'None', '')) and _pr is not None:
+                    odds1 = self._momio_implicito(_pr * 100)
                 st.markdown(f"## 🔴 {p1.get('nombre', 'Desconocido')}")
                 if odds1 and str(odds1) not in ('N/A', 'None', ''):
                     st.markdown(
@@ -131,6 +146,8 @@ class VisualUFCMejoradoV2:
             
             with col3:
                 odds2 = p2.get('odds', 'N/A')
+                if (not odds2 or str(odds2) in ('N/A', 'None', '')) and _pr is not None:
+                    odds2 = self._momio_implicito((1 - _pr) * 100)
                 st.markdown(f"## 🔵 {p2.get('nombre', 'Desconocido')}")
                 if odds2 and str(odds2) not in ('N/A', 'None', ''):
                     st.markdown(
