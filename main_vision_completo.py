@@ -254,15 +254,24 @@ def cargar_base_ufc():
     except: return {}
 
 def cargar_cuotas_ufc():
+    """Momios UFC REALES: the-odds-api (mercado) + archivo legacy. Clave = nombre normalizado."""
+    odds = {}
+    # 1) Momios reales de mercado (the-odds-api con ODDS_API_KEY)
     try:
+        from scrapers.odds_api import obtener_odds_ufc
+        odds.update(obtener_odds_ufc())
+    except Exception as _oe:
+        logger.warning(f"odds_api UFC no disponible: {_oe}")
+    # 2) Archivo legacy de Caliente (si existe) — complementa por nombre normalizado
+    try:
+        from utils.fuzzy_matching import normalizar
         with open("odds_caliente_ufc.json", "r", encoding="utf-8") as f:
-            cuotas = json.load(f)
-        odds = {}
-        for p in cuotas:
-            odds[p["p1"]] = p["m1"]
-            odds[p["p2"]] = p["m2"]
-        return odds
-    except: return {}
+            for p in json.load(f):
+                odds[normalizar(p["p1"])] = p["m1"]
+                odds[normalizar(p["p2"])] = p["m2"]
+    except Exception:
+        pass
+    return odds
 
 def cargar_mlb_desde_json():
     try:
@@ -471,10 +480,11 @@ def main():
                     st.session_state.scrapers["futbol"].poblar_historial(partidos_lg)
                 except Exception as _he:
                     logger.warning(f"Poblar historial {lg}: {_he}")
-            # Mostrar solo actuales + próximos (fecha >= hoy)
+            # Mostrar solo actuales + próximos (fecha >= hoy y NO terminados)
             _hoy = datetime.now().strftime("%Y-%m-%d")
             futuros = [p for p in (partidos_lg or [])
-                       if str(p.get("fecha_partido") or p.get("fecha") or "9999")[:10] >= _hoy]
+                       if not p.get("completado")
+                       and str(p.get("fecha_partido") or p.get("fecha") or "9999")[:10] >= _hoy]
             st.session_state.futbol_partidos[lg] = futuros
             return futuros
 
@@ -692,8 +702,9 @@ def main():
                 p2_base = next((p for p in base_ufc if p.get('nombre','') == p2_nombre), {})
 
                 # Cuotas: 1) Caliente.mx (odds_ufc)  2) las que trae el scraper de ESPN
-                odds1 = odds_ufc.get(p1_nombre) or p1_raw.get('odds') or 'N/A'
-                odds2 = odds_ufc.get(p2_nombre) or p2_raw.get('odds') or 'N/A'
+                from scrapers.odds_api import odds_de as _odds_de
+                odds1 = _odds_de(p1_nombre, odds_ufc) or p1_raw.get('odds') or 'N/A'
+                odds2 = _odds_de(p2_nombre, odds_ufc) or p2_raw.get('odds') or 'N/A'
 
                 # ESPN (p_stats) tiene prioridad sobre el JSON legacy (p_base)
                 partido_visual = {

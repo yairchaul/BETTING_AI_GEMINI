@@ -162,8 +162,8 @@ class GestorLigasUniversal:
         if not league_id:
             return []
         
-        partidos = []  # inicializar antes del loop para evitar NameError
-        # Bucle para buscar partidos en los próximos 7 días si no se encuentran
+        todos_partidos = []  # acumulador de TODOS los días (hoy + próximos)
+        # Bucle para acumular partidos de hoy + próximos 7 días
         for i in range(8): # 0 a 7 (hoy + 7 días)
             if fecha:
                 current_date_str = fecha # Si se especifica una fecha, solo buscar esa
@@ -238,7 +238,8 @@ class GestorLigasUniversal:
                                     "home":             local,
                                     "away":             visitante,
                                     "liga":             liga_nombre,
-                                    "status":           "programado",
+                                    "status":           event.get('status', {}).get('type', {}).get('state', 'pre'),
+                                    "completado":       bool(event.get('status', {}).get('type', {}).get('completed', False)),
                                     "fase":             fase,
                                     "es_torneo":        liga_nombre in (
                                         "Copa del Mundo", "Copa America", "EURO",
@@ -259,20 +260,22 @@ class GestorLigasUniversal:
                                     **corners_data,
                                 })
 
-                    # Si encontramos partidos, los devolvemos y salimos del bucle
+                    # Acumular los partidos de ESTE día (NO salir al primero):
+                    # queremos hoy + próximos días, no solo el primer día con juegos.
                     if partidos:
-                        logger.info(f"Encontrados {len(partidos)} partidos de {liga_nombre} para la fecha {current_date_str}")
-                        return partidos
+                        logger.info(f"{len(partidos)} partidos de {liga_nombre} para {current_date_str}")
+                        todos_partidos.extend(partidos)
             except Exception as e:
                 logger.error(f"Error obteniendo partidos para {liga_nombre} en fecha {current_date_str}: {e}")
             
             if i >= search_range - 1:
                 break # Salir si ya buscamos el rango completo
         
-        if not partidos:
+        if not todos_partidos:
             logger.warning(f"No se encontraron partidos para {liga_nombre} en los próximos 7 días.")
-            
-        return []
+        else:
+            logger.info(f"TOTAL {liga_nombre}: {len(todos_partidos)} partidos (hoy + próximos días)")
+        return todos_partidos
 
 
 class ESPN_FUTBOL:
