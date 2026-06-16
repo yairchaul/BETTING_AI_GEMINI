@@ -870,6 +870,14 @@ def main():
                 cC.metric("ROI", f"{g['roi']:+.1f}%")
                 cD.metric("Pendientes", s["pendientes"])
 
+                if g["total"] == 0 and s["pendientes"] > 0:
+                    st.info(
+                        f"📋 {s['pendientes']} picks registrados, aún **PENDIENTES** (los juegos de hoy "
+                        "no han terminado). El aprendizaje se llena cuando los partidos finalizan: pulsa "
+                        "**Auto-resolver** DESPUÉS de que terminen, o vuelve mañana. Entonces verás win-rate "
+                        "y ROI por deporte y por mercado, y el selector de Parlays los usará automáticamente."
+                    )
+
                 if s["por_deporte"]:
                     st.markdown("**Por deporte:**")
                     st.table([{"Deporte": k, "Picks": v["total"], "Aciertos": v["aciertos"],
@@ -892,8 +900,12 @@ def main():
                             from motors.box_score_resolver import resolver_todo
                             with st.spinner("Cruzando picks con box scores reales..."):
                                 rr = resolver_todo()
-                            st.success(f"✅ Resueltos: {rr['mlb']} MLB + {rr['nba']} NBA = {rr['total']} picks.")
-                            st.rerun()
+                            if rr['total'] == 0:
+                                st.info("0 resueltos: los juegos de esos picks aún no terminan. "
+                                        "Vuelve cuando hayan finalizado (normalmente al día siguiente).")
+                            else:
+                                st.success(f"✅ Resueltos: {rr['mlb']} MLB + {rr['nba']} NBA = {rr['total']} picks.")
+                                st.rerun()
                         except Exception as _be:
                             st.error(f"Error: {_be}")
                 with col_r2:
