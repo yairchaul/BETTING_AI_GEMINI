@@ -1,16 +1,16 @@
 {
-  "timestamp": "2026-06-12T18:51:47.709835",
+  "timestamp": "2026-06-16T11:36:56.176260",
   "dias": 30,
-  "juegos": 19,
+  "juegos": 17,
   "moneyline": {
-    "precision_global": 63.2,
-    "aciertos": 12,
-    "total": 19,
+    "precision_global": 58.8,
+    "aciertos": 10,
+    "total": 17,
     "por_confianza_motor": {
       "<58%": {
-        "n": 19,
-        "ok": 12,
-        "precision": 63.2
+        "n": 17,
+        "ok": 10,
+        "precision": 58.8
       }
     }
   },
@@ -26,13 +26,30 @@
   },
   "detalle": [
     {
+      "fecha": "20260613",
+      "juego": "New York Knicks @ San Antonio Spurs",
+      "marcador": "94-90",
+      "ml_pick": "New York Knicks",
+      "ml_conf": 50,
+      "ml_ok": true,
+      "total_real": 184,
+      "ou_pick": "",
+      "ou_ok": null,
+      "hcap_pick": "",
+      "hcap_ok": null
+    },
+    {
       "fecha": "20260610",
       "juego": "San Antonio Spurs @ New York Knicks",
       "marcador": "106-107",
       "ml_pick": "San Antonio Spurs",
       "ml_conf": 50,
       "ml_ok": false,
-      "total_real": 213
+      "total_real": 213,
+      "ou_pick": "",
+      "ou_ok": null,
+      "hcap_pick": "",
+      "hcap_ok": null
     },
     {
       "fecha": "20260608",
@@ -41,7 +58,11 @@
       "ml_pick": "San Antonio Spurs",
       "ml_conf": 50,
       "ml_ok": true,
-      "total_real": 226
+      "total_real": 226,
+      "ou_pick": "",
+      "ou_ok": null,
+      "hcap_pick": "",
+      "hcap_ok": null
     },
     {
       "fecha": "20260605",
@@ -50,7 +71,11 @@
       "ml_pick": "New York Knicks",
       "ml_conf": 50,
       "ml_ok": true,
-      "total_real": 209
+      "total_real": 209,
+      "ou_pick": "",
+      "ou_ok": null,
+      "hcap_pick": "",
+      "hcap_ok": null
     },
     {
       "fecha": "20260603",
@@ -59,7 +84,11 @@
       "ml_pick": "New York Knicks",
       "ml_conf": 50,
       "ml_ok": true,
-      "total_real": 200
+      "total_real": 200,
+      "ou_pick": "",
+      "ou_ok": null,
+      "hcap_pick": "",
+      "hcap_ok": null
     },
     {
       "fecha": "20260530",
@@ -68,7 +97,11 @@
       "ml_pick": "San Antonio Spurs",
       "ml_conf": 50,
       "ml_ok": true,
-      "total_real": 214
+      "total_real": 214,
+      "ou_pick": "",
+      "ou_ok": null,
+      "hcap_pick": "",
+      "hcap_ok": null
     },
     {
       "fecha": "20260528",
@@ -77,7 +110,11 @@
       "ml_pick": "Oklahoma City Thunder",
       "ml_conf": 50,
       "ml_ok": false,
-      "total_real": 209
+      "total_real": 209,
+      "ou_pick": "",
+      "ou_ok": null,
+      "hcap_pick": "",
+      "hcap_ok": null
     },
     {
       "fecha": "20260526",
@@ -86,7 +123,11 @@
       "ml_pick": "San Antonio Spurs",
       "ml_conf": 50,
       "ml_ok": false,
-      "total_real": 241
+      "total_real": 241,
+      "ou_pick": "",
+      "ou_ok": null,
+      "hcap_pick": "",
+      "hcap_ok": null
     },
     {
       "fecha": "20260525",
@@ -95,7 +136,11 @@
       "ml_pick": "New York Knicks",
       "ml_conf": 50,
       "ml_ok": true,
-      "total_real": 223
+      "total_real": 223,
+      "ou_pick": "",
+      "ou_ok": null,
+      "hcap_pick": "",
+      "hcap_ok": null
     },
     {
       "fecha": "20260524",
@@ -104,7 +149,11 @@
       "ml_pick": "Oklahoma City Thunder",
       "ml_conf": 50,
       "ml_ok": false,
-      "total_real": 185
+      "total_real": 185,
+      "ou_pick": "",
+      "ou_ok": null,
+      "hcap_pick": "",
+      "hcap_ok": null
     },
     {
       "fecha": "20260523",
@@ -113,7 +162,11 @@
       "ml_pick": "New York Knicks",
       "ml_conf": 50,
       "ml_ok": true,
-      "total_real": 229
+      "total_real": 229,
+      "ou_pick": "",
+      "ou_ok": null,
+      "hcap_pick": "",
+      "hcap_ok": null
     },
     {
       "fecha": "20260522",
@@ -122,7 +175,11 @@
       "ml_pick": "Oklahoma City Thunder",
       "ml_conf": 50,
       "ml_ok": true,
-      "total_real": 231
+      "total_real": 231,
+      "ou_pick": "",
+      "ou_ok": null,
+      "hcap_pick": "",
+      "hcap_ok": null
     },
     {
       "fecha": "20260521",
@@ -131,7 +188,11 @@
       "ml_pick": "Cleveland Cavaliers",
       "ml_conf": 50,
       "ml_ok": false,
-      "total_real": 202
+      "total_real": 202,
+      "ou_pick": "",
+      "ou_ok": null,
+      "hcap_pick": "",
+      "hcap_ok": null
     },
     {
       "fecha": "20260520",
@@ -140,7 +201,11 @@
       "ml_pick": "San Antonio Spurs",
       "ml_conf": 50,
       "ml_ok": false,
-      "total_real": 235
+      "total_real": 235,
+      "ou_pick": "",
+      "ou_ok": null,
+      "hcap_pick": "",
+      "hcap_ok": null
     },
     {
       "fecha": "20260519",
@@ -149,7 +214,11 @@
       "ml_pick": "Cleveland Cavaliers",
       "ml_conf": 50,
       "ml_ok": false,
-      "total_real": 219
+      "total_real": 219,
+      "ou_pick": "",
+      "ou_ok": null,
+      "hcap_pick": "",
+      "hcap_ok": null
     },
     {
       "fecha": "20260518",
@@ -158,7 +227,11 @@
       "ml_pick": "San Antonio Spurs",
       "ml_conf": 50,
       "ml_ok": true,
-      "total_real": 237
+      "total_real": 237,
+      "ou_pick": "",
+      "ou_ok": null,
+      "hcap_pick": "",
+      "hcap_ok": null
     },
     {
       "fecha": "20260517",
@@ -167,34 +240,11 @@
       "ml_pick": "Cleveland Cavaliers",
       "ml_conf": 50,
       "ml_ok": true,
-      "total_real": 219
-    },
-    {
-      "fecha": "20260515",
-      "juego": "Detroit Pistons @ Cleveland Cavaliers",
-      "marcador": "115-94",
-      "ml_pick": "Detroit Pistons",
-      "ml_conf": 50,
-      "ml_ok": true,
-      "total_real": 209
-    },
-    {
-      "fecha": "20260515",
-      "juego": "San Antonio Spurs @ Minnesota Timberwolves",
-      "marcador": "139-109",
-      "ml_pick": "San Antonio Spurs",
-      "ml_conf": 50,
-      "ml_ok": true,
-      "total_real": 248
-    },
-    {
-      "fecha": "20260513",
-      "juego": "Cleveland Cavaliers @ Detroit Pistons",
-      "marcador": "117-113",
-      "ml_pick": "Cleveland Cavaliers",
-      "ml_conf": 50,
-      "ml_ok": true,
-      "total_real": 230
+      "total_real": 219,
+      "ou_pick": "",
+      "ou_ok": null,
+      "hcap_pick": "",
+      "hcap_ok": null
     }
   ]
 }
