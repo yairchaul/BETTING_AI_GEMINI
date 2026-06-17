@@ -625,6 +625,27 @@ def main():
             futuros = [p for p in (partidos_lg or [])
                        if not p.get("completado")
                        and str(p.get("fecha_partido") or p.get("fecha") or "9999")[:10] >= _hoy]
+            # Odds REALES de fútbol (the-odds-api) donde falten las de ESPN
+            try:
+                from scrapers.odds_api import obtener_odds_futbol
+                from utils.fuzzy_matching import normalizar
+                team_odds = {}
+                for o in obtener_odds_futbol():
+                    if o.get("home_ml"):
+                        team_odds[normalizar(o["home"])] = (o["home_ml"], o.get("draw_ml"))
+                    if o.get("away_ml"):
+                        team_odds[normalizar(o["away"])] = (o["away_ml"], o.get("draw_ml"))
+                for p in futuros:
+                    ml = p.setdefault("odds", {}).setdefault("moneyline", {})
+                    if not ml.get("home") or ml.get("home") in ("N/A", "", None):
+                        lo = team_odds.get(normalizar(p.get("home") or p.get("local", "")))
+                        vo = team_odds.get(normalizar(p.get("visitante") or p.get("away", "")))
+                        if lo:
+                            ml["home"], ml["draw"] = lo[0], lo[1]
+                        if vo:
+                            ml["away"] = vo[0]
+            except Exception as _foe:
+                logger.warning(f"odds_api fútbol: {_foe}")
             st.session_state.futbol_partidos[lg] = futuros
             return futuros
 

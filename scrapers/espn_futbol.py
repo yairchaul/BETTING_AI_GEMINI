@@ -251,6 +251,7 @@ class GestorLigasUniversal:
                                     "stats_visitante":  stats_visitante,
                                     "odds":             odds_data,
                                     "fecha_partido":    event.get("date", "")[:10],
+                                    "fecha_hora":       event.get("date", ""),  # ISO completo (UTC) → CDMX en el visual
                                     "local_logo":       local_logo,
                                     "visitante_logo":   visitante_logo,
                                     "local_record":     local_record,
