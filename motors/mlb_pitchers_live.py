@@ -33,6 +33,7 @@ logger = logging.getLogger(__name__)
 LIGA_ERA = 4.20
 LIGA_WHIP = 1.30
 LIGA_K9 = 8.2
+LIGA_HR9 = 1.20         # HR permitidos por 9 entradas (media de liga, para bateador-vs-pitcher)
 PRIOR_IP = 25.0          # "entradas previas" del prior — más alto = más conservador
 
 _API = "https://statsapi.mlb.com/api/v1"
@@ -155,7 +156,7 @@ def _fetch(fecha):
         if not team or team not in mapa:
             continue
         era = whip = None
-        so = 0
+        so = hr_allowed = 0
         ip = 0.0
         gs = 0
         for sg in person.get("stats", []):
@@ -164,18 +165,21 @@ def _fetch(fecha):
                 era = _to_float(stt.get("era"), LIGA_ERA)
                 whip = _to_float(stt.get("whip"), LIGA_WHIP)
                 so = int(_to_float(stt.get("strikeOuts"), 0))
+                hr_allowed = int(_to_float(stt.get("homeRuns"), 0))   # HR permitidos
                 ip = _parse_ip(stt.get("inningsPitched"))
                 gs = int(_to_float(stt.get("gamesStarted"), 0))
         if era is None:
             continue
         k9 = (so * 9.0 / ip) if ip > 0 else LIGA_K9
+        hr9 = (hr_allowed * 9.0 / ip) if ip > 0 else LIGA_HR9   # HR/9 permitidos por el abridor
         info = mapa[team]
         info.update(era=round(era, 2), whip=round(whip, 2), k9=round(k9, 2),
-                    ip=round(ip, 1), gs=gs)
+                    ip=round(ip, 1), gs=gs, hr9=round(hr9, 2))
         # Shrinkage hacia la media según las entradas lanzadas
         info["era_adj"] = round(_shrink(era, LIGA_ERA, ip), 2)
         info["whip_adj"] = round(_shrink(whip, LIGA_WHIP, ip), 2)
         info["k9_adj"] = round(_shrink(k9, LIGA_K9, ip), 2)
+        info["hr9_adj"] = round(_shrink(hr9, LIGA_HR9, ip), 2)
         info["calidad"] = calidad_pitcher(info)
 
     # Calidad para los que tienen pitcher pero sin stats (queda en media → 0)

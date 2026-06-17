@@ -108,15 +108,28 @@ def _abrev(nombre_equipo):
     return _TEAM_ABREV.get((nombre_equipo or "").lower().strip())
 
 
-def _candidatos_hr_equipo(equipo, pitcher_rival, venue=""):
-    """Top candidatos a HR del equipo (dataset + extra), ajustados por estadio."""
+_LIGA_HR9 = 1.20   # HR/9 permitidos, media de liga (para el factor bateador-vs-pitcher)
+
+
+def _candidatos_hr_equipo(equipo, pitcher_rival, venue="", pitcher_hr9=None, rival_team=""):
+    """Top candidatos a HR del equipo. Modelo BATEADOR vs PITCHER: la prob del
+    bateador (Poisson sobre su HR/juego + OPS + estadio) se AJUSTA por la
+    vulnerabilidad del abridor rival (HR/9 que permite)."""
     abrev = _abrev(equipo)
     if not abrev:
         return []
-    # Combinar dataset principal + bateadores extra de los 4 equipos faltantes
     fuente = dict(_cargar_hr_dataset())
     fuente.update(_HR_EXTRA)
     pf = _park_factor(venue)  # factor de estadio
+    # Factor del PITCHER rival: HR-prone (HR/9 alto) sube la prob; un as la baja.
+    if pitcher_hr9 and pitcher_hr9 > 0:
+        factor_pitcher = max(0.70, min(1.45, float(pitcher_hr9) / _LIGA_HR9))
+    else:
+        factor_pitcher = 1.0
+    # Si no hay abridor rival confirmado, mostrar el EQUIPO rival (no "TBD")
+    rival_disp = pitcher_rival
+    if not pitcher_rival or str(pitcher_rival) in ("TBD", "", "N/A", "None"):
+        rival_disp = f"abridor de {rival_team}" if rival_team else "abridor rival"
     cands = []
     for nombre, stats in fuente.items():
         if stats.get("equipo", "").upper() != abrev:
@@ -124,21 +137,21 @@ def _candidatos_hr_equipo(equipo, pitcher_rival, venue=""):
         hr = stats.get("hr", 0)
         if hr < 1:
             continue
-        # Probabilidad = P(al menos 1 HR) modelada por Poisson sobre la tasa
-        # REAL de HR por juego (hr_por_juego del dataset de temporada). Es el
-        # modelo correcto: P(>=1) = 1 - e^(-tasa). Más agresivo con sluggers.
+        # Base del bateador (Poisson sobre su tasa real de HR/juego + bono OPS)
         hpg = stats.get("hr_por_juego")
         if not hpg or hpg <= 0:
-            hpg = hr / 60.0  # fallback si no hay tasa (temporada ~ /60 juegos)
+            hpg = hr / 60.0
         ops = stats.get("ops", 0.7) or 0.7
-        prob_base = (1 - math.exp(-float(hpg))) * 100      # base Poisson
-        prob_base += max(0, ops - 0.80) * 12               # bono por poder (OPS)
-        prob = round(min(40, prob_base * pf))              # park factor; tope 40%
+        prob_base = (1 - math.exp(-float(hpg))) * 100
+        prob_base += max(0, ops - 0.80) * 12
+        # BATEADOR vs PITCHER + estadio
+        prob = round(min(45, prob_base * pf * factor_pitcher))
         cands.append({
             "jugador": nombre.strip(), "nombre": nombre.strip(), "equipo": equipo,
-            "hr_total": hr, "probabilidad": prob, "pitcher_rival": pitcher_rival,
+            "hr_total": hr, "probabilidad": prob, "pitcher_rival": rival_disp,
+            "pitcher_hr9": round(pitcher_hr9, 2) if pitcher_hr9 else None,
             "ops": stats.get("ops", 0.0), "park_factor": pf,
-            "en_lineup": False,  # dataset por equipo (lineup oficial aún no publicado)
+            "en_lineup": False,
         })
     cands.sort(key=lambda x: x["probabilidad"], reverse=True)
     return cands
@@ -273,6 +286,7 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
     era_l = era_v = LIGA_ERA_REF
     whip_l = whip_v = None
     cal_l = cal_v = 0.0
+    hr9_l = hr9_v = None   # HR/9 permitidos por cada abridor (para bateador-vs-pitcher)
 
     info_l = info_v = None
     if abridores_hoy is not None:
@@ -290,6 +304,7 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
         era_l = info_l.get('era_adj') or info_l.get('era') or era_l
         whip_l = info_l.get('whip_adj') or info_l.get('whip')
         cal_l = info_l.get('calidad', 0.0) or 0.0
+        hr9_l = info_l.get('hr9_adj') or info_l.get('hr9')
     if info_v:
         if info_v.get('nombre') not in ('TBD', '', None):
             ap = info_v['nombre']
@@ -297,6 +312,7 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
         era_v = info_v.get('era_adj') or info_v.get('era') or era_v
         whip_v = info_v.get('whip_adj') or info_v.get('whip')
         cal_v = info_v.get('calidad', 0.0) or 0.0
+        hr9_v = info_v.get('hr9_adj') or info_v.get('hr9')
 
     # Fallback: stats por equipo del JSON local (solo si la API no dio abridores)
     datos_k = {}
@@ -420,7 +436,9 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
     # Fallback robusto (lineup no publicado): mejores bateadores del dataset
     # Ajustados por el estadio (park factor de HR)
     if not hr_candidates:
-        hr_candidates = (_candidatos_hr_equipo(local, ap, venue) + _candidatos_hr_equipo(visitante, hp, venue))
+        # Para bateadores LOCAL el rival es el abridor VISITANTE (ap, hr9_v) y viceversa
+        hr_candidates = (_candidatos_hr_equipo(local, ap, venue, pitcher_hr9=hr9_v, rival_team=visitante) +
+                         _candidatos_hr_equipo(visitante, hp, venue, pitcher_hr9=hr9_l, rival_team=local))
         hr_candidates.sort(key=lambda x: x.get('probabilidad', 0), reverse=True)
         hr_candidates = hr_candidates[:6]
 
