@@ -229,6 +229,65 @@ def _pitcher_nombre(pitchers, lado):
 
 
 # ──────────────────────────────────────────────────────────────────────────
+# MEJOR APUESTA — elige el mercado óptimo ponderado por rendimiento histórico
+# ──────────────────────────────────────────────────────────────────────────
+
+# Peso base por mercado (calibrado con el backtest: ML/O-U fiables; HR raro pero paga).
+_PESO_MERCADO = {"MONEYLINE": 1.00, "TOTAL": 0.97, "HANDICAP": 0.92,
+                 "PONCHES": 0.95, "TOTAL_BASES": 0.90, "HOME_RUN": 0.85}
+
+
+def _factor_mercado(mercado):
+    """Peso base × rendimiento histórico real del mercado (pick_memory). Así el
+    motor le da MÁS peso a los mercados que más se aciertan (y menos a los que fallan)."""
+    base = _PESO_MERCADO.get(mercado, 0.9)
+    try:
+        from .pick_memory import pick_memory
+        f = pick_memory.factor_confianza("MLB", mercado)
+        return base * (f if f else 1.0)
+    except Exception:
+        return base
+
+
+def _mejor_apuesta_mlb(res, factor_fn=_factor_mercado):
+    """Compara TODOS los mercados del juego (ML, O/U, run line, ponches, HR,
+    bases) y elige el de mayor confianza AJUSTADA por el histórico."""
+    cands = []
+    if res.get("pick"):
+        cands.append({"mercado": "MONEYLINE", "pick": f"Gana {res['pick']}",
+                      "confianza": res.get("confianza", 0)})
+    if res.get("ou_pick"):
+        cands.append({"mercado": "TOTAL", "pick": f"{res['ou_pick']} {res.get('ou_linea_ajustada','')}",
+                      "confianza": res.get("ou_confianza", 0)})
+    rl = res.get("run_line", {}) or {}
+    if rl.get("pick"):
+        cands.append({"mercado": "HANDICAP", "pick": f"{rl['pick']} {rl.get('linea','')}",
+                      "confianza": rl.get("confianza", 0)})
+    for kp in (res.get("k_picks") or [])[:2]:
+        cands.append({"mercado": "PONCHES", "pick": f"{kp.get('pitcher','')} {kp.get('pick','')}",
+                      "confianza": kp.get("confianza", 0)})
+    for hr in (res.get("hr_candidates") or [])[:1]:
+        cands.append({"mercado": "HOME_RUN",
+                      "pick": f"{hr.get('jugador','')} HR vs {hr.get('pitcher_rival','')}",
+                      "confianza": hr.get("probabilidad", 0)})
+    for tb in (res.get("tb_picks") or [])[:1]:
+        if tb.get("prediccion") == "OVER":
+            cands.append({"mercado": "TOTAL_BASES", "pick": f"{tb.get('jugador','')} {tb.get('pick','')}",
+                          "confianza": tb.get("confianza", 0)})
+    if not cands:
+        return None
+    for c in cands:
+        f = factor_fn(c["mercado"]) if factor_fn else 1.0
+        c["confianza_ajustada"] = round(c["confianza"] * f, 1)
+        c["factor"] = round(f, 2)
+    mejor = max(cands, key=lambda c: c["confianza_ajustada"])
+    mejor["razon"] = (f"Mejor de {len(cands)} mercados — conf {mejor['confianza']:.0f}% "
+                      f"× histórico {mejor['factor']}")
+    mejor["alternativas"] = sorted(cands, key=lambda c: c["confianza_ajustada"], reverse=True)[:4]
+    return mejor
+
+
+# ──────────────────────────────────────────────────────────────────────────
 # MOTOR PRINCIPAL
 # ──────────────────────────────────────────────────────────────────────────
 
@@ -480,7 +539,7 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
             'confianza': conf_k,
         })
 
-    return {
+    resultado = {
         # Lo que el visual muestra
         'recomendacion': pick_team,
         'pick': pick_team,
@@ -506,3 +565,6 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
         'score_raw': round(score, 2),
         'pitchers': {'local': hp, 'visitante': ap},
     }
+    # Selector del MEJOR mercado del juego, ponderado por rendimiento histórico
+    resultado['mejor_apuesta'] = _mejor_apuesta_mlb(resultado)
+    return resultado
