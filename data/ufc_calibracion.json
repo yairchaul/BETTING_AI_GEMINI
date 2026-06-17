@@ -1,11 +1,11 @@
 {
-  "actualizado": "2026-06-10T18:24:22.476106",
-  "muestras": 30,
-  "winner_precision": 63.3,
+  "actualizado": "2026-06-16T13:55:43.289487",
+  "muestras": 40,
+  "winner_precision": 72.5,
   "metodo_precision": {
-    "KO/TKO": 38.1,
-    "Sumisión": 14.3,
-    "Decisión": 50.0
+    "KO/TKO": 50.0,
+    "Sumisión": 25.0,
+    "Decisión": 75.0
   },
   "distancia_offset": 0.15
 }

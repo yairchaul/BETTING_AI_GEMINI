@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-16T11:43:03.917894",
+  "timestamp": "2026-06-16T13:40:28.046585",
   "partidos": 63,
   "evaluados": 63,
   "precision_global": 69.8,
@@ -466,5 +466,5 @@
     "Argentine Liga Profesional",
     "Championship"
   ],
-  "dias": 10
+  "dias": 6
 }

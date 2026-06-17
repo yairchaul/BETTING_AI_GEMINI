@@ -1,14 +1,50 @@
 {
   "juegos": [
     {
-      "away_team": "Miami Marlins",
-      "home_team": "Philadelphia Phillies",
+      "away_team": "San Francisco Giants",
+      "home_team": "Atlanta Braves",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "New York Mets",
+      "home_team": "Cincinnati Reds",
       "away_pitcher": "TBD",
       "home_pitcher": "TBD"
     },
     {
       "away_team": "Kansas City Royals",
       "home_team": "Washington Nationals",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "Miami Marlins",
+      "home_team": "Philadelphia Phillies",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "Detroit Tigers",
+      "home_team": "Houston Astros",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "San Diego Padres",
+      "home_team": "St. Louis Cardinals",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "Tampa Bay Rays",
+      "home_team": "Los Angeles Dodgers",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "Los Angeles Angels",
+      "home_team": "Arizona Diamondbacks",
       "away_pitcher": "TBD",
       "home_pitcher": "TBD"
     },
@@ -25,12 +61,6 @@
       "home_pitcher": "TBD"
     },
     {
-      "away_team": "New York Mets",
-      "home_team": "Cincinnati Reds",
-      "away_pitcher": "TBD",
-      "home_pitcher": "TBD"
-    },
-    {
       "away_team": "San Francisco Giants",
       "home_team": "Atlanta Braves",
       "away_pitcher": "TBD",
@@ -43,32 +73,8 @@
       "home_pitcher": "TBD"
     },
     {
-      "away_team": "San Diego Padres",
-      "home_team": "St. Louis Cardinals",
-      "away_pitcher": "TBD",
-      "home_pitcher": "TBD"
-    },
-    {
       "away_team": "Colorado Rockies",
       "home_team": "Chicago Cubs",
-      "away_pitcher": "TBD",
-      "home_pitcher": "TBD"
-    },
-    {
-      "away_team": "Minnesota Twins",
-      "home_team": "Texas Rangers",
-      "away_pitcher": "TBD",
-      "home_pitcher": "TBD"
-    },
-    {
-      "away_team": "Detroit Tigers",
-      "home_team": "Houston Astros",
-      "away_pitcher": "TBD",
-      "home_pitcher": "TBD"
-    },
-    {
-      "away_team": "Los Angeles Angels",
-      "home_team": "Arizona Diamondbacks",
       "away_pitcher": "TBD",
       "home_pitcher": "TBD"
     },
@@ -81,12 +87,6 @@
     {
       "away_team": "Pittsburgh Pirates",
       "home_team": "Athletics",
-      "away_pitcher": "TBD",
-      "home_pitcher": "TBD"
-    },
-    {
-      "away_team": "Tampa Bay Rays",
-      "home_team": "Los Angeles Dodgers",
       "away_pitcher": "TBD",
       "home_pitcher": "TBD"
     }
