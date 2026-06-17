@@ -8,7 +8,7 @@ def _hora_cdmx(iso, fecha_fallback=""):
     try:
         from datetime import datetime
         from zoneinfo import ZoneInfo
-        s = str(iso).replace("Z", "")
+        s = str(iso).replace("Z", "").replace(" ", "T")   # acepta 'YYYY-MM-DD HH:MM' y con 'T'
         dt = datetime.strptime(s[:16], "%Y-%m-%dT%H:%M").replace(tzinfo=ZoneInfo("UTC"))
         meses = ["", "ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"]
         d = dt.astimezone(ZoneInfo("America/Mexico_City"))
@@ -91,7 +91,7 @@ class VisualFutbolTriple:
             else:
                 st.markdown("<div style='text-align:center;color:#9ca3af;font-weight:800;font-size:1.3rem;margin-top:26px'>VS</div>",
                             unsafe_allow_html=True)
-            _fh = partido.get('fecha_hora') or partido.get('date') or ''
+            _fh = partido.get('fecha_hora') or partido.get('date') or fecha
             _fecha_disp = _hora_cdmx(_fh, fecha) if _fh else fecha
             if _fecha_disp:
                 st.markdown(f"<div style='text-align:center;color:#94a3b8;font-size:0.72rem;margin-top:4px'>📅 {_fecha_disp}</div>",

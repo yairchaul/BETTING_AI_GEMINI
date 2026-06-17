@@ -1016,9 +1016,6 @@ def main():
                                     p.get('away') or p.get('visitante', ''),
                                     es_torneo=p.get('es_torneo', False),
                                     fase=p.get('fase', ''),
-                                    # En torneos, fallback FIFA estable (mismo pick que el
-                                    # backtest; no deriva al llenarse la DB con resultados).
-                                    forzar_ranking=p.get('es_torneo', False),
                                 )
                                 st.session_state.analisis_futbol[key_fut] = res_fut
                                 pick_f = res_fut.get('pick', '')
@@ -1093,13 +1090,14 @@ def main():
                             "Decisión Final (Voto)": pick_final
                         }
                         st.session_state.analisis_mlb[game_key] = res_final
+                        res_mlb = res_final   # ← para que el visual SÍ muestre el pick
                         evento_mlb = f"{p.get('visitante','?')} @ {p.get('local','?')}"
                         db.guardar_backtesting("MLB", evento_mlb, f"Gana {res_final.get('pick', '')}")
-                        if res_mlb.get('ou_pick'):
-                            db.guardar_backtesting("MLB-OU", evento_mlb, f"{res_mlb['ou_pick']} {res_mlb.get('ou_linea_ajustada','')}")
-                        for _kp in res_mlb.get('k_picks', []):
+                        if res_final.get('ou_pick'):
+                            db.guardar_backtesting("MLB-OU", evento_mlb, f"{res_final['ou_pick']} {res_final.get('ou_linea_ajustada','')}")
+                        for _kp in res_final.get('k_picks', []):
                             db.guardar_backtesting("MLB-K", evento_mlb, f"{_kp.get('pitcher','')}: {_kp.get('prediccion','')} {_kp.get('linea','')} K")
-                        for _hr in res_mlb.get('hr_candidates', [])[:3]:
+                        for _hr in res_final.get('hr_candidates', [])[:3]:
                             if _hr.get('probabilidad', 0) >= 25:
                                 db.guardar_backtesting("MLB-HR", evento_mlb, f"{_hr.get('jugador','')} HR ({_hr.get('probabilidad',0):.0f}%)")
                     except Exception as _me:
