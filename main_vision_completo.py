@@ -1016,6 +1016,9 @@ def main():
                                     p.get('away') or p.get('visitante', ''),
                                     es_torneo=p.get('es_torneo', False),
                                     fase=p.get('fase', ''),
+                                    # En torneos, fallback FIFA estable (mismo pick que el
+                                    # backtest; no deriva al llenarse la DB con resultados).
+                                    forzar_ranking=p.get('es_torneo', False),
                                 )
                                 st.session_state.analisis_futbol[key_fut] = res_fut
                                 pick_f = res_fut.get('pick', '')
