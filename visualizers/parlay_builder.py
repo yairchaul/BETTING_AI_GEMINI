@@ -198,8 +198,11 @@ def _recolectar_picks(dia_filtro=None):
                         "pick": f"{tb.get('jugador','?')} {tb.get('pick','')}",
                         "prob": tb.get("confianza", 0), "tipo": "VALOR", "cuota": 1.95,
                     })
-            # HR candidates (props de mayor pago)
+            # HR candidates (props de mayor pago) — SOLO si el bateador está
+            # confirmado en la alineación del día (evita proponer a quien no juega).
             for hr in r.get("hr_candidates", []):
+                if hr.get("en_lineup") is False:
+                    continue  # lineup no confirmado → no arriesgar el HR
                 prob_hr = hr.get("probabilidad", hr.get("prob", 0))
                 pool.append({
                     "sport": "⚾ MLB", "evento": evento, "mercado": "HOME RUN",
@@ -357,6 +360,29 @@ def render_parlay_tab():
     st.header("🎰 PARLAYS — Lo mejor de todos los deportes")
     st.caption("Combina los picks más probables de NBA, MLB, UFC y Fútbol en parlays estructurados.")
 
+    # ── 📋 Resultados de picks recientes (qué propuso y cómo acertó) ─────────
+    if pick_memory is not None:
+        try:
+            resueltos = [p for p in pick_memory.todos() if p.get("estado") in ("ganado", "perdido")]
+            recientes = sorted(resueltos, key=lambda x: x.get("resuelto_en") or x.get("timestamp", ""),
+                               reverse=True)[:15]
+            if recientes:
+                ok = sum(1 for p in recientes if p["estado"] == "ganado")
+                with st.expander(f"📋 Resultados recientes de picks — {ok}/{len(recientes)} acertados ✅", expanded=True):
+                    for p in recientes:
+                        ico = "✅" if p["estado"] == "ganado" else "❌"
+                        res = f" → {p.get('resultado_real','')}" if p.get("resultado_real") else ""
+                        st.markdown(
+                            f"<div style='font-size:0.85rem;padding:2px 0'>{ico} "
+                            f"<b>{p.get('deporte','')}</b> · {p.get('pick','')} "
+                            f"<span style='color:#64748b'>({p.get('evento','')})</span>"
+                            f"<span style='color:#94a3b8'>{res}</span></div>",
+                            unsafe_allow_html=True)
+                    st.caption("💡 Marca/auto-resuelve picks en la pestaña Backtesting → 🧠 Aprendizaje "
+                               "para alimentar estos resultados.")
+        except Exception:
+            pass
+
     cargados = (len(st.session_state.get("nba_partidos", [])) +
                 len(st.session_state.get("mlb_partidos", [])) +
                 len(st.session_state.get("ufc_combates", [])) +
@@ -440,21 +466,33 @@ def render_parlay_tab():
 
     st.markdown("---")
 
-    # ── Parlay SEGURO: top picks de alta prob, máx 1 por evento ──────────
+    # ── Parlay SEGURO: COMBINA deportes (mejor de cada uno) + relleno por prob ──
     seguros = [p for p in pool if p["prob"] >= min_prob and p["mercado"] != "HOME RUN"]
     vistos_evento = set()
     legs_seguro = []
+    # 1) Lo mejor de CADA deporte primero (garantiza combinación NBA/MLB/UFC/Fútbol)
+    deportes_vistos = set()
+    for p in seguros:  # pool ya viene ordenado por prob desc
+        if p["sport"] in deportes_vistos or p["evento"] in vistos_evento:
+            continue
+        deportes_vistos.add(p["sport"])
+        vistos_evento.add(p["evento"])
+        legs_seguro.append(p)
+    # 2) Rellenar el resto por probabilidad (distintos eventos)
     for p in seguros:
+        if len(legs_seguro) >= n_legs:
+            break
         if p["evento"] in vistos_evento:
             continue
         vistos_evento.add(p["evento"])
         legs_seguro.append(p)
-        if len(legs_seguro) >= n_legs:
-            break
+    # Recortar y reordenar por probabilidad
+    legs_seguro = sorted(legs_seguro, key=lambda x: x["prob"], reverse=True)[:n_legs]
 
     if len(legs_seguro) >= 2:
+        n_deportes = len(set(l["sport"] for l in legs_seguro))
         _tarjeta_parlay("🟢 PARLAY SEGURO", "#22c55e",
-                        f"{len(legs_seguro)} picks de mayor probabilidad, distintos eventos",
+                        f"{len(legs_seguro)} picks de {n_deportes} deporte(s), distintos eventos",
                         _armar_parlay(legs_seguro))
     else:
         st.info(f"No hay suficientes picks con prob ≥ {min_prob}% para el parlay seguro. Baja el umbral.")
@@ -478,6 +516,25 @@ def render_parlay_tab():
         _tarjeta_parlay("🔴 PARLAY BOMBA", "#ef4444",
                         "Solo candidatos a Home Run — baja probabilidad, pago muy alto",
                         _armar_parlay(legs_bomba))
+
+    # ── PARLAY HR + FÚTBOL: sluggers top (HR) + mejores picks de fútbol ──────
+    # Tu escenario ganador: 2-3 home runs de élite + 2-3 picks de fútbol.
+    hr_top = sorted([p for p in pool if p["mercado"] == "HOME RUN"],
+                    key=lambda x: x["prob"], reverse=True)[:3]
+    fut_top, _vf = [], set()
+    for p in sorted([p for p in pool if "FÚTBOL" in p["sport"] and p["prob"] >= min_prob],
+                    key=lambda x: x["prob"], reverse=True):
+        if p["evento"] in _vf:
+            continue
+        _vf.add(p["evento"]); fut_top.append(p)
+        if len(fut_top) >= 3:
+            break
+    legs_hrfut = fut_top[:3] + hr_top[:2]
+    if len(legs_hrfut) >= 3 and hr_top:
+        st.markdown("")
+        _tarjeta_parlay("🎯 PARLAY HR + FÚTBOL", "#e11d48",
+                        "Sluggers top (home run) + mejores picks de fútbol — pago alto, tu combo favorito",
+                        _armar_parlay(legs_hrfut))
 
     # ── PARLAY GIGANTE: TODOS los picks sólidos (1 por evento, 10+ legs) ──
     gigante = [p for p in pool if p["prob"] >= min_prob and p["mercado"] != "HOME RUN"]
