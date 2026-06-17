@@ -133,14 +133,12 @@ class VisualMLB:
 
         st.markdown(f"""<div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding:25px; border-radius:15px; border:1px solid #334155; margin-bottom:20px;">
         <div style="display:flex;justify-content:space-between; align-items:center;">
-        <div style="text-align:center;width:42%">{img_v}<h2 style="color:#fff;margin:0;">{away}</h2><p style="color:#ff6600; font-weight:bold;">{away_rec}</p><p style="color:#fbbf24;">🎲 {a_odds}</p><p style="color:#94a3b8;font-size:14px;">🥎 <b>{ap} ({hand_away})</b></p><p style="color:{"#fbbf24" if mock_away else "#00ff41"};font-size:11px">⚡ K/9: {k9_away} | Proy: {k_proy_away}K {"⚠️" if mock_away else ""}</p></div>
+        <div style="text-align:center;width:42%">{img_v}<h2 style="color:#fff;margin:0;">{away}</h2><p style="color:#ff6600; font-weight:bold;">{away_rec}</p><div style="display:inline-block;margin:2px 0;padding:2px 12px;border-radius:14px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.45)"><span style="color:#3b82f6;font-weight:800;">🎲 {a_odds}</span></div><p style="color:#94a3b8;font-size:14px;">🥎 <b>{ap} ({hand_away})</b></p><p style="color:{"#fbbf24" if mock_away else "#00ff41"};font-size:11px">⚡ K/9: {k9_away} | Proy: {k_proy_away}K {"⚠️" if mock_away else ""}</p></div>
         <div style="text-align:center;width:16%"><h1 style="color:#e94560; margin:0;">VS</h1><p style="color:#94a3b8;">🕐 <b>{time}</b></p><p style="color:#3b82f6;">📊 O/U: {ou}</p></div>
-        <div style="text-align:center;width:42%">{img_l}<h2 style="color:#fff;margin:0;">{home}</h2><p style="color:#ff6600; font-weight:bold;">{home_rec}</p><p style="color:#fbbf24;">🎲 {h_odds}</p><p style="color:#94a3b8;font-size:14px;">🥎 <b>{hp} ({hand_home})</b></p><p style="color:{"#fbbf24" if mock_home else "#00ff41"};font-size:11px">⚡ K/9: {k9_home} | Proy: {k_proy_home}K {"⚠️" if mock_home else ""}</p></div>
+        <div style="text-align:center;width:42%">{img_l}<h2 style="color:#fff;margin:0;">{home}</h2><p style="color:#ff6600; font-weight:bold;">{home_rec}</p><div style="display:inline-block;margin:2px 0;padding:2px 12px;border-radius:14px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.45)"><span style="color:#3b82f6;font-weight:800;">🎲 {h_odds}</span></div><p style="color:#94a3b8;font-size:14px;">🥎 <b>{hp} ({hand_home})</b></p><p style="color:{"#fbbf24" if mock_home else "#00ff41"};font-size:11px">⚡ K/9: {k9_home} | Proy: {k_proy_home}K {"⚠️" if mock_home else ""}</p></div>
         </div></div>""", unsafe_allow_html=True)
         
         if mock_away or mock_home:
-            st.caption("⚠️ Algunos datos de lanzadores no se encontraron y están basados en promedios de la liga.")
-
             st.metric(f"🥎 {hp}", f"{k_proy_home} K", delta=f"{k9_home} K/9")
 
         # ── Resultado del análisis previo ────────────────────────────────────
@@ -215,15 +213,31 @@ class VisualMLB:
         if all_hr:
             st.markdown("#### 💣 CANDIDATOS A HOME RUN")
             top_hr = sorted(all_hr, key=lambda x: x.get("probabilidad", x.get("prob", 0)), reverse=True)[:6]
+            _na = (away or "").lower().strip()
+            _nh = (home or "").lower().strip()
             for hr in top_hr:
                 prob = hr.get("probabilidad", hr.get("prob", 0))
                 nombre = hr.get("jugador", hr.get("nombre", "?"))
                 equipo = hr.get("equipo", "")
-                pitcher = hr.get("pitcher_rival", hr.get("pitcher", ""))
+                # El rival es el ABRIDOR del equipo contrario (ya cargado arriba: ap/hp)
+                eq = (equipo or "").lower().strip()
+                if eq == _na or eq in _na or _na in eq:
+                    rival = hp        # visitante batea vs abridor local
+                elif eq == _nh or eq in _nh or _nh in eq:
+                    rival = ap        # local batea vs abridor visitante
+                else:
+                    rival = hr.get("pitcher_rival", hr.get("pitcher", ""))
+                pitcher_txt = (f"vs {rival}" if rival and str(rival) not in ("TBD", "None", "")
+                               else "vs abridor por confirmar")
+                en_lineup = hr.get("en_lineup")
+                lineup_txt = (" <span style='color:#22c55e;font-size:0.7rem'>✅ en alineación</span>"
+                              if en_lineup else
+                              " <span style='color:#f59e0b;font-size:0.7rem'>⚠️ alineación por confirmar</span>")
                 col_hr1, col_hr2 = st.columns([3, 1])
                 with col_hr1:
                     st.markdown(f"**{nombre}** <span style='color:#94a3b8;font-size:0.8rem'>({equipo})</span>"
-                                + (f" <span style='color:#a78bfa;font-size:0.75rem'>vs {pitcher}</span>" if pitcher else ""),
+                                + f" <span style='color:#a78bfa;font-size:0.75rem'>{pitcher_txt}</span>"
+                                + lineup_txt,
                                 unsafe_allow_html=True)
                     # Barra escalada al rango realista (0-22%)
                     st.progress(min(1.0, prob / 22))

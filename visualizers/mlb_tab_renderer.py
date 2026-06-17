@@ -13,7 +13,19 @@ def render_mlb_tab():
     if st.session_state.mlb_partidos and st.session_state.visual_mlb:
         for idx, p in enumerate(st.session_state.mlb_partidos):
             res_mlb = st.session_state.analisis_mlb.get(idx)
-            
+
+            # AUTO-ANÁLISIS: el pick base (money line, O/U, HR, K) aparece solo,
+            # sin depender del botón. El botón pasa a hacer el análisis PROFUNDO.
+            if res_mlb is None:
+                try:
+                    res_mlb = analizar_mlb(p, game_pk=p.get('game_pk'),
+                                          predictor_hr=st.session_state.get('predictor_hr'))
+                    st.session_state.analisis_mlb[idx] = res_mlb
+                    db.guardar_backtesting("MLB", f"{p.get('visitante','?')} @ {p.get('local','?')}",
+                                           f"Gana {res_mlb.get('pick','')}")
+                except Exception as _ae:
+                    logger.warning(f"Auto-análisis MLB {idx}: {_ae}")
+
             try:
                 # El visualizador unificado `VisualMLB` ahora es autocontenido y
                 # obtiene los datos de HR, K, O/U, etc., por sí mismo.

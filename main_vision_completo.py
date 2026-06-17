@@ -498,6 +498,17 @@ def main():
         st.session_state.conservative_mode = False
         st.session_state.token_log = []
         st.session_state.token_alert_threshold = 8000
+
+        # AUTO-RESOLVER (sin nada manual): al iniciar la sesión, resuelve los picks
+        # pendientes cuyos juegos ya terminaron, contra resultados reales. Así el
+        # ciclo de aprendizaje se llena solo. No bloquea la app si algo falla.
+        try:
+            from motors.box_score_resolver import resolver_todo
+            resolver_todo()
+            _auto_resolver_futbol()
+        except Exception as _are:
+            logger.warning(f"Auto-resolver inicial: {_are}")
+
         st.session_state.init = True
 
     # ── Objetos SIN estado: recrear en CADA ejecución para que los cambios de
