@@ -138,6 +138,7 @@ def _candidatos_hr_equipo(equipo, pitcher_rival, venue=""):
             "jugador": nombre.strip(), "nombre": nombre.strip(), "equipo": equipo,
             "hr_total": hr, "probabilidad": prob, "pitcher_rival": pitcher_rival,
             "ops": stats.get("ops", 0.0), "park_factor": pf,
+            "en_lineup": False,  # dataset por equipo (lineup oficial aún no publicado)
         })
     cands.sort(key=lambda x: x["probabilidad"], reverse=True)
     return cands
@@ -328,34 +329,39 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
     # ── 5. Ventaja de local ─────────────────────────────────────────────
     score += 3.0
 
-    # ── Pick de ganador + jerarquía V21 (consciente del mercado) ─────────
-    pick_team = local if score >= 0 else visitante
-    confianza = round(min(85, max(35, 50 + abs(score) * 1.4)))
+    # ── Pick de money line: SIGUE AL MEJOR RÉCORD ───────────────────────
+    # Backtest (256 juegos): seguir el mejor récord acierta ~57% en money line,
+    # vs ~51% del motor que volteaba por pitcheo/mercado. Así que el pitcheo y el
+    # mercado pasan a ser CONFIANZA + ALERTA de upset, sin voltear el pick.
+    score_extra = score - (diff_pct * 18)   # señales NO-récord (pitcheo+mercado+racha+local)
+    if abs(diff_pct) >= 0.01:
+        pick_team = local if diff_pct > 0 else visitante
+        sigue_record = True
+    else:
+        # récords parejos → desempata con las señales acumuladas
+        pick_team = local if score_extra >= 0 else visitante
+        sigue_record = False
 
-    # ¿Nuestro pick coincide con el favorito del mercado, o lo estamos fadeando?
-    pick_es_favorito = None
-    if p_l is not None and p_v is not None:
-        fav_mercado = local if p_l >= p_v else visitante
-        pick_es_favorito = (pick_team == fav_mercado)
-    fadeando = (pick_es_favorito is False)   # pick = underdog → valor en el ML
+    # ¿Las señales (abridor/mercado) apuntan al RIVAL? → alerta de upset (NO voltea)
+    senal_favorece = local if score_extra >= 0 else visitante
+    alerta_upset = ""
+    if sigue_record and senal_favorece != pick_team and abs(score_extra) >= 9:
+        alerta_upset = f"El abridor/mercado favorece a {senal_favorece} — posible upset"
 
-    # Al fadear el mercado somos algo menos categóricos (más incertidumbre) y el
-    # valor está en el MONEYLINE (momio +), no en un run line -1.5.
-    if fadeando:
-        confianza = min(confianza, 79)
+    # Confianza: el récord manda; sube si las señales coinciden, baja si contradicen
+    confianza = 50 + abs(diff_pct) * 80
+    if senal_favorece == pick_team:
+        confianza += min(12, abs(score_extra) * 0.5)
+    else:
+        confianza -= min(12, abs(score_extra) * 0.5)
+    confianza = round(min(85, max(35, confianza)))
 
-    if confianza >= 80:
+    if confianza >= 70:
         decision, tipo, handicap, stake = "🟢 ÉLITE", "MONEYLINE", "", "3u"
-    elif confianza >= 65:
-        if fadeando:
-            decision, tipo, handicap, stake = "🟡 SEGURO", "MONEYLINE", "", "2u"
-        else:
-            decision, tipo, handicap, stake = "🟡 SEGURO", "HANDICAP", "-1.5", "2u"
-    elif confianza >= 55:
-        if fadeando:
-            decision, tipo, handicap, stake = "🔵 RESCATE", "MONEYLINE", "", "1u"
-        else:
-            decision, tipo, handicap, stake = "🔵 RESCATE", "HANDICAP", "+1.5", "1u"
+    elif confianza >= 60:
+        decision, tipo, handicap, stake = "🟡 SEGURO", "MONEYLINE", "", "2u"
+    elif confianza >= 53:
+        decision, tipo, handicap, stake = "🔵 RESCATE", "HANDICAP", "+1.5", "1u"
     else:
         decision, tipo, handicap, stake = "🔴 EVITAR", "EVITAR", "", "0u"
 
@@ -470,13 +476,14 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
         'ou_confianza': ou_conf,
         'total_proyectado': total_proyectado,
         'diferencia_record': round(diff_pct * 100, 1),
+        'alerta_upset': alerta_upset,   # aviso si abridor/mercado sugiere upset (no voltea el pick)
         # Transparencia y extras
         'razones': razones[:5],
         'hr_candidates': hr_candidates,
         'k_picks': k_picks,
         'tb_picks': tb_picks,
         'run_line': {'pick': pick_team,
-                     'linea': handicap or ('+1.5' if fadeando else '-1.5'),
+                     'linea': handicap or '-1.5',
                      'confianza': max(50, confianza - 8)},
         'score_raw': round(score, 2),
         'pitchers': {'local': hp, 'visitante': ap},
