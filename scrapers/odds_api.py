@@ -104,6 +104,24 @@ def obtener_odds_ufc():
     return odds
 
 
+def obtener_odds_mlb():
+    """{nombre_equipo_normalizado: momio_americano} de los juegos MLB de hoy."""
+    odds = {}
+    for ev in _fetch_odds("baseball_mlb"):
+        bms = ev.get("bookmakers", [])
+        if not bms:
+            continue
+        for mkt in bms[0].get("markets", []):
+            if mkt.get("key") != "h2h":
+                continue
+            for o in mkt.get("outcomes", []):
+                nombre = normalizar(o.get("name", ""))
+                ml = _americano(o.get("price"))
+                if nombre and ml:
+                    odds[nombre] = ml
+    return odds
+
+
 def obtener_odds_futbol(sport_key="soccer_fifa_world_cup"):
     """Lista de partidos con momios reales: {home, away, home_ml, draw_ml, away_ml}."""
     partidos = []
