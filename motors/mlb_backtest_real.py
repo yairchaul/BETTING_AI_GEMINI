@@ -88,6 +88,7 @@ def ejecutar_backtest_real(dias=15, progreso_cb=None):
     ml_total = ml_ok = 0
     ml_por_conf = defaultdict(lambda: {"n": 0, "ok": 0})
     ou_total = ou_ok = 0
+    rl_total = rl_ok = 0
     hr_pred = hr_ok = 0
     hr_por_tramo = defaultdict(lambda: {"pred": 0, "ok": 0})
     detalle = []
@@ -142,6 +143,23 @@ def ejecutar_backtest_real(dias=15, progreso_cb=None):
                 ou_total += 1
                 ou_ok += 1 if ou_acierto else 0
 
+            # Run Line (hándicap ±1.5) del motor
+            rl = pred.get('run_line', {})
+            rl_acierto = None
+            if rl and rl.get('pick'):
+                rl_pick = rl['pick']
+                es_favorito = str(rl.get('linea', '-1.5')).strip().startswith('-')
+                margen = abs(sh - sa)
+                pick_gano = (rl_pick == ganador_real)
+                if es_favorito:
+                    # -1.5: cubre si su equipo gana por 2+
+                    rl_acierto = pick_gano and margen >= 2
+                else:
+                    # +1.5: cubre si gana o pierde por 1
+                    rl_acierto = pick_gano or margen <= 1
+                rl_total += 1
+                rl_ok += 1 if rl_acierto else 0
+
             # HR candidatos del motor
             hits_juego = 0
             for c in pred.get('hr_candidates', [])[:6]:
@@ -160,6 +178,8 @@ def ejecutar_backtest_real(dias=15, progreso_cb=None):
                 "ml_pick": pick_ml, "ml_conf": conf, "ml_ok": ml_acierto,
                 "ou_pick": f"{ou_pick} {pred.get('ou_linea_ajustada','')}" if ou_pick else "—",
                 "ou_ok": ou_acierto, "total_real": total_real,
+                "rl_pick": f"{rl.get('pick','')} {rl.get('linea','')}".strip() if rl else "—",
+                "rl_ok": rl_acierto,
                 "hr_aciertos": hits_juego,
             })
             time.sleep(0.12)
@@ -179,6 +199,10 @@ def ejecutar_backtest_real(dias=15, progreso_cb=None):
         "over_under": {
             "precision": round(ou_ok / ou_total * 100, 1) if ou_total else 0,
             "aciertos": ou_ok, "total": ou_total,
+        },
+        "run_line": {
+            "precision": round(rl_ok / rl_total * 100, 1) if rl_total else 0,
+            "aciertos": rl_ok, "total": rl_total,
         },
         "home_runs": {
             "precision_global": round(hr_ok / hr_pred * 100, 1) if hr_pred else 0,

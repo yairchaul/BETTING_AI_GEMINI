@@ -98,7 +98,7 @@ def ejecutar_hr_backtest(dias=15, top_n=5, progreso_cb=None):
             for c in candidatos:
                 pegó = _norm(c['jugador']) in hr_reales
                 prob = c['probabilidad']
-                tramo = "15%+" if prob >= 15 else "12-14%" if prob >= 12 else "9-11%" if prob >= 9 else "<9%"
+                tramo = "30%+" if prob >= 30 else "22-29%" if prob >= 22 else "15-21%" if prob >= 15 else "<15%"
                 tramos[tramo]["predichos"] += 1
                 tramos[tramo]["aciertos"] += 1 if pegó else 0
                 total_pred += 1

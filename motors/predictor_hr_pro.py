@@ -249,7 +249,9 @@ class PredictorHRPro:
                     "hr_total": hr_total,
                     "hr_por_juego": round(stats.get('hr_por_juego', hr_total/15), 2),
                     "avg": stats.get('avg', 0.0),
-                    "ops": stats.get('ops', 0.0)
+                    "ops": stats.get('ops', 0.0),
+                    # True = confirmado en la alineación oficial; False = aún sin lineup
+                    "en_lineup": bool(lineup_oficial),
                 })
         
         # Ordenar por HR total (más reciente primero)
@@ -401,6 +403,7 @@ class PredictorHRPro:
                 "equipo": equipo_nombre,
                 "hr_total": b['hr_total'],
                 "hr_por_juego": b['hr_por_juego'],
+                "en_lineup": b.get("en_lineup", False),
                 "probabilidad": probabilidad['probabilidad'],
                 "color": probabilidad['color'],
                 "icono": probabilidad['icono'],

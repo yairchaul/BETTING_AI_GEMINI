@@ -262,3 +262,80 @@ def analizar_futbol_jerarquico(
         "fase":         fase,
         "es_eliminacion": es_eliminacion,
     }
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# MERCADOS COMPLETOS (para el botón "Analizar IA"): Moneyline 1X2, Over/Under,
+# BTTS sí/no, y posibles goleadores. Modelo Poisson sobre goles esperados.
+# ──────────────────────────────────────────────────────────────────────────
+import math as _math
+
+
+def _poisson(k, lam):
+    try:
+        return _math.exp(-lam) * (lam ** k) / _math.factorial(k)
+    except Exception:
+        return 0.0
+
+
+def _avg(lista, default=1.2):
+    return sum(lista) / len(lista) if lista else default
+
+
+def mercados_completos_futbol(local, visitante, es_torneo=False, fase=""):
+    """Devuelve probabilidades de Moneyline (1X2), Over/Under 2.5, BTTS sí/no
+    y goleadores probables. Usa historial (DB) o ranking FIFA como respaldo."""
+    s_l = db.get_team_stats_detailed(local, "soccer")
+    s_v = db.get_team_stats_detailed(visitante, "soccer")
+
+    fuente = "historial"
+    if s_l and s_v and s_l.get("goles_favor") and s_v.get("goles_favor"):
+        gf_l, gc_l = _avg(s_l.get("goles_favor", [])), _avg(s_l.get("goles_contra", []))
+        gf_v, gc_v = _avg(s_v.get("goles_favor", [])), _avg(s_v.get("goles_contra", []))
+        xg_l = max(0.2, (gf_l + gc_v) / 2 * 1.10)   # localía
+        xg_v = max(0.2, (gf_v + gc_l) / 2)
+    else:
+        # Respaldo por ranking FIFA
+        r_l = next((v for k, v in _FIFA_RANK.items() if k.lower() in local.lower() or local.lower() in k.lower()), 60)
+        r_v = next((v for k, v in _FIFA_RANK.items() if k.lower() in visitante.lower() or visitante.lower() in k.lower()), 60)
+        diff = (r_v - r_l) / 20.0
+        xg_l = max(0.3, 1.4 + diff * 0.5)
+        xg_v = max(0.3, 1.4 - diff * 0.5)
+        fuente = "ranking FIFA"
+
+    pl = [_poisson(i, xg_l) for i in range(7)]
+    pv = [_poisson(j, xg_v) for j in range(7)]
+    p_home = p_draw = p_away = p_over25 = p_over15 = p_btts = 0.0
+    for i in range(7):
+        for j in range(7):
+            p = pl[i] * pv[j]
+            if i > j:
+                p_home += p
+            elif i == j:
+                p_draw += p
+            else:
+                p_away += p
+            if i + j > 2.5:
+                p_over25 += p
+            if i + j > 1.5:
+                p_over15 += p
+            if i > 0 and j > 0:
+                p_btts += p
+
+    _r = lambda x: round(x * 100, 1)
+    # Goleadores
+    try:
+        from motors.futbol_props import obtener_goleadores_partido
+        goleadores = obtener_goleadores_partido(local, visitante)
+    except Exception:
+        goleadores = {"local": [], "visitante": []}
+
+    return {
+        "fuente": fuente,
+        "xg_local": round(xg_l, 2), "xg_visitante": round(xg_v, 2),
+        "moneyline": {"local": _r(p_home), "empate": _r(p_draw), "visitante": _r(p_away)},
+        "over_under": {"over_2.5": _r(p_over25), "under_2.5": _r(1 - p_over25),
+                       "over_1.5": _r(p_over15)},
+        "btts": {"si": _r(p_btts), "no": _r(1 - p_btts)},
+        "goleadores": goleadores,
+    }
