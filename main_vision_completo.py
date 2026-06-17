@@ -635,11 +635,14 @@ def main():
                     st.session_state.scrapers["futbol"].poblar_historial(partidos_lg)
                 except Exception as _he:
                     logger.warning(f"Poblar historial {lg}: {_he}")
-            # Mostrar solo actuales + próximos (fecha >= hoy y NO terminados)
+            # Mostrar de HOY hasta +5 días (hasta el domingo), no terminados.
+            # (Lo ya jugado va al historial/backtesting, no a la pestaña.)
+            from datetime import timedelta as _td
             _hoy = datetime.now().strftime("%Y-%m-%d")
+            _lim = (datetime.now() + _td(days=5)).strftime("%Y-%m-%d")
             futuros = [p for p in (partidos_lg or [])
                        if not p.get("completado")
-                       and str(p.get("fecha_partido") or p.get("fecha") or "9999")[:10] >= _hoy]
+                       and _hoy <= str(p.get("fecha_partido") or p.get("fecha") or "9999")[:10] <= _lim]
             # Odds REALES de fútbol (the-odds-api) donde falten las de ESPN
             try:
                 from scrapers.odds_api import obtener_odds_futbol

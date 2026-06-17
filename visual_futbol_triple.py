@@ -17,6 +17,20 @@ def _hora_cdmx(iso, fecha_fallback=""):
         return str(fecha_fallback)[:10]
 
 
+def _signo_momio(v):
+    """Formatea momio americano: positivos con '+', negativos con '-', vacío '—'."""
+    s = str(v).strip()
+    if s in ("N/A", "None", "", "—"):
+        return "—"
+    if s.startswith(("+", "-")):
+        return s
+    try:
+        n = float(s)
+        return f"+{int(n)}" if n > 0 else str(int(n))
+    except Exception:
+        return s
+
+
 class VisualFutbolTriple:
     def __init__(self):
         pass
@@ -32,9 +46,9 @@ class VisualFutbolTriple:
         fecha = partido.get('fecha_partido', '') or partido.get('fecha', '')
         odds = partido.get('odds', {}) or {}
         moneyline = odds.get('moneyline', {}) if isinstance(odds.get('moneyline'), dict) else {}
-        ml_loc = moneyline.get('home', moneyline.get('local', 'N/A'))
-        ml_emp = moneyline.get('draw', 'N/A')
-        ml_vis = moneyline.get('away', moneyline.get('visitante', 'N/A'))
+        ml_loc = _signo_momio(moneyline.get('home', moneyline.get('local', 'N/A')))
+        ml_emp = _signo_momio(moneyline.get('draw', 'N/A'))
+        ml_vis = _signo_momio(moneyline.get('away', moneyline.get('visitante', 'N/A')))
         ou = odds.get('over_under', 'N/A')
         detalles = odds.get('detalles', '')
         fase = partido.get('fase', '')
