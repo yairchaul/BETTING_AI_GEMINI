@@ -167,6 +167,22 @@ class VisualMLB:
                     unsafe_allow_html=True,
                 )
 
+            # ── 🏆 MEJOR APUESTA del partido (mejor mercado ponderado por histórico) ──
+            ma = analisis_mlb.get("mejor_apuesta")
+            if ma:
+                st.markdown(
+                    "<div style='background:linear-gradient(90deg,#0ea5e922,transparent);"
+                    "border-left:4px solid #0ea5e9;border-radius:8px;padding:10px 14px;margin:6px 0'>"
+                    f"<span style='color:#38bdf8;font-weight:800;font-size:1.02rem'>🏆 MEJOR APUESTA: {ma['pick']}</span>"
+                    f"<span style='color:#cbd5e1;font-size:0.82rem'>  ·  {ma['mercado']} · conf {ma['confianza']:.0f}%</span></div>",
+                    unsafe_allow_html=True)
+                _alts = ma.get("alternativas", [])[1:4]
+                if _alts:
+                    st.caption("Alternativas: " + " · ".join(
+                        f"{a['mercado']} {a['confianza']:.0f}%" for a in _alts))
+            if analisis_mlb.get("alerta_upset"):
+                st.warning(f"⚠️ {analisis_mlb['alerta_upset']}")
+
         # ── 📊 Proyecciones del motor (O/U + Hándicap) ───────────────────────
         if analisis_mlb:
             tp = analisis_mlb.get("total_proyectado")
