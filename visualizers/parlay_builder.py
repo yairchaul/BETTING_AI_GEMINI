@@ -568,6 +568,26 @@ def render_parlay_tab():
                         "Por evento elige el mercado que MÁS paga (combinados gana+Over) sin perder calidad",
                         _armar_parlay(legs_pago))
 
+    # ── 💎 PARLAY DE VALOR (+EV): solo legs con valor real ──────────────────
+    # Valor = prob. del modelo > prob. implícita del momio (prob > 100/cuota).
+    # Es la apuesta matemáticamente correcta: solo donde el momio paga de más.
+    def _ev(p):
+        c = p.get("cuota", 1.9) or 1.9
+        return p["prob"] / 100.0 * c - 1.0
+    valor, _ve = [], set()
+    for p in sorted(pool, key=_ev, reverse=True):
+        c = p.get("cuota", 1.9) or 1.9
+        implied = 100.0 / c if c > 0 else 100.0
+        if p["prob"] > implied and p["mercado"] != "HOME RUN" and p["evento"] not in _ve:
+            _ve.add(p["evento"]); valor.append(p)
+        if len(valor) >= n_legs:
+            break
+    if len(valor) >= 2:
+        st.markdown("")
+        _tarjeta_parlay("💎 PARLAY DE VALOR (+EV)", "#14b8a6",
+                        "Solo selecciones con VALOR real: prob. del modelo > prob. implícita del momio",
+                        _armar_parlay(valor))
+
     # ── Tabla completa del pool ──────────────────────────────────────────
     st.markdown("---")
     with st.expander(f"📋 Ver los {len(pool)} picks analizados", expanded=False):
