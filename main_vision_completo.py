@@ -522,17 +522,21 @@ def main():
     st.session_state.ufc_scraper = UFCStatsScraper()
     st.session_state.ufc_analyzer = UFCAnalyzer()
 
-    st.markdown("<div id='tope-pagina'></div><div style='text-align:center;padding:10px'><h1 style='background:linear-gradient(90deg,#3b82f6,#9333ea);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:2.5rem;margin:0'>🎯 APUESTAS_IA</h1><p style='color:#94a3b8;margin:5px 0 0 0'>🏀 NBA &bull; ⚾ MLB &bull; 🥊 UFC &bull; ⚽ Futbol</p></div>", unsafe_allow_html=True)
+    st.markdown("<div id='tope-pagina'></div><div style='text-align:center;padding:10px'><h1 style='background:linear-gradient(90deg,#3b82f6,#9333ea);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:2.5rem;margin:0'>🎯 BETTING_AI</h1><p style='color:#94a3b8;margin:5px 0 0 0'>🏀 NBA &bull; ⚾ MLB &bull; 🥊 UFC &bull; ⚽ Futbol</p></div>", unsafe_allow_html=True)
 
     # Botón flotante para volver arriba (ancla nativa, funciona dentro de Streamlit)
     st.markdown("""
     <style>
-    #btn-arriba {position:fixed; bottom:28px; right:28px; z-index:9999;
+    #btn-arriba {position:fixed; bottom:30px; right:30px; z-index:9999;
                  display:flex; align-items:center; justify-content:center;
-                 background:linear-gradient(90deg,#3b82f6,#9333ea); color:white !important;
-                 width:48px; height:48px; border-radius:50%; text-decoration:none;
-                 font-size:22px; box-shadow:0 4px 14px rgba(0,0,0,0.4);}
-    #btn-arriba:hover {transform:scale(1.1);}
+                 background:linear-gradient(135deg,#3b82f6,#9333ea); color:white !important;
+                 width:54px; height:54px; border-radius:50%; text-decoration:none;
+                 font-size:24px; border:2px solid rgba(255,255,255,0.25);
+                 box-shadow:0 6px 20px rgba(59,130,246,0.45);
+                 transition:transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+                 opacity:.85;}
+    #btn-arriba:hover {transform:translateY(-3px) scale(1.12); opacity:1;
+                       box-shadow:0 10px 28px rgba(147,51,234,0.6);}
     </style>
     <a id="btn-arriba" href="#tope-pagina" title="Volver arriba">⬆️</a>
     """, unsafe_allow_html=True)
@@ -1017,12 +1021,13 @@ def main():
                             except Exception as _fe:
                                 logger.warning(f"Auto-análisis fútbol {liga} {idx}: {_fe}")
 
-                        accion_fut = st.session_state.visual_futbol.render(
-                            p, idx, liga, st.session_state.tracker,
-                            analisis_heuristico=res_fut,
-                            analisis_ia=st.session_state.analisis_futbol.get(f"{key_fut}_ia"),
-                            mercados=st.session_state.analisis_futbol.get(f"{key_fut}_mkt"),
-                        )
+                        with st.container(border=True):   # borde tipo MLB, visual más organizado
+                            accion_fut = st.session_state.visual_futbol.render(
+                                p, idx, liga, st.session_state.tracker,
+                                analisis_heuristico=res_fut,
+                                analisis_ia=st.session_state.analisis_futbol.get(f"{key_fut}_ia"),
+                                mercados=st.session_state.analisis_futbol.get(f"{key_fut}_mkt"),
+                            )
                         if accion_fut == "analizar":
                             with st.spinner("Calculando mercados (Moneyline · O/U · BTTS · goleadores)..."):
                                 # Mercados completos (heurístico Poisson) — SIEMPRE

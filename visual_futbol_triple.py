@@ -154,6 +154,17 @@ class VisualFutbolTriple:
             if nota:
                 st.caption(f"ℹ️ {nota}")
 
+            # ── Combinada de MAYOR PAGO (gana + Over) si el favorito es claro ──
+            for _op in (analisis_heuristico.get('todas_opciones') or []):
+                if _op.get('combo'):
+                    st.markdown(
+                        "<div style='margin-top:4px;background:linear-gradient(90deg,#e11d4822,transparent);"
+                        "border-left:4px solid #e11d48;border-radius:8px;padding:8px 14px'>"
+                        f"<span style='color:#fb7185;font-weight:800'>💰 Combinada (más pago): {_op['pick']}</span>"
+                        f"<span style='color:#cbd5e1;font-size:0.85rem'>  ·  {_op.get('confianza',0):.0f}%</span></div>",
+                        unsafe_allow_html=True)
+                    break
+
             # ── Resultado del pick (si el partido ya terminó) ────────────────
             if partido.get('completado') and partido.get('goles_local') is not None:
                 gl = int(partido.get('goles_local', 0))
