@@ -119,6 +119,7 @@ def analizar_futbol_jerarquico(
     visitante: str,
     es_torneo: bool = False,
     fase: str = "",
+    forzar_ranking: bool = False,
 ) -> dict:
     """
     Aplica reglas de descarte jerárquico para fútbol.
@@ -128,7 +129,12 @@ def analizar_futbol_jerarquico(
         visitante: Nombre del equipo visitante
         es_torneo: True si es torneo internacional (Mundial, EURO, Copa América…)
         fase:      Fase del torneo ('Grupo', 'Octavos', 'Cuartos', 'Semifinal', 'Final')
+        forzar_ranking: usa SOLO el fallback por ranking FIFA (lógica pre-partido),
+                   sin leer la DB. En el backtest de torneos evita el "leakage" de
+                   stats post-juego y reproduce el MISMO pick que mostró la tarjeta.
     """
+    if forzar_ranking:
+        return _analisis_ranking_fifa(local, visitante, fase)
     s_l = db.get_team_stats_detailed(local, "soccer")
     s_v = db.get_team_stats_detailed(visitante, "soccer")
 

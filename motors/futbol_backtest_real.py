@@ -137,9 +137,13 @@ def ejecutar_futbol_backtest_real(dias: int = 10, ligas=None, progreso_cb=None):
         local = p.get("home") or p.get("local", "")
         visitante = p.get("away") or p.get("visitante", "")
         try:
+            _es_torneo = p.get("es_torneo", False)
             res = analizar_futbol_jerarquico(local, visitante,
-                                             es_torneo=p.get("es_torneo", False),
-                                             fase=p.get("fase", ""))
+                                             es_torneo=_es_torneo,
+                                             fase=p.get("fase", ""),
+                                             # En torneos, reproducir el pick pre-partido
+                                             # (fallback FIFA) — mismo que mostró la tarjeta.
+                                             forzar_ranking=_es_torneo)
         except Exception as e:
             logger.debug(f"Motor fútbol falló {local} vs {visitante}: {e}")
             continue

@@ -346,11 +346,17 @@ def _tarjeta_parlay(titulo, color, descripcion, parlay):
         unsafe_allow_html=True,
     )
     for l in parlay["legs"]:
+        _c = l.get("cuota", 1.9) or 1.9
+        _impl = 100.0 / _c if _c > 0 else 100.0
+        _edge = l["prob"] - _impl                      # valor = prob modelo − prob implícita
+        _ecol = "#22c55e" if _edge >= 0 else "#ef4444"
         st.markdown(
             f"<div style='background:#0f172a;border-radius:6px;padding:6px 12px;margin:3px 0'>"
             f"{l['sport']} · <b>{l['pick']}</b> "
             f"<span style='color:#64748b'>({l['mercado']} · {l['evento']})</span> "
-            f"<span style='float:right;color:#22c55e'>{l['prob']:.0f}%</span></div>",
+            f"<span style='float:right'>"
+            f"<span style='color:{_ecol};font-size:0.78rem' title='valor = prob. modelo − prob. del momio'>valor {_edge:+.0f}%</span>  "
+            f"<span style='color:#22c55e;font-weight:700'>{l['prob']:.0f}%</span></span></div>",
             unsafe_allow_html=True,
         )
 
