@@ -362,6 +362,17 @@ def _tarjeta_parlay(titulo, color, descripcion, parlay):
     _guardar_parlay(titulo, parlay)   # registra el parlay generado para aprender de él
     momio = _decimal_a_americano(parlay['cuota'])
     ganancia = round((parlay['cuota'] - 1) * 100)   # ganancia por cada $100 apostados
+    # Rendimiento HISTÓRICO de este tipo de parlay (el cerebro aprendiendo)
+    hist_html = ""
+    try:
+        from motors.parlay_brain import stats_de_tipo
+        _h = stats_de_tipo(titulo)
+        if _h and _h.get("total", 0) >= 2:
+            _wc = "#22c55e" if _h["win_rate"] >= 50 else "#ef4444"
+            hist_html = (f"  ·  <span style='color:{_wc}'>📊 histórico: {_h['win_rate']}% "
+                         f"({_h['ganados']}/{_h['total']}) · ROI {_h['roi']:+.0f}%</span>")
+    except Exception:
+        pass
     st.markdown(
         f"<div style='background:#1e293b;border-left:5px solid {color};border-radius:10px;padding:14px;margin-bottom:6px'>"
         f"<div style='color:{color};font-weight:800;font-size:1.05rem'>{titulo}</div>"
@@ -372,7 +383,7 @@ def _tarjeta_parlay(titulo, color, descripcion, parlay):
         f"<span style='color:#fff'>Prob. combinada: <b style='color:{color}'>{parlay['prob']}%</b></span>"
         f"<span style='color:#fff'>EV: <b style='color:{'#22c55e' if parlay['ev_pct']>=0 else '#ef4444'}'>{parlay['ev_pct']:+.1f}%</b></span>"
         f"</div>"
-        f"<div style='color:#64748b;font-size:0.8rem;margin-top:6px'>💵 $100 → <b style='color:#22c55e'>${ganancia:,}</b> de ganancia ({len(parlay['legs'])} legs)</div>"
+        f"<div style='color:#64748b;font-size:0.8rem;margin-top:6px'>💵 $100 → <b style='color:#22c55e'>${ganancia:,}</b> de ganancia ({len(parlay['legs'])} legs){hist_html}</div>"
         f"</div>",
         unsafe_allow_html=True,
     )

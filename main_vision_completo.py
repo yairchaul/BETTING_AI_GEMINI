@@ -506,6 +506,9 @@ def main():
             from motors.box_score_resolver import resolver_todo
             resolver_todo()
             _auto_resolver_futbol()
+            # Resolver parlays a partir del resultado de sus legs (cerebro de parlays)
+            from motors.parlay_brain import resolver_parlays_pendientes
+            resolver_parlays_pendientes()
         except Exception as _are:
             logger.warning(f"Auto-resolver inicial: {_are}")
 
