@@ -4,7 +4,8 @@ import re
 import os
 import time
 from datetime import datetime, timedelta
-from playwright.sync_api import sync_playwright
+# Playwright es OPCIONAL (solo para el respaldo de scraping). Import perezoso
+# dentro del método que lo usa, para que el módulo cargue sin playwright instalado.
 from bs4 import BeautifulSoup
 import json
 from typing import Optional, List
@@ -90,6 +91,13 @@ class MLBResultadosScraper:
         disponible o no produce resultados. Devuelve list[dict] en el shape
         legacy esperado por consumidores antiguos.
         """
+        try:
+            from playwright.sync_api import sync_playwright
+        except ImportError:
+            import logging
+            logging.getLogger(__name__).warning(
+                "Playwright no instalado; respaldo de scraping no disponible (se usa la MLB Stats API).")
+            return []
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             context = browser.new_context(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
