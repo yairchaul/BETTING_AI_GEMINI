@@ -512,6 +512,21 @@ def main():
         except Exception as _are:
             logger.warning(f"Auto-resolver inicial: {_are}")
 
+        # HR backtest DINÁMICO: si el reporte está viejo (>18h), recalcula qué
+        # candidatos pegaron HR (ligero, 3 días) para nutrir el motor de HR.
+        try:
+            _hp = os.path.join("data", "hr_backtest_reporte.json")
+            _stale = True
+            if os.path.exists(_hp):
+                _ts = (cargar_json_safe(_hp) or {}).get("timestamp", "")
+                if _ts:
+                    _stale = (datetime.now() - datetime.fromisoformat(_ts)).total_seconds() > 64800
+            if _stale:
+                from motors.hr_backtester import ejecutar_hr_backtest
+                ejecutar_hr_backtest(dias=3)
+        except Exception as _hre:
+            logger.warning(f"Auto HR backtest: {_hre}")
+
         st.session_state.init = True
 
     # ── Objetos SIN estado: recrear en CADA ejecución para que los cambios de
@@ -1472,14 +1487,18 @@ def main():
                     st.caption("💡 Si el tramo '45%+' acierta mucho menos que 45%, el motor está inflando probabilidades. "
                                "Lo importante es el ORDEN: los de mayor probabilidad deben acertar más que los de menor.")
 
-                # Nombres de los candidatos que SÍ conectaron HR (para nutrir el motor)
-                aciertos_hr = [d for d in hr_rep.get("detalle", []) if d.get("pegó_hr")]
-                if aciertos_hr:
-                    st.markdown("**✅ Candidatos que conectaron HR (el motor acertó):**")
-                    st.table([{"Fecha": d["fecha"], "Jugador": d["jugador"],
-                               "Equipo": d["equipo"], "Prob. motor": f"{d['probabilidad']}%"}
-                              for d in aciertos_hr[:20]])
-                    st.caption(f"🧠 {len(aciertos_hr)} aciertos de HR registrados — sirven para calibrar la agresividad del motor.")
+                # Candidatos a HR: predicción vs RESULTADO real (✅ pegó / ❌ no)
+                det_hr = sorted(hr_rep.get("detalle", []),
+                                key=lambda d: d.get("probabilidad", 0), reverse=True)
+                if det_hr:
+                    _nh = sum(1 for d in det_hr if d.get("pegó_hr"))
+                    st.markdown("**💣 Candidatos a HR — predicción vs resultado real:**")
+                    st.table([{"Fecha": d.get("fecha", ""), "Jugador": d["jugador"],
+                               "Equipo": d["equipo"], "Prob. motor": f"{d['probabilidad']}%",
+                               "Resultado": "✅ HR" if d.get("pegó_hr") else "❌"}
+                              for d in det_hr[:30]])
+                    st.caption(f"🧠 {_nh}/{len(det_hr)} candidatos conectaron HR — el resultado calibra el motor de HR "
+                               "y el peso del mercado HOME RUN en los parlays.")
 
             # ── Backtest de MONEYLINE + OVER/UNDER (vs resultados reales) ──────
             st.markdown("**🏆 Backtest de Moneyline y Over/Under (precisión real):**")
