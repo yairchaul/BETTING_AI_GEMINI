@@ -328,7 +328,38 @@ def _armar_parlay(legs):
     }
 
 
+def _guardar_parlay(titulo, parlay):
+    """Guarda cada parlay GENERADO en data/parlay_history.json (idempotente por
+    día + legs) para que el cerebro aprenda qué estructuras de parlay ganan."""
+    import os, json
+    from datetime import datetime
+    ruta = os.path.join("data", "parlay_history.json")
+    try:
+        hist = json.load(open(ruta, encoding="utf-8")) if os.path.exists(ruta) else []
+    except Exception:
+        hist = []
+    fecha = datetime.now().strftime("%Y-%m-%d")
+    firma = "|".join(sorted(f"{l['sport']}::{l['pick']}" for l in parlay.get("legs", [])))
+    if any(h.get("fecha") == fecha and h.get("firma") == firma for h in hist):
+        return  # ya guardado hoy
+    hist.append({
+        "id": f"par_{datetime.now().strftime('%Y%m%d%H%M%S')}_{abs(hash(firma)) % 10000}",
+        "fecha": fecha, "tipo": titulo, "firma": firma,
+        "prob": parlay.get("prob"), "cuota": parlay.get("cuota"),
+        "ev_pct": parlay.get("ev_pct"), "n_legs": len(parlay.get("legs", [])),
+        "legs": [{"sport": l["sport"], "pick": l["pick"], "mercado": l.get("mercado", ""),
+                  "evento": l.get("evento", ""), "prob": l.get("prob")} for l in parlay.get("legs", [])],
+        "estado": "pendiente",   # se resuelve cuando se resuelvan sus legs
+    })
+    try:
+        os.makedirs("data", exist_ok=True)
+        json.dump(hist[-500:], open(ruta, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    except Exception:
+        pass
+
+
 def _tarjeta_parlay(titulo, color, descripcion, parlay):
+    _guardar_parlay(titulo, parlay)   # registra el parlay generado para aprender de él
     momio = _decimal_a_americano(parlay['cuota'])
     ganancia = round((parlay['cuota'] - 1) * 100)   # ganancia por cada $100 apostados
     st.markdown(
