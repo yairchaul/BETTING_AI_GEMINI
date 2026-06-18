@@ -155,6 +155,7 @@ def ejecutar_futbol_backtest_real(dias: int = 10, ligas=None, progreso_cb=None):
         if acierto:
             mercados[mercado]["aciertos"] += 1
         detalle.append({
+            "fecha": str(p.get("fecha_partido") or p.get("fecha") or "")[:10],
             "partido": f"{local} {gl}-{gv} {visitante}",
             "pick": pick, "mercado": mercado,
             "confianza": res.get("confianza", 0),

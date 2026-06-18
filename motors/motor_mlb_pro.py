@@ -404,32 +404,41 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
     # ── 5. Ventaja de local ─────────────────────────────────────────────
     score += 3.0
 
-    # ── Pick de money line: SIGUE AL MEJOR RÉCORD ───────────────────────
-    # Backtest (256 juegos): seguir el mejor récord acierta ~57% en money line,
-    # vs ~51% del motor que volteaba por pitcheo/mercado. Así que el pitcheo y el
-    # mercado pasan a ser CONFIANZA + ALERTA de upset, sin voltear el pick.
-    score_extra = score - (diff_pct * 18)   # señales NO-récord (pitcheo+mercado+racha+local)
-    if abs(diff_pct) >= 0.01:
-        pick_team = local if diff_pct > 0 else visitante
-        sigue_record = True
-    else:
-        # récords parejos → desempata con las señales acumuladas
-        pick_team = local if score_extra >= 0 else visitante
-        sigue_record = False
+    # ── Pick de money line: el MERCADO manda; si no hay, el récord ───────
+    # El momio es el mejor predictor (incorpora pitcheo/lesiones/forma). Tu
+    # observación: cuando el mercado favorece al de PEOR récord, suele dar la
+    # vuelta. Así que si hay favorito CLARO de mercado, el pick lo SIGUE (y eso
+    # convierte el "posible upset" en el pick). Si no hay momio claro, sigue al récord.
+    fav_record = local if diff_pct >= 0 else visitante
+    fav_mercado = None
+    if p_l is not None and p_v is not None and abs(p_l - p_v) >= 0.06:
+        fav_mercado = local if p_l > p_v else visitante
 
-    # ¿Las señales (abridor/mercado) apuntan al RIVAL? → alerta de upset (NO voltea)
-    senal_favorece = local if score_extra >= 0 else visitante
+    if fav_mercado:
+        pick_team = fav_mercado
+    elif abs(diff_pct) >= 0.01:
+        pick_team = fav_record
+    else:
+        pick_team = local if score >= 0 else visitante
+
+    # Alerta cuando el mercado contradice al mejor récord (el upset que SÍ conviene seguir)
     alerta_upset = ""
-    if sigue_record and senal_favorece != pick_team and abs(score_extra) >= 9:
-        alerta_upset = f"El abridor/mercado favorece a {senal_favorece} — posible upset"
+    if fav_mercado and fav_record and fav_mercado != fav_record and abs(diff_pct) >= 0.05:
+        alerta_upset = (f"Upset: el mercado favorece a {fav_mercado} pese al mejor récord de "
+                        f"{fav_record} — el pick SIGUE al mercado (suele dar la vuelta)")
 
-    # Confianza: el récord manda; sube si las señales coinciden, baja si contradicen
-    confianza = 50 + abs(diff_pct) * 80
-    if senal_favorece == pick_team:
-        confianza += min(12, abs(score_extra) * 0.5)
+    # Confianza: parte de la prob. implícita del momio del pick (calibrada por el
+    # mercado); si no hay momio, usa la diferencia de récord. Bono si récord+mercado coinciden.
+    p_pick = None
+    if p_l is not None and p_v is not None:
+        p_pick = p_l if pick_team == local else p_v
+    if p_pick is not None:
+        confianza = p_pick * 100
     else:
-        confianza -= min(12, abs(score_extra) * 0.5)
-    confianza = round(min(85, max(35, confianza)))
+        confianza = 50 + abs(diff_pct) * 80
+    if fav_mercado and fav_record == fav_mercado:
+        confianza += 5   # récord y mercado de acuerdo → más confianza
+    confianza = round(min(88, max(35, confianza)))
 
     if confianza >= 70:
         decision, tipo, handicap, stake = "🟢 ÉLITE", "MONEYLINE", "", "3u"

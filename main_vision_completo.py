@@ -1410,7 +1410,7 @@ def main():
                 st.markdown(f"**Precisión global del motor de fútbol: {fbr.get('precision_global',0)}%**")
                 det = fbr.get("detalle", [])
                 if det:
-                    st.table([{"Partido": d["partido"], "Pick": d["pick"],
+                    st.table([{"Fecha": d.get("fecha", ""), "Partido": d["partido"], "Pick": d["pick"],
                                "Mercado": d["mercado"], "Conf.": f"{d['confianza']}%",
                                "Resultado": "✅" if d["acierto"] else "❌"} for d in det[:25]])
             elif fbr:
