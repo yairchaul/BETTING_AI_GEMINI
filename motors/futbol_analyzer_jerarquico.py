@@ -117,6 +117,11 @@ def _analisis_ranking_fifa(local: str, visitante: str, fase: str = "") -> dict:
         "todas_opciones": opciones,
         "nota": f"Ranking FIFA: #{r_l} {local} vs #{r_v} {visitante} (sin historial en DB).",
         "wc_nota": wc_nota_rank,
+        "h2h_nota": "",
+        "liga_nota": "",
+        "pick_motor_1": best["pick"],
+        "conf_motor_1": best["confianza"],
+        "regla_motor_1": best["regla"],
         "debug_reglas": debug_reglas,
     }
 
@@ -319,6 +324,10 @@ def analizar_futbol_jerarquico(
     if viable_picks:
         viable_picks.sort(key=lambda x: (x["regla"], -x["confianza"]))
         primary = viable_picks[0]
+    # Guardar pick ANTES de calibraciones (Motor 1 original — reglas puras sin ajuste de liga/WC)
+    pick_motor_1 = primary["pick"]
+    conf_motor_1 = primary["confianza"]
+    regla_motor_1 = primary["regla"]
 
     logger.info(
         f"Análisis futbol {local} vs {visitante} → {primary['pick']} "
@@ -413,9 +422,12 @@ def analizar_futbol_jerarquico(
         "fase":         fase,
         "es_eliminacion": es_eliminacion,
         "h2h_historico": h2h,
-        "h2h_nota":     h2h_nota or (wc_nota if not h2h_nota else ""),
+        "h2h_nota":     h2h_nota,
         "wc_nota":      wc_nota,
         "liga_nota":    liga_nota,
+        "pick_motor_1": pick_motor_1,
+        "conf_motor_1": conf_motor_1,
+        "regla_motor_1": regla_motor_1,
         "motor_v2":     motor_v2,
         "debug_reglas": debug_reglas,
     }

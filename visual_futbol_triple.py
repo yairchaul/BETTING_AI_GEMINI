@@ -165,10 +165,38 @@ class VisualFutbolTriple:
                 f"<span style='color:{acc};font-weight:800;font-size:1.02rem'>{ico} {pick}</span>"
                 f"<span style='color:#cbd5e1;font-size:0.85rem'>  ·  Confianza {conf:.0f}%{regla_txt}</span></div>",
                 unsafe_allow_html=True)
-            h2h_nota = analisis_heuristico.get('h2h_nota', '')
-            if h2h_nota:
-                st.caption(f"📜 {h2h_nota}")
-            elif nota:
+
+            # ── Motor 1 (pre-calibración) — sólo si difiere del pick actual ───
+            pick_m1 = analisis_heuristico.get('pick_motor_1', '')
+            conf_m1 = analisis_heuristico.get('conf_motor_1', 0)
+            regla_m1 = analisis_heuristico.get('regla_motor_1', '')
+            if pick_m1 and pick_m1 not in (pick, 'SIN DATOS', 'REVISAR DATOS'):
+                st.markdown(
+                    "<div style='background:#0f172a;border:1px solid #334155;border-left:3px solid #fbbf24;"
+                    "border-radius:7px;padding:7px 12px;margin-top:4px;font-size:0.82rem'>"
+                    f"<span style='color:#fbbf24;font-weight:700'>📐 Motor 1 (sin calibración):</span> "
+                    f"<span style='color:#f1f5f9;font-weight:700'>{pick_m1}</span>"
+                    f"<span style='color:#94a3b8'> · {conf_m1:.0f}%"
+                    + (f" · Regla #{regla_m1}" if regla_m1 and regla_m1 != 99 else "")
+                    + "</span></div>",
+                    unsafe_allow_html=True)
+            elif pick_m1 and pick_m1 == pick:
+                st.caption(f"📐 Motor 1 = mismo pick ({pick_m1} · {conf_m1:.0f}%)")
+
+            # ── Nota de forma reciente (avg goles actuales, NO histórico) ──────
+            avg_l = analisis_heuristico.get('avg_goles_local', 0)
+            avg_v = analisis_heuristico.get('avg_goles_visit', 0)
+            liga_nota_banner = analisis_heuristico.get('liga_nota', '')
+            if avg_l or avg_v:
+                forma_txt = (f"📊 Forma reciente · {local[:10]}: avg {avg_l:.1f} goles · "
+                             f"{visitante[:10]}: avg {avg_v:.1f} goles")
+                if avg_l + avg_v > 3.0:
+                    forma_txt += " — partido de ALTA anotación"
+                elif avg_l + avg_v < 2.0:
+                    forma_txt += " — partido DEFENSIVO esperado"
+                st.caption(forma_txt)
+            elif nota and 'ranking' in nota.lower():
+                # Fallback FIFA ranking (torneos sin historial en DB)
                 st.caption(f"ℹ️ {nota}")
 
             # ── H2H histórico (martj42/international_results) ────────────────
@@ -191,7 +219,7 @@ class VisualFutbolTriple:
                 st.markdown(
                     f"<div style='background:#0f172a;border-radius:7px;padding:8px 12px;"
                     f"margin-top:5px;font-size:0.78rem'>"
-                    f"<span style='color:#64748b'>📜 H2H {h2h['total']} partidos: </span>"
+                    f"<span style='color:#475569;font-size:0.7rem'>📜 HISTORIAL (no forma actual) — {h2h['total']} partidos hist.: </span>"
                     f"<span style='color:#22c55e'>{local[:10]} {h2h['pct_local']}%</span> · "
                     f"<span style='color:#fbbf24'>Empate {h2h['pct_empate']}%</span> · "
                     f"<span style='color:#ef4444'>{visitante[:10]} {h2h['pct_visita']}%</span> · "
@@ -212,8 +240,8 @@ class VisualFutbolTriple:
                     st.markdown(
                         "<div style='background:#14532d33;border-left:4px solid #22c55e;"
                         "border-radius:7px;padding:7px 12px;margin-top:4px;font-size:0.82rem'>"
-                        f"<span style='color:#22c55e;font-weight:700'>✅ V1 + V2 coinciden: {pick_v2}</span>"
-                        f"<span style='color:#94a3b8'> · Motor A {conf:.0f}% · Motor B {conf_v2:.0f}%</span>"
+                        f"<span style='color:#22c55e;font-weight:700'>✅ Calibrado + Momentum coinciden: {pick_v2}</span>"
+                        f"<span style='color:#94a3b8'> · Calibrado {conf:.0f}% · Momentum {conf_v2:.0f}%</span>"
                         "</div>", unsafe_allow_html=True)
                 else:
                     # Discrepancia: mostrar ambos picks
@@ -221,9 +249,9 @@ class VisualFutbolTriple:
                         "<div style='background:#1e1b4b;border-left:4px solid #818cf8;"
                         "border-radius:7px;padding:7px 12px;margin-top:4px;font-size:0.82rem'>"
                         f"<span style='color:#818cf8;font-weight:700'>⚡ 2 OPCIONES:</span>"
-                        f"<br><span style='color:#a5f3fc'>🔷 Motor A (jerárquico): <b>{pick}</b> · {conf:.0f}%</span>"
-                        f"<br><span style='color:#fcd34d'>🔶 Motor B (momentum): <b>{pick_v2}</b> · {conf_v2:.0f}%</span>"
-                        + (f"<br><span style='color:#64748b;font-size:0.75rem'>{razon_v2[:80]}</span>" if razon_v2 else "")
+                        f"<br><span style='color:#a5f3fc'>🔷 Calibrado (jerarquía+liga): <b>{pick}</b> · {conf:.0f}%</span>"
+                        f"<br><span style='color:#fcd34d'>🔶 Momentum (forma reciente): <b>{pick_v2}</b> · {conf_v2:.0f}%</span>"
+                        + (f"<br><span style='color:#64748b;font-size:0.75rem'>{razon_v2[:90]}</span>" if razon_v2 else "")
                         + "</div>", unsafe_allow_html=True)
 
             # ── Combinada de MAYOR PAGO (gana + Over) si el favorito es claro ──
