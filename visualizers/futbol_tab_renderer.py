@@ -33,6 +33,7 @@ def render_futbol_tab():
                                 p.get('away') or p.get('visitante', ''),
                                 es_torneo=p.get('es_torneo', False),
                                 fase=p.get('fase', ''),
+                                liga=liga,
                             )
                             st.session_state.analisis_futbol[key_h] = res_h
                             pick_auto = res_h.get('pick', '')

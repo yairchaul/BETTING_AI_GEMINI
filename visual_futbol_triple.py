@@ -240,8 +240,11 @@ class VisualFutbolTriple:
             # ── Debug: ¿Por qué se eligió este mercado? ─────────────────────
             debug_reglas = analisis_heuristico.get('debug_reglas', [])
             wc_nota_debug = analisis_heuristico.get('wc_nota', '')
-            if debug_reglas or wc_nota_debug:
+            liga_nota_debug = analisis_heuristico.get('liga_nota', '')
+            if debug_reglas or wc_nota_debug or liga_nota_debug:
                 with st.expander("🔍 ¿Por qué este pick? — Explicación de pesos", expanded=False):
+                    if liga_nota_debug:
+                        st.warning(f"📊 Calibración liga: {liga_nota_debug.split('| PICK CAMBIADO:')[0].strip()}")
                     if wc_nota_debug:
                         st.info(f"🌍 Calibración WC: {wc_nota_debug}")
                     if debug_reglas:

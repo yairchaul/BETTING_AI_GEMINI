@@ -271,6 +271,7 @@ def _recolectar_picks(dia_filtro=None):
                     p.get("home") or p.get("local", ""),
                     p.get("away") or p.get("visitante", ""),
                     es_torneo=p.get("es_torneo", False), fase=p.get("fase", ""),
+                    liga=liga,
                 )
                 pick = r.get("pick", "")
                 if not pick or "revisar" in pick.lower():

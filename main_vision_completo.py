@@ -1034,6 +1034,7 @@ def main():
                                     p.get('away') or p.get('visitante', ''),
                                     es_torneo=p.get('es_torneo', False),
                                     fase=p.get('fase', ''),
+                                    liga=liga,
                                 )
                                 st.session_state.analisis_futbol[key_fut] = res_fut
                                 pick_f = res_fut.get('pick', '')

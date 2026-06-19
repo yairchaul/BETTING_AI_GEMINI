@@ -168,6 +168,7 @@ def analizar_futbol_jerarquico(
     es_torneo: bool = False,
     fase: str = "",
     forzar_ranking: bool = False,
+    liga: str = "",
 ) -> dict:
     """
     Aplica reglas de descarte jerárquico para fútbol.
@@ -359,6 +360,24 @@ def analizar_futbol_jerarquico(
         except Exception:
             pass
 
+    # ── Calibración por liga/competición (degradar Over 3.5→1.5 en ligas ────
+    # ── defensivas, Over 2.5→1.5 en Copa Libertadores/Sudamericana, etc.) ───
+    liga_nota = ""
+    if liga:
+        try:
+            from motors.liga_calibrador import calibrar_pick as _cal_liga
+            conf_cal, liga_nota = _cal_liga(primary["pick"], primary["confianza"], liga)
+            if liga_nota:
+                if "PICK CAMBIADO:" in liga_nota:
+                    nuevo_pick = liga_nota.split("PICK CAMBIADO:")[-1].strip()
+                    primary = dict(primary)
+                    primary["pick"] = nuevo_pick
+                    primary["confianza"] = conf_cal
+                else:
+                    primary["confianza"] = conf_cal
+        except Exception:
+            pass
+
     # ── Motor V2 (rapido/momentum) en paralelo ───────────────────────────────
     motor_v2 = None
     try:
@@ -396,6 +415,7 @@ def analizar_futbol_jerarquico(
         "h2h_historico": h2h,
         "h2h_nota":     h2h_nota or (wc_nota if not h2h_nota else ""),
         "wc_nota":      wc_nota,
+        "liga_nota":    liga_nota,
         "motor_v2":     motor_v2,
         "debug_reglas": debug_reglas,
     }

@@ -139,7 +139,8 @@ def ejecutar_futbol_backtest_real(dias: int = 10, ligas=None, progreso_cb=None):
         try:
             res = analizar_futbol_jerarquico(local, visitante,
                                              es_torneo=p.get("es_torneo", False),
-                                             fase=p.get("fase", ""))
+                                             fase=p.get("fase", ""),
+                                             liga=p.get("liga", ""))
         except Exception as e:
             logger.debug(f"Motor fútbol falló {local} vs {visitante}: {e}")
             continue
