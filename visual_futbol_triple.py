@@ -369,7 +369,14 @@ class VisualFutbolTriple:
             pick_ia = analisis_ia.get('pick', '')
             conf_ia = analisis_ia.get('confianza', 0)
             razon_ia = analisis_ia.get('razon', '')
+            alerta_ia = analisis_ia.get('alerta', '')
             st.success(f"🤖 **IA:** {pick_ia} ({conf_ia}%)" + (f" — {razon_ia}" if razon_ia else ""))
+            if alerta_ia:
+                st.info(f"⚡ {alerta_ia}")
+        elif analisis_ia and analisis_ia.get('error'):
+            prov = analisis_ia.get('proveedor', '')
+            razon_err = analisis_ia.get('razon', analisis_ia.get('error', ''))
+            st.warning(f"⚠️ IA{' (' + prov + ')' if prov else ''}: {razon_err[:100]}")
 
         # ── ⚽ Goleadores probables (anota en el partido) ────────────────────
         try:

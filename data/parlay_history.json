@@ -25,5 +25,843 @@
    }
   ],
   "estado": "perdido"
+ },
+ {
+  "id": "par_20260619164657_7483",
+  "fecha": "2026-06-19",
+  "tipo": "🎯 PARLAY ÓPTIMO (3 legs)",
+  "firma": "⚽ FÚTBOL::OVER 1.5|🥊 UFC::NO llega a decisión (termina antes)|🥊 UFC::OVER 1.5 rounds",
+  "prob": 64.14,
+  "cuota": 4.39,
+  "ev_pct": 181.8,
+  "n_legs": 3,
+  "legs": [
+   {
+    "sport": "🥊 UFC",
+    "pick": "NO llega a decisión (termina antes)",
+    "mercado": "DISTANCIA",
+    "evento": "Leon Shahbazyan vs Levan Chokheli",
+    "prob": 92.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 1.5",
+    "mercado": "1X2/Goles",
+    "evento": "Ecuador vs Curaçao",
+    "prob": 84.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "OVER 1.5 rounds",
+    "mercado": "ROUNDS",
+    "evento": "Karol Rosa vs Luana Santos",
+    "prob": 83.0
+   }
+  ],
+  "estado": "pendiente"
+ },
+ {
+  "id": "par_20260619164657_9046",
+  "fecha": "2026-06-19",
+  "tipo": "🟢 PARLAY SEGURO",
+  "firma": "⚽ FÚTBOL::OVER 1.5|⚽ FÚTBOL::OVER 1.5|⚽ FÚTBOL::OVER 2.5|⚾ MLB::Gana Los Angeles Dodgers|⚾ MLB::Gana Pittsburgh Pirates|🥊 UFC::Gana Vinicius Oliveira|🥊 UFC::NO llega a decisión (termina antes)|🥊 UFC::NO llega a decisión (termina antes)|🥊 UFC::NO llega a decisión (termina antes)|🥊 UFC::NO llega a decisión (termina antes)|🥊 UFC::OVER 1.5 rounds|🥊 UFC::OVER 1.5 rounds|🥊 UFC::OVER 1.5 rounds|🥊 UFC::OVER 1.5 rounds|🥊 UFC::OVER 1.5 rounds",
+  "prob": 1.4,
+  "cuota": 3460.02,
+  "ev_pct": 4730.8,
+  "n_legs": 15,
+  "legs": [
+   {
+    "sport": "🥊 UFC",
+    "pick": "NO llega a decisión (termina antes)",
+    "mercado": "DISTANCIA",
+    "evento": "Leon Shahbazyan vs Levan Chokheli",
+    "prob": 92.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 1.5",
+    "mercado": "1X2/Goles",
+    "evento": "Ecuador vs Curaçao",
+    "prob": 84.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "OVER 1.5 rounds",
+    "mercado": "ROUNDS",
+    "evento": "Karol Rosa vs Luana Santos",
+    "prob": 83.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "NO llega a decisión (termina antes)",
+    "mercado": "DISTANCIA",
+    "evento": "Melissa Mullins vs Bia Mesquita",
+    "prob": 81.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "OVER 1.5 rounds",
+    "mercado": "ROUNDS",
+    "evento": "Kevin Borjas vs Andre Lima",
+    "prob": 79.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Gana Vinicius Oliveira",
+    "mercado": "GANADOR (Moneyline)",
+    "evento": "Andre Fili vs Vinicius Oliveira",
+    "prob": 79.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "NO llega a decisión (termina antes)",
+    "mercado": "DISTANCIA",
+    "evento": "Melsik Baghdasaryan vs Murtazali Magomedov",
+    "prob": 78.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "OVER 1.5 rounds",
+    "mercado": "ROUNDS",
+    "evento": "Kyoji Horiguchi vs Manel Kape",
+    "prob": 77.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana Los Angeles Dodgers",
+    "mercado": "MONEYLINE",
+    "evento": "Baltimore Orioles @ Los Angeles Dodgers",
+    "prob": 75.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "OVER 1.5 rounds",
+    "mercado": "ROUNDS",
+    "evento": "Allan Nascimento vs Mitch Raposo",
+    "prob": 75.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana Pittsburgh Pirates",
+    "mercado": "MONEYLINE",
+    "evento": "Pittsburgh Pirates @ Colorado Rockies",
+    "prob": 73.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 2.5",
+    "mercado": "1X2/Goles",
+    "evento": "Netherlands vs Sweden",
+    "prob": 72.1
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "NO llega a decisión (termina antes)",
+    "mercado": "DISTANCIA",
+    "evento": "Gaston Bolaños vs Michael Aswell",
+    "prob": 72.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "OVER 1.5 rounds",
+    "mercado": "ROUNDS",
+    "evento": "Ion Cutelaba vs Navajo Stirling",
+    "prob": 72.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 1.5",
+    "mercado": "1X2/Goles",
+    "evento": "Türkiye vs Paraguay",
+    "prob": 72.0
+   }
+  ],
+  "estado": "pendiente"
+ },
+ {
+  "id": "par_20260619164657_695",
+  "fecha": "2026-06-19",
+  "tipo": "🟡 PARLAY VALOR",
+  "firma": "⚽ FÚTBOL::OVER 1.5|⚾ MLB::Byron Buxton pega HR|🥊 UFC::NO llega a decisión (termina antes)|🥊 UFC::OVER 1.5 rounds",
+  "prob": 15.55,
+  "cuota": 15.38,
+  "ev_pct": 139.1,
+  "n_legs": 4,
+  "legs": [
+   {
+    "sport": "🥊 UFC",
+    "pick": "NO llega a decisión (termina antes)",
+    "mercado": "DISTANCIA",
+    "evento": "Leon Shahbazyan vs Levan Chokheli",
+    "prob": 92.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 1.5",
+    "mercado": "1X2/Goles",
+    "evento": "Ecuador vs Curaçao",
+    "prob": 84.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "OVER 1.5 rounds",
+    "mercado": "ROUNDS",
+    "evento": "Karol Rosa vs Luana Santos",
+    "prob": 83.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Byron Buxton pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Minnesota Twins @ Arizona Diamondbacks",
+    "prob": 27.3
+   }
+  ],
+  "estado": "perdido"
+ },
+ {
+  "id": "par_20260619164657_5408",
+  "fecha": "2026-06-19",
+  "tipo": "🔴 PARLAY BOMBA",
+  "firma": "⚾ MLB::Byron Buxton pega HR|⚾ MLB::Hunter Goodman pega HR|⚾ MLB::Yordan Alvarez pega HR",
+  "prob": 1.27,
+  "cuota": 42.88,
+  "ev_pct": -45.6,
+  "n_legs": 3,
+  "legs": [
+   {
+    "sport": "⚾ MLB",
+    "pick": "Byron Buxton pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Minnesota Twins @ Arizona Diamondbacks",
+    "prob": 27.3
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Yordan Alvarez pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Cleveland Guardians @ Houston Astros",
+    "prob": 25.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Hunter Goodman pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Pittsburgh Pirates @ Colorado Rockies",
+    "prob": 22.8
+   }
+  ],
+  "estado": "perdido"
+ },
+ {
+  "id": "par_20260619164657_1509",
+  "fecha": "2026-06-19",
+  "tipo": "🎯 PARLAY HR + FÚTBOL",
+  "firma": "⚽ FÚTBOL::OVER 1.5|⚽ FÚTBOL::OVER 1.5|⚽ FÚTBOL::OVER 2.5|⚾ MLB::Byron Buxton pega HR|⚾ MLB::Yordan Alvarez pega HR",
+  "prob": 2.46,
+  "cuota": 37.32,
+  "ev_pct": -8.0,
+  "n_legs": 5,
+  "legs": [
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 1.5",
+    "mercado": "1X2/Goles",
+    "evento": "Ecuador vs Curaçao",
+    "prob": 84.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 2.5",
+    "mercado": "1X2/Goles",
+    "evento": "Netherlands vs Sweden",
+    "prob": 72.1
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 1.5",
+    "mercado": "1X2/Goles",
+    "evento": "Türkiye vs Paraguay",
+    "prob": 72.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Byron Buxton pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Minnesota Twins @ Arizona Diamondbacks",
+    "prob": 27.3
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Yordan Alvarez pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Cleveland Guardians @ Houston Astros",
+    "prob": 25.0
+   }
+  ],
+  "estado": "perdido"
+ },
+ {
+  "id": "par_20260619164657_828",
+  "fecha": "2026-06-19",
+  "tipo": "⚡ PARLAY SLUGGER DEL DÍA",
+  "firma": "⚾ MLB::Colson Montgomery pega HR|⚾ MLB::Drake Baldwin pega HR|⚾ MLB::Paul Goldschmidt pega HR|⚾ MLB::Willy Adames pega HR|⚾ MLB::Zach Neto pega HR",
+  "prob": 0.06,
+  "cuota": 525.22,
+  "ev_pct": -69.8,
+  "n_legs": 5,
+  "legs": [
+   {
+    "sport": "⚾ MLB",
+    "pick": "Willy Adames pega HR",
+    "mercado": "HOME RUN",
+    "evento": "San Francisco Giants",
+    "prob": 20.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Drake Baldwin pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Atlanta Braves",
+    "prob": 25.9
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Colson Montgomery pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Chicago White Sox",
+    "prob": 24.5
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Zach Neto pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Los Angeles Angels",
+    "prob": 21.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Paul Goldschmidt pega HR",
+    "mercado": "HOME RUN",
+    "evento": "New York Yankees",
+    "prob": 22.1
+   }
+  ],
+  "estado": "perdido"
+ },
+ {
+  "id": "par_20260619164657_5171",
+  "fecha": "2026-06-19",
+  "tipo": "🟣 PARLAY GIGANTE (38 legs)",
+  "firma": "⚽ FÚTBOL::Gana Germany + OVER 2.5|⚽ FÚTBOL::LOCAL (Argentina)|⚽ FÚTBOL::LOCAL (Belgium)|⚽ FÚTBOL::LOCAL (Brazil)|⚽ FÚTBOL::OVER 1.5|⚽ FÚTBOL::OVER 1.5|⚽ FÚTBOL::OVER 1.5|⚽ FÚTBOL::OVER 1.5|⚽ FÚTBOL::OVER 1.5 goles|⚽ FÚTBOL::OVER 2.5|⚽ FÚTBOL::UNDER 2.5|⚽ FÚTBOL::UNDER 2.5|⚾ MLB::Boston Red Sox +1.5 +1.5|⚾ MLB::Cleveland Guardians +1.5 +1.5|⚾ MLB::Gana Detroit Tigers|⚾ MLB::Gana Los Angeles Dodgers|⚾ MLB::Gana New York Yankees|⚾ MLB::Gana Pittsburgh Pirates|⚾ MLB::Gana St. Louis Cardinals|⚾ MLB::Los Angeles Angels +1.5 +1.5|⚾ MLB::Milwaukee Brewers +1.5 +1.5|⚾ MLB::Minnesota Twins +1.5 +1.5|⚾ MLB::San Diego Padres +1.5 +1.5|⚾ MLB::San Francisco Giants +1.5 +1.5|⚾ MLB::Toronto Blue Jays +1.5 +1.5|⚾ MLB::Washington Nationals +1.5 +1.5|🥊 UFC::Christian Rodriguez por Decisión|🥊 UFC::Gana Vinicius Oliveira|🥊 UFC::NO llega a decisión (termina antes)|🥊 UFC::NO llega a decisión (termina antes)|🥊 UFC::NO llega a decisión (termina antes)|🥊 UFC::NO llega a decisión (termina antes)|🥊 UFC::NO llega a decisión (termina antes)|🥊 UFC::OVER 1.5 rounds|🥊 UFC::OVER 1.5 rounds|🥊 UFC::OVER 1.5 rounds|🥊 UFC::OVER 1.5 rounds|🥊 UFC::OVER 1.5 rounds",
+  "prob": 0.0,
+  "cuota": 275299865.06,
+  "ev_pct": 12669.6,
+  "n_legs": 38,
+  "legs": [
+   {
+    "sport": "🥊 UFC",
+    "pick": "NO llega a decisión (termina antes)",
+    "mercado": "DISTANCIA",
+    "evento": "Leon Shahbazyan vs Levan Chokheli",
+    "prob": 92.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 1.5",
+    "mercado": "1X2/Goles",
+    "evento": "Ecuador vs Curaçao",
+    "prob": 84.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "OVER 1.5 rounds",
+    "mercado": "ROUNDS",
+    "evento": "Karol Rosa vs Luana Santos",
+    "prob": 83.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "NO llega a decisión (termina antes)",
+    "mercado": "DISTANCIA",
+    "evento": "Melissa Mullins vs Bia Mesquita",
+    "prob": 81.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "OVER 1.5 rounds",
+    "mercado": "ROUNDS",
+    "evento": "Kevin Borjas vs Andre Lima",
+    "prob": 79.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Gana Vinicius Oliveira",
+    "mercado": "GANADOR (Moneyline)",
+    "evento": "Andre Fili vs Vinicius Oliveira",
+    "prob": 79.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "NO llega a decisión (termina antes)",
+    "mercado": "DISTANCIA",
+    "evento": "Melsik Baghdasaryan vs Murtazali Magomedov",
+    "prob": 78.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "OVER 1.5 rounds",
+    "mercado": "ROUNDS",
+    "evento": "Kyoji Horiguchi vs Manel Kape",
+    "prob": 77.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana Los Angeles Dodgers",
+    "mercado": "MONEYLINE",
+    "evento": "Baltimore Orioles @ Los Angeles Dodgers",
+    "prob": 75.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "OVER 1.5 rounds",
+    "mercado": "ROUNDS",
+    "evento": "Allan Nascimento vs Mitch Raposo",
+    "prob": 75.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana Pittsburgh Pirates",
+    "mercado": "MONEYLINE",
+    "evento": "Pittsburgh Pirates @ Colorado Rockies",
+    "prob": 73.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 2.5",
+    "mercado": "1X2/Goles",
+    "evento": "Netherlands vs Sweden",
+    "prob": 72.1
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "NO llega a decisión (termina antes)",
+    "mercado": "DISTANCIA",
+    "evento": "Gaston Bolaños vs Michael Aswell",
+    "prob": 72.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "OVER 1.5 rounds",
+    "mercado": "ROUNDS",
+    "evento": "Ion Cutelaba vs Navajo Stirling",
+    "prob": 72.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 1.5",
+    "mercado": "1X2/Goles",
+    "evento": "Türkiye vs Paraguay",
+    "prob": 72.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 1.5",
+    "mercado": "1X2/Goles",
+    "evento": "Spain vs Saudi Arabia",
+    "prob": 72.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 1.5",
+    "mercado": "1X2/Goles",
+    "evento": "New Zealand vs Egypt",
+    "prob": 72.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "NO llega a decisión (termina antes)",
+    "mercado": "DISTANCIA",
+    "evento": "Otari Tanzilovi vs Shane Collins",
+    "prob": 71.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana New York Yankees",
+    "mercado": "MONEYLINE",
+    "evento": "Cincinnati Reds @ New York Yankees",
+    "prob": 70.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "UNDER 2.5",
+    "mercado": "1X2/Goles",
+    "evento": "Uruguay vs Cape Verde",
+    "prob": 70.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "LOCAL (Argentina)",
+    "mercado": "1X2/Goles",
+    "evento": "Argentina vs Austria",
+    "prob": 69.7
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana Detroit Tigers",
+    "mercado": "MONEYLINE",
+    "evento": "Chicago White Sox @ Detroit Tigers",
+    "prob": 68.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Christian Rodriguez por Decisión",
+    "mercado": "MÉTODO",
+    "evento": "Christian Rodriguez vs Hyder Amil",
+    "prob": 66.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "LOCAL (Brazil)",
+    "mercado": "1X2/Goles",
+    "evento": "Brazil vs Haiti",
+    "prob": 64.8
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "LOCAL (Belgium)",
+    "mercado": "1X2/Goles",
+    "evento": "Belgium vs Iran",
+    "prob": 64.8
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "Gana Germany + OVER 2.5",
+    "mercado": "1X2/Goles",
+    "evento": "Germany vs Ivory Coast",
+    "prob": 63.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Toronto Blue Jays +1.5 +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Toronto Blue Jays @ Chicago Cubs",
+    "prob": 63.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "San Francisco Giants +1.5 +1.5",
+    "mercado": "RUNLINE",
+    "evento": "San Francisco Giants @ Miami Marlins",
+    "prob": 63.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Washington Nationals +1.5 +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Washington Nationals @ Tampa Bay Rays",
+    "prob": 63.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Milwaukee Brewers +1.5 +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Milwaukee Brewers @ Atlanta Braves",
+    "prob": 63.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "San Diego Padres +1.5 +1.5",
+    "mercado": "RUNLINE",
+    "evento": "San Diego Padres @ Texas Rangers",
+    "prob": 63.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Cleveland Guardians +1.5 +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Cleveland Guardians @ Houston Astros",
+    "prob": 63.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Los Angeles Angels +1.5 +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Los Angeles Angels @ Athletics",
+    "prob": 63.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Minnesota Twins +1.5 +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Minnesota Twins @ Arizona Diamondbacks",
+    "prob": 63.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Boston Red Sox +1.5 +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Boston Red Sox @ Seattle Mariners",
+    "prob": 63.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 1.5 goles",
+    "mercado": "1X2/Goles",
+    "evento": "France vs Iraq",
+    "prob": 62.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana St. Louis Cardinals",
+    "mercado": "MONEYLINE",
+    "evento": "St. Louis Cardinals @ Kansas City Royals",
+    "prob": 61.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "UNDER 2.5",
+    "mercado": "1X2/Goles",
+    "evento": "Tunisia vs Japan",
+    "prob": 60.0
+   }
+  ],
+  "estado": "perdido"
+ },
+ {
+  "id": "par_20260619164657_3090",
+  "fecha": "2026-06-19",
+  "tipo": "💎 PARLAY MÁXIMO PAGO",
+  "firma": "⚽ FÚTBOL::OVER 2.5|⚾ MLB::Gana St. Louis Cardinals|⚾ MLB::Toronto Blue Jays +1.5 +1.5|🥊 UFC::Allan Nascimento gana por Sumisión|🥊 UFC::Andre Lima gana por KO/TKO|🥊 UFC::Bia Mesquita gana por Sumisión|🥊 UFC::Christian Rodriguez por Decisión|🥊 UFC::Gaston Bolaños gana por KO/TKO|🥊 UFC::Ion Cutelaba gana por KO/TKO|🥊 UFC::LLEGA A DECISIÓN (3 rounds)|🥊 UFC::Leon Shahbazyan gana por Sumisión|🥊 UFC::Manel Kape gana por KO/TKO|🥊 UFC::Murtazali Magomedov gana por KO/TKO|🥊 UFC::Otari Tanzilovi gana por KO/TKO|🥊 UFC::Vinicius Oliveira gana por KO/TKO",
+  "prob": 0.09,
+  "cuota": 833715.16,
+  "ev_pct": 74947.3,
+  "n_legs": 15,
+  "legs": [
+   {
+    "sport": "🥊 UFC",
+    "pick": "Leon Shahbazyan gana por Sumisión",
+    "mercado": "GANA POR SUB",
+    "evento": "Leon Shahbazyan vs Levan Chokheli",
+    "prob": 56.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Bia Mesquita gana por Sumisión",
+    "mercado": "GANA POR SUB",
+    "evento": "Melissa Mullins vs Bia Mesquita",
+    "prob": 60.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Allan Nascimento gana por Sumisión",
+    "mercado": "GANA POR SUB",
+    "evento": "Allan Nascimento vs Mitch Raposo",
+    "prob": 68.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Andre Lima gana por KO/TKO",
+    "mercado": "GANA POR KO",
+    "evento": "Kevin Borjas vs Andre Lima",
+    "prob": 49.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Vinicius Oliveira gana por KO/TKO",
+    "mercado": "GANA POR KO",
+    "evento": "Andre Fili vs Vinicius Oliveira",
+    "prob": 64.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Murtazali Magomedov gana por KO/TKO",
+    "mercado": "GANA POR KO",
+    "evento": "Melsik Baghdasaryan vs Murtazali Magomedov",
+    "prob": 63.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Manel Kape gana por KO/TKO",
+    "mercado": "GANA POR KO",
+    "evento": "Kyoji Horiguchi vs Manel Kape",
+    "prob": 63.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Gaston Bolaños gana por KO/TKO",
+    "mercado": "GANA POR KO",
+    "evento": "Gaston Bolaños vs Michael Aswell",
+    "prob": 67.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Ion Cutelaba gana por KO/TKO",
+    "mercado": "GANA POR KO",
+    "evento": "Ion Cutelaba vs Navajo Stirling",
+    "prob": 60.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Otari Tanzilovi gana por KO/TKO",
+    "mercado": "GANA POR KO",
+    "evento": "Otari Tanzilovi vs Shane Collins",
+    "prob": 68.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Christian Rodriguez por Decisión",
+    "mercado": "MÉTODO",
+    "evento": "Christian Rodriguez vs Hyder Amil",
+    "prob": 66.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 2.5",
+    "mercado": "1X2/Goles",
+    "evento": "Netherlands vs Sweden",
+    "prob": 72.1
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "LLEGA A DECISIÓN (3 rounds)",
+    "mercado": "DISTANCIA",
+    "evento": "Karol Rosa vs Luana Santos",
+    "prob": 71.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana St. Louis Cardinals",
+    "mercado": "MONEYLINE",
+    "evento": "St. Louis Cardinals @ Kansas City Royals",
+    "prob": 61.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Toronto Blue Jays +1.5 +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Toronto Blue Jays @ Chicago Cubs",
+    "prob": 63.0
+   }
+  ],
+  "estado": "pendiente"
+ },
+ {
+  "id": "par_20260619164657_6839",
+  "fecha": "2026-06-19",
+  "tipo": "💎 PARLAY DE VALOR (+EV)",
+  "firma": "⚽ FÚTBOL::OVER 2.5|⚽ FÚTBOL::UNDER 2.5|⚾ MLB::Gana St. Louis Cardinals|🥊 UFC::Allan Nascimento gana por Sumisión|🥊 UFC::Bia Mesquita gana por Sumisión|🥊 UFC::Christian Rodriguez por Decisión|🥊 UFC::Gaston Bolaños gana por KO/TKO|🥊 UFC::Ion Cutelaba gana por KO/TKO|🥊 UFC::Leon Shahbazyan gana por Sumisión|🥊 UFC::Manel Kape gana por KO/TKO|🥊 UFC::Murtazali Magomedov gana por KO/TKO|🥊 UFC::OVER 1.5 rounds|🥊 UFC::OVER 1.5 rounds|🥊 UFC::Otari Tanzilovi gana por KO/TKO|🥊 UFC::Vinicius Oliveira gana por KO/TKO",
+  "prob": 0.19,
+  "cuota": 545519.93,
+  "ev_pct": 102733.9,
+  "n_legs": 15,
+  "legs": [
+   {
+    "sport": "🥊 UFC",
+    "pick": "Allan Nascimento gana por Sumisión",
+    "mercado": "GANA POR SUB",
+    "evento": "Allan Nascimento vs Mitch Raposo",
+    "prob": 68.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Bia Mesquita gana por Sumisión",
+    "mercado": "GANA POR SUB",
+    "evento": "Melissa Mullins vs Bia Mesquita",
+    "prob": 60.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Leon Shahbazyan gana por Sumisión",
+    "mercado": "GANA POR SUB",
+    "evento": "Leon Shahbazyan vs Levan Chokheli",
+    "prob": 56.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Otari Tanzilovi gana por KO/TKO",
+    "mercado": "GANA POR KO",
+    "evento": "Otari Tanzilovi vs Shane Collins",
+    "prob": 68.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Gaston Bolaños gana por KO/TKO",
+    "mercado": "GANA POR KO",
+    "evento": "Gaston Bolaños vs Michael Aswell",
+    "prob": 67.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Vinicius Oliveira gana por KO/TKO",
+    "mercado": "GANA POR KO",
+    "evento": "Andre Fili vs Vinicius Oliveira",
+    "prob": 64.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Christian Rodriguez por Decisión",
+    "mercado": "MÉTODO",
+    "evento": "Christian Rodriguez vs Hyder Amil",
+    "prob": 66.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Murtazali Magomedov gana por KO/TKO",
+    "mercado": "GANA POR KO",
+    "evento": "Melsik Baghdasaryan vs Murtazali Magomedov",
+    "prob": 63.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Manel Kape gana por KO/TKO",
+    "mercado": "GANA POR KO",
+    "evento": "Kyoji Horiguchi vs Manel Kape",
+    "prob": 63.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "Ion Cutelaba gana por KO/TKO",
+    "mercado": "GANA POR KO",
+    "evento": "Ion Cutelaba vs Navajo Stirling",
+    "prob": 60.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "OVER 1.5 rounds",
+    "mercado": "ROUNDS",
+    "evento": "Karol Rosa vs Luana Santos",
+    "prob": 83.0
+   },
+   {
+    "sport": "🥊 UFC",
+    "pick": "OVER 1.5 rounds",
+    "mercado": "ROUNDS",
+    "evento": "Kevin Borjas vs Andre Lima",
+    "prob": 79.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 2.5",
+    "mercado": "1X2/Goles",
+    "evento": "Netherlands vs Sweden",
+    "prob": 72.1
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "UNDER 2.5",
+    "mercado": "1X2/Goles",
+    "evento": "Uruguay vs Cape Verde",
+    "prob": 70.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana St. Louis Cardinals",
+    "mercado": "MONEYLINE",
+    "evento": "St. Louis Cardinals @ Kansas City Royals",
+    "prob": 61.0
+   }
+  ],
+  "estado": "pendiente"
  }
 ]

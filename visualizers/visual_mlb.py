@@ -150,7 +150,7 @@ class VisualMLB:
             mercado_r = analisis_mlb.get("mercado", "")
             err_r = analisis_mlb.get("error", "")
             if err_r and pick_r in (None, "", "N/A"):
-                pass  # error de IA sin pick válido → no mostrar nada
+                st.warning(f"⚠️ Motor: {err_r[:100]}")
             elif pick_r and pick_r != "N/A":
                 color = "#22c55e" if conf_r >= 65 else "#f59e0b" if conf_r >= 50 else "#ef4444"
                 label = f"{'📊 HEURÍSTICO' if not mercado_r else '🤖 IA'}"
@@ -321,15 +321,18 @@ class VisualMLB:
                         unsafe_allow_html=True)
 
         # ── Decisión de la IA (si se ejecutó) ────────────────────────────────
-        if analisis_mlb and analisis_mlb.get("pick_ia"):
+        _pick_ia = analisis_mlb.get("pick_ia") if analisis_mlb else None
+        if analisis_mlb and _pick_ia and _pick_ia != "N/A":
             st.markdown(
                 f"<div style='background:#1e1b4b;border-left:4px solid #818cf8;border-radius:8px;padding:10px;margin:8px 0'>"
                 f"<span style='color:#a5b4fc;font-size:0.75rem'>🤖 IA</span> "
-                f"<b style='color:#fff'>{analisis_mlb['pick_ia']}</b> "
+                f"<b style='color:#fff'>{_pick_ia}</b> "
                 f"<span style='color:#818cf8'>({analisis_mlb.get('confianza_ia', 0)}%"
                 f"{' · ' + analisis_mlb.get('mercado_ia', '') if analisis_mlb.get('mercado_ia') else ''})</span>"
                 f"{'<div style=color:#94a3b8;font-size:0.78rem;margin-top:4px>' + analisis_mlb.get('razon_ia', '') + '</div>' if analisis_mlb.get('razon_ia') else ''}"
                 f"</div>", unsafe_allow_html=True)
+        elif analisis_mlb and analisis_mlb.get("ia_error"):
+            st.warning(f"⚠️ IA: {analisis_mlb['ia_error'][:100]}")
 
         # ── Botones de análisis (AL FINAL, debajo de todos los datos) ────────
         st.markdown("")

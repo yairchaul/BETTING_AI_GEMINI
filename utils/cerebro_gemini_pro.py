@@ -13,12 +13,14 @@ logger = logging.getLogger(__name__)
 class CerebroGeminiPro:
     # Modelos que funcionan actualmente (Junio 2026)
     MODELOS_VALIDOS = [
-        "gemini-1.5-pro",
-        "gemini-1.5-flash",
-        "gemini-pro"
+        "gemini-2.5-flash",
+        "gemini-2.0-flash",
+        "gemini-2.5-pro",
+        "gemini-3.5-flash",
+        "gemini-2.0-flash-lite",
     ]
-    
-    def __init__(self, api_key, model_name="gemini-1.5-pro"):
+
+    def __init__(self, api_key, model_name="gemini-2.5-flash"):
         self.api_key = api_key
         self.model_name = model_name if model_name in self.MODELOS_VALIDOS else "gemini-1.5-pro"
         self.api_url = f"https://generativelanguage.googleapis.com/v1/models/{self.model_name}:generateContent?key={self.api_key}"
@@ -87,7 +89,7 @@ class CerebroGeminiPro:
                 }],
                 "generationConfig": {
                     "temperature": 0.2,
-                    "maxOutputTokens": 1024
+                    "maxOutputTokens": 2048
                 }
             }
             

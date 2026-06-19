@@ -564,9 +564,18 @@ def main():
         st.session_state.tracker.render_sidebar_tracker()
         st.markdown("---")
         with st.expander("🔧 Estado de IA", expanded=False):
-            st.success("✅ Gemini conectado" if st.session_state.gemini else "❌ Gemini no disponible")
-            st.success("✅ Groq conectado" if st.session_state.groq else "⚠️ Groq no disponible")
-            st.success("✅ Claude conectado" if st.session_state.claude else "⚠️ Claude no disponible")
+            _gem_ok = bool(st.session_state.get("gemini") and getattr(st.session_state.gemini, "client", None))
+            _grq_ok = bool(st.session_state.get("groq") and getattr(st.session_state.groq, "client", None))
+            _cld_ok = bool(st.session_state.get("claude") and getattr(st.session_state.claude, "client", None))
+            st.success("✅ Gemini conectado (gemini-2.5-flash)" if _gem_ok else "❌ Gemini no disponible")
+            if _grq_ok:
+                st.success("✅ Groq conectado")
+            else:
+                st.warning("⚠️ Groq no disponible — actualiza GROQ_API_KEY")
+            if _cld_ok:
+                st.success("✅ Claude conectado")
+            else:
+                st.info("ℹ️ Claude no configurado (ANTHROPIC_API_KEY)")
 
         # Selector de motor de análisis (Heurístico + IAs conectadas)
         opciones_ia = ["Heurístico"]
@@ -995,9 +1004,20 @@ def main():
                                 groq_client=st.session_state.groq,
                                 selected_model=st.session_state.selected_ia_model
                             )
-                            resultado_final = analista.analizar_ufc(partido_visual, resultado_heuristico)
+                            resultado_ia_ufc = analista.analizar_ufc(partido_visual, resultado_heuristico)
+                            # FUSIONAR: conservar campos heurísticos + agregar decisión IA
+                            resultado_final = dict(resultado_heuristico)
+                            _ia_pick_ufc = resultado_ia_ufc.get('pick', '')
+                            if _ia_pick_ufc and _ia_pick_ufc != 'N/A':
+                                resultado_final['pick_ia'] = _ia_pick_ufc
+                                resultado_final['confianza_ia'] = resultado_ia_ufc.get('confianza', 0)
+                                resultado_final['razon_ia'] = resultado_ia_ufc.get('razon', '')
+                                resultado_final['mercado_ia'] = resultado_ia_ufc.get('mercado', '')
+                                resultado_final['alerta_ia'] = resultado_ia_ufc.get('alerta', '')
+                            elif resultado_ia_ufc.get('error'):
+                                resultado_final['ia_error'] = resultado_ia_ufc.get('error', 'Error de IA')
                             st.session_state.analisis_ufc[fight_key] = resultado_final
-                            db.guardar_backtesting("UFC", f"{p1_nombre} vs {p2_nombre}", resultado_final.get('pick', ''))
+                            db.guardar_backtesting("UFC", f"{p1_nombre} vs {p2_nombre}", _ia_pick_ufc or resultado_heuristico.get('ganador', ''))
                         else:
                             st.session_state.analisis_ufc[fight_key] = resultado_heuristico
                             db.guardar_backtesting("UFC", f"{p1_nombre} vs {p2_nombre}", resultado_heuristico.get('ganador', ''))
@@ -1145,11 +1165,14 @@ def main():
                             # FUSIONAR: conservar HR/K/O-U del motor + agregar la decisión IA
                             resultado_final = dict(resultado_heuristico)
                             resultado_final['ia'] = resultado_ia
-                            if resultado_ia.get('pick'):
-                                resultado_final['pick_ia'] = resultado_ia.get('pick')
+                            _ia_pick_mlb = resultado_ia.get('pick', '')
+                            if _ia_pick_mlb and _ia_pick_mlb != 'N/A':
+                                resultado_final['pick_ia'] = _ia_pick_mlb
                                 resultado_final['confianza_ia'] = resultado_ia.get('confianza', 0)
                                 resultado_final['razon_ia'] = resultado_ia.get('razon', '')
                                 resultado_final['mercado_ia'] = resultado_ia.get('mercado', '')
+                            elif resultado_ia.get('error'):
+                                resultado_final['ia_error'] = resultado_ia.get('error', 'Error de IA')
                             st.session_state.analisis_mlb[game_key] = resultado_final
                             db.guardar_backtesting("MLB", f"{p['local']} vs {p['visitante']}", resultado_ia.get('pick', resultado_heuristico.get('pick', '')))
                         else:

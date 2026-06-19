@@ -288,17 +288,23 @@ class VisualUFCMejoradoV2:
             
             with col_a3:
                 st.markdown("<h4 style='color: #FFD700;'>🤖 GEMINI IA</h4>", unsafe_allow_html=True)
-                _gem_ganador = (analisis_ufc or {}).get('ganador', '')
-                if analisis_ufc and not analisis_ufc.get('error') and _gem_ganador and _gem_ganador != 'N/A':
-                    metodo = analisis_ufc.get('metodo', '')
-                    confianza_ia = analisis_ufc.get('confianza', 0)
+                _ia_pick_ufc = (analisis_ufc or {}).get('pick_ia', '')
+                _ia_error_ufc = (analisis_ufc or {}).get('ia_error', '')
+                if analisis_ufc and _ia_pick_ufc and _ia_pick_ufc != 'N/A':
+                    confianza_ia = (analisis_ufc or {}).get('confianza_ia', 0)
+                    razon_ia = (analisis_ufc or {}).get('razon_ia', '')
+                    alerta_ia = (analisis_ufc or {}).get('alerta_ia', '')
+                    mercado_ia = (analisis_ufc or {}).get('mercado_ia', '')
                     st.markdown(f"""
                     <div style="background-color: #2A2A2A; padding: 10px; border-radius: 5px;">
-                        <p style='color: #2196F3; font-weight: bold;'>Ganador: {_gem_ganador}</p>
-                        <p style='color: #4CAF50;'>Confianza IA: {confianza_ia}%</p>
-                        <p style='color: #888; font-size: 12px;'>{metodo[:80]}</p>
+                        <p style='color: #2196F3; font-weight: bold;'>🎯 {_ia_pick_ufc}</p>
+                        <p style='color: #4CAF50;'>Confianza: {confianza_ia}%{(' · ' + mercado_ia) if mercado_ia else ''}</p>
+                        <p style='color: #aaa; font-size: 11px;'>{razon_ia[:120]}</p>
+                        {('<p style="color:#f59e0b;font-size:11px;">⚡ ' + alerta_ia[:80] + '</p>') if alerta_ia else ''}
                     </div>
                     """, unsafe_allow_html=True)
+                elif _ia_error_ufc:
+                    st.markdown(f"<p style='color:#f59e0b;font-size:12px;'>⚠️ {_ia_error_ufc[:100]}</p>", unsafe_allow_html=True)
                 else:
                     st.markdown("<p style='color: #888;'>Pulsa 'Actualizar análisis' para obtener análisis IA</p>", unsafe_allow_html=True)
             
