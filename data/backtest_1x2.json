@@ -1,0 +1,275 @@
+{
+  "timestamp": "2026-06-19T12:56:30.882682",
+  "partidos": 25,
+  "acierto_1x2": 56.0,
+  "acierto_doble_oportunidad": 96.0,
+  "por_resultado_real": {
+    "LOCAL": {
+      "total": 12,
+      "aciertos": 11,
+      "precision": 91.7
+    },
+    "EMPATE": {
+      "total": 10,
+      "aciertos": 0,
+      "precision": 0.0
+    },
+    "VISITANTE": {
+      "total": 3,
+      "aciertos": 3,
+      "precision": 100.0
+    }
+  },
+  "detalle": [
+    {
+      "partido": "Czechia 1-1 South Africa",
+      "real": "EMPATE",
+      "pred": "LOCAL",
+      "prob": 45.7,
+      "do": "1X (local o empate)",
+      "do_prob": 77.4,
+      "ok_1x2": false,
+      "ok_do": true
+    },
+    {
+      "partido": "Switzerland 4-1 Bosnia-Herzegovina",
+      "real": "LOCAL",
+      "pred": "LOCAL",
+      "prob": 58.1,
+      "do": "1X (local o empate)",
+      "do_prob": 85.7,
+      "ok_1x2": true,
+      "ok_do": true
+    },
+    {
+      "partido": "Canada 6-0 Qatar",
+      "real": "LOCAL",
+      "pred": "LOCAL",
+      "prob": 74.8,
+      "do": "1X (local o empate)",
+      "do_prob": 94.8,
+      "ok_1x2": true,
+      "ok_do": true
+    },
+    {
+      "partido": "Mexico 1-0 South Korea",
+      "real": "LOCAL",
+      "pred": "LOCAL",
+      "prob": 47.9,
+      "do": "1X (local o empate)",
+      "do_prob": 79.8,
+      "ok_1x2": true,
+      "ok_do": true
+    },
+    {
+      "partido": "Austria 3-1 Jordan",
+      "real": "LOCAL",
+      "pred": "LOCAL",
+      "prob": 70.2,
+      "do": "1X (local o empate)",
+      "do_prob": 89.9,
+      "ok_1x2": true,
+      "ok_do": true
+    },
+    {
+      "partido": "Portugal 1-1 Congo DR",
+      "real": "EMPATE",
+      "pred": "LOCAL",
+      "prob": 38.1,
+      "do": "1X (local o empate)",
+      "do_prob": 76.2,
+      "ok_1x2": false,
+      "ok_do": true
+    },
+    {
+      "partido": "England 4-2 Croatia",
+      "real": "LOCAL",
+      "pred": "LOCAL",
+      "prob": 58.0,
+      "do": "1X (local o empate)",
+      "do_prob": 83.1,
+      "ok_1x2": true,
+      "ok_do": true
+    },
+    {
+      "partido": "Ghana 1-0 Panama",
+      "real": "LOCAL",
+      "pred": "VISITANTE",
+      "prob": 40.9,
+      "do": "12 (no empate)",
+      "do_prob": 72.4,
+      "ok_1x2": false,
+      "ok_do": true
+    },
+    {
+      "partido": "Uzbekistan 1-3 Colombia",
+      "real": "VISITANTE",
+      "pred": "VISITANTE",
+      "prob": 45.0,
+      "do": "X2 (empate o visita)",
+      "do_prob": 73.9,
+      "ok_1x2": true,
+      "ok_do": true
+    },
+    {
+      "partido": "France 3-1 Senegal",
+      "real": "LOCAL",
+      "pred": "LOCAL",
+      "prob": 49.4,
+      "do": "1X (local o empate)",
+      "do_prob": 76.1,
+      "ok_1x2": true,
+      "ok_do": true
+    },
+    {
+      "partido": "Iraq 1-4 Norway",
+      "real": "VISITANTE",
+      "pred": "VISITANTE",
+      "prob": 47.3,
+      "do": "X2 (empate o visita)",
+      "do_prob": 77.3,
+      "ok_1x2": true,
+      "ok_do": true
+    },
+    {
+      "partido": "Argentina 3-0 Algeria",
+      "real": "LOCAL",
+      "pred": "LOCAL",
+      "prob": 49.3,
+      "do": "1X (local o empate)",
+      "do_prob": 76.8,
+      "ok_1x2": true,
+      "ok_do": true
+    },
+    {
+      "partido": "Spain 0-0 Cape Verde",
+      "real": "EMPATE",
+      "pred": "LOCAL",
+      "prob": 45.1,
+      "do": "1X (local o empate)",
+      "do_prob": 78.3,
+      "ok_1x2": false,
+      "ok_do": true
+    },
+    {
+      "partido": "Belgium 1-1 Egypt",
+      "real": "EMPATE",
+      "pred": "LOCAL",
+      "prob": 51.2,
+      "do": "1X (local o empate)",
+      "do_prob": 79.4,
+      "ok_1x2": false,
+      "ok_do": true
+    },
+    {
+      "partido": "Saudi Arabia 1-1 Uruguay",
+      "real": "EMPATE",
+      "pred": "LOCAL",
+      "prob": 47.4,
+      "do": "1X (local o empate)",
+      "do_prob": 80.8,
+      "ok_1x2": false,
+      "ok_do": true
+    },
+    {
+      "partido": "Iran 2-2 New Zealand",
+      "real": "EMPATE",
+      "pred": "LOCAL",
+      "prob": 60.2,
+      "do": "1X (local o empate)",
+      "do_prob": 84.9,
+      "ok_1x2": false,
+      "ok_do": true
+    },
+    {
+      "partido": "Australia 2-0 Türkiye",
+      "real": "LOCAL",
+      "pred": "LOCAL",
+      "prob": 38.0,
+      "do": "1X (local o empate)",
+      "do_prob": 71.7,
+      "ok_1x2": true,
+      "ok_do": true
+    },
+    {
+      "partido": "Germany 7-1 Curaçao",
+      "real": "LOCAL",
+      "pred": "LOCAL",
+      "prob": 79.3,
+      "do": "1X (local o empate)",
+      "do_prob": 92.4,
+      "ok_1x2": true,
+      "ok_do": true
+    },
+    {
+      "partido": "Netherlands 2-2 Japan",
+      "real": "EMPATE",
+      "pred": "VISITANTE",
+      "prob": 42.3,
+      "do": "X2 (empate o visita)",
+      "do_prob": 75.7,
+      "ok_1x2": false,
+      "ok_do": true
+    },
+    {
+      "partido": "Ivory Coast 1-0 Ecuador",
+      "real": "LOCAL",
+      "pred": "LOCAL",
+      "prob": 43.5,
+      "do": "1X (local o empate)",
+      "do_prob": 75.1,
+      "ok_1x2": true,
+      "ok_do": true
+    },
+    {
+      "partido": "Sweden 5-1 Tunisia",
+      "real": "LOCAL",
+      "pred": "LOCAL",
+      "prob": 67.6,
+      "do": "1X (local o empate)",
+      "do_prob": 87.8,
+      "ok_1x2": true,
+      "ok_do": true
+    },
+    {
+      "partido": "Qatar 1-1 Switzerland",
+      "real": "EMPATE",
+      "pred": "VISITANTE",
+      "prob": 64.3,
+      "do": "X2 (empate o visita)",
+      "do_prob": 89.4,
+      "ok_1x2": false,
+      "ok_do": true
+    },
+    {
+      "partido": "Brazil 1-1 Morocco",
+      "real": "EMPATE",
+      "pred": "VISITANTE",
+      "prob": 40.9,
+      "do": "12 (no empate)",
+      "do_prob": 73.1,
+      "ok_1x2": false,
+      "ok_do": false
+    },
+    {
+      "partido": "Haiti 0-1 Scotland",
+      "real": "VISITANTE",
+      "pred": "VISITANTE",
+      "prob": 42.3,
+      "do": "X2 (empate o visita)",
+      "do_prob": 75.7,
+      "ok_1x2": true,
+      "ok_do": true
+    },
+    {
+      "partido": "Canada 1-1 Bosnia-Herzegovina",
+      "real": "EMPATE",
+      "pred": "LOCAL",
+      "prob": 63.1,
+      "do": "1X (local o empate)",
+      "do_prob": 89.6,
+      "ok_1x2": false,
+      "ok_do": true
+    }
+  ]
+}

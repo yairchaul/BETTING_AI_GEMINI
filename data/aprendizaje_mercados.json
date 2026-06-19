@@ -1,0 +1,82 @@
+{
+  "actualizado": "2026-06-19T12:59:53.211648",
+  "global": {
+    "total": 158,
+    "aciertos": 62,
+    "win_rate": 39.2,
+    "roi": -11.4
+  },
+  "por_mercado": {
+    "MLB · MONEYLINE": {
+      "win_rate": 50.0,
+      "roi": -5.0,
+      "total": 14,
+      "factor": 1.0
+    },
+    "MLB · TOTAL": {
+      "win_rate": 41.2,
+      "roi": -21.8,
+      "total": 17,
+      "factor": 0.91
+    },
+    "MLB · PONCHES (K)": {
+      "win_rate": 85.7,
+      "roi": 58.6,
+      "total": 28,
+      "factor": 1.36
+    },
+    "MLB · TOTAL BASES": {
+      "win_rate": 21.2,
+      "roi": -58.6,
+      "total": 33,
+      "factor": 0.71
+    },
+    "MLB · HOME RUN": {
+      "win_rate": 22.2,
+      "roi": -22.2,
+      "total": 63,
+      "factor": 0.72
+    }
+  },
+  "por_tipo_parlay": {
+    "💎 PARLAY DE VALOR (+EV)": {
+      "total": 1,
+      "ganados": 0,
+      "cuota_sum": 0.0,
+      "win_rate": 0.0,
+      "roi": -100.0
+    }
+  },
+  "ranking_mercados": [
+    {
+      "mercado": "MLB · PONCHES (K)",
+      "win_rate": 85.7,
+      "roi": 58.6,
+      "n": 28
+    },
+    {
+      "mercado": "MLB · MONEYLINE",
+      "win_rate": 50.0,
+      "roi": -5.0,
+      "n": 14
+    },
+    {
+      "mercado": "MLB · TOTAL",
+      "win_rate": 41.2,
+      "roi": -21.8,
+      "n": 17
+    },
+    {
+      "mercado": "MLB · HOME RUN",
+      "win_rate": 22.2,
+      "roi": -22.2,
+      "n": 63
+    },
+    {
+      "mercado": "MLB · TOTAL BASES",
+      "win_rate": 21.2,
+      "roi": -58.6,
+      "n": 33
+    }
+  ]
+}

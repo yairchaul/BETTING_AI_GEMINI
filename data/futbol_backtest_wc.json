@@ -1,0 +1,258 @@
+{
+  "timestamp": "2026-06-19T14:21:48.024138",
+  "fuente": "Mundial 2026 (marcador real, forzar_ranking=True)",
+  "partidos": 25,
+  "evaluados": 25,
+  "no_evaluables": 0,
+  "precision_global": 80.0,
+  "mercados": {
+    "moneyline": {
+      "aciertos": 0,
+      "total": 0,
+      "precision": 0.0
+    },
+    "over_under": {
+      "aciertos": 19,
+      "total": 23,
+      "precision": 82.6
+    },
+    "btts": {
+      "aciertos": 1,
+      "total": 2,
+      "precision": 50.0
+    },
+    "combo": {
+      "aciertos": 0,
+      "total": 0,
+      "precision": 0.0
+    }
+  },
+  "detalle": [
+    {
+      "fecha": "2026-06-18",
+      "partido": "Czechia 1-1 South Africa",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 83.2,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-18",
+      "partido": "Switzerland 4-1 Bosnia-Herzegovina",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 88,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-18",
+      "partido": "Canada 6-0 Qatar",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 87.3,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-19",
+      "partido": "Mexico 1-0 South Korea",
+      "pick": "AMBOS ANOTAN (BTTS)",
+      "regla": 3,
+      "mercado": "btts",
+      "confianza": 39.2,
+      "acierto": false
+    },
+    {
+      "fecha": "2026-06-17",
+      "partido": "Austria 3-1 Jordan",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 88,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-17",
+      "partido": "Portugal 1-1 Congo DR",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 88,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-17",
+      "partido": "England 4-2 Croatia",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 75.0,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-17",
+      "partido": "Ghana 1-0 Panama",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 75.0,
+      "acierto": false
+    },
+    {
+      "fecha": "2026-06-18",
+      "partido": "Uzbekistan 1-3 Colombia",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 88,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-16",
+      "partido": "France 3-1 Senegal",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 83.2,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-16",
+      "partido": "Iraq 1-4 Norway",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 75.0,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-17",
+      "partido": "Argentina 3-0 Algeria",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 88,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-15",
+      "partido": "Spain 0-0 Cape Verde",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 88,
+      "acierto": false
+    },
+    {
+      "fecha": "2026-06-15",
+      "partido": "Belgium 1-1 Egypt",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 87.3,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-15",
+      "partido": "Saudi Arabia 1-1 Uruguay",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 88,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-16",
+      "partido": "Iran 2-2 New Zealand",
+      "pick": "AMBOS ANOTAN (BTTS)",
+      "regla": 3,
+      "mercado": "btts",
+      "confianza": 39.2,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-14",
+      "partido": "Australia 2-0 Türkiye",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 88,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-14",
+      "partido": "Germany 7-1 Curaçao",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 88,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-14",
+      "partido": "Netherlands 2-2 Japan",
+      "pick": "Netherlands OVER 0.5 goles (anota)",
+      "regla": 1,
+      "mercado": "over_under",
+      "confianza": 73,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-14",
+      "partido": "Ivory Coast 1-0 Ecuador",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 88,
+      "acierto": false
+    },
+    {
+      "fecha": "2026-06-15",
+      "partido": "Sweden 5-1 Tunisia",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 84.6,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-13",
+      "partido": "Qatar 1-1 Switzerland",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 88,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-13",
+      "partido": "Brazil 1-1 Morocco",
+      "pick": "Brazil OVER 0.5 goles (anota)",
+      "regla": 1,
+      "mercado": "over_under",
+      "confianza": 73,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-14",
+      "partido": "Haiti 0-1 Scotland",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 75.0,
+      "acierto": false
+    },
+    {
+      "fecha": "2026-06-12",
+      "partido": "Canada 1-1 Bosnia-Herzegovina",
+      "pick": "OVER 1.5 goles",
+      "regla": 2,
+      "mercado": "over_under",
+      "confianza": 87.3,
+      "acierto": true
+    }
+  ],
+  "detalle_no_evaluables": []
+}

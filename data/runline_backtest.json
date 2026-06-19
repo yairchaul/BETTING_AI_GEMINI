@@ -1,0 +1,932 @@
+{
+  "timestamp": "2026-06-19T12:49:49.418241",
+  "dias": 20,
+  "juegos": 259,
+  "mercados": {
+    "favorito_ML": {
+      "n": 259,
+      "hit": 144,
+      "win_rate": 55.6
+    },
+    "favorito_-1.5": {
+      "n": 259,
+      "hit": 108,
+      "win_rate": 41.7
+    },
+    "perdedor_ML(upset)": {
+      "n": 259,
+      "hit": 115,
+      "win_rate": 44.4
+    },
+    "perdedor_+1.5": {
+      "n": 259,
+      "hit": 151,
+      "win_rate": 58.3
+    },
+    "local_-1.5": {
+      "n": 259,
+      "hit": 96,
+      "win_rate": 37.1
+    },
+    "visitante_+1.5": {
+      "n": 259,
+      "hit": 163,
+      "win_rate": 62.9
+    }
+  },
+  "por_gap": {
+    "gap 8-14%": {
+      "fav_ml": {
+        "n": 88,
+        "hit": 50,
+        "win_rate": 56.8
+      },
+      "fav_15": {
+        "n": 88,
+        "hit": 38,
+        "win_rate": 43.2
+      },
+      "dog_15": {
+        "n": 88,
+        "hit": 50,
+        "win_rate": 56.8
+      }
+    },
+    "gap <8%": {
+      "fav_ml": {
+        "n": 127,
+        "hit": 69,
+        "win_rate": 54.3
+      },
+      "fav_15": {
+        "n": 127,
+        "hit": 52,
+        "win_rate": 40.9
+      },
+      "dog_15": {
+        "n": 127,
+        "hit": 75,
+        "win_rate": 59.1
+      }
+    },
+    "gap 15%+": {
+      "fav_ml": {
+        "n": 44,
+        "hit": 25,
+        "win_rate": 56.8
+      },
+      "fav_15": {
+        "n": 44,
+        "hit": 18,
+        "win_rate": 40.9
+      },
+      "dog_15": {
+        "n": 44,
+        "hit": 26,
+        "win_rate": 59.1
+      }
+    }
+  },
+  "detalle": [
+    {
+      "fecha": "2026-06-07",
+      "juego": "Boston Red Sox @ New York Yankees",
+      "marcador": "1-6",
+      "margen_fav": 5,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Baltimore Orioles @ Toronto Blue Jays",
+      "marcador": "4-6",
+      "margen_fav": 2,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Seattle Mariners @ Detroit Tigers",
+      "marcador": "4-5",
+      "margen_fav": -1,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Tampa Bay Rays @ Miami Marlins",
+      "marcador": "1-4",
+      "margen_fav": -3,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Athletics @ Houston Astros",
+      "marcador": "5-0",
+      "margen_fav": -5,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Kansas City Royals @ Minnesota Twins",
+      "marcador": "6-5",
+      "margen_fav": -1,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Cincinnati Reds @ St. Louis Cardinals",
+      "marcador": "3-5",
+      "margen_fav": 2,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Cleveland Guardians @ Texas Rangers",
+      "marcador": "0-10",
+      "margen_fav": -10,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Milwaukee Brewers @ Colorado Rockies",
+      "marcador": "12-4",
+      "margen_fav": 8,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Washington Nationals @ Arizona Diamondbacks",
+      "marcador": "1-5",
+      "margen_fav": 4,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "Los Angeles Angels @ Los Angeles Dodgers",
+      "marcador": "13-5",
+      "margen_fav": -8,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "New York Mets @ San Diego Padres",
+      "marcador": "7-3",
+      "margen_fav": -4,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-07",
+      "juego": "San Francisco Giants @ Chicago Cubs",
+      "marcador": "2-1",
+      "margen_fav": -1,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Seattle Mariners @ Detroit Tigers",
+      "marcador": "4-0",
+      "margen_fav": 4,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Kansas City Royals @ Minnesota Twins",
+      "marcador": "3-2",
+      "margen_fav": -1,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Cincinnati Reds @ St. Louis Cardinals",
+      "marcador": "5-6",
+      "margen_fav": 1,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "San Francisco Giants @ Chicago Cubs",
+      "marcador": "2-3",
+      "margen_fav": 1,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Baltimore Orioles @ Toronto Blue Jays",
+      "marcador": "4-6",
+      "margen_fav": 2,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Chicago White Sox @ Philadelphia Phillies",
+      "marcador": "6-3",
+      "margen_fav": -3,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Washington Nationals @ Arizona Diamondbacks",
+      "marcador": "6-1",
+      "margen_fav": -5,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Athletics @ Houston Astros",
+      "marcador": "2-13",
+      "margen_fav": 11,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Pittsburgh Pirates @ Atlanta Braves",
+      "marcador": "3-6",
+      "margen_fav": 3,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Tampa Bay Rays @ Miami Marlins",
+      "marcador": "3-4",
+      "margen_fav": -1,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Cleveland Guardians @ Texas Rangers",
+      "marcador": "6-0",
+      "margen_fav": 6,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Milwaukee Brewers @ Colorado Rockies",
+      "marcador": "7-1",
+      "margen_fav": 6,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "Los Angeles Angels @ Los Angeles Dodgers",
+      "marcador": "2-9",
+      "margen_fav": 7,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-06",
+      "juego": "New York Mets @ San Diego Padres",
+      "marcador": "2-3",
+      "margen_fav": 1,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "San Francisco Giants @ Chicago Cubs",
+      "marcador": "18-3",
+      "margen_fav": -15,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "Seattle Mariners @ Detroit Tigers",
+      "marcador": "3-7",
+      "margen_fav": -4,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "Chicago White Sox @ Philadelphia Phillies",
+      "marcador": "6-8",
+      "margen_fav": 2,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "Boston Red Sox @ New York Yankees",
+      "marcador": "5-3",
+      "margen_fav": -2,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "Baltimore Orioles @ Toronto Blue Jays",
+      "marcador": "13-3",
+      "margen_fav": -10,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "Tampa Bay Rays @ Miami Marlins",
+      "marcador": "6-0",
+      "margen_fav": 6,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "Pittsburgh Pirates @ Atlanta Braves",
+      "marcador": "3-6",
+      "margen_fav": 3,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "Athletics @ Houston Astros",
+      "marcador": "1-5",
+      "margen_fav": 4,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "Cincinnati Reds @ St. Louis Cardinals",
+      "marcador": "3-10",
+      "margen_fav": 7,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "Cleveland Guardians @ Texas Rangers",
+      "marcador": "2-3",
+      "margen_fav": -1,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "Kansas City Royals @ Minnesota Twins",
+      "marcador": "3-5",
+      "margen_fav": 2,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "Milwaukee Brewers @ Colorado Rockies",
+      "marcador": "9-7",
+      "margen_fav": 2,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "Washington Nationals @ Arizona Diamondbacks",
+      "marcador": "14-1",
+      "margen_fav": -13,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "New York Mets @ San Diego Padres",
+      "marcador": "5-0",
+      "margen_fav": -5,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-05",
+      "juego": "Los Angeles Angels @ Los Angeles Dodgers",
+      "marcador": "0-1",
+      "margen_fav": 1,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-04",
+      "juego": "San Diego Padres @ Philadelphia Phillies",
+      "marcador": "4-6",
+      "margen_fav": 2,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-04",
+      "juego": "Baltimore Orioles @ Boston Red Sox",
+      "marcador": "8-2",
+      "margen_fav": 6,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-04",
+      "juego": "Cleveland Guardians @ New York Yankees",
+      "marcador": "1-2",
+      "margen_fav": 1,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-04",
+      "juego": "San Francisco Giants @ Milwaukee Brewers",
+      "marcador": "12-9",
+      "margen_fav": -3,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-04",
+      "juego": "Toronto Blue Jays @ Atlanta Braves",
+      "marcador": "7-2",
+      "margen_fav": -5,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-04",
+      "juego": "Kansas City Royals @ Minnesota Twins",
+      "marcador": "8-6",
+      "margen_fav": -2,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-04",
+      "juego": "Athletics @ Chicago Cubs",
+      "marcador": "6-7",
+      "margen_fav": 1,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-04",
+      "juego": "Pittsburgh Pirates @ Houston Astros",
+      "marcador": "5-1",
+      "margen_fav": 4,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-04",
+      "juego": "Los Angeles Dodgers @ Arizona Diamondbacks",
+      "marcador": "2-3",
+      "margen_fav": -1,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-03",
+      "juego": "Miami Marlins @ Washington Nationals",
+      "marcador": "4-1",
+      "margen_fav": -3,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-03",
+      "juego": "Detroit Tigers @ Tampa Bay Rays",
+      "marcador": "7-2",
+      "margen_fav": -5,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-03",
+      "juego": "Chicago White Sox @ Minnesota Twins",
+      "marcador": "8-0",
+      "margen_fav": 8,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-03",
+      "juego": "New York Mets @ Seattle Mariners",
+      "marcador": "7-1",
+      "margen_fav": -6,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-03",
+      "juego": "San Diego Padres @ Philadelphia Phillies",
+      "marcador": "2-3",
+      "margen_fav": 1,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-03",
+      "juego": "Baltimore Orioles @ Boston Red Sox",
+      "marcador": "1-8",
+      "margen_fav": -7,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-03",
+      "juego": "Cleveland Guardians @ New York Yankees",
+      "marcador": "5-4",
+      "margen_fav": -1,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-03",
+      "juego": "Kansas City Royals @ Cincinnati Reds",
+      "marcador": "5-2",
+      "margen_fav": -3,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-03",
+      "juego": "Toronto Blue Jays @ Atlanta Braves",
+      "marcador": "3-7",
+      "margen_fav": 4,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-03",
+      "juego": "San Francisco Giants @ Milwaukee Brewers",
+      "marcador": "1-0",
+      "margen_fav": -1,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-03",
+      "juego": "Texas Rangers @ St. Louis Cardinals",
+      "marcador": "3-5",
+      "margen_fav": 2,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-03",
+      "juego": "Athletics @ Chicago Cubs",
+      "marcador": "5-4",
+      "margen_fav": -1,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-03",
+      "juego": "Pittsburgh Pirates @ Houston Astros",
+      "marcador": "9-11",
+      "margen_fav": -2,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-03",
+      "juego": "Colorado Rockies @ Los Angeles Angels",
+      "marcador": "4-11",
+      "margen_fav": 7,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-03",
+      "juego": "Los Angeles Dodgers @ Arizona Diamondbacks",
+      "marcador": "7-0",
+      "margen_fav": 7,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-02",
+      "juego": "Detroit Tigers @ Tampa Bay Rays",
+      "marcador": "8-0",
+      "margen_fav": -8,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-02",
+      "juego": "San Diego Padres @ Philadelphia Phillies",
+      "marcador": "2-3",
+      "margen_fav": 1,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-02",
+      "juego": "Baltimore Orioles @ Boston Red Sox",
+      "marcador": "4-2",
+      "margen_fav": 2,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-02",
+      "juego": "Miami Marlins @ Washington Nationals",
+      "marcador": "7-3",
+      "margen_fav": -4,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-02",
+      "juego": "Cleveland Guardians @ New York Yankees",
+      "marcador": "9-4",
+      "margen_fav": -5,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-02",
+      "juego": "Kansas City Royals @ Cincinnati Reds",
+      "marcador": "3-4",
+      "margen_fav": 1,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-02",
+      "juego": "Toronto Blue Jays @ Atlanta Braves",
+      "marcador": "3-4",
+      "margen_fav": 1,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-02",
+      "juego": "Chicago White Sox @ Minnesota Twins",
+      "marcador": "4-6",
+      "margen_fav": -2,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-02",
+      "juego": "San Francisco Giants @ Milwaukee Brewers",
+      "marcador": "3-8",
+      "margen_fav": 5,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-02",
+      "juego": "Texas Rangers @ St. Louis Cardinals",
+      "marcador": "7-4",
+      "margen_fav": -3,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-02",
+      "juego": "Athletics @ Chicago Cubs",
+      "marcador": "2-1",
+      "margen_fav": -1,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-02",
+      "juego": "Pittsburgh Pirates @ Houston Astros",
+      "marcador": "10-6",
+      "margen_fav": 4,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-02",
+      "juego": "Colorado Rockies @ Los Angeles Angels",
+      "marcador": "8-2",
+      "margen_fav": -6,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-02",
+      "juego": "Los Angeles Dodgers @ Arizona Diamondbacks",
+      "marcador": "6-5",
+      "margen_fav": 1,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-02",
+      "juego": "New York Mets @ Seattle Mariners",
+      "marcador": "3-8",
+      "margen_fav": 5,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-01",
+      "juego": "Detroit Tigers @ Tampa Bay Rays",
+      "marcador": "10-9",
+      "margen_fav": -1,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-01",
+      "juego": "Miami Marlins @ Washington Nationals",
+      "marcador": "7-3",
+      "margen_fav": -4,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-01",
+      "juego": "Kansas City Royals @ Cincinnati Reds",
+      "marcador": "9-2",
+      "margen_fav": -7,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-01",
+      "juego": "Chicago White Sox @ Minnesota Twins",
+      "marcador": "6-9",
+      "margen_fav": -3,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-01",
+      "juego": "San Francisco Giants @ Milwaukee Brewers",
+      "marcador": "2-16",
+      "margen_fav": 14,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-06-01",
+      "juego": "Texas Rangers @ St. Louis Cardinals",
+      "marcador": "2-1",
+      "margen_fav": -1,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-01",
+      "juego": "Colorado Rockies @ Los Angeles Angels",
+      "marcador": "9-8",
+      "margen_fav": -1,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-06-01",
+      "juego": "Los Angeles Dodgers @ Arizona Diamondbacks",
+      "marcador": "1-4",
+      "margen_fav": -3,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-06-01",
+      "juego": "New York Mets @ Seattle Mariners",
+      "marcador": "2-3",
+      "margen_fav": 1,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-05-31",
+      "juego": "Toronto Blue Jays @ Baltimore Orioles",
+      "marcador": "5-9",
+      "margen_fav": 4,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-05-31",
+      "juego": "San Diego Padres @ Washington Nationals",
+      "marcador": "2-4",
+      "margen_fav": -2,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-05-31",
+      "juego": "Minnesota Twins @ Pittsburgh Pirates",
+      "marcador": "3-9",
+      "margen_fav": 6,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-05-31",
+      "juego": "Boston Red Sox @ Cleveland Guardians",
+      "marcador": "9-4",
+      "margen_fav": -5,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-05-31",
+      "juego": "Los Angeles Angels @ Tampa Bay Rays",
+      "marcador": "2-5",
+      "margen_fav": 3,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-05-31",
+      "juego": "Atlanta Braves @ Cincinnati Reds",
+      "marcador": "4-6",
+      "margen_fav": -2,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-05-31",
+      "juego": "Miami Marlins @ New York Mets",
+      "marcador": "1-10",
+      "margen_fav": 9,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-05-31",
+      "juego": "Detroit Tigers @ Chicago White Sox",
+      "marcador": "1-2",
+      "margen_fav": 1,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-05-31",
+      "juego": "Milwaukee Brewers @ Houston Astros",
+      "marcador": "2-0",
+      "margen_fav": 2,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-05-31",
+      "juego": "Kansas City Royals @ Texas Rangers",
+      "marcador": "3-6",
+      "margen_fav": 3,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-05-31",
+      "juego": "San Francisco Giants @ Colorado Rockies",
+      "marcador": "19-6",
+      "margen_fav": -13,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-05-31",
+      "juego": "New York Yankees @ Athletics",
+      "marcador": "13-8",
+      "margen_fav": 5,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-05-31",
+      "juego": "Arizona Diamondbacks @ Seattle Mariners",
+      "marcador": "2-3",
+      "margen_fav": 1,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-05-31",
+      "juego": "Philadelphia Phillies @ Los Angeles Dodgers",
+      "marcador": "1-9",
+      "margen_fav": 8,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-05-31",
+      "juego": "Chicago Cubs @ St. Louis Cardinals",
+      "marcador": "1-5",
+      "margen_fav": 4,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-05-30",
+      "juego": "Detroit Tigers @ Chicago White Sox",
+      "marcador": "1-7",
+      "margen_fav": 6,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-05-30",
+      "juego": "San Diego Padres @ Washington Nationals",
+      "marcador": "4-9",
+      "margen_fav": -5,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-05-30",
+      "juego": "Kansas City Royals @ Texas Rangers",
+      "marcador": "6-7",
+      "margen_fav": 1,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-05-30",
+      "juego": "Toronto Blue Jays @ Baltimore Orioles",
+      "marcador": "5-6",
+      "margen_fav": -1,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-05-30",
+      "juego": "Minnesota Twins @ Pittsburgh Pirates",
+      "marcador": "9-10",
+      "margen_fav": 1,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-05-30",
+      "juego": "Boston Red Sox @ Cleveland Guardians",
+      "marcador": "9-1",
+      "margen_fav": -8,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-05-30",
+      "juego": "Los Angeles Angels @ Tampa Bay Rays",
+      "marcador": "14-3",
+      "margen_fav": -11,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-05-30",
+      "juego": "Miami Marlins @ New York Mets",
+      "marcador": "1-6",
+      "margen_fav": 5,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-05-30",
+      "juego": "Milwaukee Brewers @ Houston Astros",
+      "marcador": "2-9",
+      "margen_fav": -7,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-05-30",
+      "juego": "Chicago Cubs @ St. Louis Cardinals",
+      "marcador": "6-1",
+      "margen_fav": -5,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-05-30",
+      "juego": "Atlanta Braves @ Cincinnati Reds",
+      "marcador": "5-2",
+      "margen_fav": 3,
+      "gap": "gap 15%+"
+    },
+    {
+      "fecha": "2026-05-30",
+      "juego": "San Francisco Giants @ Colorado Rockies",
+      "marcador": "3-8",
+      "margen_fav": 5,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-05-30",
+      "juego": "New York Yankees @ Athletics",
+      "marcador": "4-6",
+      "margen_fav": -2,
+      "gap": "gap 8-14%"
+    },
+    {
+      "fecha": "2026-05-30",
+      "juego": "Arizona Diamondbacks @ Seattle Mariners",
+      "marcador": "1-5",
+      "margen_fav": -4,
+      "gap": "gap <8%"
+    },
+    {
+      "fecha": "2026-05-30",
+      "juego": "Philadelphia Phillies @ Los Angeles Dodgers",
+      "marcador": "4-3",
+      "margen_fav": -1,
+      "gap": "gap 8-14%"
+    }
+  ]
+}

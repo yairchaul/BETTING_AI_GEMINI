@@ -1,0 +1,114 @@
+{
+  "timestamp": "2026-06-19T15:32:30.976631",
+  "dias": 25,
+  "dias_con_juegos": 25,
+  "leg_winrate": {
+    "NUEVA-A": {
+      "hit": 205,
+      "n": 323,
+      "win_rate": 63.5
+    },
+    "NUEVA-B": {
+      "hit": 186,
+      "n": 323,
+      "win_rate": 57.6
+    },
+    "VIEJA": {
+      "hit": 179,
+      "n": 323,
+      "win_rate": 55.4
+    },
+    "MEJOR-LEG": {
+      "hit": 209,
+      "n": 323,
+      "win_rate": 64.7
+    }
+  },
+  "parlay_winrate": {
+    "NUEVA-A": {
+      "2": {
+        "ganados": 62,
+        "parlays": 152,
+        "win_rate": 40.8
+      },
+      "3": {
+        "ganados": 28,
+        "parlays": 104,
+        "win_rate": 26.9
+      },
+      "4": {
+        "ganados": 11,
+        "parlays": 66,
+        "win_rate": 16.7
+      }
+    },
+    "NUEVA-B": {
+      "2": {
+        "ganados": 52,
+        "parlays": 152,
+        "win_rate": 34.2
+      },
+      "3": {
+        "ganados": 22,
+        "parlays": 104,
+        "win_rate": 21.2
+      },
+      "4": {
+        "ganados": 10,
+        "parlays": 66,
+        "win_rate": 15.2
+      }
+    },
+    "NUEVA-MIX": {
+      "2": {
+        "ganados": 58,
+        "parlays": 152,
+        "win_rate": 38.2
+      },
+      "3": {
+        "ganados": 26,
+        "parlays": 104,
+        "win_rate": 25.0
+      },
+      "4": {
+        "ganados": 10,
+        "parlays": 66,
+        "win_rate": 15.2
+      }
+    },
+    "MEJOR-LEG": {
+      "2": {
+        "ganados": 66,
+        "parlays": 152,
+        "win_rate": 43.4
+      },
+      "3": {
+        "ganados": 32,
+        "parlays": 104,
+        "win_rate": 30.8
+      },
+      "4": {
+        "ganados": 14,
+        "parlays": 66,
+        "win_rate": 21.2
+      }
+    },
+    "VIEJA": {
+      "2": {
+        "ganados": 41,
+        "parlays": 152,
+        "win_rate": 27.0
+      },
+      "3": {
+        "ganados": 15,
+        "parlays": 104,
+        "win_rate": 14.4
+      },
+      "4": {
+        "ganados": 3,
+        "parlays": 66,
+        "win_rate": 4.5
+      }
+    }
+  }
+}
