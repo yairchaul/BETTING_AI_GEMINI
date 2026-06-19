@@ -25,6 +25,19 @@ except Exception:
 logger = logging.getLogger(__name__)
 
 
+def _mercado_pick(pick: str) -> str:
+    """Infiere el mercado de un pick de fútbol para el parlay."""
+    p = (pick or "").lower()
+    if "over 1.5" in p: return "OVER 1.5"
+    if "over 2.5" in p: return "OVER 2.5"
+    if "over 3.5" in p: return "OVER 3.5"
+    if "btts" in p or "ambos" in p: return "BTTS"
+    if "under" in p: return "UNDER"
+    if "local (" in p or "visitante (" in p: return "1X2"
+    if "combinado" in p or "combo" in p: return "COMBINADO"
+    return "1X2/Goles"
+
+
 def _deporte_code(sport: str) -> str:
     """Normaliza '🏀 NBA' / '⚽ FÚTBOL' → código canónico (NBA/MLB/UFC/SOCCER)."""
     s = (sport or "").upper()
@@ -337,6 +350,7 @@ def _recolectar_picks(dia_filtro=None):
                     continue
                 evento_f = f"{home_f or '?'} vs {away_f or '?'}"
                 cuota_real = _cuota_real_futbol(pick, home_f, away_f)
+                picks_ya_en_pool = {pick}  # deduplicar por partido
                 pool.append({
                     "sport": "⚽ FÚTBOL", "evento": evento_f,
                     "mercado": "1X2/Goles", "pick": pick,
@@ -345,8 +359,22 @@ def _recolectar_picks(dia_filtro=None):
                     "cuota": cuota_real or 1.90,
                     "cuota_real": bool(cuota_real),
                 })
+                # Picks múltiples: agregar CADA market que califica independientemente
+                for pm in r.get("picks_multiples", []):
+                    pm_pick = pm.get("pick", "")
+                    if not pm_pick or pm_pick in picks_ya_en_pool:
+                        continue
+                    picks_ya_en_pool.add(pm_pick)
+                    pm_cuota = _cuota_real_futbol(pm_pick, home_f, away_f) or 1.85
+                    pool.append({
+                        "sport": "⚽ FÚTBOL", "evento": evento_f,
+                        "mercado": _mercado_pick(pm_pick), "pick": pm_pick,
+                        "prob": pm.get("confianza", 0),
+                        "tipo": "SEGURO" if pm.get("confianza", 0) >= 55 else "VALOR",
+                        "cuota": pm_cuota,
+                    })
                 for op in r.get("todas_opciones", []):
-                    if op.get("combo") and op.get("confianza", 0) >= 38:
+                    if op.get("combo") and op.get("confianza", 0) >= 38 and op.get("pick", "") not in picks_ya_en_pool:
                         pool.append({
                             "sport": "⚽ FÚTBOL", "evento": evento_f,
                             "mercado": "COMBINADO", "pick": op["pick"],

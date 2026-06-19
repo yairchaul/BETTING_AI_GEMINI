@@ -356,6 +356,8 @@ class GestorLigasUniversal:
                         'marcador': marcador,
                         'goles_local': goles_local,
                         'goles_visitante': goles_visit,
+                        'clock': (comp.get('status') or {}).get('displayClock', ''),
+                        'periodo': (comp.get('status') or {}).get('period', 0),
                         'es_torneo': es_torneo,
                         'fase': fase,
                     })

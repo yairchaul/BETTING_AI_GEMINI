@@ -609,6 +609,20 @@ def main():
                 # 3. Enriquecer con cuotas de Caliente.mx
                 partidos_finales = _enriquecer_partidos_mlb_con_odds(partidos_con_pitchers)
 
+                # 4. Ordenar por hora de inicio en Ciudad de México (UTC → CDMX)
+                def _key_hora_cdmx(partido):
+                    try:
+                        from datetime import datetime, timezone
+                        from zoneinfo import ZoneInfo
+                        h = partido.get("hora", "")
+                        if not h:
+                            return "99:99"
+                        today = datetime.now(timezone.utc).date()
+                        dt_u = datetime.strptime(f"{today} {h}", "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc)
+                        return dt_u.astimezone(ZoneInfo("America/Mexico_City")).strftime("%H:%M")
+                    except Exception:
+                        return "99:99"
+                partidos_finales = sorted(partidos_finales, key=_key_hora_cdmx)
                 st.session_state.mlb_partidos = partidos_finales
                 st.session_state.analisis_mlb = {}  # Limpiar caché de análisis
                 st.success(f"✅ {len(st.session_state.mlb_partidos)} partidos cargados y enriquecidos.")

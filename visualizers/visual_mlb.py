@@ -99,7 +99,18 @@ class VisualMLB:
         a_odds = "—" if a_odds in (None, "", "N/A", "None") else a_odds
         h_odds = "—" if h_odds in (None, "", "N/A", "None") else h_odds
         ou = odds.get("over_under", "N/A")
-        time = p.get("hora") or p.get("time", "TBD")
+        _hora_utc = p.get("hora") or p.get("time", "")
+        # Convertir hora UTC → CDMX (America/Mexico_City)
+        def _a_cdmx(h_utc):
+            try:
+                from datetime import datetime, timezone, timedelta
+                from zoneinfo import ZoneInfo
+                today = datetime.now(timezone.utc).date()
+                dt_utc = datetime.strptime(f"{today} {h_utc}", "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc)
+                return dt_utc.astimezone(ZoneInfo("America/Mexico_City")).strftime("%H:%M CDMX")
+            except Exception:
+                return h_utc or "TBD"
+        time = _a_cdmx(_hora_utc) if _hora_utc else "TBD"
         venue = p.get("venue", "TBD")
         pit = p.get("pitchers", {})
         game_pk = p.get("game_pk")

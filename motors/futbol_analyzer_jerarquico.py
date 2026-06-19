@@ -477,6 +477,32 @@ def analizar_futbol_jerarquico(
     except Exception as _e:
         logger.debug(f"motor_v2 falló: {_e}")
 
+    # ── Picks múltiples: todos los markets que califican de forma independiente ──
+    # Umbrales por tipo de mercado (independientes del pick primario)
+    _UMBRALES_MULTI = {
+        "over 1.5 ht": 65,
+        "over 1.5": 60,
+        "over 2.5": 52,
+        "over 3.5": 55,
+        "btts": 58,
+        "ambos anotan": 58,
+        "under": 52,
+        "local (": 63,
+        "visitante (": 63,
+    }
+    picks_multiples = []
+    for vp in viable_picks:
+        p_lower = vp["pick"].lower()
+        umbral = 68  # default para tipos no listados
+        for key, thr in _UMBRALES_MULTI.items():
+            if key in p_lower:
+                umbral = thr
+                break
+        if vp["confianza"] >= umbral:
+            picks_multiples.append(dict(vp))
+    # Ordenar: primario al frente, luego por confianza
+    picks_multiples.sort(key=lambda x: (0 if x["pick"] == primary["pick"] else 1, -x["confianza"]))
+
     # Debug: motivos por los que cada regla fue/no fue elegida
     debug_reglas = []
     for vp in viable_picks:
@@ -512,6 +538,7 @@ def analizar_futbol_jerarquico(
         "regla_motor_1": regla_motor_1,
         "motor_v2":     motor_v2,
         "debug_reglas": debug_reglas,
+        "picks_multiples": picks_multiples,
     }
 
 

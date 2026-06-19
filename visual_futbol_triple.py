@@ -85,9 +85,13 @@ class VisualFutbolTriple:
                             "<div style='text-align:center;color:#22c55e;font-size:0.72rem'>✅ FINAL</div>",
                             unsafe_allow_html=True)
             elif marcador and partido.get('en_vivo'):
-                st.markdown(f"<div style='text-align:center;color:#fff;font-weight:800;font-size:1.6rem;margin-top:18px'>{marcador}</div>"
-                            "<div style='text-align:center;color:#ef4444;font-size:0.72rem'>🔴 EN VIVO</div>",
-                            unsafe_allow_html=True)
+                _clock = partido.get('clock', '')
+                _min_disp = f"<div style='color:#ef4444;font-weight:900;font-size:1.05rem'>{_clock}</div>" if _clock else ""
+                st.markdown(
+                    f"<div style='text-align:center;color:#fff;font-weight:800;font-size:1.6rem;margin-top:12px'>{marcador}</div>"
+                    f"<div style='text-align:center;color:#ef4444;font-size:0.72rem'>🔴 EN VIVO</div>"
+                    f"<div style='text-align:center'>{_min_disp}</div>",
+                    unsafe_allow_html=True)
             else:
                 st.markdown("<div style='text-align:center;color:#9ca3af;font-weight:800;font-size:1.3rem;margin-top:26px'>VS</div>",
                             unsafe_allow_html=True)
@@ -264,6 +268,41 @@ class VisualFutbolTriple:
                         f"<span style='color:#cbd5e1;font-size:0.85rem'>  ·  {_op.get('confianza',0):.0f}%</span></div>",
                         unsafe_allow_html=True)
                     break
+
+            # ── PICKS MÚLTIPLES: todos los markets que califican independientemente ─
+            picks_multi = analisis_heuristico.get('picks_multiples', [])
+            # Deduplicar por tipo de mercado (ej: "OVER 1.5" y "OVER 1.5 goles" = mismo)
+            def _tipo_mercado(p_str):
+                pl = (p_str or '').lower()
+                if "over 1.5 ht" in pl: return "over1.5ht"
+                if "over 1.5" in pl:    return "over1.5"
+                if "over 2.5" in pl:    return "over2.5"
+                if "over 3.5" in pl:    return "over3.5"
+                if "btts" in pl or "ambos" in pl: return "btts"
+                if "under" in pl:       return "under"
+                if "local (" in pl:     return "local"
+                if "visitante (" in pl: return "visitante"
+                return pl[:15]
+            primary_tipo = _tipo_mercado(pick)
+            picks_extra = [pm for pm in picks_multi
+                           if _tipo_mercado(pm.get('pick', '')) != primary_tipo]
+            if picks_extra:
+                st.markdown(
+                    "<div style='color:#94a3b8;font-size:0.72rem;margin:8px 0 4px 0'>"
+                    "📋 <b>TAMBIÉN CALIFICAN</b> para este partido:</div>",
+                    unsafe_allow_html=True)
+                for pm in picks_extra:
+                    _pc = pm.get('confianza', 0)
+                    _pp = pm.get('pick', '')
+                    _acc2 = "#22c55e" if _pc >= 65 else "#fbbf24" if _pc >= 55 else "#94a3b8"
+                    st.markdown(
+                        f"<div style='background:#0f172a;border-left:3px solid {_acc2};"
+                        f"border-radius:7px;padding:7px 12px;margin:3px 0;display:flex;"
+                        f"justify-content:space-between;align-items:center'>"
+                        f"<span style='color:{_acc2};font-weight:700'>📌 {_pp}</span>"
+                        f"<span style='color:#64748b;font-size:0.82rem'>{_pc:.0f}% confianza</span>"
+                        f"</div>",
+                        unsafe_allow_html=True)
 
             # ── Debug: ¿Por qué se eligió este mercado? ─────────────────────
             debug_reglas = analisis_heuristico.get('debug_reglas', [])
