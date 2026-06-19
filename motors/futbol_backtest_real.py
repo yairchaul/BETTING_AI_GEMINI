@@ -179,6 +179,18 @@ def ejecutar_futbol_backtest_real(dias: int = 10, ligas=None, progreso_cb=None):
         "detalle": detalle[:60],
         "ligas": ligas,
         "dias": int(dias),
+        # Nota sobre por qué el backtest puede diferir de los picks en vivo:
+        # El motor usa el historial de la DB (últimos 5 partidos de cada equipo).
+        # Cuando se re-corre sobre partidos pasados, ese historial INCLUYE el
+        # partido en cuestión (ya está guardado como resultado), lo que introduce
+        # "leakage" de información futura. El pick real mostrado en el día del
+        # partido usó el historial de ESE momento — no necesariamente el mismo.
+        "nota_metodologia": (
+            "Los picks del backtest se generan con el historial actual de la DB, "
+            "que incluye resultados posteriores al partido evaluado (leakage). "
+            "El pick real del día usó el historial disponible en ese momento. "
+            "Por eso puede haber discrepancia entre el pick en vivo y el del backtest."
+        ),
     }
     _guardar(reporte)
     logger.info(f"⚽ Backtest fútbol: {evaluables} picks evaluados · {precision_global}% global")

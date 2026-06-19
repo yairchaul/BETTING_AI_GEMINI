@@ -403,6 +403,92 @@ def _tarjeta_parlay(titulo, color, descripcion, parlay):
         )
 
 
+def _sluggers_del_dia(top_n: int = 5) -> list:
+    """
+    Lee hr_backtest_reporte.json y devuelve los sluggers con más HRs recientes
+    como legs de parlay, con probabilidad calibrada por la tasa real del backtest.
+    """
+    import os, json
+    from collections import defaultdict
+
+    ruta = os.path.join("data", "hr_backtest_reporte.json")
+    if not os.path.exists(ruta):
+        return []
+    try:
+        with open(ruta, encoding='utf-8') as f:
+            rep = json.load(f)
+    except Exception:
+        return []
+
+    det = rep.get('detalle', [])
+    tramos = rep.get('por_tramo_probabilidad', {})
+    prec_global = rep.get('precision_global', 13.6)
+
+    # La key 'pegó_hr' tiene acento en UTF-8 — buscar dinámicamente
+    pego_key = None
+    if det:
+        for k in det[0]:
+            if k.endswith('_hr') and 'prob' not in k:
+                pego_key = k
+                break
+
+    stats = defaultdict(lambda: {'hits': 0, 'probs': [], 'equipo': ''})
+    for d in det:
+        pego = bool(d.get(pego_key, False)) if pego_key else False
+        if pego:
+            j = d.get('jugador', '')
+            if not j:
+                continue
+            stats[j]['hits'] += 1
+            stats[j]['probs'].append(float(d.get('probabilidad', 15)))
+            stats[j]['equipo'] = d.get('equipo', '')
+
+    if not stats:
+        return []
+
+    # Precisión calibrada por tramo de probabilidad (tasa real del backtest)
+    def _prec_tramo(avg_prob):
+        for nombre, t in sorted(tramos.items(), key=lambda x: x[0], reverse=True):
+            prec = t.get('precision', prec_global)
+            # el tramo "15%+" cubre prob >= 15, "12-14%" para 12-14, etc.
+            if '+' in nombre:
+                lim = float(nombre.replace('%+', '').replace('%', ''))
+                if avg_prob >= lim:
+                    return prec
+            elif '-' in nombre and '%' in nombre:
+                partes = nombre.replace('%', '').split('-')
+                try:
+                    lo, hi = float(partes[0]), float(partes[1])
+                    if lo <= avg_prob <= hi:
+                        return prec
+                except ValueError:
+                    pass
+        return prec_global
+
+    ranking = []
+    for jugador, s in stats.items():
+        avg_prob = sum(s['probs']) / len(s['probs'])
+        prec = _prec_tramo(avg_prob)
+        # Prob calibrada: ponderación 40% motor, 60% tasa real; boost por racha (+1% por HR adicional)
+        prob_cal = round(prec * 0.6 + avg_prob * 0.4 + (s['hits'] - 1) * 0.8, 1)
+        prob_cal = max(8.0, min(35.0, prob_cal))
+        ranking.append({
+            'sport': '⚾ MLB',
+            'evento': s['equipo'],
+            'mercado': 'HOME RUN',
+            'pick': f"{jugador} pega HR",
+            'prob': prob_cal,
+            'tipo': 'BOMBA',
+            'cuota': 3.50,
+            '_hits': s['hits'],
+            '_avg_prob_motor': round(avg_prob, 1),
+            '_prec_historica': prec,
+        })
+
+    ranking.sort(key=lambda x: (x['_hits'], x['_avg_prob_motor']), reverse=True)
+    return ranking[:top_n]
+
+
 def render_parlay_tab():
     """Renderiza la pestaña de parlays cross-deporte."""
     st.header("🎰 PARLAYS — Lo mejor de todos los deportes")
@@ -583,6 +669,47 @@ def render_parlay_tab():
         _tarjeta_parlay("🎯 PARLAY HR + FÚTBOL", "#e11d48",
                         "Sluggers top (home run) + mejores picks de fútbol — pago alto, tu combo favorito",
                         _armar_parlay(legs_hrfut))
+
+    # ── ⚡ PARLAY SLUGGER DEL DÍA: basado en datos aprendidos del backtest ─────
+    # Usa SOLO la memoria histórica de quién pegó HR en los últimos días,
+    # calibrando la probabilidad con la tasa de acierto real (no la del motor).
+    sluggers = _sluggers_del_dia(top_n=5)
+    if len(sluggers) >= 3:
+        st.markdown("")
+        prec_global_bt = 0.0
+        try:
+            import json as _json
+            _rep_path = __import__('os').path.join("data", "hr_backtest_reporte.json")
+            with open(_rep_path, encoding='utf-8') as _f:
+                _rep = _json.load(_f)
+            prec_global_bt = _rep.get('precision_global', 0)
+            _ts = _rep.get('timestamp', '')[:10]
+            _juegos = _rep.get('juegos', 0)
+        except Exception:
+            _ts, _juegos = '', 0
+        desc_slug = (
+            f"Los {len(sluggers)} sluggers con más HRs recientes (backtest {_juegos} juegos · "
+            f"{prec_global_bt:.1f}% tasa real · datos: {_ts}) — prob calibrada con tasa histórica"
+        )
+        _tarjeta_parlay("⚡ PARLAY SLUGGER DEL DÍA", "#f59e0b", desc_slug, _armar_parlay(sluggers))
+
+        # Detalle de cada slugger con su racha
+        with st.expander("📊 Detalle de la racha de cada Slugger", expanded=False):
+            st.markdown(
+                "<div style='font-size:0.82rem;color:#94a3b8'>Los jugadores con más HRs confirmados "
+                "en los últimos días del backtest. La prob. del motor se ajusta a la tasa real de "
+                "acierto histórica.</div>", unsafe_allow_html=True)
+            for s in sluggers:
+                racha = "🔥" * min(s['_hits'], 3)
+                st.markdown(
+                    f"<div style='background:#1e293b;border-radius:6px;padding:6px 12px;margin:3px 0'>"
+                    f"<b>{s['pick']}</b> · {s['evento']} "
+                    f"<span style='float:right'>"
+                    f"{racha} <span style='color:#fbbf24'>{s['_hits']} HRs en 3 días</span> | "
+                    f"motor: {s['_avg_prob_motor']}% → calibrada: "
+                    f"<b style='color:#22c55e'>{s['prob']}%</b>"
+                    f"</span></div>",
+                    unsafe_allow_html=True)
 
     # ── PARLAY GIGANTE: TODOS los picks sólidos (1 por evento, 10+ legs) ──
     gigante = [p for p in pool if p["prob"] >= min_prob and p["mercado"] != "HOME RUN"]

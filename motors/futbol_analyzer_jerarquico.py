@@ -114,6 +114,30 @@ def _weighted_avg(lista: list) -> float:
     return sum(v * w for v, w in zip(lista, pesos)) / total_peso
 
 
+def _h2h_suplemento(local: str, visitante: str) -> dict:
+    """Datos H2H históricos de international_results (martj42) como contexto extra.
+    Nunca falla: devuelve {} si los datos no están disponibles."""
+    try:
+        from motors.international_results import head_to_head, historial_mundial
+        h2h = head_to_head(local, visitante, n=20)
+        if h2h.get('total', 0) < 3:
+            return {}
+        wc_l = historial_mundial(local)
+        wc_v = historial_mundial(visitante)
+        return {
+            'total': h2h['total'],
+            'pct_local': h2h['pct_local'],
+            'pct_empate': h2h['pct_empate'],
+            'pct_visita': h2h['pct_visita'],
+            'avg_goles': h2h['avg_total'],
+            'ultimos': h2h.get('ultimos', []),
+            'wc_local': wc_l,
+            'wc_visita': wc_v,
+        }
+    except Exception:
+        return {}
+
+
 def analizar_futbol_jerarquico(
     local: str,
     visitante: str,
@@ -134,7 +158,9 @@ def analizar_futbol_jerarquico(
                    stats post-juego y reproduce el MISMO pick que mostró la tarjeta.
     """
     if forzar_ranking:
-        return _analisis_ranking_fifa(local, visitante, fase)
+        res = _analisis_ranking_fifa(local, visitante, fase)
+        res['h2h_historico'] = _h2h_suplemento(local, visitante)
+        return res
     s_l = db.get_team_stats_detailed(local, "soccer")
     s_v = db.get_team_stats_detailed(visitante, "soccer")
 
@@ -257,6 +283,31 @@ def analizar_futbol_jerarquico(
         f"[torneo={es_torneo} fase={fase}]"
     )
 
+    # ── Suplemento H2H histórico (martj42/international_results) ─────────────
+    h2h = _h2h_suplemento(local, visitante)
+    h2h_nota = ""
+
+    if h2h.get('total', 0) >= 5:
+        # Ajuste leve de confianza basado en historial H2H (+/- 4 puntos máx)
+        pick_lower = primary["pick"].lower()
+        if "local" in pick_lower or local.lower() in pick_lower:
+            diff_h2h = (h2h['pct_local'] - 40) / 10.0  # 0 en 40%, +1 en 50%
+            primary["confianza"] = round(max(50, min(88, primary["confianza"] + diff_h2h * 2)), 1)
+            h2h_nota = f"H2H: {local} gana {h2h['pct_local']}% en {h2h['total']} partidos históricos"
+        elif "visitante" in pick_lower or visitante.lower() in pick_lower:
+            diff_h2h = (h2h['pct_visita'] - 40) / 10.0
+            primary["confianza"] = round(max(50, min(88, primary["confianza"] + diff_h2h * 2)), 1)
+            h2h_nota = f"H2H: {visitante} gana {h2h['pct_visita']}% en {h2h['total']} partidos históricos"
+        elif "btts" in pick_lower or "ambos anotan" in pick_lower:
+            # Si el promedio histórico de goles es alto, refuerza el BTTS
+            if h2h['avg_goles'] >= 2.5:
+                primary["confianza"] = round(min(88, primary["confianza"] + 2), 1)
+            h2h_nota = f"H2H avg goles: {h2h['avg_goles']} en {h2h['total']} partidos"
+        elif "over" in pick_lower:
+            if h2h['avg_goles'] >= 2.0:
+                primary["confianza"] = round(min(88, primary["confianza"] + 1.5), 1)
+            h2h_nota = f"H2H avg goles: {h2h['avg_goles']}"
+
     return {
         "pick":         primary["pick"],
         "confianza":    primary["confianza"],
@@ -267,6 +318,8 @@ def analizar_futbol_jerarquico(
         "es_torneo":    es_torneo,
         "fase":         fase,
         "es_eliminacion": es_eliminacion,
+        "h2h_historico": h2h,
+        "h2h_nota": h2h_nota,
     }
 
 

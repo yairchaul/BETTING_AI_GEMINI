@@ -1423,9 +1423,14 @@ def main():
                 f4.metric("🎰 Combo", f"{mk.get('combo',{}).get('precision',0)}%",
                           f"{mk.get('combo',{}).get('aciertos',0)}/{mk.get('combo',{}).get('total',0)}")
                 st.markdown(f"**Precisión global del motor de fútbol: {fbr.get('precision_global',0)}%**")
+                # Nota metodológica: el backtest puede diferir del pick en vivo
+                nota_bt = fbr.get("nota_metodologia", "")
+                if nota_bt:
+                    st.info(f"ℹ️ **¿Por qué el pick del backtest puede diferir del pick en vivo?**\n\n{nota_bt}")
                 det = fbr.get("detalle", [])
                 if det:
-                    st.table([{"Fecha": d.get("fecha", ""), "Partido": d["partido"], "Pick": d["pick"],
+                    st.table([{"Fecha": d.get("fecha", ""), "Partido": d["partido"],
+                               "Pick (motor)": d["pick"],
                                "Mercado": d["mercado"], "Conf.": f"{d['confianza']}%",
                                "Resultado": "✅" if d["acierto"] else "❌"} for d in det[:25]])
             elif fbr:

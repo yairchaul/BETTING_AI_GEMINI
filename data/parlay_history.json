@@ -1,0 +1,29 @@
+[
+ {
+  "id": "par_20260618082249_1792",
+  "fecha": "2026-06-18",
+  "tipo": "💎 PARLAY DE VALOR (+EV)",
+  "firma": "⚽ FÚTBOL::AMBOS ANOTAN (BTTS)|⚾ MLB::Hunter Goodman OVER 1.5 bases",
+  "prob": 12.5,
+  "cuota": 8.6,
+  "ev_pct": 7.8,
+  "n_legs": 2,
+  "legs": [
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "AMBOS ANOTAN (BTTS)",
+    "mercado": "1X2/Goles",
+    "evento": "Colombia vs Uzbekistan",
+    "prob": 60
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Hunter Goodman OVER 1.5 bases",
+    "mercado": "TOTAL BASES",
+    "evento": "COL @ CHC",
+    "prob": 72
+   }
+  ],
+  "estado": "perdido"
+ }
+]

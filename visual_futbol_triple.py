@@ -165,8 +165,40 @@ class VisualFutbolTriple:
                 f"<span style='color:{acc};font-weight:800;font-size:1.02rem'>{ico} {pick}</span>"
                 f"<span style='color:#cbd5e1;font-size:0.85rem'>  ·  Confianza {conf:.0f}%{regla_txt}</span></div>",
                 unsafe_allow_html=True)
-            if nota:
+            h2h_nota = analisis_heuristico.get('h2h_nota', '')
+            if h2h_nota:
+                st.caption(f"📜 {h2h_nota}")
+            elif nota:
                 st.caption(f"ℹ️ {nota}")
+
+            # ── H2H histórico (martj42/international_results) ────────────────
+            h2h = analisis_heuristico.get('h2h_historico', {})
+            if h2h and h2h.get('total', 0) >= 5:
+                ult = h2h.get('ultimos', [])
+                ult_str = "  ".join(
+                    f"<span style='color:#94a3b8'>{u['fecha'][:7]} {u['resultado']}</span>"
+                    for u in ult[:4]
+                ) if ult else ""
+                wc_l = h2h.get('wc_local', {})
+                wc_v = h2h.get('wc_visita', {})
+                wc_str = ""
+                if wc_l.get('total_wc', 0) and wc_v.get('total_wc', 0):
+                    wc_str = (
+                        f" · <span style='color:#fbbf24'>WC: {local[:8]} "
+                        f"W{wc_l.get('ganados',0)} "
+                        f"vs {visitante[:8]} W{wc_v.get('ganados',0)}</span>"
+                    )
+                st.markdown(
+                    f"<div style='background:#0f172a;border-radius:7px;padding:8px 12px;"
+                    f"margin-top:5px;font-size:0.78rem'>"
+                    f"<span style='color:#64748b'>📜 H2H {h2h['total']} partidos: </span>"
+                    f"<span style='color:#22c55e'>{local[:10]} {h2h['pct_local']}%</span> · "
+                    f"<span style='color:#fbbf24'>Empate {h2h['pct_empate']}%</span> · "
+                    f"<span style='color:#ef4444'>{visitante[:10]} {h2h['pct_visita']}%</span> · "
+                    f"<span style='color:#94a3b8'>avg {h2h['avg_goles']} gol/partido</span>"
+                    f"{wc_str}"
+                    f"{(' &nbsp;·&nbsp; ' + ult_str) if ult_str else ''}"
+                    f"</div>", unsafe_allow_html=True)
 
             # ── Combinada de MAYOR PAGO (gana + Over) si el favorito es claro ──
             for _op in (analisis_heuristico.get('todas_opciones') or []):
