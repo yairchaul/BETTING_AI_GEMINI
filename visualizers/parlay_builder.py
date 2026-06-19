@@ -731,9 +731,9 @@ def render_parlay_tab():
 
     st.markdown("---")
 
-    # ── 🎯 PARLAY ÓPTIMO (2-3 legs de MAYOR probabilidad real) ────────────
-    # Recomendado por el backtest: 3 legs ≈ 27% de acierto vs 14% del enfoque
-    # viejo. Toma la MEJOR leg calibrada por evento (sin HR), top 3.
+    # ── 🎯 PARLAY ÓPTIMO (4 legs de MAYOR probabilidad real) ──────────────
+    # 4 legs: mejor balance prob/pago. Toma la MEJOR leg calibrada por evento
+    # (sin HR, 1 por evento), top 4 por probabilidad calibrada.
     def _prob_cal(l):
         real = _rate_real_mercado(l.get("sport", ""), l.get("mercado", ""))
         return l["prob"] if real is None else (l["prob"] * 0.4 + real * 0.6)
@@ -746,13 +746,32 @@ def render_parlay_tab():
             continue
         vistos_opt.add(p["evento"])
         legs_opt.append(p)
-        if len(legs_opt) >= 3:
+        if len(legs_opt) >= 4:
             break
     if len(legs_opt) >= 2:
-        _tarjeta_parlay("🎯 PARLAY ÓPTIMO (3 legs)", "#10b981",
-                        "Las 3 legs de MAYOR probabilidad real (1 por evento) — el más fiable "
-                        "según backtest (~27% a 3 legs vs ~14% del enfoque viejo)",
+        _tarjeta_parlay(f"🎯 PARLAY ÓPTIMO ({len(legs_opt)} legs)", "#10b981",
+                        f"Las {len(legs_opt)} legs de MAYOR probabilidad real (1 por evento) — "
+                        "el más fiable según backtest",
                         _armar_parlay(legs_opt))
+
+    # ── 🔐 PARLAY DOBLE SEGURO: mínimas legs para cuota ≥ 2.0x ────────────
+    # Elige el mínimo de legs de alta probabilidad para que el parlay pague
+    # al menos el DOBLE de lo apostado (cuota ≥ 2.0x → $100 se vuelven ≥$200).
+    legs_doble, cuota_doble_acc = [], 1.0
+    for p in cand_opt:
+        ev_d = p.get("evento", "")
+        if any(l.get("evento") == ev_d for l in legs_doble):
+            continue
+        legs_doble.append(p)
+        cuota_doble_acc *= p.get("cuota", 1.85) or 1.85
+        if cuota_doble_acc >= 2.0 and len(legs_doble) >= 2:
+            break
+    if legs_doble and cuota_doble_acc >= 2.0:
+        par_doble = _armar_parlay(legs_doble)
+        _tarjeta_parlay("🔐 PARLAY DOBLE SEGURO", "#22d3ee",
+                        f"Mínimas legs de mayor prob para duplicar tu dinero (cuota ≥ 2x) — "
+                        f"{len(legs_doble)} legs, {par_doble['prob']:.1f}% prob",
+                        par_doble)
 
     # ── 🪜 ESCALERA DE PARLAYS: elige tu riesgo (prob real vs pago) ────────
     # Usa las mejores legs calibradas (1 por evento, ya ordenadas por prob).
@@ -997,3 +1016,90 @@ def render_parlay_tab():
              "Prob": f"{p['prob']:.0f}%", "Evento": p["evento"]}
             for p in pool
         ])
+
+    # ── 📊 BACKTEST DE PARLAYS: historial real y resolución ─────────────────
+    st.markdown("---")
+    st.markdown("#### 📊 Backtest de parlays generados")
+    st.caption("Cada parlay que genera esta página se guarda automáticamente. "
+               "Al terminar los juegos, resuelve para ver cuántos acertaste.")
+
+    col_bt1, col_bt2 = st.columns(2)
+    with col_bt1:
+        if st.button("🔄 Auto-resolver parlays pendientes", use_container_width=True, key="bt_parlays_resolve"):
+            with st.spinner("Cruzando resultados reales con legs del parlay..."):
+                try:
+                    from motors.box_score_resolver import resolver_todo
+                    rr = resolver_todo()
+                    st.success(f"Picks: {rr['mlb']} MLB + {rr['nba']} NBA resueltos")
+                except Exception:
+                    pass
+                try:
+                    from motors.parlay_brain import resolver_parlays_pendientes as _res_par
+                    n_par = _res_par()
+                    if n_par:
+                        st.success(f"🎰 {n_par} parlay(s) resueltos")
+                    else:
+                        st.info("Aún no hay parlays con todas las legs resueltas.")
+                except Exception as _ep:
+                    st.error(f"Error: {_ep}")
+            st.rerun()
+
+    # Stats por tipo
+    with col_bt2:
+        try:
+            from motors.parlay_brain import stats_por_tipo as _spt
+            _stats = _spt()
+            if _stats:
+                mejor = max(_stats.items(), key=lambda x: x[1].get("win_rate", 0))
+                st.metric("Mejor tipo", mejor[0][:20], f"{mejor[1]['win_rate']}% acierto")
+        except Exception:
+            pass
+
+    # Historial últimos 14 días
+    try:
+        import json as _json, os as _os
+        from datetime import datetime as _dt, timedelta as _td
+        _ruta = _os.path.join("data", "parlay_history.json")
+        _hist = _json.load(open(_ruta, encoding="utf-8")) if _os.path.exists(_ruta) else []
+        _cutoff = (_dt.now() - _td(days=14)).strftime("%Y-%m-%d")
+        _recientes = [h for h in _hist if h.get("fecha", "") >= _cutoff]
+        if _recientes:
+            _total = len(_recientes)
+            _gan = sum(1 for h in _recientes if h.get("estado") == "ganado")
+            _per = sum(1 for h in _recientes if h.get("estado") == "perdido")
+            _pend = _total - _gan - _per
+            _wr = round(_gan / (_gan + _per) * 100, 1) if (_gan + _per) > 0 else None
+            _resumen = (f"**{_total}** parlays generados en 14 días — "
+                        f"✅ {_gan} ganados · ❌ {_per} perdidos · ⏳ {_pend} pendientes"
+                        + (f" · **{_wr}% win rate**" if _wr is not None else ""))
+            st.markdown(_resumen)
+
+            with st.expander("📅 Ver historial detallado", expanded=False):
+                _by_day: dict = {}
+                for h in reversed(_recientes):
+                    _day = h.get("fecha", "?")
+                    _by_day.setdefault(_day, []).append(h)
+                def _dec2am(d):
+                    if d >= 2.0: return f"+{round((d-1)*100)}"
+                    return f"-{round(100/(d-1))}" if d > 1 else "N/A"
+                for _day, _parlays_day in sorted(_by_day.items(), reverse=True):
+                    st.markdown(f"**{_day}** ({len(_parlays_day)} parlays)")
+                    for _h in _parlays_day:
+                        _ico = "✅" if _h.get("estado") == "ganado" else "❌" if _h.get("estado") == "perdido" else "⏳"
+                        _tipo_lbl = _h.get("tipo", "")[:30]
+                        _cuota_str = _dec2am(_h.get("cuota", 1.0)) if _h.get("cuota") else "?"
+                        _legs_str = f"{_h.get('n_legs', '?')} legs"
+                        st.markdown(
+                            f"<div style='background:#0f172a;border-radius:6px;padding:4px 10px;margin:2px 0'>"
+                            f"{_ico} <b>{_tipo_lbl}</b> · {_legs_str} · {_cuota_str} · "
+                            f"{_h.get('prob', '?')}% prob"
+                            f"</div>",
+                            unsafe_allow_html=True)
+                        for _leg in _h.get("legs", []):
+                            st.markdown(
+                                f"<div style='background:#1e293b;border-radius:4px;padding:2px 8px;"
+                                f"margin:1px 0 1px 16px;font-size:0.8rem;color:#94a3b8'>"
+                                f"• {_leg.get('pick', '?')} · {_leg.get('evento', '')}</div>",
+                                unsafe_allow_html=True)
+    except Exception:
+        pass
