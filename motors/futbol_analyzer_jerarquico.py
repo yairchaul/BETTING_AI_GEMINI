@@ -97,9 +97,17 @@ def _analisis_ranking_fifa(local: str, visitante: str, fase: str = "") -> dict:
     except Exception:
         pass
 
-    # El pick primario es el más SEGURO (mayor confianza); en ranking fallback
-    # no hay jerarquía numérica, así que usamos directamente la confianza
-    opciones.sort(key=lambda x: x["confianza"], reverse=True)
+    # Orden por VALOR: COMBO > Gana favorito > Over 1.5 > Over 0.5 (demasiado seguro).
+    # Dentro del mismo nivel, gana la mayor confianza.
+    def _rank_prio(o):
+        p = o["pick"].lower()
+        if o.get("combo"):       return (0, -o["confianza"])   # COMBO mismatch
+        if "gana " in p:         return (1, -o["confianza"])   # ML favorito
+        if "over 1.5" in p:      return (2, -o["confianza"])   # Over 1.5 razonable
+        if "btts" in p or "ambos anotan" in p: return (2, -o["confianza"])
+        if "over 0.5" in p:      return (3, -o["confianza"])   # Over 0.5 = paga nada
+        return (2, -o["confianza"])
+    opciones.sort(key=_rank_prio)
     best = opciones[0]
 
     # Debug de reglas
@@ -196,7 +204,22 @@ def analizar_futbol_jerarquico(
     s_v = db.get_team_stats_detailed(visitante, "soccer")
 
     if not s_l or not s_v:
-        return _analisis_ranking_fifa(local, visitante, fase)
+        res = _analisis_ranking_fifa(local, visitante, fase)
+        res['h2h_historico'] = _h2h_suplemento(local, visitante)
+        # Aplicar calibración de liga incluso en el fallback de ranking
+        if liga:
+            try:
+                from motors.liga_calibrador import calibrar_pick as _cal_liga
+                conf_cal, liga_nota = _cal_liga(res["pick"], res["confianza"], liga)
+                if liga_nota:
+                    res = dict(res)
+                    res["liga_nota"] = liga_nota
+                    if "PICK CAMBIADO:" in liga_nota:
+                        res["pick"] = liga_nota.split("PICK CAMBIADO:")[-1].strip()
+                    res["confianza"] = conf_cal
+            except Exception:
+                pass
+        return res
 
     gl = s_l.get("goles_favor", [])
     gc = s_l.get("goles_contra", [])
@@ -326,15 +349,13 @@ def analizar_futbol_jerarquico(
                 "regla": 6,
             })
 
-    # ── Regla 7 — COMBINADO (gana + Over): SOLO si ML y Over ambos ≥ 70% ────
-    # Combinado de mayor pago, reservado a mismatches MUY claros: exige favorito
-    # dominante (Moneyline ≥ 70%) Y un mercado de goles muy probable (Over ≥ 70%).
-    # El backtest mostró que con umbral 60% el combo fallaba mucho por empates;
-    # subir a 70% lo limita a escenarios donde la pata "gana" es sólida.
-    ml_pick = next((p for p in viable_picks if p["regla"] == 5 and p["confianza"] >= 70), None)
-    # Mejor línea de Over que aún cumple ≥70% (se prefiere la más alta = mayor pago)
-    over_opciones = [("OVER 1.5", p_o15), ("OVER 2.5", p_o25), ("OVER 3.5", p_o35_raw)]
-    over_fuerte = [(nm, pr) for nm, pr in over_opciones if pr >= 70]
+    # ── Regla 7 — COMBINADO (gana + Over 2.5/3.5): mismatch claro ───────────
+    # Exige favorito con ML ≥63% Y Over 2.5 ≥58%. El combo NO incluye Over 1.5
+    # (ese es el fallback, no aporta valor pagado). Se prefiere la línea más alta.
+    ml_pick = next((p for p in viable_picks if p["regla"] == 5 and p["confianza"] >= 63), None)
+    # Solo Over 2.5 y Over 3.5 para el combo (Over 1.5 en combo no paga)
+    over_opciones_combo = [("OVER 2.5", p_o25), ("OVER 3.5", p_o35_raw)]
+    over_fuerte = [(nm, pr) for nm, pr in over_opciones_combo if pr >= 58]
     if ml_pick and over_fuerte and not es_eliminacion:
         over_nombre, over_prob = over_fuerte[-1]   # línea más alta que cumple
         equipo = ml_pick["pick"].split("(")[-1].rstrip(")") if "(" in ml_pick["pick"] else ml_pick["pick"]
@@ -363,17 +384,25 @@ def analizar_futbol_jerarquico(
         except Exception:
             pass
 
-    # ── Selección primaria ──────────────────────────────────────────────────
-    # CAMBIO CLAVE: ya NO se elige por número de regla (eso hacía que BTTS 60%
-    # ganara a OVER 1.5 80%). Ahora se elige por PROBABILIDAD REAL: el combinado
-    # (Regla 7) válido va primero por alto valor; el resto, el de MAYOR
-    # probabilidad de pasar. Así un OVER 1.5 al 80% supera a un BTTS al 60%.
+    # ── Selección primaria por VALOR, no solo por probabilidad ────────────────
+    # Orden: COMBO (mismatch claro) > OVER 2.5/3.5 > BTTS > UNDER > ML > OVER 1.5.
+    # OVER 1.5 es el fallback más seguro pero de menor valor: solo gana si nada
+    # más llega a su umbral mínimo. Dentro del mismo nivel, gana la mayor confianza.
     def _prioridad(x):
-        # El pick PRINCIPAL prefiere SINGLES de alta probabilidad (84% en el
-        # backtest) sobre combos (33%: fallan por los empates de fase de grupos).
-        # El combo SIGUE disponible como opción de ALTO PAGO en todas_opciones.
+        pick_lower = x.get("pick", "").lower()
+        conf = x.get("confianza", 0)
         es_combo = x.get("regla") == 7
-        return (1 if es_combo else 0, -x.get("confianza", 0))
+        if es_combo and conf >= 40:
+            return (0, -conf)   # COMBO válido → máximo valor
+        # OVER 2.5/3.5 y BTTS al mismo nivel — gana el más probable
+        if ("over 2.5" in pick_lower or "over 3.5" in pick_lower or
+                "btts" in pick_lower or "ambos anotan" in pick_lower) and conf >= 60:
+            return (1, -conf)   # Over alto o BTTS → buen pago
+        if "under" in pick_lower and conf >= 58:
+            return (2, -conf)   # UNDER → matchup defensivo detectado
+        if ("local (" in pick_lower or "visitante (" in pick_lower) and conf >= 63:
+            return (3, -conf)   # ML simple → solo si es claro
+        return (4, -conf)       # OVER 1.5 / HT / resto → fallback
 
     primary = {"pick": "REVISAR DATOS", "confianza": 0.0, "regla": 99}
     if viable_picks:

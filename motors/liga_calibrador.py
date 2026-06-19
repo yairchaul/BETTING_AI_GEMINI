@@ -151,8 +151,15 @@ def calibrar_pick(pick: str, confianza: float, liga: str) -> tuple[float, str]:
         factor = rates["o25"] / 52.0  # 52% es la referencia WC
         return round(min(88, max(50, confianza * factor)), 1), ""
 
-    # ── OVER 1.5: ajuste por liga ─────────────────────────────────────────────
-    if "over 1.5" in p:
+    # ── OVER 1.5: en ligas muy ofensivas → escalar a OVER 2.5 si la tasa lo soporta
+    if "over 1.5" in p and "ht" not in p:
+        # Bundesliga (64%), Eredivisie (61%), etc.: si el motor solo da OVER 1.5
+        # y la liga históricamente anota > 3.0 goles/partido, sugerir OVER 2.5.
+        if rates["o25"] >= 60 and rates["avg"] >= 3.0 and confianza >= 50:
+            nueva_conf = round(min(88, rates["o25"] * 0.90), 1)
+            nota = (f"Liga {liga}: avg {rates['avg']} goles, Over 2.5 real {rates['o25']}% "
+                    f"→ escalado a Over 2.5")
+            return nueva_conf, nota + " | PICK CAMBIADO: OVER 2.5 goles"
         factor = rates["o15"] / 73.0  # 73% referencia WC
         nueva_conf = round(min(88, max(50, confianza * factor)), 1)
         if abs(nueva_conf - confianza) > 3:
