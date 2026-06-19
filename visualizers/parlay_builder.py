@@ -252,44 +252,54 @@ def _recolectar_picks(dia_filtro=None):
         logger.warning(f"Parlay UFC: {e}")
 
     # ── FÚTBOL ───────────────────────────────────────────────────────────
-    # Cuotas REALES de Caliente (fútbol) para el EV — se intentan una sola vez.
+    # Cuotas REALES: The Odds API (moneyline WC, 44 partidos) como fuente
+    # principal + Caliente como respaldo. Para OVER/UNDER/BTTS se usan cuotas
+    # de mercado típicas (the-odds-api free solo da moneyline).
     cal_fut = {}
+    odds_api_ml = {}
     try:
         from scrapers.odds_scraper import get_soccer_odds_caliente
         cal_fut = get_soccer_odds_caliente() or {}
     except Exception as _ce:
         logger.warning(f"Caliente fútbol odds: {_ce}")
+    try:
+        from scrapers.odds_api import obtener_odds_futbol
+        def _am2dec(am):
+            try:
+                a = int(str(am).replace("+", ""))
+                return round(1 + (a / 100.0 if a > 0 else 100.0 / abs(a)), 2)
+            except Exception:
+                return None
+        for o in obtener_odds_futbol() or []:
+            if o.get("home_ml"):
+                odds_api_ml[(o.get("home") or "").lower()] = _am2dec(o["home_ml"])
+            if o.get("away_ml"):
+                odds_api_ml[(o.get("away") or "").lower()] = _am2dec(o["away_ml"])
+    except Exception as _oe:
+        logger.warning(f"odds_api fútbol: {_oe}")
+
+    _CUOTA_MKT = {"over 1.5 ht": 2.20, "over 1.5": 1.25, "over 2.5": 1.95,
+                  "over 3.5": 3.20, "under 2.5": 1.70, "btts": 1.85, "ambos": 1.85}
 
     def _norm_eq(s):
         return re.sub(r"[^a-z ]", "", (s or "").lower()).strip()
 
     def _cuota_real_futbol(pick, home, away):
-        """Cuota decimal real de Caliente para el pick, o None si no hay match."""
-        if not cal_fut:
-            return None
-        h, a = _norm_eq(home), _norm_eq(away)
-        ev = None
-        for v in cal_fut.values():
-            ch, ca = _norm_eq(v.get("home", "")), _norm_eq(v.get("away", ""))
-            if ((h[:5] and (h[:5] in ch or ch[:5] in h)) and (a[:5] and (a[:5] in ca or ca[:5] in a))) or \
-               ((h[:5] and (h[:5] in ca or ca[:5] in h)) and (a[:5] and (a[:5] in ch or ch[:5] in a))):
-                ev = v
-                break
-        if not ev:
-            return None
-        ml = ev.get("moneyline", {}) or {}
-        tot = ev.get("total", {}) or {}
+        """Cuota decimal REAL/mercado para el pick."""
         pl = pick.lower()
-        if "empate" in pl or "draw" in pl:
-            return ml.get("draw")
-        if "local" in pl or (h[:5] and h[:5] in pl) or f"gana {home.lower()}" in pl:
-            return ml.get("home")
-        if "visitante" in pl or (a[:5] and a[:5] in pl):
-            return ml.get("away")
-        if "over" in pl and tot.get("over"):
-            return tot.get("over")
-        if "under" in pl and tot.get("under"):
-            return tot.get("under")
+        # Moneyline → cuota real de The Odds API (o Caliente)
+        if "local" in pl or _norm_eq(home)[:5] in pl or f"gana {home.lower()}" in pl:
+            c = odds_api_ml.get(home.lower())
+            if c:
+                return c
+        if "visitante" in pl or _norm_eq(away)[:5] in pl:
+            c = odds_api_ml.get(away.lower())
+            if c:
+                return c
+        # Mercados de goles → cuota de mercado típica
+        for k, v in _CUOTA_MKT.items():
+            if k in pl:
+                return v
         return None
 
     try:
@@ -310,16 +320,14 @@ def _recolectar_picks(dia_filtro=None):
                     continue
                 evento_f = f"{home_f or '?'} vs {away_f or '?'}"
                 cuota_real = _cuota_real_futbol(pick, home_f, away_f)
-                # Pick primario (el más seguro de la jerarquía)
                 pool.append({
                     "sport": "⚽ FÚTBOL", "evento": evento_f,
                     "mercado": "1X2/Goles", "pick": pick,
                     "prob": r.get("confianza", 0),
                     "tipo": "SEGURO" if r.get("confianza", 0) >= 55 else "VALOR",
-                    "cuota": cuota_real or 2.0,
+                    "cuota": cuota_real or 1.90,
                     "cuota_real": bool(cuota_real),
                 })
-                # Pick COMBINADO (gana + Over) — mayor pago, para el parlay agresivo
                 for op in r.get("todas_opciones", []):
                     if op.get("combo") and op.get("confianza", 0) >= 38:
                         pool.append({
