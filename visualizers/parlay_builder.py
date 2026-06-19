@@ -134,7 +134,14 @@ def _recolectar_picks(dia_filtro=None):
             r = analizar_nba_pro_v17(p)
             evento = f"{p.get('local','?')} vs {p.get('visitante','?')}"
             mejor = r.get("mejor_mercado", {})
-            if mejor:
+            # Motor NBA v17 puede devolver solo recomendacion/confianza sin mejor_mercado
+            if not mejor and r.get("recomendacion") and r.get("confianza", 0) >= 50:
+                mejor = {
+                    "mercado": "MONEYLINE",
+                    "pick": r.get("recomendacion") or r.get("pick", ""),
+                    "confianza": r.get("confianza", 55),
+                }
+            if mejor and mejor.get("pick"):
                 pool.append({
                     "sport": "🏀 NBA", "evento": evento,
                     "mercado": mejor.get("mercado", "MONEYLINE"),
@@ -205,10 +212,20 @@ def _recolectar_picks(dia_filtro=None):
 
     # ── UFC ──────────────────────────────────────────────────────────────
     try:
+        _ufc_analyzer = ss.get("ufc_analyzer")
         for idx, c in enumerate(ss.get("ufc_combates", []) or []):
             if not _es_del_dia(c):
                 continue
-            res = ss.get("analisis_ufc", {}).get(f"{c.get('peleador1',{}).get('nombre','')}_vs_{c.get('peleador2',{}).get('nombre','')}")
+            p1 = c.get("peleador1", {})
+            p2 = c.get("peleador2", {})
+            fight_key = f"{p1.get('nombre','')}_vs_{p2.get('nombre','')}"
+            res = ss.get("analisis_ufc", {}).get(fight_key)
+            # Si no hay análisis previo, correr el motor UFC on-the-fly
+            if not res and _ufc_analyzer:
+                try:
+                    res = _ufc_analyzer.analizar_combate(p1, p2)
+                except Exception as _ue:
+                    logger.debug(f"UFC on-the-fly {fight_key}: {_ue}")
             if not res:
                 continue
             evento_ufc = f"{c.get('peleador1',{}).get('nombre','?')} vs {c.get('peleador2',{}).get('nombre','?')}"
@@ -647,6 +664,30 @@ def render_parlay_tab():
     if not pool:
         st.warning("No se generaron picks. Asegúrate de tener juegos cargados.")
         return
+
+    # ── Diagnóstico: picks por deporte (detecta si falta alguno) ──────────────
+    por_deporte = {}
+    for pk in pool:
+        s = pk.get("sport", "?")
+        por_deporte[s] = por_deporte.get(s, 0) + 1
+    deportes_cargados = {
+        "🏀 NBA":  len(st.session_state.get("nba_partidos", [])),
+        "⚾ MLB":  len(st.session_state.get("mlb_partidos", [])),
+        "🥊 UFC":  len(st.session_state.get("ufc_combates", [])),
+        "⚽ FÚTBOL": sum(len(v) for v in st.session_state.get("futbol_partidos", {}).values()),
+    }
+    alertas = []
+    for deporte, n_cargados in deportes_cargados.items():
+        n_picks = por_deporte.get(deporte, 0)
+        if n_cargados > 0 and n_picks == 0:
+            alertas.append(f"**{deporte}**: {n_cargados} partido(s) cargado(s) pero 0 picks generados "
+                           f"(¿juegos de otro día o ya iniciados?)")
+    if alertas:
+        with st.expander("⚠️ Deportes sin picks — diagnóstico", expanded=True):
+            for a in alertas:
+                st.warning(a)
+            st.caption("Solución: selecciona **Todos** en el filtro de día, o verifica que los juegos "
+                       "no hayan empezado ya. UFC requiere que el tab UFC esté cargado.")
 
     # ── FASE 1 (Memoria): registrar los picks propuestos para aprender de ellos ──
     if pick_memory is not None:
