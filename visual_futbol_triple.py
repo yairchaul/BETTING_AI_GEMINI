@@ -277,7 +277,7 @@ class VisualFutbolTriple:
                         st.info(f"🌍 Calibración WC: {wc_nota_debug}")
                     if debug_reglas:
                         st.markdown("**Todas las reglas evaluadas:**")
-                        for dr in sorted(debug_reglas, key=lambda x: x['confianza'], reverse=True):
+                        for dr in sorted(debug_reglas, key=lambda x: (0 if x.get('es_principal') else 1, -x['confianza'])):
                             marca = "✅ **ELEGIDA**" if dr['es_principal'] else "⬜"
                             st.markdown(
                                 f"{marca} Regla #{dr['regla']} — **{dr['pick']}** "
@@ -365,8 +365,8 @@ class VisualFutbolTriple:
             pass
 
         # ── Análisis IA ─────────────────────────────────────────────────────
-        if analisis_ia:
-            pick_ia = analisis_ia.get('pick', 'N/A')
+        if analisis_ia and not analisis_ia.get('error') and analisis_ia.get('pick') not in (None, '', 'N/A'):
+            pick_ia = analisis_ia.get('pick', '')
             conf_ia = analisis_ia.get('confianza', 0)
             razon_ia = analisis_ia.get('razon', '')
             st.success(f"🤖 **IA:** {pick_ia} ({conf_ia}%)" + (f" — {razon_ia}" if razon_ia else ""))

@@ -385,20 +385,19 @@ def analizar_futbol_jerarquico(
             pass
 
     # ── Selección primaria por VALOR, no solo por probabilidad ────────────────
-    # Orden: COMBO (mismatch claro) > OVER 2.5/3.5 > BTTS > UNDER > ML > OVER 1.5.
-    # OVER 1.5 es el fallback más seguro pero de menor valor: solo gana si nada
-    # más llega a su umbral mínimo. Dentro del mismo nivel, gana la mayor confianza.
+    # Orden: COMBO > OVER 2.5/3.5 (≥50%) > BTTS (≥58%) > UNDER (≥55%) > ML (≥63%) > OVER 1.5.
+    # OVER 2.5 SIEMPRE gana a OVER 1.5 desde 50%: mayor pago con probabilidad suficiente.
     def _prioridad(x):
         pick_lower = x.get("pick", "").lower()
         conf = x.get("confianza", 0)
         es_combo = x.get("regla") == 7
         if es_combo and conf >= 40:
             return (0, -conf)   # COMBO válido → máximo valor
-        # OVER 2.5/3.5 y BTTS al mismo nivel — gana el más probable
-        if ("over 2.5" in pick_lower or "over 3.5" in pick_lower or
-                "btts" in pick_lower or "ambos anotan" in pick_lower) and conf >= 60:
-            return (1, -conf)   # Over alto o BTTS → buen pago
-        if "under" in pick_lower and conf >= 58:
+        if ("over 2.5" in pick_lower or "over 3.5" in pick_lower) and conf >= 50:
+            return (1, -conf)   # OVER alto → mejor pago que OVER 1.5 desde 50%
+        if ("btts" in pick_lower or "ambos anotan" in pick_lower) and conf >= 58:
+            return (1, -conf)   # BTTS → ambos anotan, buen pago
+        if "under" in pick_lower and conf >= 55:
             return (2, -conf)   # UNDER → matchup defensivo detectado
         if ("local (" in pick_lower or "visitante (" in pick_lower) and conf >= 63:
             return (3, -conf)   # ML simple → solo si es claro
