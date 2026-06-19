@@ -170,39 +170,29 @@ def _recolectar_picks(dia_filtro=None):
             odds = p.get("odds", {}) or {}
             ml = odds.get("moneyline", {}) if isinstance(odds.get("moneyline"), dict) else {}
             cuota_ml = _americano_a_decimal(ml.get("local") if r.get("pick") == p.get("local") else ml.get("visitante")) or 1.90
-            # Moneyline
-            pool.append({
-                "sport": "⚾ MLB", "evento": evento, "mercado": "MONEYLINE",
-                "pick": f"Gana {r.get('pick','')}", "prob": r.get("confianza", 0),
-                "tipo": "SEGURO", "cuota": cuota_ml,
-            })
-            # Over/Under
-            if r.get("ou_pick"):
+
+            # ── MEJOR LEG DEL JUEGO: el mercado de mayor probabilidad CALIBRADA ──
+            # (el motor ya comparó ML, runline, O/U, K, HR y eligió el mejor por
+            #  confianza × tasa real histórica). Solo ESA leg sube al parlay seguro.
+            mejor = r.get("mejor_apuesta") or {}
+            _etiqueta = {"MONEYLINE": "MONEYLINE", "HANDICAP": "RUNLINE", "TOTAL": "TOTAL",
+                         "PONCHES": "PONCHES (K)", "TOTAL_BASES": "TOTAL BASES", "HOME_RUN": "HOME RUN"}
+            _cuota = {"MONEYLINE": cuota_ml, "HANDICAP": 1.80, "TOTAL": 1.90,
+                      "PONCHES": 1.85, "TOTAL_BASES": 1.95, "HOME_RUN": 3.50}
+            if mejor.get("pick") and mejor.get("mercado") != "HOME_RUN":
+                mk = mejor["mercado"]
                 pool.append({
-                    "sport": "⚾ MLB", "evento": evento, "mercado": "TOTAL",
-                    "pick": f"{r['ou_pick']} {r.get('ou_linea_ajustada','')}",
-                    "prob": r.get("ou_confianza", 0), "tipo": "SEGURO", "cuota": 1.90,
+                    "sport": "⚾ MLB", "evento": evento,
+                    "mercado": _etiqueta.get(mk, mk), "pick": mejor["pick"],
+                    "prob": mejor.get("confianza", 0), "tipo": "SEGURO",
+                    "cuota": _cuota.get(mk, 1.90),
                 })
-            # Strikeouts del lanzador (Over/Under)
-            for kp in r.get("k_picks", []):
-                pool.append({
-                    "sport": "⚾ MLB", "evento": evento, "mercado": "PONCHES (K)",
-                    "pick": f"{kp.get('pitcher','?')} {kp.get('prediccion','')} {kp.get('linea','')} K",
-                    "prob": kp.get("confianza", 0), "tipo": "SEGURO", "cuota": 1.85,
-                })
-            # Total de bases (Over 1.5) — props de mediana probabilidad
-            for tb in r.get("tb_picks", [])[:3]:
-                if tb.get("prediccion") == "OVER" and tb.get("confianza", 0) >= 55:
-                    pool.append({
-                        "sport": "⚾ MLB", "evento": evento, "mercado": "TOTAL BASES",
-                        "pick": f"{tb.get('jugador','?')} {tb.get('pick','')}",
-                        "prob": tb.get("confianza", 0), "tipo": "VALOR", "cuota": 1.95,
-                    })
-            # HR candidates (props de mayor pago) — SOLO si el bateador está
-            # confirmado en la alineación del día (evita proponer a quien no juega).
+
+            # HR candidates (props de mayor pago) — para los parlays BOMBA/SLUGGER.
+            # SOLO si el bateador está en la alineación del día (oficial o proyectada).
             for hr in r.get("hr_candidates", []):
                 if hr.get("en_lineup") is False:
-                    continue  # lineup no confirmado → no arriesgar el HR
+                    continue
                 prob_hr = hr.get("probabilidad", hr.get("prob", 0))
                 pool.append({
                     "sport": "⚾ MLB", "evento": evento, "mercado": "HOME RUN",
@@ -313,12 +303,35 @@ def _recolectar_picks(dia_filtro=None):
     return pool
 
 
+_CALIB_MERCADOS = None
+
+
+def _rate_real_mercado(sport, mercado):
+    """Tasa de acierto REAL del mercado (aprendizaje_mercados.json) o None."""
+    global _CALIB_MERCADOS
+    if _CALIB_MERCADOS is None:
+        import os, json
+        try:
+            with open(os.path.join("data", "aprendizaje_mercados.json"), encoding="utf-8") as f:
+                _CALIB_MERCADOS = json.load(f).get("por_mercado", {})
+        except Exception:
+            _CALIB_MERCADOS = {}
+    s = (sport or "").upper()
+    dep = ("MLB" if "MLB" in s else "SOCCER" if "FÚTBOL" in s or "FUTBOL" in s
+           else "NBA" if "NBA" in s else "UFC" if "UFC" in s else "")
+    return _CALIB_MERCADOS.get(f"{dep} · {mercado}", {}).get("win_rate")
+
+
 def _armar_parlay(legs):
-    """Calcula prob combinada, cuota y EV de un conjunto de legs."""
+    """Calcula prob combinada, cuota y EV. La probabilidad de cada leg se
+    CALIBRA con la tasa real del mercado (aprendizaje): 60% tasa real + 40%
+    modelo, para que la prob combinada refleje lo que de verdad acierta."""
     prob = 1.0
     cuota = 1.0
     for l in legs:
-        prob *= max(0.01, l["prob"] / 100.0)
+        real = _rate_real_mercado(l.get("sport", ""), l.get("mercado", ""))
+        p = l["prob"] if real is None else (l["prob"] * 0.4 + real * 0.6)
+        prob *= max(0.01, p / 100.0)
         cuota *= l.get("cuota", 1.9)
     ev = prob * cuota - 1.0
     return {
@@ -466,6 +479,13 @@ def _sluggers_del_dia(top_n: int = 5) -> list:
                     pass
         return prec_global
 
+    # Intentar cargar factor Statcast (barrel rate real) para cada jugador
+    try:
+        from motors.pybaseball_hr import factor_hr_statcast
+        _statcast_ok = True
+    except Exception:
+        _statcast_ok = False
+
     ranking = []
     for jugador, s in stats.items():
         avg_prob = sum(s['probs']) / len(s['probs'])
@@ -473,6 +493,21 @@ def _sluggers_del_dia(top_n: int = 5) -> list:
         # Prob calibrada: ponderación 40% motor, 60% tasa real; boost por racha (+1% por HR adicional)
         prob_cal = round(prec * 0.6 + avg_prob * 0.4 + (s['hits'] - 1) * 0.8, 1)
         prob_cal = max(8.0, min(35.0, prob_cal))
+
+        # ── Boost Statcast: si el jugador tiene barrel_rate alto, mejorar prob ──
+        statcast_nota = ""
+        statcast_factor = 1.0
+        if _statcast_ok:
+            try:
+                statcast_factor, statcast_nota = factor_hr_statcast(jugador)
+                if statcast_factor != 1.0:
+                    # Aplicar factor con límite (no más de +5pp ni -5pp)
+                    ajuste = (statcast_factor - 1.0) * 5.0
+                    ajuste = max(-5.0, min(5.0, ajuste))
+                    prob_cal = round(max(8.0, min(35.0, prob_cal + ajuste)), 1)
+            except Exception:
+                pass
+
         ranking.append({
             'sport': '⚾ MLB',
             'evento': s['equipo'],
@@ -484,9 +519,11 @@ def _sluggers_del_dia(top_n: int = 5) -> list:
             '_hits': s['hits'],
             '_avg_prob_motor': round(avg_prob, 1),
             '_prec_historica': prec,
+            '_statcast_factor': round(statcast_factor, 2),
+            '_statcast_nota': statcast_nota,
         })
 
-    ranking.sort(key=lambda x: (x['_hits'], x['_avg_prob_motor']), reverse=True)
+    ranking.sort(key=lambda x: (x['_hits'], x['_statcast_factor'], x['_avg_prob_motor']), reverse=True)
     return ranking[:top_n]
 
 
@@ -601,6 +638,29 @@ def render_parlay_tab():
 
     st.markdown("---")
 
+    # ── 🎯 PARLAY ÓPTIMO (2-3 legs de MAYOR probabilidad real) ────────────
+    # Recomendado por el backtest: 3 legs ≈ 27% de acierto vs 14% del enfoque
+    # viejo. Toma la MEJOR leg calibrada por evento (sin HR), top 3.
+    def _prob_cal(l):
+        real = _rate_real_mercado(l.get("sport", ""), l.get("mercado", ""))
+        return l["prob"] if real is None else (l["prob"] * 0.4 + real * 0.6)
+
+    cand_opt = sorted([p for p in pool if p["mercado"] != "HOME RUN"],
+                      key=_prob_cal, reverse=True)
+    vistos_opt, legs_opt = set(), []
+    for p in cand_opt:
+        if p["evento"] in vistos_opt:
+            continue
+        vistos_opt.add(p["evento"])
+        legs_opt.append(p)
+        if len(legs_opt) >= 3:
+            break
+    if len(legs_opt) >= 2:
+        _tarjeta_parlay("🎯 PARLAY ÓPTIMO (3 legs)", "#10b981",
+                        "Las 3 legs de MAYOR probabilidad real (1 por evento) — el más fiable "
+                        "según backtest (~27% a 3 legs vs ~14% del enfoque viejo)",
+                        _armar_parlay(legs_opt))
+
     # ── Parlay SEGURO: COMBINA deportes (mejor de cada uno) + relleno por prob ──
     seguros = [p for p in pool if p["prob"] >= min_prob and p["mercado"] != "HOME RUN"]
     vistos_evento = set()
@@ -694,22 +754,31 @@ def render_parlay_tab():
         )
         _tarjeta_parlay("⚡ PARLAY SLUGGER DEL DÍA", "#f59e0b", desc_slug, _armar_parlay(sluggers))
 
-        # Detalle de cada slugger con su racha
-        with st.expander("📊 Detalle de la racha de cada Slugger", expanded=False):
+        # Detalle de cada slugger con su racha + datos Statcast
+        with st.expander("📊 Detalle de la racha de cada Slugger + Statcast", expanded=False):
             st.markdown(
-                "<div style='font-size:0.82rem;color:#94a3b8'>Los jugadores con más HRs confirmados "
-                "en los últimos días del backtest. La prob. del motor se ajusta a la tasa real de "
-                "acierto histórica.</div>", unsafe_allow_html=True)
+                "<div style='font-size:0.82rem;color:#94a3b8'>Jugadores con HRs confirmados "
+                "en los últimos días del backtest, mejorados con datos Statcast (barrel rate / exit velo). "
+                "La probabilidad combina: tasa real (60%) + motor (40%) + racha + Statcast.</div>",
+                unsafe_allow_html=True)
             for s in sluggers:
                 racha = "🔥" * min(s['_hits'], 3)
+                sc_factor = s.get('_statcast_factor', 1.0)
+                sc_nota = s.get('_statcast_nota', '')
+                sc_color = "#22c55e" if sc_factor >= 1.1 else "#ef4444" if sc_factor < 0.9 else "#94a3b8"
+                sc_ico = "🚀" if sc_factor >= 1.2 else "📈" if sc_factor >= 1.05 else "📊" if sc_factor >= 0.95 else "📉"
+                sc_html = (f"<br><span style='color:{sc_color};font-size:0.75rem'>"
+                           f"{sc_ico} {sc_nota[:80]}</span>") if sc_nota else ""
                 st.markdown(
-                    f"<div style='background:#1e293b;border-radius:6px;padding:6px 12px;margin:3px 0'>"
+                    f"<div style='background:#1e293b;border-radius:6px;padding:8px 12px;margin:3px 0'>"
                     f"<b>{s['pick']}</b> · {s['evento']} "
                     f"<span style='float:right'>"
-                    f"{racha} <span style='color:#fbbf24'>{s['_hits']} HRs en 3 días</span> | "
+                    f"{racha} <span style='color:#fbbf24'>{s['_hits']} HRs recientes</span> | "
                     f"motor: {s['_avg_prob_motor']}% → calibrada: "
                     f"<b style='color:#22c55e'>{s['prob']}%</b>"
-                    f"</span></div>",
+                    f"</span>"
+                    f"{sc_html}"
+                    f"</div>",
                     unsafe_allow_html=True)
 
     # ── PARLAY GIGANTE: TODOS los picks sólidos (1 por evento, 10+ legs) ──

@@ -653,11 +653,11 @@ def main():
                     st.session_state.scrapers["futbol"].poblar_historial(partidos_lg)
                 except Exception as _he:
                     logger.warning(f"Poblar historial {lg}: {_he}")
-            # Mostrar de HOY hasta +5 días (hasta el domingo), no terminados.
+            # Mostrar de HOY hasta +3 días (hoy → lunes), no terminados.
             # (Lo ya jugado va al historial/backtesting, no a la pestaña.)
             from datetime import timedelta as _td
             _hoy = datetime.now().strftime("%Y-%m-%d")
-            _lim = (datetime.now() + _td(days=5)).strftime("%Y-%m-%d")
+            _lim = (datetime.now() + _td(days=3)).strftime("%Y-%m-%d")
             futuros = [p for p in (partidos_lg or [])
                        if not p.get("completado")
                        and _hoy <= str(p.get("fecha_partido") or p.get("fecha") or "9999")[:10] <= _lim]
@@ -1163,82 +1163,140 @@ def main():
         st.header("📊 Reporte de Backtesting Universal")
         st.caption("Resultados del rendimiento histórico de los motores de análisis.")
 
-        # ── 🧠 MEMORIA DE PICKS (ciclo de aprendizaje) ───────────────────────
-        with st.expander("🧠 Aprendizaje — Memoria de picks (acierto global / por deporte / por mercado)", expanded=False):
-            if pick_memory is None:
-                st.info("Módulo de memoria no disponible.")
-            else:
+        # ── 🧠 APRENDIZAJE — Parlays generados + aciertos ───────────────────
+        with st.expander("🧠 Aprendizaje — Parlays generados y resultados", expanded=False):
+            try:
+                from utils.parlay_log import historial as _ph_historial, stats_parlays as _ph_stats
+                _ph_stats_data = _ph_stats()
+                _ph_hist = _ph_historial(dias=30)
+            except Exception as _ple:
+                _ph_stats_data = {}
+                _ph_hist = []
+
+            # ── Métricas globales de picks (pick_memory) ──────────────────────
+            if pick_memory is not None:
                 s = pick_memory.stats()
                 g = s["global"]
                 cA, cB, cC, cD = st.columns(4)
                 cA.metric("Picks resueltos", g["total"])
-                cB.metric("Tasa de acierto", f"{g['win_rate']}%")
-                cC.metric("ROI", f"{g['roi']:+.1f}%")
+                cB.metric("Win Rate picks", f"{g['win_rate']}%")
+                cC.metric("ROI picks", f"{g['roi']:+.1f}%")
                 cD.metric("Pendientes", s["pendientes"])
 
-                if g["total"] == 0 and s["pendientes"] > 0:
-                    st.info(
-                        f"📋 {s['pendientes']} picks registrados, aún **PENDIENTES** (los juegos de hoy "
-                        "no han terminado). El aprendizaje se llena cuando los partidos finalizan: pulsa "
-                        "**Auto-resolver** DESPUÉS de que terminen, o vuelve mañana. Entonces verás win-rate "
-                        "y ROI por deporte y por mercado, y el selector de Parlays los usará automáticamente."
-                    )
+            # ── Métricas de parlays ───────────────────────────────────────────
+            if _ph_stats_data.get("total", 0) > 0:
+                st.markdown("**Rendimiento de parlays generados:**")
+                pA, pB, pC, pD = st.columns(4)
+                pA.metric("Parlays resueltos", _ph_stats_data["total"])
+                pB.metric("Ganados", _ph_stats_data["ganados"])
+                pC.metric("Win Rate", f"{_ph_stats_data['win_rate']}%")
+                pD.metric("ROI", f"{_ph_stats_data['roi']:+.1f}%")
 
-                if s["por_deporte"]:
-                    st.markdown("**Por deporte:**")
-                    st.table([{"Deporte": k, "Picks": v["total"], "Aciertos": v["aciertos"],
-                               "Win Rate": f"{v['win_rate']}%", "ROI": f"{v['roi']:+.1f}%"}
-                              for k, v in s["por_deporte"].items()])
-                if s["por_mercado"]:
-                    st.markdown("**Por tipo de apuesta (mercado):**")
-                    st.table([{"Mercado": k, "Picks": v["total"], "Aciertos": v["aciertos"],
-                               "Win Rate": f"{v['win_rate']}%", "ROI": f"{v['roi']:+.1f}%"}
-                              for k, v in sorted(s["por_mercado"].items(),
-                                                 key=lambda x: x[1]["win_rate"], reverse=True)])
-                    st.caption("💡 El selector de Parlays ya usa estas tasas: penaliza mercados con bajo "
-                               "acierto y premia los consistentes (Fase 3 - Evolución).")
+            # ── Historial de parlays por día ──────────────────────────────────
+            if _ph_hist:
+                st.markdown("---")
+                st.markdown("**Parlays generados (últimos 30 días):**")
 
-                # Auto-resolver con resultados/box scores reales
-                col_r1, col_r2 = st.columns(2)
-                with col_r1:
-                    if st.button("🔄 Auto-resolver MLB + NBA (box scores reales)", use_container_width=True):
-                        try:
-                            from motors.box_score_resolver import resolver_todo
-                            with st.spinner("Cruzando picks con box scores reales..."):
-                                rr = resolver_todo()
-                            if rr['total'] == 0:
-                                st.info("0 resueltos: los juegos de esos picks aún no terminan. "
-                                        "Vuelve cuando hayan finalizado (normalmente al día siguiente).")
-                            else:
-                                st.success(f"✅ Resueltos: {rr['mlb']} MLB + {rr['nba']} NBA = {rr['total']} picks.")
-                                st.rerun()
-                        except Exception as _be:
-                            st.error(f"Error: {_be}")
-                with col_r2:
-                    if st.button("⚽ Auto-resolver FÚTBOL (resultados reales)", use_container_width=True):
-                        try:
-                            with st.spinner("Cruzando picks de fútbol..."):
-                                resueltos = _auto_resolver_futbol()
-                            st.success(f"✅ {resueltos} picks de fútbol resueltos.")
+                # Agrupar por fecha
+                por_fecha: dict = {}
+                for p in _ph_hist:
+                    f = p.get("fecha", "?")
+                    por_fecha.setdefault(f, []).append(p)
+
+                for fecha, parlays in sorted(por_fecha.items(), reverse=True):
+                    ganados_dia  = sum(1 for p in parlays if p.get("estado") == "ganado")
+                    perdidos_dia = sum(1 for p in parlays if p.get("estado") == "perdido")
+                    pend_dia     = sum(1 for p in parlays if p.get("estado") in (None, "pendiente"))
+                    resumen_dia  = (f"✅ {ganados_dia}G" if ganados_dia else "") + \
+                                   (f" ❌ {perdidos_dia}P" if perdidos_dia else "") + \
+                                   (f" ⏳ {pend_dia} pend." if pend_dia else "")
+                    st.markdown(f"**📅 {fecha}** · {len(parlays)} parlays · {resumen_dia.strip()}")
+
+                    for p in parlays:
+                        estado = p.get("estado") or "pendiente"
+                        ico_estado = {"ganado": "✅", "perdido": "❌", "parcial": "🔶",
+                                      "pendiente": "⏳"}.get(estado, "⏳")
+                        cuota = p.get("cuota", 0)
+                        def _dec2am(d):
+                            try:
+                                d = float(d)
+                                if d <= 1: return "—"
+                                return f"+{round((d-1)*100)}" if d >= 2 else f"-{round(100/(d-1))}"
+                            except Exception: return "—"
+                        momio_str = _dec2am(cuota) if cuota else "—"
+                        tipo_short = str(p.get("tipo", "")).replace("🎯", "").replace("🚀", "").replace(
+                            "💎", "").replace("💣", "").replace("⚡", "").strip()[:20]
+
+                        with st.container():
+                            col_e, col_t, col_m, col_p = st.columns([1, 3, 2, 2])
+                            col_e.markdown(f"<span style='font-size:1.1rem'>{ico_estado}</span>",
+                                           unsafe_allow_html=True)
+                            col_t.markdown(f"<span style='font-size:0.82rem;color:#cbd5e1'>{tipo_short}</span>"
+                                           f"<br><span style='font-size:0.72rem;color:#64748b'>"
+                                           f"{p.get('n_legs', len(p.get('legs',[])))}-legs · "
+                                           f"EV {p.get('ev_pct',0):+.1f}%</span>",
+                                           unsafe_allow_html=True)
+                            col_m.markdown(f"<span style='color:#22c55e;font-weight:700'>{momio_str}</span>"
+                                           f"<span style='color:#64748b;font-size:0.75rem'> ({cuota:.1f}x)</span>",
+                                           unsafe_allow_html=True)
+                            col_p.markdown(f"<span style='color:#94a3b8;font-size:0.78rem'>"
+                                           f"Prob {p.get('prob',0):.1f}%</span>",
+                                           unsafe_allow_html=True)
+
+                        # Legs del parlay (colapsado)
+                        legs_txt = " · ".join(
+                            f"{l.get('sport','').split()[-1]} {l.get('pick','')[:30]}"
+                            for l in p.get("legs", [])
+                        )
+                        st.caption(legs_txt)
+                        st.markdown("<hr style='margin:4px 0;border-color:#1e293b'>",
+                                    unsafe_allow_html=True)
+            else:
+                st.info("Aún no hay parlays guardados. Ve a la pestaña **Parlays** para generar el primero — "
+                        "cada parlay se guarda automáticamente y aquí verás sus resultados.")
+
+            # ── Auto-resolver ─────────────────────────────────────────────────
+            st.markdown("---")
+            col_r1, col_r2 = st.columns(2)
+            with col_r1:
+                if st.button("🔄 Auto-resolver MLB + NBA", use_container_width=True):
+                    try:
+                        from motors.box_score_resolver import resolver_todo
+                        with st.spinner("Cruzando picks con box scores reales..."):
+                            rr = resolver_todo()
+                        if rr['total'] == 0:
+                            st.info("0 resueltos — los juegos de esos picks aún no terminan.")
+                        else:
+                            st.success(f"✅ {rr['mlb']} MLB + {rr['nba']} NBA resueltos.")
                             st.rerun()
-                        except Exception as _re:
-                            st.error(f"Error al auto-resolver: {_re}")
+                    except Exception as _be:
+                        st.error(f"Error: {_be}")
+            with col_r2:
+                if st.button("⚽ Auto-resolver Fútbol", use_container_width=True):
+                    try:
+                        with st.spinner("Cruzando picks de fútbol..."):
+                            _res_f = _auto_resolver_futbol()
+                        st.success(f"✅ {_res_f} picks de fútbol resueltos.")
+                        st.rerun()
+                    except Exception as _re:
+                        st.error(f"Error: {_re}")
 
-                # Resolución manual de pendientes
-                pend = pick_memory.pendientes()
-                if pend:
-                    st.markdown(f"**Resolver manualmente ({len(pend)} pendientes):**")
-                    for p in pend[:25]:
-                        rc1, rc2, rc3 = st.columns([4, 1, 1])
-                        rc1.markdown(f"<span style='font-size:0.85rem'>{p['deporte']} · {p['pick']} "
-                                     f"<span style='color:#64748b'>({p['evento']})</span></span>",
-                                     unsafe_allow_html=True)
-                        if rc2.button("✅", key=f"win_{p['id']}", help="Ganado"):
-                            pick_memory.resolver(p['id'], "ganado"); st.rerun()
-                        if rc3.button("❌", key=f"loss_{p['id']}", help="Perdido"):
-                            pick_memory.resolver(p['id'], "perdido"); st.rerun()
-                else:
-                    st.caption("No hay picks pendientes. Genera parlays para llenar la memoria.")
+            # ── Tabla pick_memory por deporte / mercado ───────────────────────
+            if pick_memory is not None:
+                s2 = pick_memory.stats()
+                if s2.get("por_deporte"):
+                    with st.expander("📊 Detalle por deporte y mercado", expanded=False):
+                        st.markdown("**Por deporte:**")
+                        st.table([{"Deporte": k, "Picks": v["total"], "Aciertos": v["aciertos"],
+                                   "Win Rate": f"{v['win_rate']}%", "ROI": f"{v['roi']:+.1f}%"}
+                                  for k, v in s2["por_deporte"].items()])
+                        if s2.get("por_mercado"):
+                            st.markdown("**Por mercado:**")
+                            st.table([{"Mercado": k, "Picks": v["total"], "Aciertos": v["aciertos"],
+                                       "Win Rate": f"{v['win_rate']}%", "ROI": f"{v['roi']:+.1f}%"}
+                                      for k, v in sorted(s2["por_mercado"].items(),
+                                                         key=lambda x: x[1]["win_rate"], reverse=True)])
+                            st.caption("💡 El selector de Parlays ya usa estas tasas automáticamente.")
 
 
         # ── BACKTEST REAL MLB (scraper oficial → auditor → efectividad) ──────
