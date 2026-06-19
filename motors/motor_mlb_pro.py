@@ -312,7 +312,7 @@ def _mejor_apuesta_mlb(res, factor_fn=_factor_mercado):
                       "confianza": res.get("ou_confianza", 0)})
     rl = res.get("run_line", {}) or {}
     if rl.get("pick"):
-        cands.append({"mercado": "HANDICAP", "pick": f"{rl['pick']} {rl.get('linea','')}",
+        cands.append({"mercado": "HANDICAP", "pick": rl["pick"],
                       "confianza": rl.get("confianza", 0)})
     for kp in (res.get("k_picks") or [])[:2]:
         cands.append({"mercado": "PONCHES", "pick": f"{kp.get('pitcher','')} {kp.get('pick','')}",

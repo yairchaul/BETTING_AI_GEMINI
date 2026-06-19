@@ -237,10 +237,10 @@ class VisualUFCMejoradoV2:
             
             with col_a1:
                 st.markdown("<h4 style='color: #FFD700;'>📊 HEURÍSTICO</h4>", unsafe_allow_html=True)
-                if analisis_ufc:
-                    apuesta = analisis_ufc.get('recomendacion') or analisis_ufc.get('apuesta', 'N/A')
+                _heur_pick = (analisis_ufc or {}).get('recomendacion') or (analisis_ufc or {}).get('apuesta', '')
+                if analisis_ufc and _heur_pick and _heur_pick not in ('N/A', ''):
                     confianza = analisis_ufc.get('confianza', 0)
-                    metodo = analisis_ufc.get('metodo', 'N/A')
+                    metodo = analisis_ufc.get('metodo', '')
                     dur = analisis_ufc.get('duracion', {}) or {}
 
                     color_conf = '#4CAF50' if confianza >= 70 else '#FF9800' if confianza >= 50 else '#f44336'
@@ -251,14 +251,14 @@ class VisualUFCMejoradoV2:
 
                     st.markdown(f"""
                     <div style="background-color: #2A2A2A; padding: 10px; border-radius: 5px;">
-                        <p style='color: #FFF; font-weight: bold;'>{apuesta}</p>
+                        <p style='color: #FFF; font-weight: bold;'>{_heur_pick}</p>
                         <p style='color: {color_conf};'>Confianza: {confianza}%</p>
                         <p style='color: #888; font-size: 12px;'>{metodo}</p>
                         {linea_dur}
                     </div>
                     """, unsafe_allow_html=True)
                 else:
-                    st.markdown("<p style='color: #888;'>Pendiente de análisis</p>", unsafe_allow_html=True)
+                    st.markdown("<p style='color: #888;'>Pulsa 'Actualizar análisis' para ver el pick</p>", unsafe_allow_html=True)
             
             with col_a2:
                 st.markdown("<h4 style='color: #FFD700;'>🧠 CLAUDE ANALYST</h4>", unsafe_allow_html=True)
@@ -288,23 +288,19 @@ class VisualUFCMejoradoV2:
             
             with col_a3:
                 st.markdown("<h4 style='color: #FFD700;'>🤖 GEMINI IA</h4>", unsafe_allow_html=True)
-                if analisis_ufc:
-                    if 'error' in analisis_ufc:
-                        st.error(f"IA Falló: {analisis_ufc['error'][:100]}...")
-                    else:
-                        ganador = analisis_ufc.get('ganador', 'N/A')
-                        metodo = analisis_ufc.get('metodo', 'N/A')
-                        confianza_ia = analisis_ufc.get('confianza', 0)
-                        
-                        st.markdown(f"""
-                        <div style="background-color: #2A2A2A; padding: 10px; border-radius: 5px;">
-                            <p style='color: #2196F3; font-weight: bold;'>Ganador: {ganador}</p>
-                            <p style='color: #4CAF50;'>Confianza IA: {confianza_ia}%</p>
-                            <p style='color: #888; font-size: 12px;'>{metodo[:80]}...</p>
-                        </div>
-                        """, unsafe_allow_html=True)
+                _gem_ganador = (analisis_ufc or {}).get('ganador', '')
+                if analisis_ufc and not analisis_ufc.get('error') and _gem_ganador and _gem_ganador != 'N/A':
+                    metodo = analisis_ufc.get('metodo', '')
+                    confianza_ia = analisis_ufc.get('confianza', 0)
+                    st.markdown(f"""
+                    <div style="background-color: #2A2A2A; padding: 10px; border-radius: 5px;">
+                        <p style='color: #2196F3; font-weight: bold;'>Ganador: {_gem_ganador}</p>
+                        <p style='color: #4CAF50;'>Confianza IA: {confianza_ia}%</p>
+                        <p style='color: #888; font-size: 12px;'>{metodo[:80]}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
                 else:
-                    st.markdown("<p style='color: #888;'>Pendiente de análisis</p>", unsafe_allow_html=True)
+                    st.markdown("<p style='color: #888;'>Pulsa 'Actualizar análisis' para obtener análisis IA</p>", unsafe_allow_html=True)
             
             st.markdown("---")
             

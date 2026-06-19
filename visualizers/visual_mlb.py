@@ -149,9 +149,9 @@ class VisualMLB:
             razon_r = analisis_mlb.get("razon", "")
             mercado_r = analisis_mlb.get("mercado", "")
             err_r = analisis_mlb.get("error", "")
-            if err_r:
-                st.warning(f"⚠️ IA: {err_r}")
-            elif pick_r:
+            if err_r and pick_r in (None, "", "N/A"):
+                pass  # error de IA sin pick válido → no mostrar nada
+            elif pick_r and pick_r != "N/A":
                 color = "#22c55e" if conf_r >= 65 else "#f59e0b" if conf_r >= 50 else "#ef4444"
                 label = f"{'📊 HEURÍSTICO' if not mercado_r else '🤖 IA'}"
                 st.markdown(
@@ -180,6 +180,20 @@ class VisualMLB:
                 if _alts:
                     st.caption("Alternativas: " + " · ".join(
                         f"{a['mercado']} {a['confianza']:.0f}%" for a in _alts))
+                # Registrar MEJOR APUESTA en pick_memory para backtest automático
+                try:
+                    from motors.pick_memory import pick_memory as _pm
+                    if _pm is not None:
+                        _evento_str = f"{p.get('visitante','?')} @ {p.get('local','?')}"
+                        _pm.registrar(
+                            deporte="MLB",
+                            mercado=ma.get("mercado", "MEJOR APUESTA"),
+                            pick=ma["pick"],
+                            confianza=ma.get("confianza", 0),
+                            evento=_evento_str,
+                        )
+                except Exception:
+                    pass
             if analisis_mlb.get("alerta_upset"):
                 st.warning(f"⚠️ {analisis_mlb['alerta_upset']}")
 
