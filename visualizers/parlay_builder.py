@@ -720,10 +720,26 @@ def render_parlay_tab():
         st.caption("Probabilidad REAL de que ganen TODAS las legs (calibrada con backtest). "
                    "Más legs = más pago pero MENOS probable. Ningún parlay es 100% seguro.")
         filas = []
-        for n in range(2, min(len(legs_esc), 12) + 1):
-            par = _armar_parlay(legs_esc[:n])
-            filas.append({"n": n, "prob": par["prob"], "cuota": par["cuota"],
-                          "gan": round((par["cuota"] - 1) * 100), "ev": par["ev_pct"]})
+        try:
+            from motors.montecarlo_parlay import prob_combinada_mc, simular_estrategia
+            _mc_ok = True
+        except Exception:
+            _mc_ok = False
+        for n in range(2, min(len(legs_esc), 10) + 1):
+            sub = legs_esc[:n]
+            par = _armar_parlay(sub)
+            prob = par["prob"]
+            # Monte Carlo: corrige la prob si hay legs correlacionadas (mismo
+            # partido) y simula el riesgo/retorno de apostarlo 30 veces.
+            rentable = roi = None
+            if _mc_ok:
+                mc_legs = [{"prob": _prob_cal(l), "evento": l.get("evento", "")} for l in sub]
+                prob = round(prob_combinada_mc(mc_legs, n_sims=4000) * 100, 1)
+                sim = simular_estrategia(prob / 100.0, par["cuota"], n_apuestas=30, sims=2500)
+                rentable, roi = sim["pct_rentable"], sim["roi_medio_pct"]
+            filas.append({"n": n, "prob": prob, "cuota": par["cuota"],
+                          "gan": round((par["cuota"] - 1) * 100), "ev": par["ev_pct"],
+                          "rentable": rentable, "roi": roi})
         # el de MAYOR ganancia cuya probabilidad aún es razonable (≥10%)
         grande = max([f for f in filas if f["prob"] >= 10], key=lambda f: f["gan"], default=None)
         for f in filas:
@@ -733,11 +749,17 @@ def render_parlay_tab():
                 tags.append("<span style='color:#22c55e'>🛡️ para no perder</span>")
             if grande and f["n"] == grande["n"]:
                 tags.append("<span style='color:#f59e0b'>💰 mayor ganancia razonable</span>")
+            riesgo_txt = ""
+            if f.get("rentable") is not None:
+                rc = "#22c55e" if f["rentable"] >= 50 else "#ef4444"
+                riesgo_txt = (f" · <span style='color:{rc};font-size:0.8rem' "
+                              f"title='Monte Carlo: 30 apuestas de $100'>rentable {f['rentable']}% · "
+                              f"ROI {f['roi']:+.0f}%</span>")
             st.markdown(
                 f"<div style='background:#0f172a;border-radius:6px;padding:5px 12px;margin:2px 0'>"
                 f"<b>{f['n']} legs</b> · prob <b style='color:{color}'>{f['prob']}%</b> · "
                 f"cuota {f['cuota']}x · $100 → <b style='color:#22c55e'>${f['gan']:,}</b>"
-                f"  {' · '.join(tags)}</div>",
+                f"{riesgo_txt}  {' · '.join(tags)}</div>",
                 unsafe_allow_html=True)
         if grande:
             st.caption(f"💡 'No perder': 2-3 legs ({filas[0]['prob']}% a 2). 'Gran ganancia': hasta "
