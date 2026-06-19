@@ -1270,7 +1270,15 @@ def main():
                             st.info("0 resueltos — los juegos de esos picks aún no terminan.")
                         else:
                             st.success(f"✅ {rr['mlb']} MLB + {rr['nba']} NBA resueltos.")
-                            st.rerun()
+                        # Cerrar el ciclo: resolver los parlays cuyos picks ya se saben
+                        try:
+                            from motors.parlay_brain import resolver_parlays_pendientes
+                            n_par = resolver_parlays_pendientes()
+                            if n_par:
+                                st.success(f"🎰 {n_par} parlay(s) resueltos automáticamente.")
+                        except Exception:
+                            pass
+                        st.rerun()
                     except Exception as _be:
                         st.error(f"Error: {_be}")
             with col_r2:
@@ -1279,9 +1287,46 @@ def main():
                         with st.spinner("Cruzando picks de fútbol..."):
                             _res_f = _auto_resolver_futbol()
                         st.success(f"✅ {_res_f} picks de fútbol resueltos.")
+                        try:
+                            from motors.parlay_brain import resolver_parlays_pendientes
+                            n_par = resolver_parlays_pendientes()
+                            if n_par:
+                                st.success(f"🎰 {n_par} parlay(s) resueltos automáticamente.")
+                        except Exception:
+                            pass
                         st.rerun()
                     except Exception as _re:
                         st.error(f"Error: {_re}")
+
+            # ── Estadísticas de aprendizaje por TIPO de parlay ────────────────
+            try:
+                from motors.parlay_brain import stats_por_tipo
+                _stats_t = stats_por_tipo()
+                if _stats_t:
+                    st.markdown("---")
+                    st.markdown("**📊 Aprendizaje por tipo de parlay (resultados reales):**")
+                    st.caption("Cuántos parlays de cada tipo se resolvieron y cuál tiene mejor tasa de acierto. "
+                               "El generador ya usa esto para mostrarte primero los tipos más rentables.")
+                    filas_t = sorted(_stats_t.items(), key=lambda x: x[1].get("win_rate", 0), reverse=True)
+                    for tipo_t, s_t in filas_t:
+                        color_t = "#22c55e" if s_t["win_rate"] >= 50 else "#ef4444"
+                        tipo_lbl = str(tipo_t).replace("🎯","").replace("🟢","").replace("🟡","").replace(
+                            "🔴","").replace("🟣","").replace("💎","").replace("⚡","").strip()[:30]
+                        st.markdown(
+                            f"<div style='background:#0f172a;border-radius:6px;padding:5px 12px;margin:2px 0'>"
+                            f"<b>{tipo_lbl}</b> — "
+                            f"<span style='color:{color_t}'>{s_t['win_rate']}% acierto</span> "
+                            f"({s_t['ganados']}/{s_t['total']}) · "
+                            f"ROI <span style='color:{'#22c55e' if s_t['roi']>=0 else '#ef4444'}'>"
+                            f"{s_t['roi']:+.1f}%</span>"
+                            f"</div>",
+                            unsafe_allow_html=True,
+                        )
+                    st.caption("⚠️ Necesitas al menos 4+ parlays resueltos por tipo para que el aprendizaje "
+                               "sea estadísticamente significativo. Genera parlays diariamente y resuélvelos "
+                               "con los botones de arriba.")
+            except Exception:
+                pass
 
             # ── Tabla pick_memory por deporte / mercado ───────────────────────
             if pick_memory is not None:
