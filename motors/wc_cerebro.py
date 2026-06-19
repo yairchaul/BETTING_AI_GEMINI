@@ -187,7 +187,10 @@ def ajustar_pick(pick: str, confianza: float, es_torneo: bool, fase: str = "") -
         return conf_nueva, nota
 
     if "over 1.5" in p:
-        conf_nueva = round(min(88, confianza * factores["OVER_1.5"]), 1)
+        # Mezcla hacia la tasa WC (no multiplica) para NO inflar matchups
+        # defensivos: 60% confianza del motor (específica del partido) + 40%
+        # tasa WC. Así un partido cerrado no termina en 88% artificial.
+        conf_nueva = round(min(88, 0.6 * confianza + 0.4 * tasas["over_1.5"]), 1)
         nota = (f"WC: Over 1.5 real {tasas['over_1.5']:.0f}% → confianza {confianza:.0f}% → {conf_nueva:.0f}%")
         return conf_nueva, nota
 

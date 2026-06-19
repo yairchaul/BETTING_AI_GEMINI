@@ -274,6 +274,12 @@ def analizar_futbol_jerarquico(
     for nombre, pr in (("OVER 1.5", p_o15), ("OVER 2.5", p_o25), ("OVER 3.5", p_o35_raw)):
         if pr >= 55:
             viable_picks.append({"pick": nombre, "confianza": round(min(92, pr * factor_fase), 1), "regla": 4})
+    # UNDER 2.5 — matchups DEFENSIVOS (ambos conceden/anotan poco). Detecta los
+    # partidos cerrados (p.ej. Mexico 1-0 Korea) donde el OVER falla. Compite por
+    # probabilidad como el resto: si el UNDER es más probable, gana la selección.
+    p_under25 = _pct(todos_totales, lambda t: t <= 2.5)
+    if p_under25 >= 58:
+        viable_picks.append({"pick": "UNDER 2.5", "confianza": round(min(88, p_under25 * factor_fase), 1), "regla": 4})
     # Si ninguno llega a 55%, usar el más cercano (para no quedar sin over)
     if not any(p["regla"] == 4 for p in viable_picks):
         dist = {abs(p_o15 - 55): ("OVER 1.5", p_o15), abs(p_o25 - 55): ("OVER 2.5", p_o25),
@@ -407,14 +413,13 @@ def analizar_futbol_jerarquico(
                 primary["confianza"] = round(min(88, primary["confianza"] + 1.5), 1)
             h2h_nota = f"H2H avg goles: {h2h['avg_goles']}"
 
-    # ── Calibración WC (ajusta BTTS down, Over 1.5 up según tasas reales) ────
+    # ── Nota WC (la confianza YA se calibró en la PRE-calibración; NO se ──────
+    # ── re-aplica aquí para evitar la doble inflación del OVER 1.5). ─────────
     wc_nota = ""
     if es_torneo:
         try:
-            from motors.wc_cerebro import ajustar_pick
-            conf_wc, wc_nota = ajustar_pick(primary["pick"], primary["confianza"], True, fase)
-            if conf_wc != primary["confianza"]:
-                primary["confianza"] = conf_wc
+            from motors.wc_cerebro import resumen_wc
+            wc_nota = resumen_wc(fase)
         except Exception:
             pass
 
