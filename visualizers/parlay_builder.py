@@ -12,6 +12,7 @@ escalonados por riesgo:
 No depende de que el usuario analice cada juego: ejecuta los motores al vuelo.
 """
 
+import re
 import streamlit as st
 import logging
 from datetime import datetime, timedelta
@@ -251,29 +252,72 @@ def _recolectar_picks(dia_filtro=None):
         logger.warning(f"Parlay UFC: {e}")
 
     # ── FÚTBOL ───────────────────────────────────────────────────────────
+    # Cuotas REALES de Caliente (fútbol) para el EV — se intentan una sola vez.
+    cal_fut = {}
+    try:
+        from scrapers.odds_scraper import get_soccer_odds_caliente
+        cal_fut = get_soccer_odds_caliente() or {}
+    except Exception as _ce:
+        logger.warning(f"Caliente fútbol odds: {_ce}")
+
+    def _norm_eq(s):
+        return re.sub(r"[^a-z ]", "", (s or "").lower()).strip()
+
+    def _cuota_real_futbol(pick, home, away):
+        """Cuota decimal real de Caliente para el pick, o None si no hay match."""
+        if not cal_fut:
+            return None
+        h, a = _norm_eq(home), _norm_eq(away)
+        ev = None
+        for v in cal_fut.values():
+            ch, ca = _norm_eq(v.get("home", "")), _norm_eq(v.get("away", ""))
+            if ((h[:5] and (h[:5] in ch or ch[:5] in h)) and (a[:5] and (a[:5] in ca or ca[:5] in a))) or \
+               ((h[:5] and (h[:5] in ca or ca[:5] in h)) and (a[:5] and (a[:5] in ch or ch[:5] in a))):
+                ev = v
+                break
+        if not ev:
+            return None
+        ml = ev.get("moneyline", {}) or {}
+        tot = ev.get("total", {}) or {}
+        pl = pick.lower()
+        if "empate" in pl or "draw" in pl:
+            return ml.get("draw")
+        if "local" in pl or (h[:5] and h[:5] in pl) or f"gana {home.lower()}" in pl:
+            return ml.get("home")
+        if "visitante" in pl or (a[:5] and a[:5] in pl):
+            return ml.get("away")
+        if "over" in pl and tot.get("over"):
+            return tot.get("over")
+        if "under" in pl and tot.get("under"):
+            return tot.get("under")
+        return None
+
     try:
         from motors.futbol_analyzer_jerarquico import analizar_futbol_jerarquico
         for liga, partidos in (ss.get("futbol_partidos", {}) or {}).items():
             for p in partidos or []:
                 if not _es_del_dia(p):
                     continue
+                home_f = p.get("home") or p.get("local", "")
+                away_f = p.get("away") or p.get("visitante", "")
                 r = analizar_futbol_jerarquico(
-                    p.get("home") or p.get("local", ""),
-                    p.get("away") or p.get("visitante", ""),
+                    home_f, away_f,
                     es_torneo=p.get("es_torneo", False), fase=p.get("fase", ""),
                     liga=liga,
                 )
                 pick = r.get("pick", "")
                 if not pick or "revisar" in pick.lower():
                     continue
-                evento_f = f"{p.get('home', p.get('local','?'))} vs {p.get('away', p.get('visitante','?'))}"
+                evento_f = f"{home_f or '?'} vs {away_f or '?'}"
+                cuota_real = _cuota_real_futbol(pick, home_f, away_f)
                 # Pick primario (el más seguro de la jerarquía)
                 pool.append({
                     "sport": "⚽ FÚTBOL", "evento": evento_f,
                     "mercado": "1X2/Goles", "pick": pick,
                     "prob": r.get("confianza", 0),
                     "tipo": "SEGURO" if r.get("confianza", 0) >= 55 else "VALOR",
-                    "cuota": 2.0,
+                    "cuota": cuota_real or 2.0,
+                    "cuota_real": bool(cuota_real),
                 })
                 # Pick COMBINADO (gana + Over) — mayor pago, para el parlay agresivo
                 for op in r.get("todas_opciones", []):
@@ -660,6 +704,47 @@ def render_parlay_tab():
                         "Las 3 legs de MAYOR probabilidad real (1 por evento) — el más fiable "
                         "según backtest (~27% a 3 legs vs ~14% del enfoque viejo)",
                         _armar_parlay(legs_opt))
+
+    # ── 🪜 ESCALERA DE PARLAYS: elige tu riesgo (prob real vs pago) ────────
+    # Usa las mejores legs calibradas (1 por evento, ya ordenadas por prob).
+    # Muestra, por tamaño, la probabilidad REAL de que ganen TODAS y el pago,
+    # para decidir entre "no perder" (pocas legs) y "gran ganancia" (muchas).
+    legs_esc, vistos_esc = [], set()
+    for p in cand_opt:
+        if p["evento"] in vistos_esc:
+            continue
+        vistos_esc.add(p["evento"])
+        legs_esc.append(p)
+    if len(legs_esc) >= 2:
+        st.markdown("#### 🪜 Escalera de parlays — elige tu riesgo")
+        st.caption("Probabilidad REAL de que ganen TODAS las legs (calibrada con backtest). "
+                   "Más legs = más pago pero MENOS probable. Ningún parlay es 100% seguro.")
+        filas = []
+        for n in range(2, min(len(legs_esc), 12) + 1):
+            par = _armar_parlay(legs_esc[:n])
+            filas.append({"n": n, "prob": par["prob"], "cuota": par["cuota"],
+                          "gan": round((par["cuota"] - 1) * 100), "ev": par["ev_pct"]})
+        # el de MAYOR ganancia cuya probabilidad aún es razonable (≥10%)
+        grande = max([f for f in filas if f["prob"] >= 10], key=lambda f: f["gan"], default=None)
+        for f in filas:
+            color = "#22c55e" if f["prob"] >= 25 else "#fbbf24" if f["prob"] >= 10 else "#ef4444"
+            tags = []
+            if f["n"] <= 3:
+                tags.append("<span style='color:#22c55e'>🛡️ para no perder</span>")
+            if grande and f["n"] == grande["n"]:
+                tags.append("<span style='color:#f59e0b'>💰 mayor ganancia razonable</span>")
+            st.markdown(
+                f"<div style='background:#0f172a;border-radius:6px;padding:5px 12px;margin:2px 0'>"
+                f"<b>{f['n']} legs</b> · prob <b style='color:{color}'>{f['prob']}%</b> · "
+                f"cuota {f['cuota']}x · $100 → <b style='color:#22c55e'>${f['gan']:,}</b>"
+                f"  {' · '.join(tags)}</div>",
+                unsafe_allow_html=True)
+        if grande:
+            st.caption(f"💡 'No perder': 2-3 legs ({filas[0]['prob']}% a 2). 'Gran ganancia': hasta "
+                       f"{grande['n']} legs (~{grande['prob']}% real, ${grande['gan']:,}). "
+                       "Más allá es lotería. NOTA: el pago usa cuotas ESTIMADAS; con cuotas reales "
+                       "de tu casa se calcula el valor (EV) exacto. Si cada leg tiene valor positivo, "
+                       "a la larga rinde más apostarlas POR SEPARADO que en parlay.")
 
     # ── Parlay SEGURO: COMBINA deportes (mejor de cada uno) + relleno por prob ──
     seguros = [p for p in pool if p["prob"] >= min_prob and p["mercado"] != "HOME RUN"]

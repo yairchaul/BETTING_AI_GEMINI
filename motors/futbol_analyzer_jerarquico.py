@@ -263,17 +263,23 @@ def analizar_futbol_jerarquico(
     if prob_btts >= 60:
         viable_picks.append({"pick": "AMBOS ANOTAN (BTTS)", "confianza": round(prob_btts, 1), "regla": 3})
 
-    # ── Regla 4 — Over más cercano al 55% ────────────────────────────────────
+    # ── Regla 4 — Overs de tiempo completo con su PROBABILIDAD REAL ─────────
+    # Antes se elegía "el over más cercano al 55%", lo que IGNORABA a propósito
+    # el OVER 1.5 de alta probabilidad. Ahora se añaden los OVER con su prob
+    # real para que el de MAYOR probabilidad pueda ganar la selección. En el
+    # Mundial el OVER 1.5 ronda 75-88% y suele ser el mercado más probable.
     p_o15 = _pct(todos_totales, lambda t: t > 1.5)
     p_o25 = _pct(todos_totales, lambda t: t > 2.5)
     p_o35_raw = _pct(todos_totales, lambda t: t >= 3.5)
-    dist = {
-        abs(p_o15 - 55): "OVER 1.5",
-        abs(p_o25 - 55): "OVER 2.5",
-        abs(p_o35_raw - 55): "OVER 3.5",
-    }
-    mejor_over = dist[min(dist.keys())]
-    viable_picks.append({"pick": mejor_over, "confianza": 55.0, "regla": 4})
+    for nombre, pr in (("OVER 1.5", p_o15), ("OVER 2.5", p_o25), ("OVER 3.5", p_o35_raw)):
+        if pr >= 55:
+            viable_picks.append({"pick": nombre, "confianza": round(min(92, pr * factor_fase), 1), "regla": 4})
+    # Si ninguno llega a 55%, usar el más cercano (para no quedar sin over)
+    if not any(p["regla"] == 4 for p in viable_picks):
+        dist = {abs(p_o15 - 55): ("OVER 1.5", p_o15), abs(p_o25 - 55): ("OVER 2.5", p_o25),
+                abs(p_o35_raw - 55): ("OVER 3.5", p_o35_raw)}
+        nm, pr = dist[min(dist.keys())]
+        viable_picks.append({"pick": nm, "confianza": round(max(50, pr), 1), "regla": 4})
 
     # ── Regla 5 — Moneyline ≥ 55% ────────────────────────────────────────────
     n_l = len(gl)
@@ -352,12 +358,16 @@ def analizar_futbol_jerarquico(
             pass
 
     # ── Selección primaria ──────────────────────────────────────────────────
-    # El combinado (Regla 7) es la jugada de MAYOR VALOR: si existe (ML y Over
-    # ambos ≥60%), va a PRIMER LUGAR por encima de cualquier mercado simple.
-    # El resto sigue la jerarquía normal (regla más baja gana; tie→mayor conf).
+    # CAMBIO CLAVE: ya NO se elige por número de regla (eso hacía que BTTS 60%
+    # ganara a OVER 1.5 80%). Ahora se elige por PROBABILIDAD REAL: el combinado
+    # (Regla 7) válido va primero por alto valor; el resto, el de MAYOR
+    # probabilidad de pasar. Así un OVER 1.5 al 80% supera a un BTTS al 60%.
     def _prioridad(x):
-        r = x["regla"]
-        return (-1 if r == 7 else r, -x["confianza"])
+        # El pick PRINCIPAL prefiere SINGLES de alta probabilidad (84% en el
+        # backtest) sobre combos (33%: fallan por los empates de fase de grupos).
+        # El combo SIGUE disponible como opción de ALTO PAGO en todas_opciones.
+        es_combo = x.get("regla") == 7
+        return (1 if es_combo else 0, -x.get("confianza", 0))
 
     primary = {"pick": "REVISAR DATOS", "confianza": 0.0, "regla": 99}
     if viable_picks:

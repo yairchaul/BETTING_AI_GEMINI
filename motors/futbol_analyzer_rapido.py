@@ -88,9 +88,26 @@ def analizar_futbol_rapido(
             prob_v = _tasa_ponderada(vic_v_lista)
             diff_forma = prob_l - prob_v
 
+            # En TORNEOS: la forma de selecciones (amistosos vs rivales dispares)
+            # es ruidosa → mezclar la diferencia de forma con el RANKING FIFA
+            # (70% ranking), igual que el motor principal. Evita que un equipo
+            # flojo con buena racha (Australia #24) "gane" a uno fuerte (USA #11).
+            diff_efectiva = diff_forma
+            if es_torneo:
+                try:
+                    from motors.futbol_analyzer_jerarquico import _FIFA_RANK
+                    r_l = next((v for k, v in _FIFA_RANK.items() if k.lower() in local.lower() or local.lower() in k.lower()), 60)
+                    r_v = next((v for k, v in _FIFA_RANK.items() if k.lower() in visitante.lower() or visitante.lower() in k.lower()), 60)
+                    edge = max(-0.35, min(0.35, (r_v - r_l) / 80.0))
+                    diff_ranking = 2 * edge * 100        # + => local mejor ranked (±70pp)
+                    diff_efectiva = 0.3 * diff_forma + 0.7 * diff_ranking
+                except Exception:
+                    diff_efectiva = diff_forma
+
             debug["prob_local_forma"] = round(prob_l, 1)
             debug["prob_visita_forma"] = round(prob_v, 1)
             debug["diff_forma"] = round(diff_forma, 1)
+            debug["diff_efectiva"] = round(diff_efectiva, 1)
 
             # Goles esperados ponderados
             xg_l = _avg_ponderado(gl)
@@ -122,22 +139,24 @@ def analizar_futbol_rapido(
             debug["p_over25"] = round(p_over25, 1)
             debug["p_over35"] = round(p_over35, 1)
 
-            # ── Moneyline V2: solo cuando la forma lo justifica (>20pp diferencia) ──
-            if diff_forma >= 20:
-                # Local claramente en mejor forma
+            # ── Moneyline V2: solo cuando forma+ranking lo justifican (>20pp) ──
+            if diff_efectiva >= 20:
+                # Local claramente superior (forma ajustada por ranking)
                 opciones.append({
                     "pick": f"Gana {local}",
-                    "confianza": round(min(78, 50 + diff_forma * 0.8), 1),
+                    "confianza": round(min(78, 50 + diff_efectiva * 0.8), 1),
                     "mercado": "MONEYLINE",
-                    "razon": f"Local en MUCHO mejor forma: {prob_l:.0f}% vs {prob_v:.0f}% (diff {diff_forma:.0f}pp)",
+                    "razon": f"{local} superior: forma {prob_l:.0f}% vs {prob_v:.0f}%"
+                             + (f" + ranking (efectiva {diff_efectiva:.0f}pp)" if es_torneo else f" (diff {diff_forma:.0f}pp)"),
                     "fuente": "forma",
                 })
-            elif diff_forma <= -20:
+            elif diff_efectiva <= -20:
                 opciones.append({
                     "pick": f"Gana {visitante}",
-                    "confianza": round(min(78, 50 + abs(diff_forma) * 0.8), 1),
+                    "confianza": round(min(78, 50 + abs(diff_efectiva) * 0.8), 1),
                     "mercado": "MONEYLINE",
-                    "razon": f"Visitante en MUCHO mejor forma: {prob_v:.0f}% vs {prob_l:.0f}% (diff {abs(diff_forma):.0f}pp)",
+                    "razon": f"{visitante} superior: forma {prob_v:.0f}% vs {prob_l:.0f}%"
+                             + (f" + ranking (efectiva {abs(diff_efectiva):.0f}pp)" if es_torneo else f" (diff {abs(diff_forma):.0f}pp)"),
                     "fuente": "forma",
                 })
 
