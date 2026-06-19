@@ -84,16 +84,40 @@ def _analisis_ranking_fifa(local: str, visitante: str, fase: str = "") -> dict:
             if "OVER" in o["pick"] or "BTTS" in o["pick"]:
                 o["confianza"] = max(50, o["confianza"] - 4)
 
-    # El pick primario es el más SEGURO (mayor confianza); el combinado queda
-    # disponible en todas_opciones para el selector que optimiza por pago.
+    # ── Calibración WC: ajusta BTTS down, Over 1.5 up según tasas históricas ──
+    wc_nota_rank = ""
+    try:
+        from motors.wc_cerebro import ajustar_pick, resumen_wc
+        for o in opciones:
+            new_conf, nota = ajustar_pick(o["pick"], o["confianza"], True, fase)
+            if nota:
+                o["confianza"] = new_conf
+        wc_nota_rank = resumen_wc(fase)
+    except Exception:
+        pass
+
+    # El pick primario es el más SEGURO (mayor confianza); en ranking fallback
+    # no hay jerarquía numérica, así que usamos directamente la confianza
     opciones.sort(key=lambda x: x["confianza"], reverse=True)
     best = opciones[0]
+
+    # Debug de reglas
+    debug_reglas = [{
+        "pick": o["pick"],
+        "confianza": o["confianza"],
+        "regla": o["regla"],
+        "descripcion": {1:"Over 0.5 favorito",2:"Over 1.5",3:"BTTS",4:"Gana favorito",7:"Combo gana+Over"}.get(o["regla"],""),
+        "es_principal": o["pick"] == best["pick"],
+    } for o in opciones]
+
     return {
         "pick": best["pick"],
         "confianza": best["confianza"],
         "regla": best["regla"],
         "todas_opciones": opciones,
         "nota": f"Ranking FIFA: #{r_l} {local} vs #{r_v} {visitante} (sin historial en DB).",
+        "wc_nota": wc_nota_rank,
+        "debug_reglas": debug_reglas,
     }
 
 
@@ -271,10 +295,28 @@ def analizar_futbol_jerarquico(
             "confianza": conf_combo, "regla": 7, "combo": True, "cuota": cuota_combo,
         })
 
-    # ── Selección primaria (jerarquía: regla más baja = más prioridad) ────────
+    # ── Pre-calibración WC: descarta picks cuya confianza cae < 50% ─────────
+    # (se aplica ANTES de la selección para que picks degradados no bloqueen
+    #  opciones con mayor confianza como el Moneyline)
+    if es_torneo:
+        try:
+            from motors.wc_cerebro import ajustar_pick as _wc_ajustar
+            viables_post_wc = []
+            for vp in viable_picks:
+                conf_adj, _ = _wc_ajustar(vp["pick"], vp["confianza"], True, fase)
+                if conf_adj >= 50:
+                    vp_copia = dict(vp)
+                    vp_copia["confianza"] = conf_adj
+                    viables_post_wc.append(vp_copia)
+            if viables_post_wc:
+                viable_picks = viables_post_wc
+        except Exception:
+            pass
+
+    # ── Selección primaria (jerarquía: regla más baja; tie→mayor confianza) ──
     primary = {"pick": "REVISAR DATOS", "confianza": 0.0, "regla": 99}
     if viable_picks:
-        viable_picks.sort(key=lambda x: x["regla"])
+        viable_picks.sort(key=lambda x: (x["regla"], -x["confianza"]))
         primary = viable_picks[0]
 
     logger.info(
@@ -288,10 +330,9 @@ def analizar_futbol_jerarquico(
     h2h_nota = ""
 
     if h2h.get('total', 0) >= 5:
-        # Ajuste leve de confianza basado en historial H2H (+/- 4 puntos máx)
         pick_lower = primary["pick"].lower()
         if "local" in pick_lower or local.lower() in pick_lower:
-            diff_h2h = (h2h['pct_local'] - 40) / 10.0  # 0 en 40%, +1 en 50%
+            diff_h2h = (h2h['pct_local'] - 40) / 10.0
             primary["confianza"] = round(max(50, min(88, primary["confianza"] + diff_h2h * 2)), 1)
             h2h_nota = f"H2H: {local} gana {h2h['pct_local']}% en {h2h['total']} partidos históricos"
         elif "visitante" in pick_lower or visitante.lower() in pick_lower:
@@ -299,7 +340,6 @@ def analizar_futbol_jerarquico(
             primary["confianza"] = round(max(50, min(88, primary["confianza"] + diff_h2h * 2)), 1)
             h2h_nota = f"H2H: {visitante} gana {h2h['pct_visita']}% en {h2h['total']} partidos históricos"
         elif "btts" in pick_lower or "ambos anotan" in pick_lower:
-            # Si el promedio histórico de goles es alto, refuerza el BTTS
             if h2h['avg_goles'] >= 2.5:
                 primary["confianza"] = round(min(88, primary["confianza"] + 2), 1)
             h2h_nota = f"H2H avg goles: {h2h['avg_goles']} en {h2h['total']} partidos"
@@ -307,6 +347,41 @@ def analizar_futbol_jerarquico(
             if h2h['avg_goles'] >= 2.0:
                 primary["confianza"] = round(min(88, primary["confianza"] + 1.5), 1)
             h2h_nota = f"H2H avg goles: {h2h['avg_goles']}"
+
+    # ── Calibración WC (ajusta BTTS down, Over 1.5 up según tasas reales) ────
+    wc_nota = ""
+    if es_torneo:
+        try:
+            from motors.wc_cerebro import ajustar_pick
+            conf_wc, wc_nota = ajustar_pick(primary["pick"], primary["confianza"], True, fase)
+            if conf_wc != primary["confianza"]:
+                primary["confianza"] = conf_wc
+        except Exception:
+            pass
+
+    # ── Motor V2 (rapido/momentum) en paralelo ───────────────────────────────
+    motor_v2 = None
+    try:
+        from motors.futbol_analyzer_rapido import analizar_futbol_rapido
+        motor_v2 = analizar_futbol_rapido(local, visitante, es_torneo, fase)
+    except Exception as _e:
+        logger.debug(f"motor_v2 falló: {_e}")
+
+    # Debug: motivos por los que cada regla fue/no fue elegida
+    debug_reglas = []
+    for vp in viable_picks:
+        regla_desc = {
+            1: "OVER 1.5 HT ≥ 60%", 2: "OVER 3.5 ≥ 60%", 3: "BTTS ≥ 60%",
+            4: "Mejor OVER cercano a 55%", 5: "Moneyline ≥ 55%",
+            6: "UNDER 2.5 eliminación directa", 7: "COMBINADO (gana+Over)",
+        }.get(vp.get("regla"), "regla desconocida")
+        debug_reglas.append({
+            "pick": vp["pick"],
+            "confianza": vp["confianza"],
+            "regla": vp.get("regla"),
+            "descripcion": regla_desc,
+            "es_principal": vp["pick"] == primary["pick"],
+        })
 
     return {
         "pick":         primary["pick"],
@@ -319,7 +394,10 @@ def analizar_futbol_jerarquico(
         "fase":         fase,
         "es_eliminacion": es_eliminacion,
         "h2h_historico": h2h,
-        "h2h_nota": h2h_nota,
+        "h2h_nota":     h2h_nota or (wc_nota if not h2h_nota else ""),
+        "wc_nota":      wc_nota,
+        "motor_v2":     motor_v2,
+        "debug_reglas": debug_reglas,
     }
 
 

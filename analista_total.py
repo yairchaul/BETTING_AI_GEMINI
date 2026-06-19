@@ -520,6 +520,82 @@ class AnalistaTotal:
             "razon": "Confianza insuficiente en todas las opciones"
         }
 
+    def analizar_futbol(self, partido: dict, res_v1: dict, _ignorado=None) -> dict:
+        """
+        Arbitraje IA para fútbol.
+        Si V1 y V2 coinciden → devuelve el pick con confianza boost.
+        Si difieren → llama a Gemini para que elija el mejor.
+        Siempre devuelve un resultado útil (no falla silenciosamente).
+        """
+        local = partido.get('home') or partido.get('local', '?')
+        visitante = partido.get('away') or partido.get('visitante', '?')
+        pick_v1 = res_v1.get('pick', '')
+        conf_v1 = res_v1.get('confianza', 0)
+
+        motor_v2 = res_v1.get('motor_v2') or {}
+        pick_v2 = motor_v2.get('pick', '')
+        conf_v2 = motor_v2.get('confianza', 0)
+        razon_v2 = motor_v2.get('razon', '')
+
+        h2h = res_v1.get('h2h_historico', {})
+        wc_nota = res_v1.get('wc_nota', '')
+
+        # Construir contexto H2H
+        h2h_txt = ""
+        if h2h.get('total', 0) >= 5:
+            h2h_txt = (f"H2H {h2h['total']} partidos: {local} gana {h2h['pct_local']}% | "
+                       f"empate {h2h['pct_empate']}% | {visitante} gana {h2h['pct_visita']}% | "
+                       f"avg {h2h['avg_goles']} goles/partido")
+
+        # Coinciden → boost de confianza
+        if pick_v1 and pick_v2 and pick_v1.lower().strip() == pick_v2.lower().strip():
+            boost = min(88, max(conf_v1, conf_v2) + 5)
+            return {
+                "pick": pick_v1, "confianza": boost,
+                "razon": f"V1 y V2 coinciden en {pick_v1}. {h2h_txt}",
+                "fuente": "consenso_motores",
+            }
+
+        # Difieren → Gemini elige
+        if self.gemini and pick_v2:
+            try:
+                prompt = f"""Eres un analista de apuestas de fútbol experto. Decide cuál de estos dos picks es mejor:
+
+PARTIDO: {local} vs {visitante}
+{"WC: " + wc_nota if wc_nota else ""}
+
+MOTOR A (jerárquico, reglas estadísticas): {pick_v1} — confianza {conf_v1:.0f}%
+MOTOR B (momentum, forma reciente): {pick_v2} — confianza {conf_v2:.0f}% — {razon_v2[:100]}
+{h2h_txt}
+
+Responde SOLO en JSON válido:
+{{"pick": "el pick que eliges (igual texto que A o B)", "confianza": número 50-85, "razon": "máx 20 palabras por qué"}}"""
+                resp = self.gemini.model.generate_content(prompt)
+                txt = resp.text.strip()
+                # Extraer JSON
+                import re as _re
+                m = _re.search(r'\{[^}]+\}', txt, _re.DOTALL)
+                if m:
+                    data = json.loads(m.group())
+                    data['fuente'] = 'gemini_arbitro'
+                    return data
+            except Exception as _ge:
+                logger.debug(f"analizar_futbol Gemini: {_ge}")
+
+        # Fallback: mejor confianza entre los dos
+        if conf_v2 > conf_v1 and pick_v2:
+            return {
+                "pick": pick_v2, "confianza": conf_v2,
+                "razon": razon_v2[:100],
+                "fuente": "motor_v2",
+            }
+        return {
+            "pick": pick_v1, "confianza": conf_v1,
+            "razon": f"Motor A: {pick_v1}. {h2h_txt}",
+            "fuente": "motor_v1",
+        }
+
+
 # Prueba
 if __name__ == "__main__":
     # Configurar un logger para la prueba

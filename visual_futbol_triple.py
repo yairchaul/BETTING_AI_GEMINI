@@ -200,6 +200,32 @@ class VisualFutbolTriple:
                     f"{(' &nbsp;·&nbsp; ' + ult_str) if ult_str else ''}"
                     f"</div>", unsafe_allow_html=True)
 
+            # ── Motor V2 (momentum/form) en paralelo ─────────────────────────
+            motor_v2 = analisis_heuristico.get('motor_v2')
+            if motor_v2 and motor_v2.get('pick') not in ('SIN DATOS', None):
+                pick_v2 = motor_v2['pick']
+                conf_v2 = motor_v2.get('confianza', 0)
+                razon_v2 = motor_v2.get('razon', '')
+                coinciden = pick_v2.lower().strip() == pick.lower().strip()
+                if coinciden:
+                    # Ambos motores de acuerdo → mostrar pick unificado con boost
+                    st.markdown(
+                        "<div style='background:#14532d33;border-left:4px solid #22c55e;"
+                        "border-radius:7px;padding:7px 12px;margin-top:4px;font-size:0.82rem'>"
+                        f"<span style='color:#22c55e;font-weight:700'>✅ V1 + V2 coinciden: {pick_v2}</span>"
+                        f"<span style='color:#94a3b8'> · Motor A {conf:.0f}% · Motor B {conf_v2:.0f}%</span>"
+                        "</div>", unsafe_allow_html=True)
+                else:
+                    # Discrepancia: mostrar ambos picks
+                    st.markdown(
+                        "<div style='background:#1e1b4b;border-left:4px solid #818cf8;"
+                        "border-radius:7px;padding:7px 12px;margin-top:4px;font-size:0.82rem'>"
+                        f"<span style='color:#818cf8;font-weight:700'>⚡ 2 OPCIONES:</span>"
+                        f"<br><span style='color:#a5f3fc'>🔷 Motor A (jerárquico): <b>{pick}</b> · {conf:.0f}%</span>"
+                        f"<br><span style='color:#fcd34d'>🔶 Motor B (momentum): <b>{pick_v2}</b> · {conf_v2:.0f}%</span>"
+                        + (f"<br><span style='color:#64748b;font-size:0.75rem'>{razon_v2[:80]}</span>" if razon_v2 else "")
+                        + "</div>", unsafe_allow_html=True)
+
             # ── Combinada de MAYOR PAGO (gana + Over) si el favorito es claro ──
             for _op in (analisis_heuristico.get('todas_opciones') or []):
                 if _op.get('combo'):
@@ -210,6 +236,31 @@ class VisualFutbolTriple:
                         f"<span style='color:#cbd5e1;font-size:0.85rem'>  ·  {_op.get('confianza',0):.0f}%</span></div>",
                         unsafe_allow_html=True)
                     break
+
+            # ── Debug: ¿Por qué se eligió este mercado? ─────────────────────
+            debug_reglas = analisis_heuristico.get('debug_reglas', [])
+            wc_nota_debug = analisis_heuristico.get('wc_nota', '')
+            if debug_reglas or wc_nota_debug:
+                with st.expander("🔍 ¿Por qué este pick? — Explicación de pesos", expanded=False):
+                    if wc_nota_debug:
+                        st.info(f"🌍 Calibración WC: {wc_nota_debug}")
+                    if debug_reglas:
+                        st.markdown("**Todas las reglas evaluadas:**")
+                        for dr in sorted(debug_reglas, key=lambda x: x['confianza'], reverse=True):
+                            marca = "✅ **ELEGIDA**" if dr['es_principal'] else "⬜"
+                            st.markdown(
+                                f"{marca} Regla #{dr['regla']} — **{dr['pick']}** "
+                                f"({dr['confianza']:.0f}%) · _{dr['descripcion']}_"
+                            )
+                    if motor_v2:
+                        st.markdown("---")
+                        st.markdown(f"**Motor V2 (momentum):** {motor_v2.get('pick','')} · {motor_v2.get('confianza',0):.0f}%")
+                        st.caption(motor_v2.get('razon', ''))
+                        v2_debug = motor_v2.get('debug', {})
+                        if v2_debug:
+                            cols = st.columns(4)
+                            for i, (k, v) in enumerate(list(v2_debug.items())[:8]):
+                                cols[i % 4].metric(k.replace('_', ' '), v)
 
             # ── Resultado del pick (si el partido ya terminó) ────────────────
             if partido.get('completado') and partido.get('goles_local') is not None:
