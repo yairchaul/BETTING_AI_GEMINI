@@ -246,9 +246,15 @@ class VisualMLB:
                 pitcher_txt = (f"vs {rival}" if rival and str(rival) not in ("TBD", "None", "")
                                else "vs abridor por confirmar")
                 en_lineup = hr.get("en_lineup")
-                lineup_txt = (" <span style='color:#22c55e;font-size:0.7rem'>✅ en alineación</span>"
-                              if en_lineup else
-                              " <span style='color:#f59e0b;font-size:0.7rem'>⚠️ alineación por confirmar</span>")
+                proyectada = hr.get("lineup_proyectada")
+                if en_lineup and proyectada:
+                    lineup_txt = " <span style='color:#3b82f6;font-size:0.7rem'>🔵 en alineación (proyectada)</span>"
+                elif en_lineup:
+                    lineup_txt = " <span style='color:#22c55e;font-size:0.7rem'>✅ en alineación confirmada</span>"
+                elif en_lineup is False:
+                    lineup_txt = " <span style='color:#ef4444;font-size:0.7rem'>❌ fuera de la alineación</span>"
+                else:
+                    lineup_txt = " <span style='color:#f59e0b;font-size:0.7rem'>⚠️ alineación por confirmar</span>"
                 col_hr1, col_hr2 = st.columns([3, 1])
                 with col_hr1:
                     st.markdown(f"**{nombre}** <span style='color:#94a3b8;font-size:0.8rem'>({equipo})</span>"

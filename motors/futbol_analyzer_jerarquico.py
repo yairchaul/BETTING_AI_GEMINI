@@ -5,6 +5,7 @@ Soporta: ligas normales + Copa del Mundo 2026 + EURO + Copa América
 Fixes v25: threshold ≥3.5, divisor dinámico, recency weighting, fase de torneo
 """
 
+import math
 import logging
 from utils.database_manager import db
 from .motor_fut_pro import analizar_futbol_pro_v20
@@ -229,14 +230,24 @@ def analizar_futbol_jerarquico(
 
     viable_picks = []
 
-    # ── Regla 1 — OVER 1.5 HT ≥ 60% ─────────────────────────────────────────
-    hits_ht = (
-        sum(1 for g in ht_l if g >= 2)
-        + sum(1 for g in ht_v if g >= 2)
-    )
-    prob_ht = (hits_ht / total_partidos) * 100 * factor_fase
+    # ── Regla 1 — OVER 1.5 HT: P(2+ goles TOTALES en el 1er tiempo) ─────────
+    # Modelo Poisson sobre los goles esperados de AMBOS equipos en la 1ª parte.
+    #   • Si el historial trae goles de HT reales → se usan directamente.
+    #   • Si no (la mayoría de fuentes solo dan el marcador final) → se ESTIMAN
+    #     aplicando la cuota histórica de goles en la 1ª parte (~45% del total).
+    hay_ht_real = any(g and g > 0 for g in (ht_l + ht_v))
+    if hay_ht_real:
+        lam_ht = _weighted_avg(ht_l) + _weighted_avg(ht_v)      # goles esperados HT (local+visita)
+        fuente_ht = "HT real"
+    else:
+        exp_total_ft = (avg_goles_l + avg_goles_v) / 2.0
+        lam_ht = 0.45 * exp_total_ft                            # ~45% de los goles caen en la 1ª parte
+        fuente_ht = "estimado FT·0.45"
+    # P(X >= 2) con X ~ Poisson(lam_ht):  1 - P(0) - P(1)
+    prob_ht = max(0.0, 1 - math.exp(-lam_ht) * (1 + lam_ht)) * 100 * factor_fase
     if prob_ht >= 60:
-        viable_picks.append({"pick": "OVER 1.5 HT", "confianza": round(prob_ht, 1), "regla": 1})
+        viable_picks.append({"pick": "OVER 1.5 HT", "confianza": round(prob_ht, 1),
+                             "regla": 1, "fuente_ht": fuente_ht})
 
     # ── Regla 2 — OVER 3.5 ≥ 60% (fix: >= en lugar de >) ────────────────────
     prob_o35 = _pct(todos_totales, lambda t: t >= 3.5) * factor_fase  # FIX: >= 3.5
@@ -272,6 +283,22 @@ def analizar_futbol_jerarquico(
     prob_l = (vic_l / n_l) * 100 if n_l > 0 else 0.0   # FIX: divisor dinámico
     prob_v = (vic_v / n_v) * 100 if n_v > 0 else 0.0
 
+    # En TORNEOS de selecciones, el win% de los últimos 5 (amistosos/eliminatorias
+    # vs rivales muy dispares) NO refleja la fuerza real. Se MEZCLA con la
+    # probabilidad implícita por RANKING FIFA, dándole MÁS peso al ranking (0.70),
+    # que el backtest mostró como la señal más fiable para selecciones. Evita
+    # elegir a un equipo flojo con buena racha (Australia #24) sobre uno fuerte
+    # (USA #11) y, a la vez, SÍ favorece al fuerte cuando corresponde.
+    if es_torneo:
+        r_l = next((v for k, v in _FIFA_RANK.items() if k.lower() in local.lower() or local.lower() in k.lower()), 60)
+        r_v = next((v for k, v in _FIFA_RANK.items() if k.lower() in visitante.lower() or visitante.lower() in k.lower()), 60)
+        edge = max(-0.35, min(0.35, (r_v - r_l) / 80.0))   # ventaja del mejor ranked (±35%)
+        rank_prob_l = 50 + edge * 100
+        rank_prob_v = 50 - edge * 100
+        _W_RANK = 0.70   # peso del ranking (forma reciente de selecciones = ruidosa)
+        prob_l = (1 - _W_RANK) * prob_l + _W_RANK * rank_prob_l
+        prob_v = (1 - _W_RANK) * prob_v + _W_RANK * rank_prob_v
+
     if prob_l >= 55:
         viable_picks.append({"pick": f"LOCAL ({local})", "confianza": round(prob_l, 1), "regla": 5})
     if prob_v >= 55:
@@ -287,17 +314,22 @@ def analizar_futbol_jerarquico(
                 "regla": 6,
             })
 
-    # ── Regla 7 — COMBINADO (gana + Over), mayor pago ───────────────────────
-    # Si hay un favorito claro (ML) y los goles acompañan, combinar ambos.
-    ml_pick = next((p for p in viable_picks if p["regla"] == 5), None)
-    over_pick = next((p for p in viable_picks if p["regla"] in (1, 2, 4)
-                      and "OVER" in p["pick"]), None)
-    if ml_pick and over_pick and not es_eliminacion:
+    # ── Regla 7 — COMBINADO (gana + Over): SOLO si ML y Over ambos ≥ 70% ────
+    # Combinado de mayor pago, reservado a mismatches MUY claros: exige favorito
+    # dominante (Moneyline ≥ 70%) Y un mercado de goles muy probable (Over ≥ 70%).
+    # El backtest mostró que con umbral 60% el combo fallaba mucho por empates;
+    # subir a 70% lo limita a escenarios donde la pata "gana" es sólida.
+    ml_pick = next((p for p in viable_picks if p["regla"] == 5 and p["confianza"] >= 70), None)
+    # Mejor línea de Over que aún cumple ≥70% (se prefiere la más alta = mayor pago)
+    over_opciones = [("OVER 1.5", p_o15), ("OVER 2.5", p_o25), ("OVER 3.5", p_o35_raw)]
+    over_fuerte = [(nm, pr) for nm, pr in over_opciones if pr >= 70]
+    if ml_pick and over_fuerte and not es_eliminacion:
+        over_nombre, over_prob = over_fuerte[-1]   # línea más alta que cumple
         equipo = ml_pick["pick"].split("(")[-1].rstrip(")") if "(" in ml_pick["pick"] else ml_pick["pick"]
-        conf_combo = round(ml_pick["confianza"] / 100.0 * over_pick["confianza"] / 100.0 * 100)
-        cuota_combo = round((100.0 / max(1, ml_pick["confianza"])) * (100.0 / max(1, over_pick["confianza"])), 2)
+        conf_combo = round(ml_pick["confianza"] / 100.0 * over_prob / 100.0 * 100)
+        cuota_combo = round((100.0 / max(1, ml_pick["confianza"])) * (100.0 / max(1, over_prob)), 2)
         viable_picks.append({
-            "pick": f"Gana {equipo} + {over_pick['pick']}",
+            "pick": f"Gana {equipo} + {over_nombre}",
             "confianza": conf_combo, "regla": 7, "combo": True, "cuota": cuota_combo,
         })
 
@@ -319,10 +351,17 @@ def analizar_futbol_jerarquico(
         except Exception:
             pass
 
-    # ── Selección primaria (jerarquía: regla más baja; tie→mayor confianza) ──
+    # ── Selección primaria ──────────────────────────────────────────────────
+    # El combinado (Regla 7) es la jugada de MAYOR VALOR: si existe (ML y Over
+    # ambos ≥60%), va a PRIMER LUGAR por encima de cualquier mercado simple.
+    # El resto sigue la jerarquía normal (regla más baja gana; tie→mayor conf).
+    def _prioridad(x):
+        r = x["regla"]
+        return (-1 if r == 7 else r, -x["confianza"])
+
     primary = {"pick": "REVISAR DATOS", "confianza": 0.0, "regla": 99}
     if viable_picks:
-        viable_picks.sort(key=lambda x: (x["regla"], -x["confianza"]))
+        viable_picks.sort(key=_prioridad)
         primary = viable_picks[0]
     # Guardar pick ANTES de calibraciones (Motor 1 original — reglas puras sin ajuste de liga/WC)
     pick_motor_1 = primary["pick"]

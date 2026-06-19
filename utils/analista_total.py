@@ -50,6 +50,74 @@ _MODEL_KEYS = {
 }
 
 
+def _sanitize_for_json(obj, _seen=None):
+    """Convierte recursivamente cualquier estructura en algo serializable por json.
+
+    Maneja: tipos numpy (int64/float64/bool_/arrays), NaN/Inf, sets, tuplas,
+    fechas/objetos arbitrarios (→ str) y referencias circulares (→ '<circular>').
+    Nunca lanza excepción.
+    """
+    if _seen is None:
+        _seen = set()
+
+    # Tipos básicos directamente serializables
+    if obj is None or isinstance(obj, (str, bool, int)):
+        return obj
+    if isinstance(obj, float):
+        # NaN/Inf no son JSON válido en muchos parsers → null
+        if obj != obj or obj in (float("inf"), float("-inf")):
+            return None
+        return obj
+
+    # Escalares numpy (exponen .item()) y arrays (exponen .tolist())
+    item = getattr(obj, "item", None)
+    if callable(item) and not isinstance(obj, (list, dict, tuple, set)):
+        try:
+            return _sanitize_for_json(item(), _seen)
+        except Exception:
+            pass
+    tolist = getattr(obj, "tolist", None)
+    if callable(tolist):
+        try:
+            return _sanitize_for_json(tolist(), _seen)
+        except Exception:
+            pass
+
+    # Contenedores: controlar referencias circulares
+    if isinstance(obj, dict):
+        if id(obj) in _seen:
+            return "<circular>"
+        _seen.add(id(obj))
+        out = {}
+        for k, v in obj.items():
+            key = k if isinstance(k, str) else str(k)
+            out[key] = _sanitize_for_json(v, _seen)
+        _seen.discard(id(obj))
+        return out
+    if isinstance(obj, (list, tuple, set, frozenset)):
+        if id(obj) in _seen:
+            return "<circular>"
+        _seen.add(id(obj))
+        out = [_sanitize_for_json(v, _seen) for v in obj]
+        _seen.discard(id(obj))
+        return out
+
+    # Cualquier otra cosa (datetime, objetos custom, etc.)
+    return str(obj)
+
+
+def _safe_json(obj, limit: Optional[int] = None) -> str:
+    """json.dumps a prueba de fallos: nunca lanza. Recorta a `limit` si se indica."""
+    try:
+        text = json.dumps(obj, ensure_ascii=False)
+    except (ValueError, TypeError):
+        try:
+            text = json.dumps(_sanitize_for_json(obj), ensure_ascii=False)
+        except Exception:
+            text = str(obj)
+    return text[:limit] if limit else text
+
+
 def _parse_json_safe(text: str) -> Optional[dict]:
     """Extrae el primer JSON válido del texto, limpiando markdown si es necesario."""
     if not text:
@@ -224,7 +292,7 @@ class AnalistaTotal:
             f"Racha local: {partido.get('local_streak', 'N/A')} | Racha visitante: {partido.get('visitante_streak', 'N/A')}\n"
             f"Moneyline: local={ml.get('local', 'N/A')} / visitante={ml.get('visitante', 'N/A')}\n"
             f"Total O/U: {ou}\n"
-            f"Análisis heurístico (motores propios): {json.dumps(heuristica, ensure_ascii=False)[:700]}\n"
+            f"Análisis heurístico (motores propios): {_safe_json(heuristica, 700)}\n"
             "Elige el mejor mercado (Moneyline, Hándicap o Total) y da tu recomendación final en JSON."
         )
 
@@ -249,11 +317,11 @@ class AnalistaTotal:
             f"Récords: local={partido.get('local_record', 'N/A')} / visitante={partido.get('visitante_record', 'N/A')}\n"
             f"Pitcher local: {p_loc} | Pitcher visitante: {p_vis}\n"
             f"Línea O/U carreras: {odds.get('over_under', 'N/A')}\n"
-            f"Clima: {json.dumps(clima, ensure_ascii=False)[:180] if clima else 'N/A'}\n"
+            f"Clima: {_safe_json(clima, 180) if clima else 'N/A'}\n"
             f"Candidatos a HOME RUN (bateador + prob real): {', '.join(hr_desc) if hr_desc else 'ninguno detectado'}\n"
-            f"Picks de Strikeouts (pitcher): {json.dumps(k_picks, ensure_ascii=False)[:200] if k_picks else 'N/A'}\n"
+            f"Picks de Strikeouts (pitcher): {_safe_json(k_picks, 200) if k_picks else 'N/A'}\n"
             f"O/U heurístico: {heur.get('ou_pick', 'N/A')} ({heur.get('ou_confianza', 0)}%)\n"
-            f"Análisis heurístico completo: {json.dumps(heur, ensure_ascii=False)[:700]}\n"
+            f"Análisis heurístico completo: {_safe_json(heur, 700)}\n"
             "De TODOS los mercados (Moneyline, O/U carreras, Home Run de un bateador concreto, Strikeouts del pitcher), "
             "elige el de mayor probabilidad/valor y justifícalo. Recomendación final en JSON."
         )
@@ -306,6 +374,14 @@ class AnalistaTotal:
         fase = partido.get('fase', '')
         if self.conservative_mode:
             return (f"Fútbol: {local} vs {visit}. Pick: {heur.get('pick', 'N/A')}. JSON.")
+        # Contexto real del torneo (noticias, lesiones, forma, ranking, estilo)
+        contexto = ""
+        try:
+            from motors.contexto_mundial import contexto_partido
+            contexto = contexto_partido(local, visit, es_torneo=bool(es_torneo))
+        except Exception:
+            contexto = ""
+        bloque_ctx = (contexto + "\n") if contexto else ""
         return (
             f"Deporte: Fútbol{' (TORNEO eliminatoria)' if es_torneo else ''}\n"
             f"Partido: {local} (local) vs {visit} (visita)\n"
@@ -314,8 +390,11 @@ class AnalistaTotal:
             f"Cuotas 1X2: local={ml.get('home', ml.get('local', 'N/A'))} / "
             f"empate={ml.get('draw', 'N/A')} / visita={ml.get('away', ml.get('visitante', 'N/A'))}\n"
             f"O/U goles: {odds.get('over_under', 'N/A')}\n"
-            f"Análisis heurístico jerárquico: {json.dumps(heur, ensure_ascii=False)[:500]}\n"
+            f"Análisis heurístico jerárquico: {_safe_json(heur, 500)}\n"
+            + bloque_ctx +
             "Evalúa 1X2 vs Doble oportunidad vs BTTS vs Over/Under goles y elige el de mayor valor. "
+            "USA EL CONTEXTO REAL para ajustar: una lesión clave, una baja, polémica o mala racha puede "
+            "cambiar el favorito o bajar la probabilidad de goles; dilo en 'alerta' si aplica. "
             "Recomendación final en JSON."
         )
 
@@ -350,4 +429,4 @@ class AnalistaTotal:
             result = self.analizar_ufc(partido, kwargs)
         else:
             result = self.analizar_futbol(partido, kwargs, {})
-        return json.dumps(result, ensure_ascii=False)
+        return _safe_json(result)

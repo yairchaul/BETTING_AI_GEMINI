@@ -344,6 +344,26 @@ class VisualFutbolTriple:
             st.caption(f"Modelo Poisson · xG {mercados.get('xg_local','?')} - {mercados.get('xg_visitante','?')} "
                        f"· fuente: {mercados.get('fuente','')}")
 
+        # ── 🔮 RESULTADO DEL PARTIDO (1X2 con empate) — ventana independiente ──
+        try:
+            from motors.predictor_1x2 import predecir_1x2
+            r1x2 = predecir_1x2(local, visitante,
+                                es_torneo=partido.get("es_torneo", False),
+                                fase=partido.get("fase", ""))
+            if r1x2:
+                p = r1x2["prob_1x2"]
+                emp_flag = " ⚠️ riesgo de empate" if r1x2.get("riesgo_empate") else ""
+                st.markdown("##### 🔮 Resultado probable (1X2)")
+                r1, r2, r3 = st.columns(3)
+                r1.metric(f"🏠 {local[:10]}", f"{p['local']}%")
+                r2.metric("🤝 Empate", f"{p['empate']}%")
+                r3.metric(f"✈️ {visitante[:10]}", f"{p['visitante']}%")
+                do = r1x2["doble_oportunidad"]
+                st.info(f"🎯 Sugerencia: **{r1x2['sugerencia']}** "
+                        f"· Doble oportunidad {do['mercado']} ({do['prob']}%)" + emp_flag)
+        except Exception:
+            pass
+
         # ── Análisis IA ─────────────────────────────────────────────────────
         if analisis_ia:
             pick_ia = analisis_ia.get('pick', 'N/A')

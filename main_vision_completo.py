@@ -1023,7 +1023,9 @@ def main():
                 if partidos:
                     st.markdown(f"### ⚽ {liga}")
                     for idx, p in enumerate(partidos):
-                        key_fut = f"fut_{liga}_{idx}"
+                        # La versión del motor en la clave invalida el caché viejo
+                        # automáticamente cuando se actualiza la lógica del motor.
+                        key_fut = f"fut_v26_{liga}_{idx}"
                         res_fut = st.session_state.analisis_futbol.get(key_fut)
 
                         # Auto-análisis jerárquico (con fallback FIFA para el Mundial)

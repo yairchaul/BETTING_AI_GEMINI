@@ -232,9 +232,60 @@ def _pitcher_nombre(pitchers, lado):
 # MEJOR APUESTA — elige el mercado óptimo ponderado por rendimiento histórico
 # ──────────────────────────────────────────────────────────────────────────
 
-# Peso base por mercado (calibrado con el backtest: ML/O-U fiables; HR raro pero paga).
-_PESO_MERCADO = {"MONEYLINE": 1.00, "TOTAL": 0.97, "HANDICAP": 0.92,
-                 "PONCHES": 0.95, "TOTAL_BASES": 0.90, "HOME_RUN": 0.85}
+# Peso base por mercado — JERARQUÍA calibrada con backtest REAL 2026:
+#   HANDICAP (runline +1.5 al no favorito) ≈ 58-63% → el más fiable, va primero
+#   MONEYLINE (favorito) ≈ 56% → sólido
+#   HOME_RUN ≈ 22% pero paga mucho → solo "spice" de parlay, no ancla
+#   TOTAL (O/U) ≈ 41% · PONCHES (K a línea de casa) ≈ 40% → flojos
+#   TOTAL_BASES ≈ 21% → el peor, casi nunca debe ser el pick principal
+_PESO_MERCADO = {"HANDICAP": 1.10, "MONEYLINE": 1.00, "HOME_RUN": 0.85,
+                 "TOTAL": 0.80, "PONCHES": 0.75, "TOTAL_BASES": 0.45}
+
+# Buffer de la casa de apuestas para STRIKEOUTS (K): la casa suele fijar la línea
+# ~1 K por encima de la línea analítica del programa (ej. programa OVER 4.5 →
+# casa OVER 5.5). Calculamos la probabilidad REAL del OVER en la línea de la
+# casa con Poisson; solo es "apostable" si supera el umbral. Configurable.
+K_BUFFER_CASA = 1.0
+
+
+def _poisson_over(lam, linea):
+    """P(K > linea) con K ~ Poisson(lam). 'linea' es x.5 (no entero)."""
+    if lam <= 0:
+        return 0.0
+    k_min = int(math.floor(linea)) + 1          # primer entero estrictamente > línea
+    cdf = sum(math.exp(-lam) * lam ** i / math.factorial(i) for i in range(k_min))
+    return max(0.0, min(1.0, 1.0 - cdf))
+
+
+def _runline_pick(fav_team, local, visitante, confianza, p_pick, gap_pct=0.0):
+    """Hándicap (runline) basado en el backtest real 2026:
+        • perdedor +1.5 ≈ 58%  ·  visitante +1.5 ≈ 63%  (los más fiables)
+        • favorito -1.5 ≈ 42%  ·  local -1.5 ≈ 37%       (malos: evitar)
+    Estrategia: por defecto +1.5 al NO favorito (preferente al visitante, que
+    cubre el 63%); -1.5 al favorito SOLO si es dominante extremo y es local.
+    gap_pct = |dif de récord| (0-1): brecha grande a favor del fuerte sube el
+    riesgo de paliza → baja la confianza del +1.5."""
+    perdedor = visitante if fav_team == local else local
+    es_visitante_dog = (perdedor == visitante)
+    # Favorito -1.5 solo en dominancia clara (y como local, donde -1.5 es menos malo)
+    if confianza >= 80 and (p_pick or 0) >= 0.74 and fav_team == local:
+        return {"pick": f"{fav_team} -1.5", "linea": "-1.5",
+                "confianza": round(min(58, confianza - 22)),
+                "nota": "favorito local dominante (raro: -1.5 solo aquí)"}
+    conf = 63 if es_visitante_dog else 58
+    # Filtro por brecha: si el +1.5 es de un MUY inferior vs favorito dominante,
+    # crece el riesgo de paliza por 2+ → penaliza la confianza.
+    nota_gap = ""
+    if gap_pct >= 0.20:
+        conf -= 8
+        nota_gap = " (brecha grande: riesgo de paliza, confianza reducida)"
+    elif gap_pct >= 0.12:
+        conf -= 4
+        nota_gap = " (brecha media)"
+    base = ("visitante +1.5: cubre 63% (pierde por ≤1 o gana)" if es_visitante_dog
+            else "no favorito +1.5: cubre 58% (pierde por ≤1 o gana)")
+    return {"pick": f"{perdedor} +1.5", "linea": "+1.5", "confianza": max(48, conf),
+            "nota": base + nota_gap}
 
 
 def _factor_mercado(mercado):
@@ -463,25 +514,16 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
     factor_pitcheo = (k9_l + k9_v) / 2 - 7.5 + (4.2 - (era_l + era_v) / 2) * 1.5
     # Total de carreras PROYECTADO: línea ajustada por el factor de pitcheo + estadio
     pf_runs = _park_factor(venue)  # parques de HR también suben carreras
-    total_proyectado = round(ou_linea - factor_pitcheo * 0.55 + (pf_runs - 1.0) * 4, 1)
-    if factor_pitcheo >= 1.0:
-        ou_pick, ou_conf = "UNDER", round(min(70, 52 + factor_pitcheo * 5))
-        razones.append(f"Pitcheo dominante (K/9 prom {((k9_l + k9_v) / 2):.1f}) → UNDER")
-    elif factor_pitcheo <= -1.0:
-        ou_pick, ou_conf = "OVER", round(min(70, 52 + abs(factor_pitcheo) * 5))
-        razones.append("Pitcheo vulnerable → OVER")
+    total_proyectado = max(5.0, round(ou_linea - factor_pitcheo * 0.55 + (pf_runs - 1.0) * 4, 1))
+    # Probabilidad REAL del over con Poisson sobre el total proyectado (no heurística).
+    # Las carreras totales de un juego se aproximan bien por Poisson(total_proy).
+    p_over_tot = _poisson_over(total_proyectado, ou_linea)
+    p_under_tot = 1.0 - p_over_tot
+    if p_over_tot >= p_under_tot:
+        ou_pick, ou_conf = "OVER", int(min(75, round(p_over_tot * 100)))
     else:
-        # Caso neutral: usar la proyección, con nudge del sesgo OVER real (backtest)
-        try:
-            calib = json.load(open(os.path.join("data", "mlb_calibracion.json"), encoding="utf-8"))
-            tasa_over = calib.get("ou_tasa_over", 50)
-        except Exception:
-            tasa_over = 50
-        sesgo_over = (tasa_over - 50) * 0.04  # nudge suave hacia el lado más frecuente
-        if total_proyectado + sesgo_over > ou_linea:
-            ou_pick, ou_conf = "OVER", round(min(62, 50 + abs(total_proyectado - ou_linea) * 6 + (tasa_over - 50) * 0.3))
-        else:
-            ou_pick, ou_conf = "UNDER", round(min(62, 50 + abs(total_proyectado - ou_linea) * 6))
+        ou_pick, ou_conf = "UNDER", int(min(75, round(p_under_tot * 100)))
+    razones.append(f"O/U Poisson: proy {total_proyectado} vs línea {ou_linea} → {ou_pick} {ou_conf}%")
 
     # ── 7. Candidatos HR ────────────────────────────────────────────────
     # Primero intentar el predictor con lineup oficial (si ya se publicó);
@@ -510,6 +552,25 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
         hr_candidates.sort(key=lambda x: x.get('probabilidad', 0), reverse=True)
         hr_candidates = hr_candidates[:6]
 
+    # ── Marcar en_lineup con la alineación del día (OFICIAL o PROYECTADA) ──
+    # Si la oficial no se publicó, se usa la última confirmada del equipo como
+    # proyección → evita el "alineación por confirmar" y permite filtrar HRs.
+    if game_pk:
+        try:
+            from .lineup_provider import obtener_lineup, en_alineacion
+            lu_local = obtener_lineup(game_pk, local)
+            lu_visit = obtener_lineup(game_pk, visitante)
+            for b in hr_candidates:
+                eq = str(b.get("equipo", "")).lower()
+                lu = lu_local if (local and local.lower() in eq) else lu_visit
+                en = en_alineacion(b.get("jugador", b.get("nombre", "")), lu)
+                if en is not None:
+                    b["en_lineup"] = en
+                    b["lineup_proyectada"] = lu.get("proyectada", False)
+                    b["lineup_fuente"] = lu.get("fuente", "")
+        except Exception as _le:
+            logger.debug(f"lineup_provider: {_le}")
+
     # ── Total de bases por bateador (Over 1.5) ──────────────────────────
     # Señal principal: poder del bateador (HR en 15 días). Un slugger supera 1.5
     # bases con frecuencia. OPS suma si está disponible.
@@ -537,14 +598,25 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
         k9 = datos_k.get(team, {}).get('k9', k9_team) or k9_team
         innings = 5.5
         k_proy = round((k9 / 9.0) * innings, 1)
+        # Línea analítica del programa (conservadora) y línea REALISTA de la casa
+        # (~1 K más arriba = la que SÍ se puede apostar).
         linea = max(2.5, round(k_proy) - 0.5)
-        pred = "OVER" if k_proy > linea else "UNDER"
-        # Confianza por margen respecto a la línea
-        margen = abs(k_proy - linea)
-        conf_k = int(min(70, 52 + margen * 12))
+        linea_casa = round(linea + K_BUFFER_CASA, 1)
+        # Probabilidad REAL en la línea de la casa (Poisson), no margen blando.
+        p_over = _poisson_over(k_proy, linea_casa)
+        p_under = 1.0 - p_over
+        if p_over >= 0.55:
+            pred, conf_p, apostable = "OVER", p_over, True
+        elif p_under >= 0.58:           # UNDER exige más margen (riesgo de blow-up)
+            pred, conf_p, apostable = "UNDER", p_under, True
+        else:
+            pred, conf_p, apostable = "OVER", p_over, False   # sin edge real en la casa
+        conf_k = int(max(38, min(80, round(conf_p * 100))))
         k_picks.append({
             'pitcher': pitcher, 'k9': round(k9, 1), 'proyeccion': k_proy,
-            'linea': linea, 'prediccion': pred, 'pick': f"{pred} {linea} K",
+            'linea': linea_casa, 'linea_programa': linea, 'linea_casa': linea_casa,
+            'prediccion': pred, 'pick': f"{pred} {linea_casa} K",
+            'prob_over_casa': round(p_over * 100, 1), 'apostable': apostable,
             'confianza': conf_k,
         })
 
@@ -568,9 +640,7 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
         'hr_candidates': hr_candidates,
         'k_picks': k_picks,
         'tb_picks': tb_picks,
-        'run_line': {'pick': pick_team,
-                     'linea': handicap or '-1.5',
-                     'confianza': max(50, confianza - 8)},
+        'run_line': _runline_pick(pick_team, local, visitante, confianza, p_pick, abs(diff_pct)),
         'score_raw': round(score, 2),
         'pitchers': {'local': hp, 'visitante': ap},
     }

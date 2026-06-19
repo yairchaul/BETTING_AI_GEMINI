@@ -4,6 +4,8 @@ ESPN FÚTBOL V25 — Ligas + Torneos (Mundial 2026, EURO, Copa América)
 Extrae logos, cuotas, récords, fecha y fase directamente del scoreboard.
 """
 
+import os
+import json
 import requests
 import logging
 
@@ -94,6 +96,60 @@ class GestorLigasUniversal:
         }
         self.corners_scraper = None
         self._ligas_cache = None
+        # Caché en disco de goles de primer tiempo por evento (resultados ya
+        # finalizados → nunca caduca). { event_id: {team_id: goles_ht} }
+        self._ht_cache_path = os.path.join("data", "ht_goals_cache.json")
+        self._ht_cache = None
+
+    def _cargar_ht_cache(self) -> dict:
+        if self._ht_cache is None:
+            try:
+                with open(self._ht_cache_path, "r", encoding="utf-8") as f:
+                    self._ht_cache = json.load(f)
+            except Exception:
+                self._ht_cache = {}
+        return self._ht_cache
+
+    def _guardar_ht_cache(self):
+        try:
+            os.makedirs("data", exist_ok=True)
+            with open(self._ht_cache_path, "w", encoding="utf-8") as f:
+                json.dump(self._ht_cache or {}, f)
+        except Exception as e:
+            logger.debug(f"No se pudo guardar caché HT: {e}")
+
+    def goles_ht_evento(self, event_id) -> dict:
+        """Goles de PRIMER TIEMPO por equipo de un evento finalizado.
+
+        Devuelve {team_id(str): goles_ht(int)} leyendo keyEvents del summary de
+        ESPN (scoringPlay en period 1, excluyendo penaltis de desempate).
+        Cachea en disco porque los partidos finalizados no cambian.
+        """
+        if not event_id:
+            return {}
+        eid = str(event_id)
+        cache = self._cargar_ht_cache()
+        if eid in cache:
+            return cache[eid]
+        ht = {}
+        try:
+            url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/all/summary?event={eid}"
+            r = requests.get(url, headers=self.headers, timeout=12)
+            if r.status_code == 200:
+                for ev in r.json().get("keyEvents", []):
+                    if not ev.get("scoringPlay") or ev.get("shootout"):
+                        continue
+                    if ev.get("period", {}).get("number") != 1:
+                        continue
+                    tid = str(ev.get("team", {}).get("id", ""))
+                    if tid:
+                        ht[tid] = ht.get(tid, 0) + 1
+        except Exception as e:
+            logger.debug(f"No se pudo leer HT del evento {eid}: {e}")
+            return {}
+        cache[eid] = ht
+        self._guardar_ht_cache()
+        return ht
 
     def obtener_ligas(self):
         """Todas las ligas + torneos disponibles (orden del mapa: torneos primero)."""
@@ -203,12 +259,13 @@ class GestorLigasUniversal:
             return recs[0].get('summary', '0-0-0')
         return '0-0-0'
 
-    def obtener_partidos(self, liga_nombre, dias_atras=3):
-        """Partidos de una liga/torneo: últimos `dias_atras` días + próximos.
+    def obtener_partidos(self, liga_nombre, dias_atras=3, dias_adelante=0):
+        """Partidos de una liga/torneo: últimos `dias_atras` días + HOY +
+        próximos `dias_adelante` días.
 
         ESPN no soporta rangos de fecha en fútbol, así que se consulta el
-        scoreboard por defecto (próximos) + cada día pasado por separado.
-        Incluye marcador y estado (FT/EN VIVO/programado).
+        scoreboard por defecto (próximos) + cada día (pasado y futuro) por
+        separado. Incluye marcador y estado (FT/EN VIVO/programado).
         """
         from datetime import datetime, timedelta
         info = LIGAS_IDS.get(liga_nombre)
@@ -217,10 +274,15 @@ class GestorLigasUniversal:
             return []
         league_id, es_torneo = info
 
-        # URLs a consultar: scoreboard por defecto + cada día pasado
+        # URLs a consultar: scoreboard por defecto + cada día pasado + hoy y futuros
         urls = [f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league_id}/scoreboard"]
         for d in range(1, dias_atras + 1):
             fecha = (datetime.now() - timedelta(days=d)).strftime('%Y%m%d')
+            urls.append(f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league_id}/scoreboard?dates={fecha}")
+        # Hoy + próximos `dias_adelante` días (explícito, porque el scoreboard por
+        # defecto no siempre cubre los próximos días en torneos como el Mundial)
+        for d in range(0, dias_adelante + 1):
+            fecha = (datetime.now() + timedelta(days=d)).strftime('%Y%m%d')
             urls.append(f"https://site.api.espn.com/apis/site/v2/sports/soccer/{league_id}/scoreboard?dates={fecha}")
 
         partidos = []
@@ -313,11 +375,13 @@ class GestorLigasUniversal:
         return partidos
 
 
-    def obtener_ultimos_5(self, team_id, league_id=None):
-        """Últimos 5 partidos JUGADOS de un equipo (goles favor/contra).
+    def obtener_ultimos_5(self, team_id, league_id=None, incluir_ht=True):
+        """Últimos 5 partidos JUGADOS de un equipo (goles favor/contra/HT).
 
         Usa el código 'all' que agrega TODAS las competiciones — necesario para
         selecciones nacionales (juegan amistosos/eliminatorias, no liga).
+        Si incluir_ht=True, añade los goles del 1er tiempo (favor/contra) leídos
+        del summary de ESPN (cacheados en disco).
         """
         if not team_id:
             return []
@@ -341,16 +405,33 @@ class GestorLigasUniversal:
                 gc = rival.get('score', {}).get('value')
                 if gf is None or gc is None:
                     continue
-                jugados.append({'fecha': e.get('date', '')[:10], 'favor': int(gf), 'contra': int(gc)})
-            # Más recientes primero
-            jugados.sort(key=lambda x: x['fecha'], reverse=True)
-            return jugados[:5]
+                registro = {'fecha': e.get('date', '')[:10], 'favor': int(gf),
+                            'contra': int(gc), 'ht_favor': 0, 'ht_contra': 0}
+                jugados.append((e, mio, rival, registro))
+            # Más recientes primero y nos quedamos con 5 antes de pedir HT
+            jugados.sort(key=lambda x: x[3]['fecha'], reverse=True)
+            jugados = jugados[:5]
+
+            salida = []
+            for e, mio, rival, registro in jugados:
+                if incluir_ht:
+                    ht_map = self.goles_ht_evento(e.get('id'))
+                    if ht_map:
+                        tid = str(mio.get('team', {}).get('id'))
+                        rid = str(rival.get('team', {}).get('id'))
+                        registro['ht_favor'] = int(ht_map.get(tid, 0))
+                        registro['ht_contra'] = int(ht_map.get(rid, 0))
+                salida.append(registro)
+            return salida
         except Exception as e:
             logger.debug(f"Error últimos 5 de {team_id}: {e}")
             return []
 
     def poblar_historial(self, partidos, progreso_cb=None):
-        """Guarda en historial_equipos los últimos 5 de cada equipo (idempotente)."""
+        """Guarda en historial_equipos los últimos 5 de cada equipo (idempotente).
+
+        puntos_ht = goles del equipo en el 1er tiempo (favor), capturados de ESPN.
+        """
         import sqlite3
         equipos = {}
         for p in partidos:
@@ -375,7 +456,7 @@ class GestorLigasUniversal:
                 for u in ultimos:
                     cur.execute(
                         "INSERT INTO historial_equipos (nombre_equipo, deporte, puntos_favor, puntos_ht, puntos_contra, fecha) VALUES (?,?,?,?,?,?)",
-                        (nombre, 'soccer', u['favor'], 0, u['contra'], u['fecha']))
+                        (nombre, 'soccer', u['favor'], u.get('ht_favor', 0), u['contra'], u['fecha']))
                 conn.commit()
                 conn.close()
                 poblados += 1
@@ -394,8 +475,9 @@ class ESPN_FUTBOL:
     def ligas_con_juegos_hoy(self, max_resultados=5):
         return self.gestor.ligas_con_juegos_hoy(max_resultados)
 
-    def get_games(self, liga):
-        return self.gestor.obtener_partidos(liga)
+    def get_games(self, liga, dias_atras=3, dias_adelante=3):
+        # Por defecto trae últimos 3 días (historial) + hoy y próximos 3 días
+        return self.gestor.obtener_partidos(liga, dias_atras=dias_atras, dias_adelante=dias_adelante)
 
     def obtener_ultimos_5(self, team_id, league_id):
         return self.gestor.obtener_ultimos_5(team_id, league_id)
