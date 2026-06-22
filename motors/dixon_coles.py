@@ -363,7 +363,20 @@ def predecir(local, visitante, neutral=True, top_n=5, modelo=None):
     p_over15 = float(M[tot > 1].sum())
     p_over25 = float(M[tot > 2].sum())
     p_over35 = float(M[tot > 3].sum())
+    p_under15 = float(M[tot <= 1].sum())
+    p_under35 = float(M[tot <= 3].sum())
     p_btts = float(M[(idx_i > 0) & (idx_j > 0)].sum())
+    p_cs_local = float(M[idx_j == 0].sum())   # visitante NO anota (local portería a cero)
+    p_cs_visit = float(M[idx_i == 0].sum())   # local NO anota
+
+    # Mercados del PRIMER TIEMPO: matriz HT con λ·0.45 (≈45% de los goles caen en 1ª parte)
+    Mht = matriz_marcadores(lam_l * 0.45, lam_v * 0.45, rho)
+    nh = Mht.shape[0]
+    ih, jh = np.meshgrid(np.arange(nh), np.arange(nh), indexing="ij")
+    toth = ih + jh
+    ht_o05 = float(Mht[toth > 0].sum())
+    ht_o15 = float(Mht[toth > 1].sum())
+    ht_u15 = float(Mht[toth <= 1].sum())
 
     # Top-N marcadores correctos
     plano = [(M[i, j], i, j) for i in range(n) for j in range(n)]
@@ -385,6 +398,18 @@ def predecir(local, visitante, neutral=True, top_n=5, modelo=None):
         "btts": {"si": _r(p_btts), "no": _r(1 - p_btts)},
         "marcador_top": top,
         "matriz": M.tolist(),
+        # Todos los mercados derivados de la MISMA matriz (para nutrir el motor):
+        "mercados": {
+            "local": _r(p_home), "empate": _r(p_draw), "visitante": _r(p_away),
+            "doble_1x": _r(p_home + p_draw), "doble_x2": _r(p_draw + p_away),
+            "doble_12": _r(p_home + p_away),
+            "over_1.5": _r(p_over15), "under_1.5": _r(p_under15),
+            "over_2.5": _r(p_over25), "under_2.5": _r(1 - p_over25),
+            "over_3.5": _r(p_over35), "under_3.5": _r(p_under35),
+            "btts_si": _r(p_btts), "btts_no": _r(1 - p_btts),
+            "cs_local": _r(p_cs_local), "cs_visit": _r(p_cs_visit),
+            "ht_over_0.5": _r(ht_o05), "ht_over_1.5": _r(ht_o15), "ht_under_1.5": _r(ht_u15),
+        },
     }
 
 

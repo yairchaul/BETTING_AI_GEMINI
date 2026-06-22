@@ -258,6 +258,19 @@ class VisualFutbolTriple:
                         + (f"<br><span style='color:#64748b;font-size:0.75rem'>{razon_v2[:90]}</span>" if razon_v2 else "")
                         + "</div>", unsafe_allow_html=True)
 
+            # ── Ajuste Dixon-Coles: corrección/coincidencia con el modelo ────
+            _ajuste_dc = analisis_heuristico.get('ajuste_dc', '')
+            if _ajuste_dc:
+                _es_correccion = _ajuste_dc.startswith('⚠️')
+                _bg = "#422006" if _es_correccion else "#0c2a1a"
+                _bd = "#f59e0b" if _es_correccion else "#22c55e"
+                _tx = "#fbbf24" if _es_correccion else "#4ade80"
+                st.markdown(
+                    f"<div style='background:{_bg};border-left:4px solid {_bd};"
+                    f"border-radius:7px;padding:7px 12px;margin-top:4px;font-size:0.82rem'>"
+                    f"<span style='color:{_tx};font-weight:700'>{_ajuste_dc}</span></div>",
+                    unsafe_allow_html=True)
+
             # ── Combinada de MAYOR PAGO (gana + Over) si el favorito es claro ──
             for _op in (analisis_heuristico.get('todas_opciones') or []):
                 if _op.get('combo'):

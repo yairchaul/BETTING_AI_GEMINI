@@ -176,6 +176,141 @@ def _h2h_suplemento(local: str, visitante: str) -> dict:
         return {}
 
 
+# ──────────────────────────────────────────────────────────────────────────
+# INTEGRACIÓN DIXON-COLES → selección de picks
+# La matriz de marcadores da la probabilidad EXACTA de cada mercado. Se usa para
+# (1) surtir picks que califican (incl. UNDER 1.5 y UNDER 1.5 HT que el motor de
+# reglas casi no emite) y (2) corregir el pick primario cuando el modelo lo
+# contradice (el backtest probó que DC acierta más en selecciones).
+# ──────────────────────────────────────────────────────────────────────────
+def _tipo_mercado_simple(pick: str) -> str:
+    """Clasifica un pick a un tipo de mercado canónico (para deduplicar)."""
+    p = (pick or "").lower()
+    if "+" in p or "combinad" in p or "combo" in p: return "combo"
+    if "doble" in p: return "doble"
+    if "over 1.5 ht" in p: return "ht_over"
+    if "under 1.5 ht" in p: return "ht_under"
+    if "over 1.5" in p: return "over1.5"
+    if "over 2.5" in p: return "over2.5"
+    if "over 3.5" in p: return "over3.5"
+    if "under 1.5" in p: return "under1.5"
+    if "under 2.5" in p or "under" in p: return "under2.5"
+    if "btts" in p or "ambos" in p: return "btts"
+    if "local (" in p: return "local"
+    if "visitante (" in p: return "visitante"
+    if "empate" in p: return "empate"
+    return p[:14]
+
+
+def _picks_dixon_coles(mc: dict, local: str, visitante: str) -> list:
+    """Picks que CALIFICAN según las probabilidades exactas de la matriz DC.
+    Umbrales más bajos que el motor de reglas porque estas probabilidades son
+    exactas y están calibradas (lo confirmó el backtest)."""
+    m = mc.get("mercados", {})
+    if not m:
+        return []
+    picks = []
+
+    def add(pick, conf):
+        picks.append({"pick": pick, "confianza": round(conf, 1), "regla": "DC", "fuente_dc": True})
+
+    # Moneyline
+    if m.get("local", 0) >= 55:      add(f"LOCAL ({local})", m["local"])
+    if m.get("visitante", 0) >= 55:  add(f"VISITANTE ({visitante})", m["visitante"])
+    # Doble oportunidad (lado del favorito; pago bajo pero muy seguro)
+    if m.get("local", 0) > m.get("visitante", 0) and m.get("doble_1x", 0) >= 78:
+        add(f"DOBLE: {local} o Empate", m["doble_1x"])
+    elif m.get("visitante", 0) > m.get("local", 0) and m.get("doble_x2", 0) >= 78:
+        add(f"DOBLE: Empate o {visitante}", m["doble_x2"])
+    # Over / Under tiempo completo. Umbrales calibrados con el backtest:
+    #   • OVER 1.5, OVER 2.5, UNDER 2.5: confiables (ganan ≥62% out-of-sample).
+    #   • UNDER 1.5: sólo con prob MUY alta (al 55% ganaba <40% — Poisson subestima
+    #     la varianza de goles).
+    #   • OVER 3.5 y BTTS: NO se surten — el backtest mostró que un Poisson
+    #     independiente no los predice (ganan ~52-55% diciendo 70%). Quedan
+    #     visibles en la matriz, pero el motor no los recomienda.
+    if m.get("over_1.5", 0) >= 70:   add("OVER 1.5", m["over_1.5"])
+    if m.get("over_2.5", 0) >= 55:   add("OVER 2.5", m["over_2.5"])
+    if m.get("under_1.5", 0) >= 72:  add("UNDER 1.5", m["under_1.5"])
+    if m.get("under_2.5", 0) >= 68:  add("UNDER 2.5", m["under_2.5"])
+    # Primer tiempo (umbral alto por la misma subestimación de varianza)
+    if m.get("ht_under_1.5", 0) >= 70: add("UNDER 1.5 HT", m["ht_under_1.5"])
+    if m.get("ht_over_1.5", 0) >= 62:  add("OVER 1.5 HT", m["ht_over_1.5"])
+    return picks
+
+
+def _dc_prob_de_pick(pick: str, m: dict, local: str, visitante: str):
+    """Probabilidad que DC asigna al pick heurístico (o None si no se puede mapear,
+    p.ej. combos). Sirve para validar/corregir el pick primario."""
+    p = (pick or "").lower()
+    if "+" in p or "combinad" in p or "combo" in p:
+        return None
+    if "btts" in p or "ambos" in p:        return m.get("btts_si")
+    if "over 3.5" in p:                    return m.get("over_3.5")
+    if "over 2.5" in p:                    return m.get("over_2.5")
+    if "over 1.5 ht" in p:                 return m.get("ht_over_1.5")
+    if "under 1.5 ht" in p:                return m.get("ht_under_1.5")
+    if "over 1.5" in p:                    return m.get("over_1.5")
+    if "over 0.5" in p:                    return m.get("ht_over_0.5") if "ht" in p else None
+    if "under 2.5" in p:                   return m.get("under_2.5")
+    if "under 1.5" in p:                   return m.get("under_1.5")
+    if "under" in p:                       return m.get("under_2.5")
+    if "doble" in p and local.lower() in p:    return m.get("doble_1x")
+    if "doble" in p and visitante.lower() in p: return m.get("doble_x2")
+    if "empate" in p:                      return m.get("empate")
+    if local.lower() in p or "local" in p: return m.get("local")
+    if visitante.lower() in p or "visitante" in p: return m.get("visitante")
+    return None
+
+
+def _mejor_pick_dc(dc_picks: list):
+    """Elige el pick DC de mayor VALOR (no solo mayor probabilidad)."""
+    def prioridad(x):
+        p = x["pick"].lower()
+        c = x["confianza"]
+        if "over 2.5" in p or "over 3.5" in p:           return (0, -c)  # buen pago, prob suficiente
+        if "btts" in p or "ambos" in p:                  return (1, -c)
+        if "under 2.5" in p:                             return (1, -c)
+        if "local (" in p or "visitante (" in p:         return (2, -c)
+        if "under 1.5" in p and "ht" not in p:           return (3, -c)
+        if "ht" in p:                                    return (4, -c)
+        if "over 1.5" in p:                              return (5, -c)
+        return (6, -c)  # doble oportunidad (pago muy bajo) al final
+    return sorted(dc_picks, key=prioridad)[0] if dc_picks else None
+
+
+def _integrar_dixon_coles(mc, local, visitante, primary, picks_multiples):
+    """Surte los picks de la matriz a picks_multiples y corrige el primario si DC
+    lo contradice. Devuelve (primary, picks_multiples, ajuste_dc)."""
+    ajuste_dc = ""
+    if not (mc and mc.get("disponible") and mc.get("mercados")):
+        return primary, picks_multiples, ajuste_dc
+
+    m = mc["mercados"]
+    dc_picks = _picks_dixon_coles(mc, local, visitante)
+
+    # Surtir picks DC a picks_multiples (dedup por tipo de mercado)
+    tipos = {_tipo_mercado_simple(p["pick"]) for p in picks_multiples}
+    for dp in dc_picks:
+        t = _tipo_mercado_simple(dp["pick"])
+        if t not in tipos:
+            picks_multiples.append(dp)
+            tipos.add(t)
+
+    # Cruzar/corregir el pick primario
+    dc_prob_primary = _dc_prob_de_pick(primary["pick"], m, local, visitante)
+    mejor = _mejor_pick_dc(dc_picks)
+    if dc_prob_primary is not None and dc_prob_primary < 48 and mejor:
+        ajuste_dc = (f"⚠️ Dixon-Coles corrige: '{primary['pick']}' solo {dc_prob_primary:.0f}% "
+                     f"según el modelo → mejor: {mejor['pick']} ({mejor['confianza']:.0f}%)")
+        primary = {"pick": mejor["pick"], "confianza": mejor["confianza"], "regla": "DC"}
+    elif dc_prob_primary is not None:
+        ajuste_dc = f"✅ Dixon-Coles coincide: {primary['pick']} ≈ {dc_prob_primary:.0f}% (modelo)"
+
+    picks_multiples.sort(key=lambda x: (0 if x["pick"] == primary["pick"] else 1, -x["confianza"]))
+    return primary, picks_multiples, ajuste_dc
+
+
 def analizar_futbol_jerarquico(
     local: str,
     visitante: str,
@@ -507,11 +642,16 @@ def analizar_futbol_jerarquico(
     # Para selecciones internacionales: top-N marcadores + matriz (heatmap) +
     # 1X2 derivado del MISMO modelo. Cae a None para clubes (no están en el dataset).
     marcador_correcto = None
+    ajuste_dc = ""
     try:
         from motors.dixon_coles import predecir as _dc_predecir
         _dc = _dc_predecir(local, visitante, neutral=bool(es_torneo))
         if _dc.get("disponible"):
             marcador_correcto = _dc
+            # Nutre los picks con los mercados exactos de la matriz y corrige el
+            # primario si el modelo lo contradice.
+            primary, picks_multiples, ajuste_dc = _integrar_dixon_coles(
+                marcador_correcto, local, visitante, primary, picks_multiples)
     except Exception as _e:
         logger.debug(f"dixon_coles no disponible para {local} vs {visitante}: {_e}")
 
@@ -552,6 +692,7 @@ def analizar_futbol_jerarquico(
         "debug_reglas": debug_reglas,
         "picks_multiples": picks_multiples,
         "marcador_correcto": marcador_correcto,
+        "ajuste_dc": ajuste_dc,
     }
 
 

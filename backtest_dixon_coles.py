@@ -208,5 +208,70 @@ def correr(test_years=(2023, 2024, 2025), desde=2018):
           f"(el video esperaba 15-20%)")
 
 
+def calibracion_picks(test_years=(2023, 2024, 2025), desde=2018):
+    """¿Cuándo el modelo marca un mercado como pick, qué tan seguido gana de verdad
+    (out-of-sample)? Compara probabilidad predicha vs. tasa real de aciertos. Si
+    coinciden, los picks están bien calibrados y son confiables."""
+    filas = _cargar_datos()
+    # (nombre, clave en mercados, umbral, evaluador(gl,gv)) — mismos umbrales que el motor
+    # Umbrales = los del motor (_picks_dixon_coles), ya recalibrados con este backtest
+    MERCADOS = [
+        ("LOCAL",      "local",     55, lambda gl, gv: gl > gv),
+        ("VISITANTE",  "visitante", 55, lambda gl, gv: gv > gl),
+        ("OVER 1.5",   "over_1.5",  70, lambda gl, gv: gl + gv >= 2),
+        ("OVER 2.5",   "over_2.5",  55, lambda gl, gv: gl + gv >= 3),
+        ("OVER 3.5",   "over_3.5",  63, lambda gl, gv: gl + gv >= 4),
+        ("UNDER 1.5",  "under_1.5", 72, lambda gl, gv: gl + gv <= 1),
+        ("UNDER 2.5",  "under_2.5", 68, lambda gl, gv: gl + gv <= 2),
+        ("BTTS",       "btts_si",   65, lambda gl, gv: gl > 0 and gv > 0),
+        ("DOBLE 1X",   "doble_1x",  78, lambda gl, gv: gl >= gv),
+        ("DOBLE X2",   "doble_x2",  78, lambda gl, gv: gv >= gl),
+    ]
+    stats = {n: {"n": 0, "hit": 0, "psum": 0.0} for n, _, _, _ in MERCADOS}
+
+    for Y in test_years:
+        corte = f"{Y-1}-12-31"
+        modelo = dc.entrenar(desde_anio=desde, hasta_fecha=corte, ref_fecha=corte, guardar=False)
+        if not modelo:
+            continue
+        idx = modelo["idx"]
+        test = [r for r in filas if r["fecha"][:4] == str(Y)
+                and r["local"] in idx and r["visita"] in idx]
+        for r in test:
+            pr = dc.predecir(r["local_raw"], r["visita_raw"],
+                             neutral=r.get("neutral", False), modelo=modelo)
+            if not pr.get("disponible"):
+                continue
+            m = pr["mercados"]
+            gl, gv = r["goles_local"], r["goles_visita"]
+            for name, key, thr, ev in MERCADOS:
+                if name == "DOBLE 1X" and not (m["local"] > m["visitante"]):
+                    continue
+                if name == "DOBLE X2" and not (m["visitante"] > m["local"]):
+                    continue
+                if m.get(key, 0) >= thr:
+                    s = stats[name]
+                    s["n"] += 1
+                    s["psum"] += m[key]
+                    s["hit"] += 1 if ev(gl, gv) else 0
+
+    print("\n" + "=" * 78)
+    print("CALIBRACIÓN DE PICKS — cuando el modelo marca el mercado, ¿gana? (out-of-sample)")
+    print("=" * 78)
+    print(f"{'Mercado':<14}{'# picks':>9}{'prob media':>12}{'gana real':>11}{'gap':>8}")
+    print("-" * 78)
+    for name, _, _, _ in MERCADOS:
+        s = stats[name]
+        if s["n"] == 0:
+            continue
+        pred = s["psum"] / s["n"]
+        real = 100 * s["hit"] / s["n"]
+        print(f"{name:<14}{s['n']:>9}{pred:>11.1f}%{real:>10.1f}%{real-pred:>+7.1f}")
+    print("=" * 78)
+    print("gap ≈ 0 → bien calibrado. gap positivo → gana MÁS de lo que dice (conservador).")
+    print("(Mercados HT no evaluables: el dataset no trae marcador al descanso.)")
+
+
 if __name__ == "__main__":
     correr()
+    calibracion_picks()
