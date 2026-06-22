@@ -22,6 +22,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from .hr_poisson import prob_hr as prob_hr_poisson
+
 # Mapa nombre completo → abreviatura (el dataset de HR usa abreviaturas)
 _TEAM_ABREV = {
     "arizona diamondbacks": "ARI", "atlanta braves": "ATL", "baltimore orioles": "BAL",
@@ -120,12 +122,7 @@ def _candidatos_hr_equipo(equipo, pitcher_rival, venue="", pitcher_hr9=None, riv
         return []
     fuente = dict(_cargar_hr_dataset())
     fuente.update(_HR_EXTRA)
-    pf = _park_factor(venue)  # factor de estadio
-    # Factor del PITCHER rival: HR-prone (HR/9 alto) sube la prob; un as la baja.
-    if pitcher_hr9 and pitcher_hr9 > 0:
-        factor_pitcher = max(0.70, min(1.45, float(pitcher_hr9) / _LIGA_HR9))
-    else:
-        factor_pitcher = 1.0
+    pf = _park_factor(venue)  # factor de estadio (el núcleo Poisson aplica el resto)
     # Si no hay abridor rival confirmado, mostrar el EQUIPO rival (no "TBD")
     rival_disp = pitcher_rival
     if not pitcher_rival or str(pitcher_rival) in ("TBD", "", "N/A", "None"):
@@ -137,15 +134,14 @@ def _candidatos_hr_equipo(equipo, pitcher_rival, venue="", pitcher_hr9=None, riv
         hr = stats.get("hr", 0)
         if hr < 1:
             continue
-        # Base del bateador (Poisson sobre su tasa real de HR/juego + bono OPS)
+        # Probabilidad calibrada por el núcleo Poisson (shrinkage + factores acotados)
         hpg = stats.get("hr_por_juego")
-        if not hpg or hpg <= 0:
-            hpg = hr / 60.0
         ops = stats.get("ops", 0.7) or 0.7
-        prob_base = (1 - math.exp(-float(hpg))) * 100
-        prob_base += max(0, ops - 0.80) * 12
-        # BATEADOR vs PITCHER + estadio
-        prob = round(min(45, prob_base * pf * factor_pitcher))
+        prob = prob_hr_poisson(
+            hr_por_juego=hpg, hr_total=hr,
+            pitcher_hr9=pitcher_hr9, park_factor=pf,
+            mano_pitcher="R", ops=ops,
+        )
         cands.append({
             "jugador": nombre.strip(), "nombre": nombre.strip(), "equipo": equipo,
             "hr_total": hr, "probabilidad": prob, "pitcher_rival": rival_disp,

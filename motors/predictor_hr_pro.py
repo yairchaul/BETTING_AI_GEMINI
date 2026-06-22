@@ -16,6 +16,10 @@ import json, os, unicodedata, hashlib
 from datetime import datetime, timedelta
 import streamlit as st
 from database_manager import db # Importar el gestor de DB
+try:
+    from motors.hr_poisson import prob_hr as _prob_hr_poisson
+except ImportError:
+    from hr_poisson import prob_hr as _prob_hr_poisson
 
 class PredictorHRPro:
     def __init__(self, data_source=None, mlb_partidos_hoy=None):
@@ -258,123 +262,65 @@ class PredictorHRPro:
         bateadores_candidatos.sort(key=lambda x: x['hr_total'], reverse=True)
         return bateadores_candidatos[:6]  # Top 6
     
-    # ==================== CALCULO DE PROBABILIDAD INTELIGENTE ====================
+    # ==================== CALCULO DE PROBABILIDAD (POISSON CALIBRADO) ====================
     def calcular_probabilidad_hr_inteligente(self, bateador_stats, pitcher_info, estadio="", clima=None):
-        """Calcula probabilidad HR con múltiples factores"""
-        
-        # Probabilidad base
-        hr_por_juego = bateador_stats.get("hr_por_juego", 0.02)
-        prob_base = min(80, hr_por_juego * 100)
-        
-        factores = []
-        multiplicador = 1.0
-        
-        # Factor 1: Pitcher rival
-        hr9_pitcher = pitcher_info.get("hr9", 1.0)
-        if hr9_pitcher > 1.5:
-            multiplicador *= 1.35
-            factores.append(f"🎯 Pitcher vulnerable (HR/9={hr9_pitcher:.1f})")
-        elif hr9_pitcher > 1.2:
-            multiplicador *= 1.20
-            factores.append(f"📊 Pitcher moderado (HR/9={hr9_pitcher:.1f})")
-        elif hr9_pitcher < 0.6:
-            multiplicador *= 0.65
-            factores.append(f"🛡️ Pitcher élite (HR/9={hr9_pitcher:.1f})")
-        
-        # Factor 2: Mano del pitcher
-        mano_pitcher = pitcher_info.get("mano", "R")
-        if mano_pitcher == "L":
-            multiplicador *= 1.15
-            factores.append("👈 Pitcher zurdo (ventaja bateador)")
-        
-        # Factor 3: Estadio
+        """Probabilidad CALIBRADA de ≥1 HR vía el núcleo Poisson (motors.hr_poisson).
+        P(≥1 HR)=1−e^(−λ), con λ = tasa·factor_pitcher·factor_parque·factor_mano y
+        shrinkage de la tasa. Se topa en ~25% (realista) en vez del 95% del modelo
+        viejo, que inflaba ~1.5× (validado con el backtest)."""
+        hr_por_juego = bateador_stats.get("hr_por_juego", 0.0) or 0.0
+        hr_total = bateador_stats.get("hr_total", 0) or 0
+        ops = bateador_stats.get("ops", 0.0) or 0.0
+        hr9_pitcher = pitcher_info.get("hr9", 1.0) or 1.0
+        mano_pitcher = pitcher_info.get("mano", "R") or "R"
+
+        # Factor de parque desde la base de estadios
+        park_factor = 1.0
         try:
             with open("data/estadios_db.json", "r", encoding="utf-8") as f:
                 estadios = json.load(f)
-            
             if estadio in estadios:
-                factor_hr = estadios[estadio].get("factor_hr", 1.0)
-                if factor_hr > 1.2:
-                    multiplicador *= 1.25
-                    factores.append(f"🏟️ Estadio favorable ({estadio}, factor:{factor_hr:.2f})")
-                elif factor_hr > 1.1:
-                    multiplicador *= 1.15
-                    factores.append(f"🏟️ Estadio moderado ({estadio}, factor:{factor_hr:.2f})")
-                elif factor_hr < 0.85:
-                    multiplicador *= 0.80
-                    factores.append(f"🏟️ Estadio difícil ({estadio}, factor:{factor_hr:.2f})")
-        except:
+                park_factor = estadios[estadio].get("factor_hr", 1.0)
+        except Exception:
             pass
-        
-        # Factor 4: Clima (si está disponible)
-        if clima:
-            temp = clima.get("temp", 70)
-            wind_speed = clima.get("wind_speed", 0)
-            wind_dir = clima.get("wind_dir", "")
-            
-            if temp > 85:
-                multiplicador *= 1.15
-                factores.append(f"🌡️ Calor extremo ({temp}°F)")
-            elif temp > 75:
-                multiplicador *= 1.08
-                factores.append(f"☀️ Buen clima ({temp}°F)")
-            
-            if wind_speed > 12 and wind_dir == "Out":
-                multiplicador *= 1.20
-                factores.append(f"💨 Viento favorable ({wind_speed} mph)")
-        
-        # Factor 5: Día de la semana
-        dia_actual = datetime.now().weekday()
-        if dia_actual in [4, 5]:  # Viernes/Sábado
-            multiplicador *= 1.15
-            factores.append("📅 Fin de semana (alta tendencia HR)")
-        elif dia_actual == 0:  # Lunes
-            multiplicador *= 1.10
-            factores.append("📅 Lunes (alta tendencia HR)")
-        
-        # Factor 6: Racha del bateador
-        hr_total = bateador_stats.get("hr_total", 0)
-        if hr_total >= 5:
-            multiplicador *= 1.20
-            factores.append(f"🔥 Racha caliente ({hr_total} HR en 15d)")
-        elif hr_total >= 3:
-            multiplicador *= 1.10
-            factores.append(f"📈 Buena racha ({hr_total} HR)")
-        
-        # Cálculo final
-        prob_final = min(95, prob_base * multiplicador)
-        
-        # Determinar stake y recomendación
-        if prob_final >= 45:
-            stake = "4u"
-            color = "#00ff41"
-            icono = "🔥🔥🔥"
-            recomendacion = "ELITE"
-        elif prob_final >= 35:
-            stake = "3u"
-            color = "#fbbf24"
-            icono = "🔥🔥"
-            recomendacion = "ALTA"
-        elif prob_final >= 25:
-            stake = "2u"
-            color = "#3b82f6"
-            icono = "🔥"
-            recomendacion = "MEDIA"
-        elif prob_final >= 18:
-            stake = "1u"
-            color = "#94a3b8"
-            icono = "🟡"
-            recomendacion = "BAJA"
+
+        prob_final = _prob_hr_poisson(
+            hr_por_juego=hr_por_juego, hr_total=hr_total,
+            pitcher_hr9=hr9_pitcher, park_factor=park_factor,
+            mano_pitcher=mano_pitcher, ops=ops,
+        )
+
+        # Factores DESCRIPTIVOS (transparencia; no inflan la probabilidad)
+        factores = []
+        if hr9_pitcher > 1.4:
+            factores.append(f"🎯 Pitcher vulnerable (HR/9={hr9_pitcher:.1f})")
+        elif hr9_pitcher < 0.8:
+            factores.append(f"🛡️ Pitcher difícil (HR/9={hr9_pitcher:.1f})")
+        if mano_pitcher == "L":
+            factores.append("👈 Abridor zurdo")
+        if park_factor > 1.1:
+            factores.append(f"🏟️ Estadio favorable ({estadio}, {park_factor:.2f})")
+        elif park_factor < 0.9:
+            factores.append(f"🏟️ Estadio difícil ({estadio}, {park_factor:.2f})")
+        if ops >= 0.90:
+            factores.append(f"💪 Poder élite (OPS {ops:.2f})")
+        if hr_total >= 20:
+            factores.append(f"📊 {hr_total} HR en la temporada")
+
+        # Stake/recomendación en la ESCALA REALISTA (el techo real es ~22%)
+        if prob_final >= 21:
+            stake, color, icono, recomendacion = "3u", "#00ff41", "🔥🔥", "ALTA"
+        elif prob_final >= 17:
+            stake, color, icono, recomendacion = "2u", "#fbbf24", "🔥", "MEDIA"
+        elif prob_final >= 13:
+            stake, color, icono, recomendacion = "1u", "#3b82f6", "🟡", "BAJA"
         else:
-            stake = "0u"
-            color = "#ef4444"
-            icono = "⚪"
-            recomendacion = "EVITAR"
-        
+            stake, color, icono, recomendacion = "0u", "#94a3b8", "⚪", "EVITAR"
+
         return {
             "probabilidad": round(prob_final, 1),
-            "probabilidad_base": round(prob_base, 1),
-            "multiplicador": round(multiplicador, 2),
+            "probabilidad_base": round(prob_final, 1),
+            "multiplicador": 1.0,
             "stake": stake,
             "color": color,
             "icono": icono,
