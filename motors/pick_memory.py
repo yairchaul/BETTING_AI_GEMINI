@@ -153,12 +153,24 @@ class PickMemory:
         por_deporte = {}
         por_mercado = {}
         por_deporte_mercado = {}
+        por_fuente = {}
+        por_fuente_deporte = {}
         for p in resueltos:
             dep = (p.get("deporte") or "?").upper()
             mer = p.get("mercado") or "?"
+            fte = p.get("fuente") or "Heuristico"
             por_deporte.setdefault(dep, []).append(p)
             por_mercado.setdefault(mer, []).append(p)
             por_deporte_mercado.setdefault((dep, mer), []).append(p)
+            por_fuente.setdefault(fte, []).append(p)
+            por_fuente_deporte.setdefault((fte, dep), []).append(p)
+
+        # Pendientes por fuente (para ver qué se está acumulando aún sin resolver)
+        pend_por_fuente = {}
+        for p in picks:
+            if p.get("estado") == "pendiente":
+                pend_por_fuente[p.get("fuente") or "Heuristico"] = \
+                    pend_por_fuente.get(p.get("fuente") or "Heuristico", 0) + 1
 
         return {
             "global": _resumen(resueltos),
@@ -167,6 +179,10 @@ class PickMemory:
             "por_mercado": {k: _resumen(v) for k, v in por_mercado.items()},
             "por_deporte_mercado": {f"{k[0]} · {k[1]}": _resumen(v)
                                     for k, v in por_deporte_mercado.items()},
+            "por_fuente": {k: _resumen(v) for k, v in por_fuente.items()},
+            "por_fuente_deporte": {f"{k[0]} · {k[1]}": _resumen(v)
+                                   for k, v in por_fuente_deporte.items()},
+            "pendientes_por_fuente": pend_por_fuente,
         }
 
     # ── FASE 3: EVOLUCIÓN ─────────────────────────────────────────────────

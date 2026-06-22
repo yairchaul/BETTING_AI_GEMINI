@@ -736,6 +736,44 @@ def render_parlay_tab():
         except Exception as _le:
             logger.warning(f"log picks: {_le}")
 
+        # ── 🤖 PARLAY DE IA (de los picks que la IA registró al analizar) ──────
+        try:
+            _picks_ia = [p for p in pick_memory.pendientes()
+                         if p.get("fuente") == "IA"
+                         and (dia_filtro is None
+                              or p.get("fecha_evento") == dia_filtro
+                              or p.get("fecha") == dia_filtro)]
+            _vistos, _ia_unq = set(), []
+            for p in sorted(_picks_ia, key=lambda x: x.get("confianza", 0) or 0, reverse=True):
+                k = (p.get("evento"), p.get("pick"))
+                if k in _vistos:
+                    continue
+                _vistos.add(k)
+                _ia_unq.append(p)
+            st.markdown("---")
+            st.subheader("🤖 Parlay de IA")
+            st.caption("Combina los picks que las IAs (Gemini/Groq) registraron al analizar. "
+                       "Cada leg se backtestea solo; míralo en Backtesting → 🧠 Aprendizaje (IA vs Heurístico).")
+            if not _ia_unq:
+                st.info("Aún no hay picks de IA para este día. Analiza partidos con un modelo de IA "
+                        "seleccionado (no 'Heurístico') en MLB / Fútbol / UFC y vuelve aquí.")
+            else:
+                _legs_ia = _ia_unq[:max(2, min(n_legs, len(_ia_unq)))]
+                cuota_total = 1.0
+                for p in _legs_ia:
+                    cuota_total *= float(p.get("cuota", 1.9) or 1.9)
+                    st.markdown(
+                        f"<div style='font-size:0.9rem;padding:3px 0'>🤖 <b>{p.get('deporte','')}</b> · "
+                        f"{p.get('pick','')} <span style='color:#64748b'>({p.get('evento','')}) · "
+                        f"{(p.get('confianza',0) or 0):.0f}%</span></div>", unsafe_allow_html=True)
+                _imp = round(100.0 / cuota_total, 1)
+                st.success(f"🎰 Cuota combinada IA: **{cuota_total:.2f}**  ·  {len(_legs_ia)} legs  ·  "
+                           f"prob. implícita ~{_imp}%")
+                st.caption("⚠️ Recuerda: un parlay gana solo si ACIERTAN TODAS las patas. "
+                           "Más legs = más pago pero mucha menos probabilidad.")
+        except Exception as _ie:
+            logger.warning(f"parlay IA: {_ie}")
+
     # Ordenar por probabilidad
     pool.sort(key=lambda x: x["prob"], reverse=True)
 

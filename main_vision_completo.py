@@ -387,6 +387,31 @@ def inicializar_bd_ufc():
         conn.commit(); conn.close()
     except: pass
 
+def _log_pick_ia(deporte, local, visitante, resultado_ia, fecha_evento=None):
+    """Registra el pick de la IA en pick_memory con fuente='IA' para que el
+    auto-resolver lo backtestee junto al heurístico. No-op si no hay pick válido.
+    El historial de IA arranca desde hoy (antes nunca se guardaba)."""
+    if pick_memory is None or not resultado_ia:
+        return
+    pick = resultado_ia.get('pick', '')
+    if not pick or str(pick) in ('N/A', 'None', ''):
+        return
+    try:
+        pick_memory.log_pick({
+            "deporte": deporte,
+            "evento": f"{local} vs {visitante}",
+            "local": local, "visitante": visitante,
+            "mercado": resultado_ia.get('mercado', '') or 'IA',
+            "pick": pick, "seleccion": pick,
+            "confianza": resultado_ia.get('confianza', 0) or 0,
+            "cuota": resultado_ia.get('cuota', 1.90) or 1.90,
+            "fuente": "IA",
+            "fecha_evento": fecha_evento or datetime.now().strftime("%Y-%m-%d"),
+        })
+    except Exception as _e:
+        logger.debug(f"log pick IA ({deporte}): {_e}")
+
+
 def _auto_resolver_futbol():
     """Resuelve picks de fútbol pendientes cruzándolos con resultados reales de ESPN."""
     if pick_memory is None:
@@ -1031,6 +1056,7 @@ def main():
                             elif resultado_ia_ufc.get('error'):
                                 resultado_final['ia_error'] = resultado_ia_ufc.get('error', 'Error de IA')
                             st.session_state.analisis_ufc[fight_key] = resultado_final
+                            _log_pick_ia("UFC", p1_nombre, p2_nombre, resultado_ia_ufc)
                             db.guardar_backtesting("UFC", f"{p1_nombre} vs {p2_nombre}", _ia_pick_ufc or resultado_heuristico.get('ganador', ''))
                         else:
                             st.session_state.analisis_ufc[fight_key] = resultado_heuristico
@@ -1105,7 +1131,12 @@ def main():
                                         groq_client=st.session_state.groq,
                                         selected_model=st.session_state.selected_ia_model,
                                     )
-                                    st.session_state.analisis_futbol[f"{key_fut}_ia"] = analista.analizar_futbol(p, res_fut, res_fut)
+                                    _res_ia_fut = analista.analizar_futbol(p, res_fut, res_fut)
+                                    st.session_state.analisis_futbol[f"{key_fut}_ia"] = _res_ia_fut
+                                    _log_pick_ia("SOCCER",
+                                                 p.get('home') or p.get('local', ''),
+                                                 p.get('away') or p.get('visitante', ''),
+                                                 _res_ia_fut)
                             st.rerun()
                         st.markdown("---")
         else: st.info("👈 Carga ligas en el sidebar")
@@ -1188,6 +1219,7 @@ def main():
                             elif resultado_ia.get('error'):
                                 resultado_final['ia_error'] = resultado_ia.get('error', 'Error de IA')
                             st.session_state.analisis_mlb[game_key] = resultado_final
+                            _log_pick_ia("MLB", p.get('local', ''), p.get('visitante', ''), resultado_ia)
                             db.guardar_backtesting("MLB", f"{p['local']} vs {p['visitante']}", resultado_ia.get('pick', resultado_heuristico.get('pick', '')))
                         else:
                             st.session_state.analisis_mlb[game_key] = resultado_heuristico
@@ -1221,6 +1253,26 @@ def main():
                 cB.metric("Win Rate picks", f"{g['win_rate']}%")
                 cC.metric("ROI picks", f"{g['roi']:+.1f}%")
                 cD.metric("Pendientes", s["pendientes"])
+
+                # ── Comparativo IA vs Heurístico ──────────────────────────────
+                pf = s.get("por_fuente", {})
+                pend_f = s.get("pendientes_por_fuente", {})
+                st.markdown("**🤖 IA vs 🧮 Heurístico** — quién acierta más (se llena conforme se resuelven los juegos):")
+                fuentes = sorted(set(pf) | set(pend_f), key=lambda x: x != "IA")  # IA primero
+                if not pf.get("IA") and pend_f.get("IA", 0) == 0:
+                    st.info("ℹ️ Aún no hay picks de IA registrados. Analiza partidos con un modelo de IA "
+                            "seleccionado (no 'Heurístico') y se empezarán a guardar para backtestear.")
+                cols_f = st.columns(max(1, len(fuentes)))
+                for i, fte in enumerate(fuentes):
+                    d = pf.get(fte, {"total": 0, "win_rate": 0, "roi": 0})
+                    pend = pend_f.get(fte, 0)
+                    etiqueta = "🤖 IA" if fte == "IA" else f"🧮 {fte}"
+                    cols_f[i].metric(
+                        etiqueta,
+                        f"{d['win_rate']}% WR" if d["total"] else "sin resolver",
+                        f"ROI {d['roi']:+.1f}% · {d['total']} res · {pend} pend" if d["total"]
+                        else f"{pend} pendientes",
+                    )
 
             # ── Métricas de parlays ───────────────────────────────────────────
             if _ph_stats_data.get("total", 0) > 0:
