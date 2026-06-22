@@ -36,3 +36,6 @@ data/betting_stats.db
 # para que Streamlit Cloud lo cargue al instante, sin re-entrenar. Solo se ignora
 # el pickle viejo por si quedara alguno.
 data/dixon_coles_params.pkl
+
+# Cache modelo de carreras MLB (se regenera vía statsapi)
+data/mlb_runs_params.json
