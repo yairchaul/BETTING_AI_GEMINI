@@ -27,8 +27,8 @@ Sólo cubre SELECCIONES. Para clubes, predecir() devuelve disponible=False y el
 motor de fútbol cae a su lógica previa.
 """
 import os
+import json
 import math
-import pickle
 import logging
 from datetime import datetime
 
@@ -38,8 +38,8 @@ from motors.international_results import _cargar_datos, _resolve
 
 logger = logging.getLogger(__name__)
 
-CACHE_PATH = os.path.join("data", "dixon_coles_params.pkl")
-CACHE_DAYS = 7                  # refrescar coeficientes semanalmente
+CACHE_PATH = os.path.join("data", "dixon_coles_params.json")  # JSON portable (se commitea)
+CACHE_DAYS = 14                 # refrescar coeficientes cada 2 semanas
 DESDE_ANIO_DEFAULT = 2018       # como en los videos: datos recientes, menos ruido
 MIN_PARTIDOS = 8                # un equipo necesita ≥8 apariciones para tener coef. propio
 HALF_LIFE_DAYS = 540            # vida media del decaimiento temporal (~18 meses)
@@ -248,8 +248,8 @@ def entrenar(desde_anio=DESDE_ANIO_DEFAULT, hasta_fecha=None, ref_fecha=None, gu
 
     modelo = {
         "idx": idx,                 # nombre normalizado → índice
-        "atk": atk,
-        "dfn": dfn,
+        "atk": np.asarray(atk),
+        "dfn": np.asarray(dfn),
         "home_adv": h,
         "rho": rho,
         "n_equipos": arr["n"],
@@ -261,8 +261,12 @@ def entrenar(desde_anio=DESDE_ANIO_DEFAULT, hasta_fecha=None, ref_fecha=None, gu
     if guardar and hasta_fecha is None:
         try:
             os.makedirs("data", exist_ok=True)
-            with open(CACHE_PATH, "wb") as f:
-                pickle.dump(modelo, f)
+            # JSON portable (independiente de versión de numpy) → se commitea al repo
+            serial = dict(modelo)
+            serial["atk"] = modelo["atk"].tolist()
+            serial["dfn"] = modelo["dfn"].tolist()
+            with open(CACHE_PATH, "w", encoding="utf-8") as f:
+                json.dump(serial, f)
             logger.info(
                 f"dixon_coles: modelo guardado ({modelo['n_equipos']} equipos, "
                 f"{modelo['n_partidos']} partidos, ρ={rho:.3f}, h={h:.3f})"
@@ -282,8 +286,11 @@ def _modelo_activo(force_refit=False):
         try:
             edad = (datetime.now() - datetime.fromtimestamp(os.path.getmtime(CACHE_PATH))).days
             if edad < CACHE_DAYS:
-                with open(CACHE_PATH, "rb") as f:
-                    _modelo = pickle.load(f)
+                with open(CACHE_PATH, "r", encoding="utf-8") as f:
+                    m = json.load(f)
+                m["atk"] = np.asarray(m["atk"], dtype=float)
+                m["dfn"] = np.asarray(m["dfn"], dtype=float)
+                _modelo = m
                 return _modelo
         except Exception as e:
             logger.warning(f"dixon_coles: cache ilegible ({e}), reentrenando")

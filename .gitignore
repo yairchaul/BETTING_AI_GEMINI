@@ -32,5 +32,7 @@ Thumbs.db
 data/betting_stats.db
 .streamlit/secrets.toml
 
-# Cache Dixon-Coles (se regenera; pickle sensible a versión de numpy)
+# Cache Dixon-Coles: el modelo JSON (data/dixon_coles_params.json) SÍ se commitea
+# para que Streamlit Cloud lo cargue al instante, sin re-entrenar. Solo se ignora
+# el pickle viejo por si quedara alguno.
 data/dixon_coles_params.pkl
