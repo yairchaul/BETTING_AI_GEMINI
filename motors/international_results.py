@@ -13,7 +13,9 @@ Provee:
   analizar_h2h(local, visitante)  → resumen texto para Gemini/display
 """
 import os
+import re
 import csv
+import difflib
 import logging
 import requests
 import unicodedata
@@ -33,7 +35,8 @@ _cache_data = None  # lista de dicts en memoria
 
 def _norm(name: str) -> str:
     t = unicodedata.normalize('NFD', (name or '').strip()).encode('ascii', 'ignore').decode()
-    return t.lower().replace('-', ' ').replace('.', '').strip()
+    t = t.lower().replace('-', ' ').replace('.', '').replace("'", ' ')
+    return re.sub(r'\s+', ' ', t).strip()
 
 
 # Aliases: variante común (FIFA o español) → nombre normalizado tal como
@@ -85,12 +88,59 @@ _ALIASES = {
     "arabia saudita": "saudi arabia",
     "arabia saudi": "saudi arabia",
     "catar": "qatar",
+    "turkiye": "turkey",      # renombramiento oficial 2022 (dataset usa "turkey")
+    "turquia": "turkey",
 }
 
 
+# ── Resolución de nombres con fuzzy matching CONSERVADOR ─────────────────────
+_KNOWN_NAMES = None          # set de nombres normalizados del dataset
+_RESOLVE_CACHE = {}          # memo: nombre crudo → nombre resuelto
+# Palabras vacías al comparar por tokens (no aportan a la identidad del equipo)
+_STOP_TOKENS = {"and", "of", "the", "dr", "rep", "republic", "fc", "national", "ir", "&", "y", "de"}
+
+
+def _known_names():
+    global _KNOWN_NAMES
+    if _KNOWN_NAMES is None:
+        datos = _cargar_datos()
+        _KNOWN_NAMES = {r["local"] for r in datos} | {r["visita"] for r in datos}
+    return _KNOWN_NAMES
+
+
+def _tokens(s: str) -> set:
+    s = s.replace("&", " and ").replace("-", " ")
+    return {t for t in s.split() if t and t not in _STOP_TOKENS}
+
+
 def _resolve(name: str) -> str:
+    """Normaliza un nombre de selección al usado por martj42. Primero alias
+    exactos; si falla, fuzzy CONSERVADOR (un falso match en apuestas es peligroso):
+    contención de tokens con candidato ÚNICO, y difflib con umbral 0.90 al final.
+    Casos ambiguos (p.ej. 'Korea' → north/south) se dejan SIN resolver a propósito."""
+    if name in _RESOLVE_CACHE:
+        return _RESOLVE_CACHE[name]
     n = _norm(name)
-    return _ALIASES.get(n, n)
+    n = _ALIASES.get(n, n)
+    known = _known_names()
+    resuelto = n
+    if known and n not in known:
+        # Normalizar separadores ('&', '-') y reintentar exacto
+        var = re.sub(r"\s+", " ", n.replace("&", " and ").replace("-", " ")).strip()
+        if var in known:
+            resuelto = var
+        else:
+            # Contención de tokens significativos con candidato ÚNICO
+            qt = _tokens(n)
+            cands = [k for k in known if qt and qt <= _tokens(k)] if qt else []
+            if len(cands) == 1:
+                resuelto = cands[0]
+            else:
+                m = difflib.get_close_matches(var, list(known), n=1, cutoff=0.90)
+                if m:
+                    resuelto = m[0]
+    _RESOLVE_CACHE[name] = resuelto
+    return resuelto
 
 
 # ── Descarga y carga del CSV ─────────────────────────────────────────────────
