@@ -1579,6 +1579,51 @@ def main():
             elif fbr:
                 st.info(fbr.get("error", "Sin picks evaluables todavía. Ejecuta el backtest."))
 
+        # ── DASHBOARD MARCADOR CORRECTO (Dixon-Coles) ──────────────────────────
+        with st.expander("🎯 MARCADOR CORRECTO — ¿acertó el Top-3 del modelo Dixon-Coles?", expanded=False):
+            st.caption("Para cada partido de selecciones de los últimos N días, el modelo propone 3 marcadores. "
+                       "Aquí ves cuál pegó EXACTO (y en qué posición), cuál se ACERCÓ más, y si acertó el 1X2. "
+                       "El modelo se entrena EXCLUYENDO esos días (out-of-sample, sin trampa).")
+            col_mc1, col_mc2 = st.columns([3, 1])
+            with col_mc2:
+                dias_mc = st.number_input("Días", 3, 30, 10, step=1, key="mc_bt_dias")
+            with col_mc1:
+                st.write("")
+                if st.button("🎯 EJECUTAR BACKTEST MARCADOR CORRECTO", use_container_width=True, key="mc_bt_run"):
+                    with st.spinner("Entrenando Dixon-Coles sin la ventana y evaluando marcadores..."):
+                        try:
+                            from motors.backtest_marcador_correcto import backtest_marcador
+                            st.session_state["_mc_bt"] = backtest_marcador(dias=int(dias_mc))
+                        except Exception as _mce:
+                            st.error(f"Error: {_mce}")
+                            logger.exception(_mce)
+
+            _mc = st.session_state.get("_mc_bt")
+            if _mc and _mc.get("resumen", {}).get("partidos"):
+                r = _mc["resumen"]
+                st.caption(f"Ventana: {r['desde']} → {r['hasta']} · {r['partidos']} partidos de selecciones (out-of-sample)")
+                m1, m2, m3, m4 = st.columns(4)
+                m1.metric("✅ Exacto (Top-3)", f"{r['exacto_top3_pct']}%", f"Top-1: {r['exacto_top1_pct']}%")
+                m2.metric("🏆 Resultado 1X2", f"{r['outcome_1x2_pct']}%")
+                m3.metric("🎯 Cerca (≤1 gol)", f"{r['cerca_1gol_pct']}%")
+                m4.metric("📏 Distancia media", f"{r['distancia_media']}", help="0 = marcador exacto")
+                st.info("ℹ️ Acertar el marcador EXACTO ronda 1 de 7 por partido; ~34% en Top-3 y ~67% a ≤1 gol "
+                        "es lo realista. Úsalo para ver dónde el modelo se acerca y seguir calibrando.")
+                def _icono_mc(p):
+                    if p["exacto_rank"]:
+                        return f"✅ EXACTO (#{p['exacto_rank']})"
+                    if p["outcome_ok"]:
+                        return "🎯 acertó 1X2"
+                    return f"📏 cerca (d={p['distancia']})" if p["distancia"] <= 1 else f"❌ d={p['distancia']}"
+                st.table([{
+                    "Fecha": p["fecha"],
+                    "Partido": f"{p['local']} {p['real']} {p['visitante']}",
+                    "Top-3 predicho": " · ".join(p["top3"]),
+                    "Resultado": _icono_mc(p),
+                } for p in _mc["partidos"][:30]])
+            elif _mc and _mc.get("error"):
+                st.warning(f"⚠️ {_mc['error']}")
+
         with st.expander("⚾ Backtest por picks guardados (efectividad acumulada HR / ML / O-U / K)", expanded=False):
             st.caption("Descarga resultados reales de la MLB Stats API, cruza tus picks pendientes y mide qué tan efectivo es cada mercado.")
             col_mlb_bt1, col_mlb_bt2 = st.columns([3, 1])
