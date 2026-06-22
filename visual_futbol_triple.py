@@ -304,6 +304,63 @@ class VisualFutbolTriple:
                         f"</div>",
                         unsafe_allow_html=True)
 
+            # ── MARCADOR CORRECTO (Dixon-Coles) ──────────────────────────────
+            # Top-3 marcadores + heatmap de la matriz Poisson corregida (τ),
+            # igual que los paneles del modelo profesional. Solo selecciones.
+            mc = analisis_heuristico.get('marcador_correcto')
+            if mc and mc.get('disponible'):
+                top = mc.get('marcador_top', [])
+                xgl, xgv = mc.get('xg_local'), mc.get('xg_visit')
+                st.markdown(
+                    f"<div style='color:#94a3b8;font-size:0.72rem;margin:12px 0 5px 0'>"
+                    f"🎯 <b>MARCADOR CORRECTO</b> · modelo Dixon-Coles "
+                    f"<span style='color:#64748b'>(xG {xgl} - {xgv})</span></div>",
+                    unsafe_allow_html=True)
+                _col = {"LOCAL": "#3b82f6", "EMPATE": "#94a3b8", "VISITANTE": "#ef4444"}
+                chips = []
+                for i, t in enumerate(top[:3]):
+                    c = _col.get(t.get('resultado'), "#94a3b8")
+                    borde = "border:2px solid #fbbf24;" if i == 0 else f"border:1px solid {c};"
+                    chips.append(
+                        f"<div style='background:#0f172a;{borde}border-radius:9px;"
+                        f"padding:8px 16px;text-align:center;min-width:66px'>"
+                        f"<div style='color:#fff;font-weight:900;font-size:1.25rem'>{t['marcador']}</div>"
+                        f"<div style='color:{c};font-size:0.78rem;font-weight:700'>{t['pct']}%</div></div>")
+                st.markdown(
+                    f"<div style='display:flex;gap:8px;margin-bottom:8px'>{''.join(chips)}</div>",
+                    unsafe_allow_html=True)
+                # Heatmap 0-5 (filas = goles local, columnas = goles visitante)
+                matriz = mc.get('matriz', [])
+                if matriz:
+                    N = min(6, len(matriz))
+                    mx = max((matriz[i][j] for i in range(N) for j in range(N)), default=0) or 1
+                    enc = "".join(
+                        f"<td style='color:#64748b;font-size:0.6rem;text-align:center;padding:2px 6px'>{j}</td>"
+                        for j in range(N))
+                    filas_html = [f"<tr><td></td>{enc}</tr>"]
+                    for i in range(N):
+                        celdas = [f"<td style='color:#64748b;font-size:0.6rem;padding:2px 6px'>{i}</td>"]
+                        for j in range(N):
+                            p = matriz[i][j]
+                            inten = p / mx
+                            r = int(30 + inten * 225)
+                            g = int(35 + inten * 25)
+                            b = max(0, int(55 - inten * 45))
+                            txt = "#fff" if inten > 0.35 else "#475569"
+                            celdas.append(
+                                f"<td style='background:rgb({r},{g},{b});color:{txt};"
+                                f"font-size:0.62rem;font-weight:700;text-align:center;"
+                                f"padding:4px 6px;border-radius:3px'>{p*100:.0f}</td>")
+                        filas_html.append(f"<tr>{''.join(celdas)}</tr>")
+                    st.markdown(
+                        f"<div style='color:#64748b;font-size:0.6rem;margin-bottom:3px'>"
+                        f"↓ {local} &nbsp;·&nbsp; → {visitante} &nbsp;·&nbsp; % por marcador</div>"
+                        f"<table style='border-collapse:separate;border-spacing:2px;margin-bottom:4px'>"
+                        f"{''.join(filas_html)}</table>",
+                        unsafe_allow_html=True)
+                st.caption("ℹ️ Ningún marcador exacto pasa de ~15-20%: el fútbol es así de aleatorio. "
+                           "Es guía de escenarios, no certeza.")
+
             # ── Debug: ¿Por qué se eligió este mercado? ─────────────────────
             debug_reglas = analisis_heuristico.get('debug_reglas', [])
             wc_nota_debug = analisis_heuristico.get('wc_nota', '')

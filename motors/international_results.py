@@ -36,24 +36,55 @@ def _norm(name: str) -> str:
     return t.lower().replace('-', ' ').replace('.', '').strip()
 
 
-# Aliases: variante común → nombre normalizado en el CSV de martj42
+# Aliases: variante común (FIFA o español) → nombre normalizado tal como
+# aparece en el CSV de martj42. OJO: martj42 usa nombres comunes en inglés
+# ("south korea", "czech republic", "ivory coast", "united states"), NO los
+# nombres estilo FIFA. Mapear al nombre REAL del dataset o el lookup falla.
 _ALIASES = {
-    "south korea": "korea republic",
-    "corea del sur": "korea republic",
+    # Corea (dataset: "south korea")
+    "korea republic": "south korea",
+    "corea del sur": "south korea",
+    "corea": "south korea",
+    "corea del norte": "north korea",
+    # Estados Unidos (dataset: "united states")
+    "usa": "united states",
+    "estados unidos": "united states",
+    "eeuu": "united states",
+    "ee uu": "united states",
+    # Irán
     "ir iran": "iran",
-    "united states": "usa",
-    "estados unidos": "usa",
-    "eeuu": "usa",
-    "ivory coast": "cote d ivoire",
-    "costa de marfil": "cote d ivoire",
-    "czech republic": "czechia",
+    # Costa de Marfil (dataset: "ivory coast")
+    "cote d ivoire": "ivory coast",
+    "costa de marfil": "ivory coast",
+    # Chequia (dataset: "czech republic")
+    "czechia": "czech republic",
+    "chequia": "czech republic",
+    "republica checa": "czech republic",
+    # Macedonia (dataset: "north macedonia")
     "macedonia": "north macedonia",
-    "cape verde": "cabo verde",
-    "dr congo": "congo dr",
-    "rdc": "congo dr",
-    "curacao": "curacao",
-    "mexico": "mexico",
-    "usa": "united states",  # martj42 usa "United States"
+    # Cabo Verde (dataset: "cape verde")
+    "cabo verde": "cape verde",
+    # Congo RD (dataset: "dr congo")
+    "congo dr": "dr congo",
+    "rd congo": "dr congo",
+    "rdc": "dr congo",
+    # Traducciones ES → EN comunes (los feeds dan inglés, pero el usuario
+    # puede teclear en español)
+    "paises bajos": "netherlands",
+    "holanda": "netherlands",
+    "alemania": "germany",
+    "inglaterra": "england",
+    "francia": "france",
+    "espana": "spain",
+    "belgica": "belgium",
+    "brasil": "brazil",
+    "croacia": "croatia",
+    "suiza": "switzerland",
+    "japon": "japan",
+    "marruecos": "morocco",
+    "arabia saudita": "saudi arabia",
+    "arabia saudi": "saudi arabia",
+    "catar": "qatar",
 }
 
 

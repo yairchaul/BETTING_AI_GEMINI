@@ -503,6 +503,18 @@ def analizar_futbol_jerarquico(
     # Ordenar: primario al frente, luego por confianza
     picks_multiples.sort(key=lambda x: (0 if x["pick"] == primary["pick"] else 1, -x["confianza"]))
 
+    # ── Marcador correcto (Dixon-Coles) ───────────────────────────────────────
+    # Para selecciones internacionales: top-N marcadores + matriz (heatmap) +
+    # 1X2 derivado del MISMO modelo. Cae a None para clubes (no están en el dataset).
+    marcador_correcto = None
+    try:
+        from motors.dixon_coles import predecir as _dc_predecir
+        _dc = _dc_predecir(local, visitante, neutral=bool(es_torneo))
+        if _dc.get("disponible"):
+            marcador_correcto = _dc
+    except Exception as _e:
+        logger.debug(f"dixon_coles no disponible para {local} vs {visitante}: {_e}")
+
     # Debug: motivos por los que cada regla fue/no fue elegida
     debug_reglas = []
     for vp in viable_picks:
@@ -539,6 +551,7 @@ def analizar_futbol_jerarquico(
         "motor_v2":     motor_v2,
         "debug_reglas": debug_reglas,
         "picks_multiples": picks_multiples,
+        "marcador_correcto": marcador_correcto,
     }
 
 
@@ -562,7 +575,34 @@ def _avg(lista, default=1.2):
 
 def mercados_completos_futbol(local, visitante, es_torneo=False, fase=""):
     """Devuelve probabilidades de Moneyline (1X2), Over/Under 2.5, BTTS sí/no
-    y goleadores probables. Usa historial (DB) o ranking FIFA como respaldo."""
+    y goleadores probables. Fuente primaria: Dixon-Coles (selecciones); si no
+    está disponible (clubes), cae a historial (DB) o ranking FIFA."""
+    # ── Fuente PRIMARIA: Dixon-Coles (ataque/defensa + Poisson con corrección τ)
+    try:
+        from motors.dixon_coles import predecir as _dc_predecir
+        _dc = _dc_predecir(local, visitante, neutral=bool(es_torneo))
+    except Exception:
+        _dc = {"disponible": False}
+
+    if _dc.get("disponible"):
+        try:
+            from motors.futbol_props import obtener_goleadores_partido
+            goleadores = obtener_goleadores_partido(local, visitante)
+        except Exception:
+            goleadores = {"local": [], "visitante": []}
+        return {
+            "fuente": "dixon-coles",
+            "xg_local": _dc["xg_local"], "xg_visitante": _dc["xg_visit"],
+            "moneyline": {"local": _dc["prob"]["local"], "empate": _dc["prob"]["empate"],
+                          "visitante": _dc["prob"]["visitante"]},
+            "over_under": {"over_2.5": _dc["over_under"]["over_2.5"],
+                           "under_2.5": _dc["over_under"]["under_2.5"],
+                           "over_1.5": _dc["over_under"]["over_1.5"]},
+            "btts": _dc["btts"],
+            "goleadores": goleadores,
+            "marcador_correcto": _dc,
+        }
+
     s_l = db.get_team_stats_detailed(local, "soccer")
     s_v = db.get_team_stats_detailed(visitante, "soccer")
 
@@ -616,4 +656,5 @@ def mercados_completos_futbol(local, visitante, es_torneo=False, fase=""):
                        "over_1.5": _r(p_over15)},
         "btts": {"si": _r(p_btts), "no": _r(1 - p_btts)},
         "goleadores": goleadores,
+        "marcador_correcto": None,
     }

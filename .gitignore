@@ -31,3 +31,6 @@ Thumbs.db
 # Base de datos (generalmente no se versiona si contiene datos de usuario)
 data/betting_stats.db
 .streamlit/secrets.toml
+
+# Cache Dixon-Coles (se regenera; pickle sensible a versión de numpy)
+data/dixon_coles_params.pkl
