@@ -902,6 +902,12 @@ def render_parlay_tab():
                        "de tu casa se calcula el valor (EV) exacto. Si cada leg tiene valor positivo, "
                        "a la larga rinde más apostarlas POR SEPARADO que en parlay.")
 
+    # ── ⚽ PARLAY SOLO FÚTBOL (las predicciones que auditamos) ───────────────
+    # Reúne SOLO legs de fútbol (mejor por partido), priorizadas por la tasa de
+    # acierto auditada del backtest. Las mismas legs siguen en el pool, así que
+    # también alimentan los parlays cross-deporte de abajo.
+    _parlay_solo_futbol(pool, n_legs=n_legs, min_prob=min_prob)
+
     # ── Parlay SEGURO: COMBINA deportes (mejor de cada uno) + relleno por prob ──
     seguros = [p for p in pool if p["prob"] >= min_prob and p["mercado"] != "HOME RUN"]
     vistos_evento = set()
@@ -1169,3 +1175,137 @@ def render_parlay_tab():
                                 unsafe_allow_html=True)
     except Exception:
         pass
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# PARLAY SOLO FÚTBOL — usa las predicciones de fútbol que AUDITAMOS (backtest)
+# y arma un parlay independiente; estas mismas legs siguen entrando al pool
+# cross-deporte, así que "se conecta con los demás".
+# ──────────────────────────────────────────────────────────────────────────
+_AUDIT_FUT = None
+
+
+def _audit_futbol_rates():
+    """Tasa de acierto AUDITADA de fútbol (del backtest) por mercado. Devuelve
+    {'global','n','moneyline','over_under','btts','combo'} (los que tengan ≥3
+    muestras) o {} si no hay datos. Es la conexión con 'lo que auditamos'."""
+    global _AUDIT_FUT
+    if _AUDIT_FUT is not None:
+        return _AUDIT_FUT
+    import os, json
+    _AUDIT_FUT = {}
+    for ruta in (os.path.join("data", "futbol_backtest_db.json"),
+                 os.path.join("data", "futbol_backtest_real.json")):
+        try:
+            with open(ruta, encoding="utf-8") as f:
+                rep = json.load(f)
+        except Exception:
+            continue
+        mk = rep.get("mercados", {})
+        res = {"global": rep.get("precision_global", 0), "n": rep.get("evaluados", 0)}
+        for k in ("moneyline", "over_under", "btts", "combo"):
+            d = mk.get(k, {})
+            if d.get("total", 0) >= 3:
+                res[k] = d.get("precision", 0)
+        if res.get("n"):
+            _AUDIT_FUT = res
+            break
+    return _AUDIT_FUT
+
+
+def _audit_rate_de_mercado(mercado):
+    """Mapea el mercado del leg (1X2/OVER/UNDER/BTTS/COMBINADO) al mercado
+    auditado y devuelve su % de acierto (o None si no hay dato)."""
+    rates = _audit_futbol_rates()
+    if not rates:
+        return None
+    m = (mercado or "").lower()
+    if "btts" in m or "ambos" in m:
+        key = "btts"
+    elif "combinad" in m or "combo" in m:
+        key = "combo"
+    elif "over" in m or "under" in m or "gol" in m:
+        key = "over_under"
+    else:
+        key = "moneyline"
+    return rates.get(key)
+
+
+def _parlay_solo_futbol(pool, n_legs=4, min_prob=55):
+    """Parlay de SOLO fútbol con las predicciones que auditamos. Toma la MEJOR
+    leg por partido (1 por evento), ordenada por prob calibrada con la tasa
+    auditada del backtest, y muestra una escalera para elegir riesgo. Estas
+    mismas legs siguen disponibles para los parlays cross-deporte."""
+    fut = [p for p in pool if "FÚTBOL" in (p.get("sport", "") or "").upper()
+           or "FUTBOL" in (p.get("sport", "") or "").upper()]
+    st.markdown("---")
+    st.subheader("⚽ PARLAY SOLO FÚTBOL")
+    aud = _audit_futbol_rates()
+    if aud:
+        _lbl = {"moneyline": "ML", "over_under": "O/U", "btts": "BTTS", "combo": "Combo"}
+        partes = [f"{lb} {aud[k]:.0f}%" for k, lb in _lbl.items() if k in aud]
+        st.caption(f"📊 Auditado (backtest, {aud.get('n', 0)} picks): global "
+                   f"{aud.get('global', 0):.0f}%" + (" · " + " · ".join(partes) if partes else "") +
+                   ". Estas legs también se combinan en los parlays cross-deporte.")
+    if not fut:
+        st.info("⚽ No hay picks de fútbol del día. Carga partidos de fútbol "
+                "o pon el filtro de día en 'Todos'.")
+        return
+
+    def _prob_cal_fut(l):
+        real = _rate_real_mercado(l.get("sport", ""), l.get("mercado", ""))
+        aud_r = _audit_rate_de_mercado(l.get("mercado", ""))
+        p = l["prob"]
+        if real is not None and aud_r is not None:
+            return 0.34 * p + 0.33 * real + 0.33 * aud_r
+        if real is not None:
+            return 0.4 * p + 0.6 * real
+        if aud_r is not None:
+            return 0.5 * p + 0.5 * aud_r
+        return p
+
+    vistos, legs = set(), []
+    for p in sorted(fut, key=_prob_cal_fut, reverse=True):
+        if p["evento"] in vistos:
+            continue
+        vistos.add(p["evento"])
+        legs.append(p)
+    if len(legs) < 2:
+        st.info("Solo hay 1 partido de fútbol disponible; se necesitan ≥2 para un parlay.")
+        return
+
+    legs_top = [l for l in legs if _prob_cal_fut(l) >= min_prob][:n_legs] or legs[:n_legs]
+    if len(legs_top) >= 2:
+        _tarjeta_parlay(f"⚽ PARLAY SOLO FÚTBOL ({len(legs_top)} legs)", "#16a34a",
+                        "La mejor leg por partido (1 por evento), solo fútbol — priorizado por la "
+                        "tasa que auditamos. También entra a los parlays cross-deporte.",
+                        _armar_parlay(legs_top))
+    _escalera_solo_futbol(legs, _prob_cal_fut)
+
+
+def _escalera_solo_futbol(legs, prob_fn):
+    """Escalera 2→N de SOLO fútbol con probabilidad real (Monte Carlo corrige
+    legs correlacionadas del mismo partido). Para elegir entre 'no perder'
+    (pocas legs) y 'gran ganancia' (muchas)."""
+    try:
+        from motors.montecarlo_parlay import prob_combinada_mc
+        _mc = True
+    except Exception:
+        _mc = False
+    st.markdown("##### 🪜 Escalera solo fútbol — elige tu riesgo")
+    for n in range(2, min(len(legs), 8) + 1):
+        sub = legs[:n]
+        par = _armar_parlay(sub)
+        prob = par["prob"]
+        if _mc:
+            prob = round(prob_combinada_mc(
+                [{"prob": prob_fn(l), "evento": l.get("evento", "")} for l in sub],
+                n_sims=3000) * 100, 1)
+        color = "#22c55e" if prob >= 25 else "#fbbf24" if prob >= 10 else "#ef4444"
+        gan = round((par["cuota"] - 1) * 100)
+        tag = " · 🛡️ no perder" if n <= 3 else ""
+        st.markdown(
+            f"<div style='background:#0f172a;border-radius:6px;padding:5px 12px;margin:2px 0'>"
+            f"<b>{n} legs</b> · prob <b style='color:{color}'>{prob}%</b> · "
+            f"cuota {par['cuota']}x · $100 → <b style='color:#22c55e'>${gan:,}</b>{tag}</div>",
+            unsafe_allow_html=True)
