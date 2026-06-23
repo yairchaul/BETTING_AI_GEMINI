@@ -1252,6 +1252,9 @@ def _parlay_solo_futbol(pool, n_legs=4, min_prob=55):
                 "o pon el filtro de día en 'Todos'.")
         return
 
+    # ── TODAS las apuestas de fútbol generadas (lista completa por partido) ──
+    _lista_apuestas_futbol(fut)
+
     def _prob_cal_fut(l):
         real = _rate_real_mercado(l.get("sport", ""), l.get("mercado", ""))
         aud_r = _audit_rate_de_mercado(l.get("mercado", ""))
@@ -1308,4 +1311,36 @@ def _escalera_solo_futbol(legs, prob_fn):
             f"<div style='background:#0f172a;border-radius:6px;padding:5px 12px;margin:2px 0'>"
             f"<b>{n} legs</b> · prob <b style='color:{color}'>{prob}%</b> · "
             f"cuota {par['cuota']}x · $100 → <b style='color:#22c55e'>${gan:,}</b>{tag}</div>",
+            unsafe_allow_html=True)
+
+
+def _lista_apuestas_futbol(fut):
+    """Lista COMPLETA de TODAS las apuestas de fútbol generadas, agrupadas por
+    partido (incluye cada mercado por juego: 1X2/ML, OVER/UNDER, BTTS, combos),
+    con su confianza, la tasa AUDITADA del mercado y la cuota."""
+    por_evento = {}
+    for p in fut:
+        por_evento.setdefault(p.get("evento", "?"), []).append(p)
+    st.markdown(f"**📋 Todas las apuestas de fútbol generadas: "
+                f"{len(fut)} en {len(por_evento)} partido(s)**")
+    st.caption("Todo lo que produjo el motor de fútbol (cada mercado por partido). "
+               "Las mejores por partido arman el parlay de abajo.")
+    for ev, picks in por_evento.items():
+        picks_s = sorted(picks, key=lambda x: x.get("prob", 0) or 0, reverse=True)
+        filas = ""
+        for p in picks_s:
+            aud = _audit_rate_de_mercado(p.get("mercado", ""))
+            aud_txt = (f" · auditado <b style='color:#22c55e'>{aud:.0f}%</b>"
+                       if aud is not None else "")
+            c = p.get("cuota", 1.9) or 1.9
+            mom = _decimal_a_americano(c)
+            real_badge = " 📈real" if p.get("cuota_real") else ""
+            filas += (f"<div style='padding:1px 0 1px 16px;font-size:0.84rem;color:#cbd5e1'>"
+                      f"• <b style='color:#f1f5f9'>{p.get('pick','')}</b> "
+                      f"<span style='color:#64748b'>({p.get('mercado','')})</span> · "
+                      f"<span style='color:#22c55e'>{(p.get('prob',0) or 0):.0f}%</span>{aud_txt} · "
+                      f"cuota {c:.2f} ({mom}){real_badge}</div>")
+        st.markdown(
+            f"<div style='background:#0f172a;border-radius:6px;padding:6px 10px;margin:3px 0'>"
+            f"<b style='color:#e2e8f0'>⚽ {ev}</b>{filas}</div>",
             unsafe_allow_html=True)
