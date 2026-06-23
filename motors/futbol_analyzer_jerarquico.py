@@ -386,6 +386,23 @@ def analizar_futbol_jerarquico(
     )
     factor_fase = TORNEO_BOOST if es_eliminacion else 1.0
 
+    # ── Dixon-Coles PRE-cálculo (xG específico del enfrentamiento) ──────────
+    # Se calcula ANTES de las reglas para que la Regla 4 (OVER/UNDER) use la
+    # probabilidad ESPECÍFICA del partido (vía xG local+visita) y no solo la
+    # frecuencia histórica cruda, que mezcla los entornos de ambos equipos y
+    # produce sesgos (caso Portugal: UNDER 1.5 cuando en realidad metió 3, o
+    # partidos cerrados marcados como de alta anotación). Se reutiliza más
+    # abajo para nutrir picks múltiples y corregir el primario (sin recalcular).
+    _dc_pre = None
+    try:
+        from motors.dixon_coles import predecir as _dc_predecir
+        _dc_tmp = _dc_predecir(local, visitante, neutral=bool(es_torneo))
+        if _dc_tmp.get("disponible"):
+            _dc_pre = _dc_tmp
+    except Exception as _e:
+        logger.debug(f"dixon_coles pre-cálculo no disponible {local} vs {visitante}: {_e}")
+    _dc_mkt = (_dc_pre or {}).get("mercados", {})
+
     viable_picks = []
 
     # ── Regla 1 — OVER 1.5 HT: P(2+ goles TOTALES en el 1er tiempo) ─────────
@@ -426,16 +443,37 @@ def analizar_futbol_jerarquico(
     # el OVER 1.5 de alta probabilidad. Ahora se añaden los OVER con su prob
     # real para que el de MAYOR probabilidad pueda ganar la selección. En el
     # Mundial el OVER 1.5 ronda 75-88% y suele ser el mercado más probable.
-    p_o15 = _pct(todos_totales, lambda t: t > 1.5)
-    p_o25 = _pct(todos_totales, lambda t: t > 2.5)
-    p_o35_raw = _pct(todos_totales, lambda t: t >= 3.5)
+    # Probabilidad histórica CRUDA: frecuencia de goles en los últimos 5 de
+    # AMBOS equipos juntos. Mezcla los dos entornos → sesga el OVER al alza en
+    # partidos que en realidad son cerrados (y a veces a la baja, como Portugal).
+    p_o15_hist = _pct(todos_totales, lambda t: t > 1.5)
+    p_o25_hist = _pct(todos_totales, lambda t: t > 2.5)
+    p_o35_hist = _pct(todos_totales, lambda t: t >= 3.5)
+    p_u25_hist = _pct(todos_totales, lambda t: t <= 2.5)
+
+    # Mezcla con la probabilidad ESPECÍFICA del enfrentamiento (Dixon-Coles xG,
+    # que ya combina fuerza estructural + forma reciente 2026). 60% DC / 40%
+    # histórico cuando hay modelo; 100% histórico si no hay DC. Esto reubica el
+    # OVER al nivel real del matchup en vez de la frecuencia cruda de cada equipo.
+    _W_DC_OVER = 0.60
+
+    def _mezcla_over(p_hist, clave_dc):
+        dc_v = _dc_mkt.get(clave_dc)
+        if dc_v is None:
+            return p_hist
+        return _W_DC_OVER * dc_v + (1 - _W_DC_OVER) * p_hist
+
+    p_o15 = _mezcla_over(p_o15_hist, "over_1.5")
+    p_o25 = _mezcla_over(p_o25_hist, "over_2.5")
+    p_o35_raw = _mezcla_over(p_o35_hist, "over_3.5")
+    p_under25 = _mezcla_over(p_u25_hist, "under_2.5")
+
     for nombre, pr in (("OVER 1.5", p_o15), ("OVER 2.5", p_o25), ("OVER 3.5", p_o35_raw)):
         if pr >= 55:
             viable_picks.append({"pick": nombre, "confianza": round(min(92, pr * factor_fase), 1), "regla": 4})
     # UNDER 2.5 — matchups DEFENSIVOS (ambos conceden/anotan poco). Detecta los
     # partidos cerrados (p.ej. Mexico 1-0 Korea) donde el OVER falla. Compite por
     # probabilidad como el resto: si el UNDER es más probable, gana la selección.
-    p_under25 = _pct(todos_totales, lambda t: t <= 2.5)
     if p_under25 >= 58:
         viable_picks.append({"pick": "UNDER 2.5", "confianza": round(min(88, p_under25 * factor_fase), 1), "regla": 4})
     # Si ninguno llega a 55%, usar el más cercano (para no quedar sin over)
@@ -475,8 +513,8 @@ def analizar_futbol_jerarquico(
         viable_picks.append({"pick": f"VISITANTE ({visitante})", "confianza": round(prob_v, 1), "regla": 5})
 
     # ── Regla 6 — UNDER 2.5 en partidos de eliminación directa ──────────────
+    # Reutiliza el UNDER ya mezclado con Dixon-Coles (no recalcula el crudo).
     if es_eliminacion:
-        p_under25 = _pct(todos_totales, lambda t: t <= 2.5)
         if p_under25 >= 60:
             viable_picks.append({
                 "pick": "UNDER 2.5 (Eliminación directa)",
@@ -644,10 +682,9 @@ def analizar_futbol_jerarquico(
     marcador_correcto = None
     ajuste_dc = ""
     try:
-        from motors.dixon_coles import predecir as _dc_predecir
-        _dc = _dc_predecir(local, visitante, neutral=bool(es_torneo))
-        if _dc.get("disponible"):
-            marcador_correcto = _dc
+        # Reutiliza el pre-cálculo de Dixon-Coles (la matriz NO se recalcula).
+        if _dc_pre is not None:
+            marcador_correcto = _dc_pre
             # Nutre los picks con los mercados exactos de la matriz y corrige el
             # primario si el modelo lo contradice.
             primary, picks_multiples, ajuste_dc = _integrar_dixon_coles(

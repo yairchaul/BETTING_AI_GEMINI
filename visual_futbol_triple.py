@@ -187,17 +187,28 @@ class VisualFutbolTriple:
             elif pick_m1 and pick_m1 == pick:
                 st.caption(f"📐 Motor 1 = mismo pick ({pick_m1} · {conf_m1:.0f}%)")
 
-            # ── Nota de forma reciente (avg goles actuales, NO histórico) ──────
+            # ── Forma reciente + TOTAL ESPERADO real del partido ──────────────
             avg_l = analisis_heuristico.get('avg_goles_local', 0)
             avg_v = analisis_heuristico.get('avg_goles_visit', 0)
             liga_nota_banner = analisis_heuristico.get('liga_nota', '')
             if avg_l or avg_v:
-                forma_txt = (f"📊 Forma reciente · {local[:10]}: avg {avg_l:.1f} goles · "
-                             f"{visitante[:10]}: avg {avg_v:.1f} goles")
-                if avg_l + avg_v > 3.0:
-                    forma_txt += " — partido de ALTA anotación"
-                elif avg_l + avg_v < 2.0:
-                    forma_txt += " — partido DEFENSIVO esperado"
+                # El total esperado del PARTIDO NO es avg_l + avg_v (eso duplica:
+                # cada avg ya es el TOTAL de goles en los partidos de ese equipo).
+                # Usamos el xG de Dixon-Coles (matchup real) si está; si no, el
+                # promedio de los dos entornos de gol.
+                mc_ = analisis_heuristico.get('marcador_correcto') or {}
+                if mc_.get('disponible') and mc_.get('xg_local') is not None:
+                    total_esp = round(mc_['xg_local'] + mc_['xg_visit'], 1)
+                else:
+                    total_esp = round((avg_l + avg_v) / 2.0, 1)
+                forma_txt = (f"📊 Forma · {local[:10]}: {avg_l:.1f} · {visitante[:10]}: {avg_v:.1f} "
+                             f"goles/partido · total esperado ≈ <b>{total_esp}</b>")
+                if total_esp >= 2.9:
+                    forma_txt += " — ALTA anotación (favorece OVER)"
+                elif total_esp <= 2.3:
+                    forma_txt += " — partido CERRADO (favorece UNDER)"
+                else:
+                    forma_txt += " — anotación MEDIA"
                 st.caption(forma_txt)
             elif nota and 'ranking' in nota.lower():
                 # Fallback FIFA ranking (torneos sin historial en DB)
