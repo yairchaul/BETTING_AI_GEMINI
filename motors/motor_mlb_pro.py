@@ -506,20 +506,21 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
     except Exception:
         ou_linea = 8.5
 
-    # Pitcheo dominante (K/9 alto + ERA baja) empuja al UNDER
+    # Pitcheo dominante (K/9 alto + ERA baja) empuja al UNDER. Para TOTALES, el
+    # abridor del día es la señal #1; un modelo de carreras a nivel EQUIPO no
+    # mejoró el O/U en backtest (47% vs 50.6% baseline: los totales MLB son muy
+    # eficientes y el modelo de equipo ignora al abridor). Por eso O/U usa pitcheo.
     factor_pitcheo = (k9_l + k9_v) / 2 - 7.5 + (4.2 - (era_l + era_v) / 2) * 1.5
-    # Total de carreras PROYECTADO: línea ajustada por el factor de pitcheo + estadio
     pf_runs = _park_factor(venue)  # parques de HR también suben carreras
     total_proyectado = max(5.0, round(ou_linea - factor_pitcheo * 0.55 + (pf_runs - 1.0) * 4, 1))
-    # Probabilidad REAL del over con Poisson sobre el total proyectado (no heurística).
-    # Las carreras totales de un juego se aproximan bien por Poisson(total_proy).
+    # Probabilidad REAL del over con Poisson sobre el total proyectado.
     p_over_tot = _poisson_over(total_proyectado, ou_linea)
     p_under_tot = 1.0 - p_over_tot
     if p_over_tot >= p_under_tot:
         ou_pick, ou_conf = "OVER", int(min(75, round(p_over_tot * 100)))
     else:
         ou_pick, ou_conf = "UNDER", int(min(75, round(p_under_tot * 100)))
-    razones.append(f"O/U Poisson: proy {total_proyectado} vs línea {ou_linea} → {ou_pick} {ou_conf}%")
+    razones.append(f"O/U Poisson (pitcheo+estadio): proy {total_proyectado} vs línea {ou_linea} → {ou_pick} {ou_conf}%")
 
     # ── 7. Candidatos HR ────────────────────────────────────────────────
     # Primero intentar el predictor con lineup oficial (si ya se publicó);

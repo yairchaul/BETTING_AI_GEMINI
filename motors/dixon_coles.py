@@ -441,6 +441,19 @@ def predecir(local, visitante, neutral=True, top_n=5, modelo=None):
         res = "LOCAL" if i > j else ("EMPATE" if i == j else "VISITANTE")
         top.append({"marcador": f"{i}-{j}", "pct": round(p * 100, 1), "resultado": res})
 
+    # Confianza del marcador: qué tan "picudo" es el top. Si el marcador #1
+    # concentra mucha probabilidad → el modelo está seguro; si los 3 están
+    # parejos y bajos → es un partido abierto (toss-up).
+    top1_pct = top[0]["pct"] if top else 0.0
+    top3_masa = round(sum(t["pct"] for t in top[:3]), 1)
+    if top1_pct >= 15:
+        conf_nivel = "Alta"
+    elif top1_pct >= 10:
+        conf_nivel = "Media"
+    else:
+        conf_nivel = "Baja"
+    confianza_marcador = {"nivel": conf_nivel, "top1_pct": top1_pct, "top3_masa": top3_masa}
+
     _r = lambda v: round(v * 100, 1)
     return {
         "disponible": True,
@@ -452,6 +465,7 @@ def predecir(local, visitante, neutral=True, top_n=5, modelo=None):
                        "over_3.5": _r(p_over35), "under_2.5": _r(1 - p_over25)},
         "btts": {"si": _r(p_btts), "no": _r(1 - p_btts)},
         "marcador_top": top,
+        "confianza_marcador": confianza_marcador,
         "matriz": M.tolist(),
         # Todos los mercados derivados de la MISMA matriz (para nutrir el motor):
         "mercados": {

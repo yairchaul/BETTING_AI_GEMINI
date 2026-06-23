@@ -324,10 +324,16 @@ class VisualFutbolTriple:
             if mc and mc.get('disponible'):
                 top = mc.get('marcador_top', [])
                 xgl, xgv = mc.get('xg_local'), mc.get('xg_visit')
+                cm = mc.get('confianza_marcador', {})
+                _cnivel = cm.get('nivel', '')
+                _ccol = {"Alta": "#22c55e", "Media": "#fbbf24", "Baja": "#ef4444"}.get(_cnivel, "#94a3b8")
+                _ctxt = (f" · <span style='color:{_ccol}'>confianza {_cnivel}</span>"
+                         f"<span style='color:#64748b'> (top-3 = {cm.get('top3_masa','?')}% prob)</span>"
+                         if _cnivel else "")
                 st.markdown(
                     f"<div style='color:#94a3b8;font-size:0.72rem;margin:12px 0 5px 0'>"
                     f"🎯 <b>MARCADOR CORRECTO</b> · modelo Dixon-Coles "
-                    f"<span style='color:#64748b'>(xG {xgl} - {xgv})</span></div>",
+                    f"<span style='color:#64748b'>(xG {xgl} - {xgv})</span>{_ctxt}</div>",
                     unsafe_allow_html=True)
                 _col = {"LOCAL": "#3b82f6", "EMPATE": "#94a3b8", "VISITANTE": "#ef4444"}
                 chips = []
