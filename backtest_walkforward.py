@@ -269,6 +269,7 @@ def ejecutar(primer_corte="2021-01-01", paso_meses=3, desde_anio_dc=2018, predic
                       "brier_ov": 0.0, "acc_ov": 0, "n_ov": 0} for p in predictores}
     n_ventanas = 0
     n_test_total = 0
+    ventanas = []
 
     while corte < hoy:
         fin = _add_months(corte, paso_meses)
@@ -290,6 +291,7 @@ def ejecutar(primer_corte="2021-01-01", paso_meses=3, desde_anio_dc=2018, predic
                 modelos[p.nombre] = p.entrenar(corte_str)
 
         evaluados = 0
+        win = {p.nombre: {"rps": 0.0, "ac": 0, "n": 0} for p in predictores}
         for r in test:
             outcome = _resultado(r["goles_local"], r["goles_visita"])
             over_real = 1.0 if (r["goles_local"] + r["goles_visita"]) > 2.5 else 0.0
@@ -304,11 +306,18 @@ def ejecutar(primer_corte="2021-01-01", paso_meses=3, desde_anio_dc=2018, predic
                 continue  # mismo set de partidos para todos
             for nombre, (p1x2, p_ov) in probs_by.items():
                 a = acc[nombre]
-                a["rps"] += rps(p1x2, outcome)
+                _r = rps(p1x2, outcome)
+                a["rps"] += _r
                 a["ll"] += log_loss(p1x2, outcome)
-                if max(range(3), key=lambda k: p1x2[k]) == outcome:
+                _hit = max(range(3), key=lambda k: p1x2[k]) == outcome
+                if _hit:
                     a["aciertos"] += 1
                 a["n"] += 1
+                w = win[nombre]
+                w["rps"] += _r
+                w["n"] += 1
+                if _hit:
+                    w["ac"] += 1
                 if p_ov is not None:
                     a["brier_ov"] += (p_ov - over_real) ** 2
                     if (p_ov >= 0.5) == (over_real >= 0.5):
@@ -318,13 +327,19 @@ def ejecutar(primer_corte="2021-01-01", paso_meses=3, desde_anio_dc=2018, predic
 
         n_ventanas += 1
         n_test_total += evaluados
+        ventanas.append({
+            "corte": corte_str, "fin": fin_str, "n": evaluados,
+            "por_pred": {nm: {"rps": round(w["rps"] / max(1, w["n"]), 4),
+                              "acc": round(w["ac"] / max(1, w["n"]) * 100, 1)}
+                         for nm, w in win.items()},
+        })
         print(f"  ventana {corte_str} → {fin_str}: {evaluados} partidos evaluados", flush=True)
         corte = fin
 
-    return _reporte(acc, predictores, n_ventanas, n_test_total, primer_corte, paso_meses)
+    return _reporte(acc, predictores, n_ventanas, n_test_total, primer_corte, paso_meses, ventanas)
 
 
-def _reporte(acc, predictores, n_ventanas, n_test, primer_corte, paso_meses):
+def _reporte(acc, predictores, n_ventanas, n_test, primer_corte, paso_meses, ventanas=None):
     res = {}
     for p in predictores:
         a = acc[p.nombre]
@@ -344,6 +359,7 @@ def _reporte(acc, predictores, n_ventanas, n_test, primer_corte, paso_meses):
         "paso_meses": paso_meses,
         "n_ventanas": n_ventanas,
         "n_partidos_evaluados": n_test,
+        "ventanas": ventanas or [],
         "predictores": res,
     }
     os.makedirs("data", exist_ok=True)
@@ -370,10 +386,42 @@ def _imprimir(rep):
     print("=" * 74)
 
 
+def _imprimir_ventanas(rep, pred="dixon_coles"):
+    """Desglose VENTANA POR VENTANA del predictor indicado (RPS y Acc 1X2),
+    para ver el rendimiento por trimestre (p.ej. 2026)."""
+    vts = rep.get("ventanas", [])
+    if not vts:
+        return
+    print()
+    print("=" * 74)
+    print(f"DESGLOSE POR VENTANA — {pred} (RPS y Acc 1X2 de cada trimestre)")
+    print("=" * 74)
+    print(f"{'VENTANA':<26}{'N':>6}{'RPS':>10}{'Acc 1X2':>10}")
+    print("-" * 74)
+    for v in vts:
+        pp = v.get("por_pred", {}).get(pred, {})
+        if not pp:
+            continue
+        etiqueta = f"{v['corte']} → {v['fin']}"
+        print(f"{etiqueta:<26}{v['n']:>6}{pp.get('rps', 0):>10.4f}{pp.get('acc', 0):>9.1f}%")
+    print("-" * 74)
+    # Promedio ponderado del año 2026 (ventanas cuyo corte empieza en 2026)
+    v2026 = [v for v in vts if v["corte"][:4] == "2026" and v.get("por_pred", {}).get(pred)]
+    if v2026:
+        n26 = sum(v["n"] for v in v2026)
+        if n26:
+            rps26 = sum(v["por_pred"][pred]["rps"] * v["n"] for v in v2026) / n26
+            acc26 = sum(v["por_pred"][pred]["acc"] * v["n"] for v in v2026) / n26
+            print(f"SOLO 2026: {len(v2026)} ventanas · {n26} partidos · "
+                  f"RPS {rps26:.4f} · Acc {acc26:.1f}%")
+    print("=" * 74)
+
+
 if __name__ == "__main__":
     args = sys.argv[1:]
     modo_ml = "ml" in args
-    args = [a for a in args if a != "ml"]
+    detalle = "detalle" in args
+    args = [a for a in args if a not in ("ml", "detalle")]
     primer_corte = args[0] if len(args) > 0 else "2021-01-01"
     paso = int(args[1]) if len(args) > 1 else 3
 
@@ -391,3 +439,5 @@ if __name__ == "__main__":
         rep = ejecutar(primer_corte=primer_corte, paso_meses=paso)
     if rep:
         _imprimir(rep)
+        if detalle:
+            _imprimir_ventanas(rep)
