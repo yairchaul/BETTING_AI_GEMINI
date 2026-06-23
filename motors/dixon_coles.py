@@ -31,6 +31,7 @@ import json
 import math
 import logging
 from datetime import datetime
+import sqlite3
 
 import numpy as np
 
@@ -328,8 +329,25 @@ def matriz_marcadores(lam_l, lam_v, rho=0.0):
     return M
 
 
-def get_lambdas(local, visitante, neutral=True, modelo=None):
-    """(λ_local, λ_visitante) según Dixon-Coles, o None si falta algún equipo."""
+def _get_form_stats(equipo: str):
+    """Media de goles a favor/en contra de los últimos partidos del equipo,
+    desde la DB (historial_equipos poblado con los últimos 5 de ESPN, que SÍ
+    incluye 2026). Devuelve (avg_gf, avg_gc) o (None, None) si no hay datos."""
+    try:
+        from utils.database_manager import db
+        s = db.get_team_stats_detailed(equipo, "soccer")
+        if s and s.get("goles_favor"):
+            gf = s.get("goles_favor", [])
+            gc = s.get("goles_contra", [])
+            if gf and gc:
+                return sum(gf) / len(gf), sum(gc) / len(gc)
+    except Exception:
+        pass
+    return None, None
+
+
+def _get_lambdas_dc(local, visitante, neutral=True, modelo=None):
+    """(λ_local, λ_visitante) según Dixon-Coles puro, o None si falta algún equipo."""
     modelo = modelo or _modelo_activo()
     if not modelo:
         return None
@@ -337,11 +355,41 @@ def get_lambdas(local, visitante, neutral=True, modelo=None):
     tl, tv = _resolve(local), _resolve(visitante)
     if tl not in idx or tv not in idx:
         return None
+
     i, j = idx[tl], idx[tv]
     atk, dfn, h = modelo["atk"], modelo["dfn"], modelo["home_adv"]
     m = 0.0 if neutral else 1.0
     lam_l = math.exp(min(4.0, m * h + atk[i] - dfn[j]))
     lam_v = math.exp(min(4.0, atk[j] - dfn[i]))
+    return float(lam_l), float(lam_v)
+
+
+def get_lambdas(local, visitante, neutral=True, modelo=None):
+    """(λ_local, λ_visitante) HÍBRIDO: Dixon-Coles (fuerza estructural) mezclado
+    con la forma RECIENTE de la DB (2026). Si no hay forma reciente usa DC puro;
+    si no hay DC pero sí forma, usa la forma. Corrige el desfase del CSV (≤2024)."""
+    lams_dc = _get_lambdas_dc(local, visitante, neutral, modelo)
+    gf_local, gc_local = _get_form_stats(local)
+    gf_visit, gc_visit = _get_form_stats(visitante)
+
+    hay_forma = None not in (gf_local, gc_local, gf_visit, gc_visit)
+    if lams_dc is None and not hay_forma:
+        return None
+
+    if hay_forma:
+        lam_l_form = max(0.2, (gf_local + gc_visit) / 2.0)
+        lam_v_form = max(0.2, (gf_visit + gc_local) / 2.0)
+        if not neutral:
+            lam_l_form *= 1.10   # ventaja de localía si NO es cancha neutral
+    if lams_dc is None:
+        return float(lam_l_form), float(lam_v_form)
+    lam_l_dc, lam_v_dc = lams_dc
+    if not hay_forma:
+        return float(lam_l_dc), float(lam_v_dc)
+
+    # Mezcla: 45% Dixon-Coles + 55% forma reciente (la fresca manda un poco más)
+    lam_l = lam_l_dc * 0.45 + lam_l_form * 0.55
+    lam_v = lam_v_dc * 0.45 + lam_v_form * 0.55
     return float(lam_l), float(lam_v)
 
 
