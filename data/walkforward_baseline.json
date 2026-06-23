@@ -1,0 +1,49 @@
+{
+  "timestamp": "2026-06-23T15:32:05.483996",
+  "primer_corte": "2021-01-01",
+  "paso_meses": 3,
+  "n_ventanas": 22,
+  "n_partidos_evaluados": 5581,
+  "predictores": {
+    "dixon_coles": {
+      "n": 5581,
+      "rps": 0.1693,
+      "log_loss": 0.8687,
+      "accuracy_1x2": 60.1,
+      "brier_over25": 0.2438,
+      "acc_over25": 58.2
+    },
+    "ml_glm": {
+      "n": 5581,
+      "rps": 0.1809,
+      "log_loss": 0.9087,
+      "accuracy_1x2": 57.8,
+      "brier_over25": 0.2471,
+      "acc_over25": 56.6
+    },
+    "blend_ml30": {
+      "n": 5581,
+      "rps": 0.1714,
+      "log_loss": 0.8754,
+      "accuracy_1x2": 59.7,
+      "brier_over25": 0.2424,
+      "acc_over25": 58.6
+    },
+    "blend_ml50": {
+      "n": 5581,
+      "rps": 0.1735,
+      "log_loss": 0.8825,
+      "accuracy_1x2": 59.4,
+      "brier_over25": 0.2427,
+      "acc_over25": 58.7
+    },
+    "tasa_base": {
+      "n": 5581,
+      "rps": 0.2276,
+      "log_loss": 1.0507,
+      "accuracy_1x2": 47.9,
+      "brier_over25": 0.2513,
+      "acc_over25": 49.0
+    }
+  }
+}

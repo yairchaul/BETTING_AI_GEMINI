@@ -1,0 +1,50 @@
+[
+  {
+    "escenario": "casa=ml shrink=0.0 vig=0.05",
+    "primer_corte": "2021-01-01",
+    "paso_meses": 3,
+    "n_partidos": 5581,
+    "n_apuestas": 4236,
+    "hit_rate": 33.4,
+    "profit_unidades": 1317.2,
+    "yield_pct": 31.1,
+    "max_dd_unidades": 48.0,
+    "kelly_banca_final": 1.8512854285231232e+18,
+    "kelly_roi_pct": 1.8512854285231232e+18,
+    "kelly_max_dd_pct": 57.2,
+    "kelly_frac": 0.25,
+    "umbral_ev": 0.05
+  },
+  {
+    "escenario": "casa=dc shrink=0.15 vig=0.05",
+    "primer_corte": "2021-01-01",
+    "paso_meses": 3,
+    "n_partidos": 5581,
+    "n_apuestas": 1613,
+    "hit_rate": 83.9,
+    "profit_unidades": 173.0,
+    "yield_pct": 10.72,
+    "max_dd_unidades": 6.1,
+    "kelly_banca_final": 15674.67,
+    "kelly_roi_pct": 15574.7,
+    "kelly_max_dd_pct": 14.5,
+    "kelly_frac": 0.25,
+    "umbral_ev": 0.03
+  },
+  {
+    "escenario": "casa=dc shrink=0.0 vig=0.05",
+    "primer_corte": "2021-01-01",
+    "paso_meses": 3,
+    "n_partidos": 5581,
+    "n_apuestas": 0,
+    "hit_rate": 0.0,
+    "profit_unidades": 0.0,
+    "yield_pct": 0.0,
+    "max_dd_unidades": 0.0,
+    "kelly_banca_final": 100.0,
+    "kelly_roi_pct": 0.0,
+    "kelly_max_dd_pct": 0.0,
+    "kelly_frac": 0.25,
+    "umbral_ev": 0.03
+  }
+]
