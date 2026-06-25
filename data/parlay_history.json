@@ -931,5 +931,535 @@
    }
   ],
   "estado": "perdido"
+ },
+ {
+  "id": "par_20260625130103_3073",
+  "fecha": "2026-06-25",
+  "tipo": "🎯 PARLAY ÓPTIMO (4 legs)",
+  "firma": "⚽ FÚTBOL::DOBLE: Empate o Ivory Coast|⚽ FÚTBOL::DOBLE: Empate o Netherlands|⚽ FÚTBOL::DOBLE: Japan o Empate|⚽ FÚTBOL::OVER 1.5",
+  "prob": 76.07,
+  "cuota": 3.04,
+  "ev_pct": 131.6,
+  "n_legs": 4,
+  "legs": [
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "DOBLE: Empate o Ivory Coast",
+    "mercado": "1X2/Goles",
+    "evento": "Curaçao vs Ivory Coast",
+    "prob": 99
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "DOBLE: Japan o Empate",
+    "mercado": "1X2/Goles",
+    "evento": "Japan vs Sweden",
+    "prob": 99
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "DOBLE: Empate o Netherlands",
+    "mercado": "1X2/Goles",
+    "evento": "Tunisia vs Netherlands",
+    "prob": 99
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 1.5",
+    "mercado": "OVER 1.5",
+    "evento": "Ecuador vs Germany",
+    "prob": 78.4
+   }
+  ],
+  "estado": "pendiente"
+ },
+ {
+  "id": "par_20260625130104_2075",
+  "fecha": "2026-06-25",
+  "tipo": "🔐 PARLAY DOBLE SEGURO",
+  "firma": "⚽ FÚTBOL::DOBLE: Empate o Ivory Coast|⚽ FÚTBOL::DOBLE: Japan o Empate",
+  "prob": 98.01,
+  "cuota": 2.23,
+  "ev_pct": 119.0,
+  "n_legs": 2,
+  "legs": [
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "DOBLE: Empate o Ivory Coast",
+    "mercado": "1X2/Goles",
+    "evento": "Curaçao vs Ivory Coast",
+    "prob": 99
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "DOBLE: Japan o Empate",
+    "mercado": "1X2/Goles",
+    "evento": "Japan vs Sweden",
+    "prob": 99
+   }
+  ],
+  "estado": "pendiente"
+ },
+ {
+  "id": "par_20260625130104_8547",
+  "fecha": "2026-06-25",
+  "tipo": "🟢 PARLAY SEGURO",
+  "firma": "⚽ FÚTBOL::DOBLE: Empate o Ivory Coast|⚽ FÚTBOL::DOBLE: Empate o Netherlands|⚽ FÚTBOL::DOBLE: Japan o Empate|⚽ FÚTBOL::OVER 1.5|⚾ MLB::Arizona Diamondbacks +1.5|⚾ MLB::Athletics +1.5|⚾ MLB::Detroit Tigers +1.5|⚾ MLB::Gana Philadelphia Phillies|⚾ MLB::Gana Pittsburgh Pirates|⚾ MLB::Kansas City Royals +1.5|⚾ MLB::New York Mets +1.5|⚾ MLB::Texas Rangers +1.5",
+  "prob": 1.41,
+  "cuota": 165.26,
+  "ev_pct": 132.7,
+  "n_legs": 12,
+  "legs": [
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "DOBLE: Empate o Ivory Coast",
+    "mercado": "1X2/Goles",
+    "evento": "Curaçao vs Ivory Coast",
+    "prob": 99
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "DOBLE: Japan o Empate",
+    "mercado": "1X2/Goles",
+    "evento": "Japan vs Sweden",
+    "prob": 99
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "DOBLE: Empate o Netherlands",
+    "mercado": "1X2/Goles",
+    "evento": "Tunisia vs Netherlands",
+    "prob": 99
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana Pittsburgh Pirates",
+    "mercado": "MONEYLINE",
+    "evento": "Seattle Mariners @ Pittsburgh Pirates",
+    "prob": 88.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 1.5",
+    "mercado": "OVER 1.5",
+    "evento": "Ecuador vs Germany",
+    "prob": 78.4
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana Philadelphia Phillies",
+    "mercado": "MONEYLINE",
+    "evento": "Philadelphia Phillies @ Washington Nationals",
+    "prob": 68.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Athletics +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Athletics @ San Francisco Giants",
+    "prob": 63.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Texas Rangers +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Texas Rangers @ Toronto Blue Jays",
+    "prob": 63.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Arizona Diamondbacks +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Arizona Diamondbacks @ St. Louis Cardinals",
+    "prob": 63.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Kansas City Royals +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Kansas City Royals @ Tampa Bay Rays",
+    "prob": 59.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Detroit Tigers +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Houston Astros @ Detroit Tigers",
+    "prob": 58.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "New York Mets +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Chicago Cubs @ New York Mets",
+    "prob": 58.0
+   }
+  ],
+  "estado": "pendiente"
+ },
+ {
+  "id": "par_20260625130104_7805",
+  "fecha": "2026-06-25",
+  "tipo": "🟡 PARLAY VALOR",
+  "firma": "⚽ FÚTBOL::DOBLE: Empate o Ivory Coast|⚽ FÚTBOL::DOBLE: Empate o Netherlands|⚽ FÚTBOL::DOBLE: Japan o Empate|⚾ MLB::Kyle Schwarber pega HR",
+  "prob": 17.35,
+  "cuota": 8.53,
+  "ev_pct": 47.9,
+  "n_legs": 4,
+  "legs": [
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "DOBLE: Empate o Ivory Coast",
+    "mercado": "1X2/Goles",
+    "evento": "Curaçao vs Ivory Coast",
+    "prob": 99
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "DOBLE: Japan o Empate",
+    "mercado": "1X2/Goles",
+    "evento": "Japan vs Sweden",
+    "prob": 99
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "DOBLE: Empate o Netherlands",
+    "mercado": "1X2/Goles",
+    "evento": "Tunisia vs Netherlands",
+    "prob": 99
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Kyle Schwarber pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Philadelphia Phillies @ Washington Nationals",
+    "prob": 11.4
+   }
+  ],
+  "estado": "pendiente"
+ },
+ {
+  "id": "par_20260625130104_6066",
+  "fecha": "2026-06-25",
+  "tipo": "🔴 PARLAY BOMBA",
+  "firma": "⚾ MLB::Ben Rice pega HR|⚾ MLB::James Wood pega HR|⚾ MLB::Kyle Schwarber pega HR",
+  "prob": 0.53,
+  "cuota": 42.88,
+  "ev_pct": -77.4,
+  "n_legs": 3,
+  "legs": [
+   {
+    "sport": "⚾ MLB",
+    "pick": "Kyle Schwarber pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Philadelphia Phillies @ Washington Nationals",
+    "prob": 11.4
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Ben Rice pega HR",
+    "mercado": "HOME RUN",
+    "evento": "New York Yankees @ Boston Red Sox",
+    "prob": 9.8
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "James Wood pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Philadelphia Phillies @ Washington Nationals",
+    "prob": 9.5
+   }
+  ],
+  "estado": "perdido"
+ },
+ {
+  "id": "par_20260625130104_566",
+  "fecha": "2026-06-25",
+  "tipo": "🎯 PARLAY HR + FÚTBOL",
+  "firma": "⚽ FÚTBOL::DOBLE: Empate o Ivory Coast|⚽ FÚTBOL::DOBLE: Empate o Netherlands|⚽ FÚTBOL::DOBLE: Japan o Empate|⚾ MLB::Ben Rice pega HR|⚾ MLB::Kyle Schwarber pega HR",
+  "prob": 2.99,
+  "cuota": 29.84,
+  "ev_pct": -10.8,
+  "n_legs": 5,
+  "legs": [
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "DOBLE: Empate o Ivory Coast",
+    "mercado": "1X2/Goles",
+    "evento": "Curaçao vs Ivory Coast",
+    "prob": 99
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "DOBLE: Japan o Empate",
+    "mercado": "1X2/Goles",
+    "evento": "Japan vs Sweden",
+    "prob": 99
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "DOBLE: Empate o Netherlands",
+    "mercado": "1X2/Goles",
+    "evento": "Tunisia vs Netherlands",
+    "prob": 99
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Kyle Schwarber pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Philadelphia Phillies @ Washington Nationals",
+    "prob": 11.4
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Ben Rice pega HR",
+    "mercado": "HOME RUN",
+    "evento": "New York Yankees @ Boston Red Sox",
+    "prob": 9.8
+   }
+  ],
+  "estado": "pendiente"
+ },
+ {
+  "id": "par_20260625130104_2742",
+  "fecha": "2026-06-25",
+  "tipo": "⚡ PARLAY SLUGGER DEL DÍA",
+  "firma": "⚾ MLB::Curtis Mead pega HR|⚾ MLB::Joc Pederson pega HR|⚾ MLB::Jorge Soler pega HR|⚾ MLB::Luis García Jr. pega HR|⚾ MLB::Michael Busch pega HR",
+  "prob": 0.02,
+  "cuota": 525.22,
+  "ev_pct": -89.1,
+  "n_legs": 5,
+  "legs": [
+   {
+    "sport": "⚾ MLB",
+    "pick": "Luis García Jr. pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Washington Nationals",
+    "prob": 12.4
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Michael Busch pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Chicago Cubs",
+    "prob": 12.1
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Jorge Soler pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Los Angeles Angels",
+    "prob": 13.1
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Curtis Mead pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Washington Nationals",
+    "prob": 13.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Joc Pederson pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Texas Rangers",
+    "prob": 11.4
+   }
+  ],
+  "estado": "perdido"
+ },
+ {
+  "id": "par_20260625130104_7854",
+  "fecha": "2026-06-25",
+  "tipo": "💎 PARLAY MÁXIMO PAGO",
+  "firma": "⚽ FÚTBOL::OVER 2.5|⚽ FÚTBOL::OVER 2.5|⚽ FÚTBOL::OVER 2.5|⚽ FÚTBOL::OVER 3.5 FT|⚾ MLB::Arizona Diamondbacks +1.5|⚾ MLB::Athletics +1.5|⚾ MLB::Boston Red Sox +1.5|⚾ MLB::Detroit Tigers +1.5|⚾ MLB::Gana Philadelphia Phillies|⚾ MLB::Gana Pittsburgh Pirates|⚾ MLB::Kansas City Royals +1.5|⚾ MLB::New York Mets +1.5|⚾ MLB::Texas Rangers +1.5",
+  "prob": 0.1,
+  "cuota": 2318.14,
+  "ev_pct": 141.6,
+  "n_legs": 13,
+  "legs": [
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 3.5 FT",
+    "mercado": "OVER 3.5",
+    "evento": "Japan vs Sweden",
+    "prob": 60.9
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 2.5",
+    "mercado": "OVER 2.5",
+    "evento": "Curaçao vs Ivory Coast",
+    "prob": 59.6
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 2.5",
+    "mercado": "OVER 2.5",
+    "evento": "Tunisia vs Netherlands",
+    "prob": 54.2
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 2.5",
+    "mercado": "OVER 2.5",
+    "evento": "Ecuador vs Germany",
+    "prob": 53.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Athletics +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Athletics @ San Francisco Giants",
+    "prob": 63.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Texas Rangers +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Texas Rangers @ Toronto Blue Jays",
+    "prob": 63.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Arizona Diamondbacks +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Arizona Diamondbacks @ St. Louis Cardinals",
+    "prob": 63.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Kansas City Royals +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Kansas City Royals @ Tampa Bay Rays",
+    "prob": 59.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Detroit Tigers +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Houston Astros @ Detroit Tigers",
+    "prob": 58.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "New York Mets +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Chicago Cubs @ New York Mets",
+    "prob": 58.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Boston Red Sox +1.5",
+    "mercado": "RUNLINE",
+    "evento": "New York Yankees @ Boston Red Sox",
+    "prob": 54.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana Philadelphia Phillies",
+    "mercado": "MONEYLINE",
+    "evento": "Philadelphia Phillies @ Washington Nationals",
+    "prob": 68.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana Pittsburgh Pirates",
+    "mercado": "MONEYLINE",
+    "evento": "Seattle Mariners @ Pittsburgh Pirates",
+    "prob": 88.0
+   }
+  ],
+  "estado": "pendiente"
+ },
+ {
+  "id": "par_20260625130104_5945",
+  "fecha": "2026-06-25",
+  "tipo": "💎 PARLAY DE VALOR (+EV)",
+  "firma": "⚽ FÚTBOL::DOBLE: Empate o Netherlands|⚽ FÚTBOL::OVER 2.5|⚽ FÚTBOL::OVER 2.5|⚽ FÚTBOL::OVER 3.5 FT|⚾ MLB::Arizona Diamondbacks +1.5|⚾ MLB::Athletics +1.5|⚾ MLB::Detroit Tigers +1.5|⚾ MLB::Gana Philadelphia Phillies|⚾ MLB::Kansas City Royals +1.5|⚾ MLB::New York Mets +1.5|⚾ MLB::Texas Rangers +1.5",
+  "prob": 0.54,
+  "cuota": 712.75,
+  "ev_pct": 285.3,
+  "n_legs": 11,
+  "legs": [
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 3.5 FT",
+    "mercado": "OVER 3.5",
+    "evento": "Japan vs Sweden",
+    "prob": 60.9
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 2.5",
+    "mercado": "OVER 2.5",
+    "evento": "Curaçao vs Ivory Coast",
+    "prob": 59.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Athletics +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Athletics @ San Francisco Giants",
+    "prob": 63.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Texas Rangers +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Texas Rangers @ Toronto Blue Jays",
+    "prob": 63.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Arizona Diamondbacks +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Arizona Diamondbacks @ St. Louis Cardinals",
+    "prob": 63.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "DOBLE: Empate o Netherlands",
+    "mercado": "1X2/Goles",
+    "evento": "Tunisia vs Netherlands",
+    "prob": 99
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana Philadelphia Phillies",
+    "mercado": "MONEYLINE",
+    "evento": "Philadelphia Phillies @ Washington Nationals",
+    "prob": 68.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Kansas City Royals +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Kansas City Royals @ Tampa Bay Rays",
+    "prob": 59.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Detroit Tigers +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Houston Astros @ Detroit Tigers",
+    "prob": 58.0
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "New York Mets +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Chicago Cubs @ New York Mets",
+    "prob": 58.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 2.5",
+    "mercado": "OVER 2.5",
+    "evento": "Ecuador vs Germany",
+    "prob": 53.0
+   }
+  ],
+  "estado": "pendiente"
  }
 ]
