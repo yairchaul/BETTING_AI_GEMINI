@@ -420,9 +420,18 @@ def analizar_futbol_jerarquico(
             _gf_torneo = factor_goles_torneo()
         except Exception:
             _gf_torneo = 1.0
+    # Boost por ESTRELLAS goleadoras (idea del usuario): entorno × poder de los
+    # goleadores de cada equipo. Sube el xG del equipo con estrellas → su over y
+    # su prob de ganar. Por-equipo, así que se pasa como tupla.
+    try:
+        from motors.futbol_props import factor_estrellas
+        _gf_l = _gf_torneo * factor_estrellas(local)
+        _gf_v = _gf_torneo * factor_estrellas(visitante)
+    except Exception:
+        _gf_l = _gf_v = _gf_torneo
     try:
         from motors.dixon_coles import predecir as _dc_predecir
-        _dc_tmp = _dc_predecir(local, visitante, neutral=bool(es_torneo), goles_factor=_gf_torneo)
+        _dc_tmp = _dc_predecir(local, visitante, neutral=bool(es_torneo), goles_factor=(_gf_l, _gf_v))
         if _dc_tmp.get("disponible"):
             _dc_pre = _dc_tmp
     except Exception as _e:

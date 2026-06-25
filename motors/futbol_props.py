@@ -101,6 +101,24 @@ def _buscar_equipo(nombre):
     return []
 
 
+def factor_estrellas(equipo):
+    """Boost ACOTADO al xG de un equipo según el poder de sus goleadores (la idea
+    del usuario: Brasil/Francia/Noruega traen estrellas → más probabilidad de gol,
+    el over sube de 1.5 a 2.5). La ESTRELLA pesa más (un Haaland solo amenaza).
+    Devuelve un factor en [1.0, 1.12]; 1.0 si el equipo no tiene goleadores de élite.
+
+    Acotado y suave a propósito (DC + forma ya capturan parte del ataque; esto solo
+    añade la amenaza de las estrellas que el marcador histórico no refleja del todo)."""
+    scorers = _buscar_equipo(equipo)
+    if not scorers:
+        return 1.0
+    tasas = sorted((t for _, t in scorers), reverse=True)[:3]
+    suma3 = sum(tasas)
+    top1 = tasas[0] if tasas else 0.0
+    amenaza = max(suma3, top1 * 1.6)        # no penaliza al equipo de una sola estrella
+    return round(max(1.0, min(1.12, 1.0 + (amenaza - 0.95) * 0.16)), 3)
+
+
 def obtener_goleadores_partido(local, visitante):
     """Props 'anota en el partido' de los jugadores clave de ambos equipos."""
     out = {"local": [], "visitante": []}

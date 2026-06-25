@@ -420,18 +420,23 @@ def predecir(local, visitante, neutral=True, top_n=5, modelo=None, goles_factor=
     btts, marcador_top (lista de {marcador, pct, resultado}) y matriz (para heatmap).
     Si algún equipo no está en el modelo → {disponible: False}.
 
-    goles_factor: multiplicador del entorno de goles (p.ej. del torneo en curso vía
-    wc_cerebro.factor_goles_torneo). Escala AMBOS xG por igual → sube/baja el rango
-    de goles (Over/Under, marcador) sin alterar el balance 1X2. Default 1.0 (neutro).
+    goles_factor: multiplicador del entorno de goles. ESCALAR (afecta a ambos por
+    igual, p.ej. el entorno del torneo wc_cerebro.factor_goles_torneo) o TUPLA
+    (gf_local, gf_visit) para boosts POR EQUIPO (p.ej. entorno × estrellas: Brasil
+    con sus goleadores sube su xG y por tanto su over y su prob de ganar). Default 1.0.
     """
     modelo = modelo or _modelo_activo()
     lams = get_lambdas(local, visitante, neutral=neutral, modelo=modelo)
     if lams is None:
         return {"disponible": False}
     lam_l, lam_v = lams
-    gf = max(0.5, min(1.5, float(goles_factor or 1.0)))
-    lam_l *= gf
-    lam_v *= gf
+    if isinstance(goles_factor, (tuple, list)):
+        gf_l = max(0.5, min(1.5, float(goles_factor[0] or 1.0)))
+        gf_v = max(0.5, min(1.5, float(goles_factor[1] or 1.0)))
+    else:
+        gf_l = gf_v = max(0.5, min(1.5, float(goles_factor or 1.0)))
+    lam_l *= gf_l
+    lam_v *= gf_v
     rho = modelo.get("rho", 0.0) if modelo else 0.0
     M = matriz_marcadores(lam_l, lam_v, rho)
     (p_home, p_draw, p_away), p_over25 = matriz_marcadores.get_1x2_ou25_probs(lam_l, lam_v, rho)
