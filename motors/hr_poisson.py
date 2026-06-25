@@ -41,6 +41,37 @@ def factor_parque(park_factor):
     return max(0.88, min(1.15, float(pf)))
 
 
+def factor_clima(clima):
+    """Ajuste por clima sobre λ_HR. El aire CALIENTE es menos denso y la bola
+    viaja más; el viento SALIENDO (Out) la empuja fuera y ENTRANDO (In) la frena.
+    Acotado y suave, como los demás factores. No-op si no hay datos de clima.
+
+    clima: dict con 'temp' (°F), 'wind_speed' (mph), 'wind_dir' ('Out'/'In'/'None').
+    """
+    if not clima or not isinstance(clima, dict):
+        return 1.0
+    f = 1.0
+    # Temperatura: ~+0.6%/°F sobre 70 (referencia documentada ~1%/°F, lo dejamos
+    # conservador y acotado a [-10%, +12%]).
+    temp = clima.get("temp")
+    if temp is not None:
+        try:
+            f *= max(0.90, min(1.12, 1.0 + (float(temp) - 70.0) * 0.006))
+        except (TypeError, ValueError):
+            pass
+    # Viento: ~1% por mph en la dirección correspondiente, acotado.
+    try:
+        wind = float(clima.get("wind_speed") or 0)
+    except (TypeError, ValueError):
+        wind = 0.0
+    wdir = str(clima.get("wind_dir", "None")).lower()
+    if "out" in wdir:
+        f *= min(1.18, 1.0 + wind * 0.010)
+    elif "in" in wdir:
+        f *= max(0.85, 1.0 - wind * 0.010)
+    return max(0.82, min(1.22, f))
+
+
 def factor_mano(mano_pitcher, mano_bateador=None):
     """Ventaja de plato. Si conocemos ambas manos, premia el cruce opuesto; si no,
     un abridor zurdo da una ventaja global leve (hay más bateadores diestros)."""
@@ -67,13 +98,14 @@ def tasa_shrunk(hr_por_juego, hr_total=0, juegos=0):
 
 
 def prob_hr(hr_por_juego, hr_total=0, juegos=0, pitcher_hr9=None,
-            park_factor=1.0, mano_pitcher="R", mano_bateador=None, ops=None):
+            park_factor=1.0, mano_pitcher="R", mano_bateador=None, ops=None, clima=None):
     """Probabilidad calibrada (%) de que el bateador pegue ≥1 HR en el juego."""
     hpg = tasa_shrunk(hr_por_juego, hr_total, juegos)
     lam = (hpg
            * factor_pitcher(pitcher_hr9)
            * factor_parque(park_factor)
-           * factor_mano(mano_pitcher, mano_bateador))
+           * factor_mano(mano_pitcher, mano_bateador)
+           * factor_clima(clima))
     # Ajuste MUY leve por OPS de élite (acotado; no doble-cuenta el grueso)
     if ops and ops > 0.90:
         lam *= 1.0 + min(0.10, (ops - 0.90) * 0.5)
@@ -82,12 +114,12 @@ def prob_hr(hr_por_juego, hr_total=0, juegos=0, pitcher_hr9=None,
 
 
 def lambda_hr(hr_por_juego, hr_total=0, juegos=0, pitcher_hr9=None,
-              park_factor=1.0, mano_pitcher="R", mano_bateador=None, ops=None):
+              park_factor=1.0, mano_pitcher="R", mano_bateador=None, ops=None, clima=None):
     """λ_HR esperado (HR esperados del bateador en el juego), por si se quiere el
     valor continuo en vez de la probabilidad."""
     hpg = tasa_shrunk(hr_por_juego, hr_total, juegos)
     lam = (hpg * factor_pitcher(pitcher_hr9) * factor_parque(park_factor)
-           * factor_mano(mano_pitcher, mano_bateador))
+           * factor_mano(mano_pitcher, mano_bateador) * factor_clima(clima))
     if ops and ops > 0.90:
         lam *= 1.0 + min(0.10, (ops - 0.90) * 0.5)
     return lam

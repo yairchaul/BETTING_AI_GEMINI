@@ -287,7 +287,7 @@ class PredictorHRPro:
         prob_final = _prob_hr_poisson(
             hr_por_juego=hr_por_juego, hr_total=hr_total,
             pitcher_hr9=hr9_pitcher, park_factor=park_factor,
-            mano_pitcher=mano_pitcher, ops=ops,
+            mano_pitcher=mano_pitcher, ops=ops, clima=clima,
         )
 
         # Factores DESCRIPTIVOS (transparencia; no inflan la probabilidad)
@@ -302,6 +302,16 @@ class PredictorHRPro:
             factores.append(f"🏟️ Estadio favorable ({estadio}, {park_factor:.2f})")
         elif park_factor < 0.9:
             factores.append(f"🏟️ Estadio difícil ({estadio}, {park_factor:.2f})")
+        # Clima (ahora SÍ afecta la probabilidad vía hr_poisson.factor_clima)
+        try:
+            from motors.hr_poisson import factor_clima as _fc
+        except ImportError:
+            from hr_poisson import factor_clima as _fc
+        fclima = _fc(clima)
+        if fclima > 1.06:
+            factores.append(f"🌡️ Clima a favor (calor/viento out, ×{fclima:.2f})")
+        elif fclima < 0.94:
+            factores.append(f"🌬️ Clima en contra (frío/viento in, ×{fclima:.2f})")
         if ops >= 0.90:
             factores.append(f"💪 Poder élite (OPS {ops:.2f})")
         if hr_total >= 20:
