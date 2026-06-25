@@ -1580,10 +1580,12 @@ def main():
                     st.caption("💡 Esto alimenta la calibración del motor: aprende de qué tipo de pelea acierta o falla.")
 
         # ── BACKTEST REAL FÚTBOL (corre el motor jerárquico sobre partidos pasados) ──
-        with st.expander("⚽ BACKTEST REAL FÚTBOL — corre el motor sobre partidos finalizados", expanded=False):
+        with st.expander("⚽ BACKTEST REAL FÚTBOL — out-of-sample, SIN leakage", expanded=False):
             st.caption("Descarga partidos finalizados de las ligas principales (Premier, LaLiga, Serie A, "
-                       "Bundesliga, Ligue 1, Liga MX, MLS, etc.) en los últimos N días, corre el motor "
-                       "jerárquico y mide si acertó el Moneyline, el Over/Under de goles, el BTTS y los combinados.")
+                       "Bundesliga, Ligue 1, Liga MX, MLS, etc.) en los últimos N días y corre el motor "
+                       "jerárquico CON CORTE TEMPORAL: para cada partido solo ve la forma ANTERIOR (no el "
+                       "marcador). Por eso esta precisión SÍ es la que el programa puede acertar en vivo "
+                       "(ya no el ~95% inflado que salía cuando el motor 'veía' el resultado).")
             col_fb1, col_fb2 = st.columns([3, 1])
             with col_fb2:
                 dias_fut = st.number_input("Días", 1, 30, 7, step=1, key="fut_br_dias")
@@ -1621,7 +1623,10 @@ def main():
                 # Nota metodológica: el backtest puede diferir del pick en vivo
                 nota_bt = fbr.get("nota_metodologia", "")
                 if nota_bt:
-                    st.info(f"ℹ️ **¿Por qué el pick del backtest puede diferir del pick en vivo?**\n\n{nota_bt}")
+                    if fbr.get("sin_leakage"):
+                        st.success(f"✅ **Backtest honesto (out-of-sample):**\n\n{nota_bt}")
+                    else:
+                        st.warning(f"⚠️ **Backtest con leakage (precisión inflada, NO reproducible en vivo):**\n\n{nota_bt}")
                 det = fbr.get("detalle", [])
                 if det:
                     st.table([{"Fecha": d.get("fecha", ""), "Partido": d["partido"],

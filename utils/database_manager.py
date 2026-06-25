@@ -208,13 +208,34 @@ class DatabaseManager:
             logger.error(f"Error obteniendo top player para {equipo} ({stat}): {e}")
             return None
     
-    def get_team_stats_detailed(self, equipo, deporte, limit=5):
-        """Obtiene estadísticas históricas de un equipo"""
+    def set_asof(self, fecha):
+        """Fija una FECHA DE CORTE global: get_team_stats_detailed solo verá los
+        partidos ANTERIORES a esa fecha. Es el interruptor anti-leakage del
+        backtest — con un solo punto de corte, tanto el motor de reglas como la
+        forma de Dixon-Coles dejan de ver resultados futuros. fecha = 'AAAA-MM-DD'."""
+        self._asof_date = str(fecha)[:10] if fecha else None
+
+    def clear_asof(self):
+        """Quita la fecha de corte (vuelve a usar todo el historial, modo en vivo)."""
+        self._asof_date = None
+
+    def get_team_stats_detailed(self, equipo, deporte, limit=5, hasta_fecha=None):
+        """Obtiene estadísticas históricas de un equipo. Si hay fecha de corte
+        (parámetro hasta_fecha o el global set_asof), solo cuenta partidos con
+        fecha ESTRICTAMENTE anterior → forma pre-partido sin leakage."""
         try:
             conn = self._connect()
+            corte = hasta_fecha or getattr(self, "_asof_date", None)
             # Extraemos los datos individuales para calcular probabilidades manuales
-            query = "SELECT puntos_favor, puntos_ht, puntos_contra FROM historial_equipos WHERE nombre_equipo LIKE ? AND deporte = ? ORDER BY fecha DESC LIMIT ?"
-            df = pd.read_sql_query(query, conn, params=(f'%{equipo}%', deporte, limit))
+            if corte:
+                query = ("SELECT puntos_favor, puntos_ht, puntos_contra FROM historial_equipos "
+                         "WHERE nombre_equipo LIKE ? AND deporte = ? AND fecha < ? "
+                         "ORDER BY fecha DESC LIMIT ?")
+                df = pd.read_sql_query(query, conn, params=(f'%{equipo}%', deporte, str(corte)[:10], limit))
+            else:
+                query = ("SELECT puntos_favor, puntos_ht, puntos_contra FROM historial_equipos "
+                         "WHERE nombre_equipo LIKE ? AND deporte = ? ORDER BY fecha DESC LIMIT ?")
+                df = pd.read_sql_query(query, conn, params=(f'%{equipo}%', deporte, limit))
             conn.close()
             
             if not df.empty:
