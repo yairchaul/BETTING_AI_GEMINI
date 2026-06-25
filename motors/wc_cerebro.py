@@ -163,6 +163,17 @@ def _leer_resultados_wc_2026() -> dict:
     return res
 
 
+def factor_goles_torneo() -> float:
+    """Multiplicador del nivel de goles de ESTE Mundial vs la media histórica WC
+    (2.81). >1 si el torneo es más goleador (sube el xG del modelo y reduce los
+    UNDER espurios contra equipos goleadores). Acotado [0.90, 1.18]; 1.0 si aún
+    no hay suficientes partidos. Data-driven: lo decide el torneo, no una corazonada."""
+    t = _leer_resultados_wc_2026()
+    if t.get("n", 0) < 8 or not t.get("avg_goles"):
+        return 1.0
+    return round(max(0.90, min(1.18, t["avg_goles"] / _WC_BASE["avg_goles"])), 3)
+
+
 def _blend_torneo(base: float, live_val, n: int, n_full: int = 60) -> float:
     """Mezcla la tasa base (histórica/fase) con la tasa REAL de este Mundial.
     El peso del torneo crece con los partidos jugados (hasta 0.6 cuando la fase

@@ -413,18 +413,25 @@ def get_lambdas(local, visitante, neutral=True, modelo=None):
     return float(lam_l), float(lam_v)
 
 
-def predecir(local, visitante, neutral=True, top_n=5, modelo=None):
+def predecir(local, visitante, neutral=True, top_n=5, modelo=None, goles_factor=1.0):
     """Predicción completa de un partido a partir de la matriz Poisson corregida.
 
     Devuelve dict con: disponible, xg_local, xg_visit, prob (1X2), over/under,
     btts, marcador_top (lista de {marcador, pct, resultado}) y matriz (para heatmap).
     Si algún equipo no está en el modelo → {disponible: False}.
+
+    goles_factor: multiplicador del entorno de goles (p.ej. del torneo en curso vía
+    wc_cerebro.factor_goles_torneo). Escala AMBOS xG por igual → sube/baja el rango
+    de goles (Over/Under, marcador) sin alterar el balance 1X2. Default 1.0 (neutro).
     """
     modelo = modelo or _modelo_activo()
     lams = get_lambdas(local, visitante, neutral=neutral, modelo=modelo)
     if lams is None:
         return {"disponible": False}
     lam_l, lam_v = lams
+    gf = max(0.5, min(1.5, float(goles_factor or 1.0)))
+    lam_l *= gf
+    lam_v *= gf
     rho = modelo.get("rho", 0.0) if modelo else 0.0
     M = matriz_marcadores(lam_l, lam_v, rho)
     (p_home, p_draw, p_away), p_over25 = matriz_marcadores.get_1x2_ou25_probs(lam_l, lam_v, rho)

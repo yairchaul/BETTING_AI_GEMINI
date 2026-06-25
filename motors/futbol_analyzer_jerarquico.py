@@ -411,9 +411,18 @@ def analizar_futbol_jerarquico(
     # partidos cerrados marcados como de alta anotación). Se reutiliza más
     # abajo para nutrir picks múltiples y corregir el primario (sin recalcular).
     _dc_pre = None
+    # Entorno de goles del torneo en curso (sube el xG si el Mundial es goleador
+    # → reduce los UNDER espurios contra equipos goleadores). 1.0 si no es torneo.
+    _gf_torneo = 1.0
+    if es_torneo:
+        try:
+            from motors.wc_cerebro import factor_goles_torneo
+            _gf_torneo = factor_goles_torneo()
+        except Exception:
+            _gf_torneo = 1.0
     try:
         from motors.dixon_coles import predecir as _dc_predecir
-        _dc_tmp = _dc_predecir(local, visitante, neutral=bool(es_torneo))
+        _dc_tmp = _dc_predecir(local, visitante, neutral=bool(es_torneo), goles_factor=_gf_torneo)
         if _dc_tmp.get("disponible"):
             _dc_pre = _dc_tmp
     except Exception as _e:
