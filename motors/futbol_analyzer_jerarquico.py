@@ -222,6 +222,22 @@ def _picks_dixon_coles(mc: dict, local: str, visitante: str) -> list:
         add(f"DOBLE: {local} o Empate", m["doble_1x"])
     elif m.get("visitante", 0) > m.get("local", 0) and m.get("doble_x2", 0) >= 78:
         add(f"DOBLE: Empate o {visitante}", m["doble_x2"])
+    # ── Empate / doble oportunidad en partidos PAREJOS ──────────────────────
+    # El motor de reglas NUNCA emite empate, pero en torneos de selecciones los
+    # partidos cerrados son comunes (Mexico 1-1 Korea) y el empate PAGA bien
+    # (~+250). El histórico WC da ~21-22% de empates, así que solo se surte
+    # cuando el 1X2 de DC ve el partido claramente MÁS cerrado que esa media.
+    pE = m.get("empate", 0)
+    pL_ml = m.get("local", 0)
+    pV_ml = m.get("visitante", 0)
+    toss_up = pL_ml < 50 and pV_ml < 50          # sin favorito claro
+    if pE >= 32:                                  # empate directo de valor
+        add("EMPATE", pE)
+    if toss_up and pE >= 26:                      # cubrir empate + resultado del lado probable
+        if pL_ml >= pV_ml and m.get("doble_1x", 0) >= 65:
+            add(f"DOBLE: {local} o Empate", m["doble_1x"])
+        elif pV_ml > pL_ml and m.get("doble_x2", 0) >= 65:
+            add(f"DOBLE: Empate o {visitante}", m["doble_x2"])
     # Over / Under tiempo completo. Umbrales calibrados con el backtest:
     #   • OVER 1.5, OVER 2.5, UNDER 2.5: confiables (ganan ≥62% out-of-sample).
     #   • UNDER 1.5: sólo con prob MUY alta (al 55% ganaba <40% — Poisson subestima
@@ -269,6 +285,7 @@ def _mejor_pick_dc(dc_picks: list):
         p = x["pick"].lower()
         c = x["confianza"]
         if "over 2.5" in p or "over 3.5" in p:           return (0, -c)  # buen pago, prob suficiente
+        if "empate" in p and "doble" not in p:           return (1, -c)  # empate directo paga bien
         if "btts" in p or "ambos" in p:                  return (1, -c)
         if "under 2.5" in p:                             return (1, -c)
         if "local (" in p or "visitante (" in p:         return (2, -c)

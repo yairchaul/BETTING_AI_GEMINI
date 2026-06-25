@@ -151,6 +151,13 @@ def contexto_partido(local: str, visitante: str, es_torneo: bool = True) -> str:
         return ""
     nots = obtener_noticias()
 
+    # Goleadores de referencia (señal de peligro ofensivo / props)
+    try:
+        from motors.futbol_props import obtener_goleadores_partido
+        goleadores = obtener_goleadores_partido(local, visitante)
+    except Exception:
+        goleadores = {"local": [], "visitante": []}
+
     lineas = []
     r_l, r_v = _ranking(local), _ranking(visitante)
     lineas.append(f"Ranking FIFA aprox.: {local} #{r_l} vs {visitante} #{r_v} "
@@ -161,6 +168,10 @@ def contexto_partido(local: str, visitante: str, es_torneo: bool = True) -> str:
         forma = _forma_y_estilo(equipo)
         if forma:
             lineas.append(f"{equipo} — {forma}.")
+        lista_gol = goleadores.get("local" if equipo == local else "visitante", [])
+        if lista_gol:
+            top = ", ".join(f"{g['jugador']} ({g.get('prob', 0)}% anota)" for g in lista_gol[:2])
+            lineas.append(f"Goleadores {equipo}: {top}.")
         for a in noticias_de_equipo(equipo, nots, max_n=2):
             txt = a["headline"]
             if a.get("description"):

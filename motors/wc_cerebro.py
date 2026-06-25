@@ -118,19 +118,87 @@ def _merge_tasas(base: float, live: list, peso_live: float = 0.6) -> float:
     return round(base * (1 - peso) + tasa_live * peso, 1)
 
 
+# ── Entorno de goles REAL de ESTE Mundial (resultados ya jugados) ───────────
+# A diferencia de _leer_live_wc (que mide si los PICKS del motor acertaron), esto
+# mide las tasas reales del torneo en curso: ¿cuántos goles, empates y BTTS está
+# produciendo ESTE Mundial? Es la señal que el usuario pidió: calibrar con lo que
+# de verdad está pasando, no solo con históricos 2014-2022.
+_TORNEO_CACHE = {"ts": 0.0, "datos": None}
+
+
+def _leer_resultados_wc_2026() -> dict:
+    """Tasas reales del Mundial en curso desde international_results (torneo
+    'FIFA World Cup' del año actual, excluyendo eliminatorias). Cacheado por
+    sesión: los resultados solo cambian entre corridas. Devuelve {'n':0} si aún
+    no hay suficientes partidos jugados."""
+    import time
+    if _TORNEO_CACHE["datos"] is not None and (time.time() - _TORNEO_CACHE["ts"]) < 1800:
+        return _TORNEO_CACHE["datos"]
+    res = {"n": 0}
+    try:
+        from motors.international_results import _cargar_datos
+        anio = str(datetime.now().year)
+        partidos = [
+            r for r in _cargar_datos()
+            if r.get("fecha", "")[:4] == anio
+            and "world cup" in str(r.get("torneo", "")).lower()
+            and "qualif" not in str(r.get("torneo", "")).lower()
+        ]
+        n = len(partidos)
+        if n >= 5:
+            tot = [r["goles_local"] + r["goles_visita"] for r in partidos]
+            res = {
+                "n": n,
+                "over_1.5": round(sum(1 for t in tot if t > 1) / n * 100, 1),
+                "over_2.5": round(sum(1 for t in tot if t > 2) / n * 100, 1),
+                "btts": round(sum(1 for r in partidos if r["goles_local"] > 0 and r["goles_visita"] > 0) / n * 100, 1),
+                "empate": round(sum(1 for r in partidos if r["goles_local"] == r["goles_visita"]) / n * 100, 1),
+                "avg_goles": round(sum(tot) / n, 2),
+            }
+        else:
+            res = {"n": n}
+    except Exception as e:
+        logger.debug(f"wc_cerebro resultados live: {e}")
+    _TORNEO_CACHE.update(ts=time.time(), datos=res)
+    return res
+
+
+def _blend_torneo(base: float, live_val, n: int, n_full: int = 60) -> float:
+    """Mezcla la tasa base (histórica/fase) con la tasa REAL de este Mundial.
+    El peso del torneo crece con los partidos jugados (hasta 0.6 cuando la fase
+    de grupos está avanzada), porque el entorno propio del torneo manda."""
+    if live_val is None or n < 5:
+        return base
+    peso = min(0.6, n / n_full * 0.6)
+    return round(base * (1 - peso) + live_val * peso, 1)
+
+
 def calcular_tasas(fase: str = "grupo") -> dict:
-    """Devuelve tasas calibradas para el mercado WC en la fase dada."""
+    """Devuelve tasas calibradas para el mercado WC en la fase dada.
+
+    Tres capas, de más a menos específica: (1) entorno REAL de este Mundial
+    (resultados ya jugados) con peso creciente; (2) acierto del motor en sus
+    picks resueltos del torneo; (3) base histórica WC 2014-2022 por fase."""
     fase_k = _fase_key(fase)
     base = _WC_FASE.get(fase_k, _WC_FASE["grupo"])
     live = _leer_live_wc()
+    torneo = _leer_resultados_wc_2026()
+    nT = torneo.get("n", 0)
+
+    def _capa(clave_base, clave_live):
+        # 1) entorno real del torneo en curso  2) picks resueltos del motor
+        v = _blend_torneo(base[clave_base], torneo.get(clave_base), nT)
+        return _merge_tasas(v, live.get(clave_live, []))
 
     tasas = {
-        "over_1.5": _merge_tasas(base["over_1.5"], live.get("over_1.5", [])),
-        "over_2.5": _merge_tasas(base["over_2.5"], live.get("over_2.5", [])),
-        "btts":     _merge_tasas(base["btts"],     live.get("btts", [])),
+        "over_1.5": _capa("over_1.5", "over_1.5"),
+        "over_2.5": _capa("over_2.5", "over_2.5"),
+        "btts":     _capa("btts",     "btts"),
         "local_win": base["local_win"],
-        "empate":    base["empate"],
+        "empate":    _blend_torneo(base["empate"], torneo.get("empate"), nT),
         "away_win":  base["away_win"],
+        "avg_goles": torneo.get("avg_goles", _WC_BASE["avg_goles"]),
+        "n_torneo":  nT,
     }
     return tasas
 
@@ -212,11 +280,16 @@ def resumen_wc(fase: str = "grupo") -> str:
     tasas = calcular_tasas(fase)
     live = _leer_live_wc()
     n_live = sum(len(v) for v in live.values())
-    return (
+    nT = tasas.get("n_torneo", 0)
+    base = (
         f"WC 2026 ({fase}): "
         f"Over 1.5 = {tasas['over_1.5']:.0f}% | "
+        f"Empate = {tasas['empate']:.0f}% | "
         f"BTTS = {tasas['btts']:.0f}% | "
-        f"Over 2.5 = {tasas['over_2.5']:.0f}% | "
-        f"Local gana = {tasas['local_win']:.0f}%"
-        + (f" · ({n_live} picks WC 2026 resueltos)" if n_live else " · (datos históricos WC 2014-2022)")
+        f"Over 2.5 = {tasas['over_2.5']:.0f}%"
     )
+    if nT >= 5:
+        return base + f" · ({nT} partidos jugados de este Mundial, {tasas['avg_goles']:.1f} goles/partido)"
+    if n_live:
+        return base + f" · ({n_live} picks WC 2026 resueltos)"
+    return base + " · (datos históricos WC 2014-2022)"
