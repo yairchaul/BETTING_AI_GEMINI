@@ -552,22 +552,32 @@ def analizar_futbol_jerarquico(
                 "regla": 6,
             })
 
-    # ── Regla 7 — COMBINADO (gana + Over 2.5/3.5): mismatch claro ───────────
-    # Exige favorito con ML ≥63% Y Over 2.5 ≥58%. El combo NO incluye Over 1.5
-    # (ese es el fallback, no aporta valor pagado). Se prefiere la línea más alta.
+    # ── Regla 7 — COMBINADO (gana + Over): mismatch claro. Dos sabores ──────
+    # Exige favorito con ML ≥63%. Se ofrecen DOS combos según el perfil de riesgo:
+    #   • VALOR  : Gana + Over 2.5/3.5 (Over ≥58%) → más pago, menos probable.
+    #   • SEGURO : Gana + Over 1.5 (Over 1.5 ≥72%) → más probable, paga más que el
+    #     moneyline solo. El backtest WC mostró que favoritos ML≥60% aciertan este
+    #     combo 60-75% out-of-sample (es +EV; lo pidió el usuario).
     ml_pick = next((p for p in viable_picks if p["regla"] == 5 and p["confianza"] >= 63), None)
-    # Solo Over 2.5 y Over 3.5 para el combo (Over 1.5 en combo no paga)
-    over_opciones_combo = [("OVER 2.5", p_o25), ("OVER 3.5", p_o35_raw)]
-    over_fuerte = [(nm, pr) for nm, pr in over_opciones_combo if pr >= 58]
-    if ml_pick and over_fuerte and not es_eliminacion:
-        over_nombre, over_prob = over_fuerte[-1]   # línea más alta que cumple
+    if ml_pick and not es_eliminacion:
         equipo = ml_pick["pick"].split("(")[-1].rstrip(")") if "(" in ml_pick["pick"] else ml_pick["pick"]
-        conf_combo = round(ml_pick["confianza"] / 100.0 * over_prob / 100.0 * 100)
-        cuota_combo = round((100.0 / max(1, ml_pick["confianza"])) * (100.0 / max(1, over_prob)), 2)
-        viable_picks.append({
-            "pick": f"Gana {equipo} + {over_nombre}",
-            "confianza": conf_combo, "regla": 7, "combo": True, "cuota": cuota_combo,
-        })
+
+        def _add_combo(over_nombre, over_prob, seguro=False):
+            conf_combo = round(ml_pick["confianza"] / 100.0 * over_prob / 100.0 * 100)
+            cuota_combo = round((100.0 / max(1, ml_pick["confianza"])) * (100.0 / max(1, over_prob)), 2)
+            viable_picks.append({
+                "pick": f"Gana {equipo} + {over_nombre}",
+                "confianza": conf_combo, "regla": 7, "combo": True,
+                "combo_seguro": seguro, "cuota": cuota_combo,
+            })
+
+        # VALOR: la línea de Over más alta que cumpla ≥58% (2.5 o 3.5)
+        over_fuerte = [(nm, pr) for nm, pr in (("OVER 2.5", p_o25), ("OVER 3.5", p_o35_raw)) if pr >= 58]
+        if over_fuerte:
+            _add_combo(*over_fuerte[-1], seguro=False)
+        # SEGURO: Gana + Over 1.5 cuando el Over 1.5 ya es ALTO (≥72%)
+        if p_o15 >= 72:
+            _add_combo("OVER 1.5", p_o15, seguro=True)
 
     # ── Pre-calibración WC: descarta picks cuya confianza cae < 50% ─────────
     # (se aplica ANTES de la selección para que picks degradados no bloqueen
