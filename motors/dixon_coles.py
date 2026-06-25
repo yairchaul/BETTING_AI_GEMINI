@@ -31,7 +31,6 @@ import json
 import math
 import logging
 from datetime import datetime
-import sqlite3
 
 import numpy as np
 
@@ -300,51 +299,49 @@ def _modelo_activo(force_refit=False):
     return _modelo
 
 
-# ──────────────────────────────────────────────────────────────────────────
-# Predicción
-# ──────────────────────────────────────────────────────────────────────────
-def _poisson_col(lam):
-    """Vector P(0..MAX_GOLES) para una Poisson(λ)."""
-    ks = np.arange(MAX_GOLES + 1)
-    return np.exp(-lam) * np.power(lam, ks) / _FACT
+class _MatrizMarcadores:
+    def __call__(self, lam_l, lam_v, rho=0.0):
+        """Permite usar la instancia como la función histórica
+        matriz_marcadores(lam_l, lam_v, rho) → matriz de marcadores."""
+        return self._compute_matrix(lam_l, lam_v, rho)
 
+    def get_1x2_ou25_probs(self, lam_l, lam_v, rho=0.0):
+        """( (pL,pE,pV), p_over2.5 ) desde la matriz. Reutilizable."""
+        M = self._compute_matrix(lam_l, lam_v, rho)
+        p_home = float(np.tril(M, -1).sum())
+        p_draw = float(np.trace(M))
+        p_away = float(np.triu(M, 1).sum())
+        s = p_home + p_draw + p_away
+        if s <= 0:
+            return None, None
+        n = M.shape[0]
+        ii, jj = np.meshgrid(np.arange(n), np.arange(n), indexing="ij")
+        p_over25 = float(M[(ii + jj) > 2].sum())
+        return (p_home / s, p_draw / s, p_away / s), p_over25
 
-def matriz_marcadores(lam_l, lam_v, rho=0.0):
-    """Matriz (MAX+1 × MAX+1) de P(marcador = i-j) con corrección τ Dixon-Coles.
-    Filas = goles del local, columnas = goles del visitante. Normalizada."""
-    lam_l = float(np.clip(lam_l, 0.05, 6.0))
-    lam_v = float(np.clip(lam_v, 0.05, 6.0))
-    pl = _poisson_col(lam_l)
-    pv = _poisson_col(lam_v)
-    M = np.outer(pl, pv)
-    # Corrección de marcadores bajos
-    M[0, 0] *= 1.0 - lam_l * lam_v * rho
-    M[0, 1] *= 1.0 + lam_l * rho
-    M[1, 0] *= 1.0 + lam_v * rho
-    M[1, 1] *= 1.0 - rho
-    M = np.clip(M, 0.0, None)
-    s = M.sum()
-    if s > 0:
-        M /= s
-    return M
+    def _compute_matrix(self, lam_l, lam_v, rho=0.0):
+        """Matriz (MAX+1 × MAX+1) de P(marcador = i-j) con corrección τ Dixon-Coles."""
+        lam_l = float(np.clip(lam_l, 0.05, 6.0))
+        lam_v = float(np.clip(lam_v, 0.05, 6.0))
+        pl = self._poisson_col(lam_l)
+        pv = self._poisson_col(lam_v)
+        M = np.outer(pl, pv)
+        # Corrección de marcadores bajos
+        M[0, 0] *= 1.0 - lam_l * lam_v * rho
+        M[0, 1] *= 1.0 + lam_l * rho
+        M[1, 0] *= 1.0 + lam_v * rho
+        M[1, 1] *= 1.0 - rho
+        M = np.clip(M, 0.0, None)
+        s = M.sum()
+        if s > 0:
+            M /= s
+        return M
 
+    def _poisson_col(self, lam):
+        ks = np.arange(MAX_GOLES + 1)
+        return np.exp(-lam) * np.power(lam, ks) / _FACT
 
-def _get_form_stats(equipo: str):
-    """Media de goles a favor/en contra de los últimos partidos del equipo,
-    desde la DB (historial_equipos poblado con los últimos 5 de ESPN, que SÍ
-    incluye 2026). Devuelve (avg_gf, avg_gc) o (None, None) si no hay datos."""
-    try:
-        from utils.database_manager import db
-        s = db.get_team_stats_detailed(equipo, "soccer")
-        if s and s.get("goles_favor"):
-            gf = s.get("goles_favor", [])
-            gc = s.get("goles_contra", [])
-            if gf and gc:
-                return sum(gf) / len(gf), sum(gc) / len(gc)
-    except Exception:
-        pass
-    return None, None
-
+matriz_marcadores = _MatrizMarcadores()
 
 def _get_lambdas_dc(local, visitante, neutral=True, modelo=None):
     """(λ_local, λ_visitante) según Dixon-Coles puro, o None si falta algún equipo."""
@@ -364,10 +361,33 @@ def _get_lambdas_dc(local, visitante, neutral=True, modelo=None):
     return float(lam_l), float(lam_v)
 
 
+def _get_form_stats(equipo: str):
+    """Media de goles a favor/en contra de los últimos partidos del equipo,
+    desde la DB (historial_equipos poblado con los últimos 5 de ESPN, que SÍ
+    incluye 2026). Devuelve (avg_gf, avg_gc) o (None, None) si no hay datos."""
+    try:
+        from utils.database_manager import db
+        s = db.get_team_stats_detailed(equipo, "soccer")
+        if s and s.get("goles_favor"):
+            gf = s.get("goles_favor", [])
+            gc = s.get("goles_contra", [])
+            if gf and gc:
+                return sum(gf) / len(gf), sum(gc) / len(gc)
+    except Exception:
+        pass
+    return None, None
+
+
 def get_lambdas(local, visitante, neutral=True, modelo=None):
     """(λ_local, λ_visitante) HÍBRIDO: Dixon-Coles (fuerza estructural) mezclado
     con la forma RECIENTE de la DB (2026). Si no hay forma reciente usa DC puro;
-    si no hay DC pero sí forma, usa la forma. Corrige el desfase del CSV (≤2024)."""
+    si no hay DC pero sí forma, usa la forma. Corrige el desfase del CSV (≤2024).
+
+    NOTA (backtest walk-forward 2024-2026, 2541 partidos out-of-sample): mezclar
+    con ml_predictor (Poisson-GLM) NO supera a DC puro (RPS 0.172 vs 0.167; Acc
+    59% vs 60%). Por eso el blend ML NO se integra — ml_predictor queda como
+    herramienta validada-negativa (comparable en backtest_walkforward.py 'ml').
+    """
     lams_dc = _get_lambdas_dc(local, visitante, neutral, modelo)
     gf_local, gc_local = _get_form_stats(local)
     gf_visit, gc_visit = _get_form_stats(visitante)
@@ -405,18 +425,14 @@ def predecir(local, visitante, neutral=True, top_n=5, modelo=None):
     if lams is None:
         return {"disponible": False}
     lam_l, lam_v = lams
-    rho = modelo.get("rho", 0.0)
+    rho = modelo.get("rho", 0.0) if modelo else 0.0
     M = matriz_marcadores(lam_l, lam_v, rho)
+    (p_home, p_draw, p_away), p_over25 = matriz_marcadores.get_1x2_ou25_probs(lam_l, lam_v, rho)
 
     n = M.shape[0]
-    p_home = float(np.tril(M, -1).sum())   # i > j
-    p_draw = float(np.trace(M))            # i == j
-    p_away = float(np.triu(M, 1).sum())    # i < j
-
     idx_i, idx_j = np.meshgrid(np.arange(n), np.arange(n), indexing="ij")
     tot = idx_i + idx_j
     p_over15 = float(M[tot > 1].sum())
-    p_over25 = float(M[tot > 2].sum())
     p_over35 = float(M[tot > 3].sum())
     p_under15 = float(M[tot <= 1].sum())
     p_under35 = float(M[tot <= 3].sum())
@@ -424,7 +440,6 @@ def predecir(local, visitante, neutral=True, top_n=5, modelo=None):
     p_cs_local = float(M[idx_j == 0].sum())   # visitante NO anota (local portería a cero)
     p_cs_visit = float(M[idx_i == 0].sum())   # local NO anota
 
-    # Mercados del PRIMER TIEMPO: matriz HT con λ·0.45 (≈45% de los goles caen en 1ª parte)
     Mht = matriz_marcadores(lam_l * 0.45, lam_v * 0.45, rho)
     nh = Mht.shape[0]
     ih, jh = np.meshgrid(np.arange(nh), np.arange(nh), indexing="ij")

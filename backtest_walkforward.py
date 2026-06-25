@@ -63,25 +63,21 @@ def log_loss(probs, outcome, eps=1e-12):
     return -math.log(max(eps, probs[outcome]))
 
 
-def _resultado(gl, gv):
-    return HOME if gl > gv else (DRAW if gl == gv else AWAY)
+def _brier_score(prob, outcome):
+    """Brier score para un resultado binario (ej. Over/Under).
+    prob: probabilidad predicha (0-1). outcome: 0 o 1."""
+    return (prob - outcome) ** 2
 
 
 def _lams_a_probs(lam_l, lam_v, rho=0.0):
     """De (λ_local, λ_visit) saca ((pL,pE,pV), p_over2.5) vía la matriz Poisson
     con corrección τ de Dixon-Coles. Devuelve (None, None) si algo falla."""
     from motors.dixon_coles import matriz_marcadores
-    M = matriz_marcadores(lam_l, lam_v, rho)
-    p_home = float(np.tril(M, -1).sum())
-    p_draw = float(np.trace(M))
-    p_away = float(np.triu(M, 1).sum())
-    s = p_home + p_draw + p_away
-    if s <= 0:
-        return None, None
-    n = M.shape[0]
-    ii, jj = np.meshgrid(np.arange(n), np.arange(n), indexing="ij")
-    p_over25 = float(M[(ii + jj) > 2].sum())
-    return (p_home / s, p_draw / s, p_away / s), p_over25
+    return matriz_marcadores.get_1x2_ou25_probs(lam_l, lam_v, rho)
+
+
+def _resultado(gl, gv):
+    return HOME if gl > gv else (DRAW if gl == gv else AWAY)
 
 
 # Cache de entrenamiento por (modelo, corte): evita reentrenar DC/ML varias veces
@@ -266,7 +262,8 @@ def ejecutar(primer_corte="2021-01-01", paso_meses=3, desde_anio_dc=2018, predic
     corte = datetime.strptime(primer_corte, "%Y-%m-%d")
 
     acc = {p.nombre: {"rps": 0.0, "ll": 0.0, "aciertos": 0, "n": 0,
-                      "brier_ov": 0.0, "acc_ov": 0, "n_ov": 0} for p in predictores}
+                      "brier_ov25": 0.0, "acc_ov25": 0, "n_ov25": 0}
+           for p in predictores}
     n_ventanas = 0
     n_test_total = 0
     ventanas = []
@@ -311,18 +308,18 @@ def ejecutar(primer_corte="2021-01-01", paso_meses=3, desde_anio_dc=2018, predic
                 a["ll"] += log_loss(p1x2, outcome)
                 _hit = max(range(3), key=lambda k: p1x2[k]) == outcome
                 if _hit:
-                    a["aciertos"] += 1
+                    a["aciertos"] += 1                
                 a["n"] += 1
                 w = win[nombre]
                 w["rps"] += _r
                 w["n"] += 1
                 if _hit:
                     w["ac"] += 1
-                if p_ov is not None:
-                    a["brier_ov"] += (p_ov - over_real) ** 2
+                if p_ov is not None: # Evaluar Over/Under 2.5
+                    a["brier_ov25"] += _brier_score(p_ov, over_real)
                     if (p_ov >= 0.5) == (over_real >= 0.5):
-                        a["acc_ov"] += 1
-                    a["n_ov"] += 1
+                        a["acc_ov25"] += 1
+                    a["n_ov25"] += 1
             evaluados += 1
 
         n_ventanas += 1
@@ -344,14 +341,14 @@ def _reporte(acc, predictores, n_ventanas, n_test, primer_corte, paso_meses, ven
     for p in predictores:
         a = acc[p.nombre]
         n = max(1, a["n"])
-        n_ov = max(1, a["n_ov"])
+        n_ov = max(1, a["n_ov25"])
         res[p.nombre] = {
             "n": a["n"],
             "rps": round(a["rps"] / n, 4),
             "log_loss": round(a["ll"] / n, 4),
             "accuracy_1x2": round(a["aciertos"] / n * 100, 1),
-            "brier_over25": round(a["brier_ov"] / n_ov, 4),
-            "acc_over25": round(a["acc_ov"] / n_ov * 100, 1),
+            "brier_over25": round(a["brier_ov25"] / n_ov, 4),
+            "acc_over25": round(a["acc_ov25"] / n_ov * 100, 1),
         }
     rep = {
         "timestamp": datetime.now().isoformat(),
@@ -374,14 +371,14 @@ def _imprimir(rep):
     print(f"Desde {rep['primer_corte']} · paso {rep['paso_meses']}m · "
           f"{rep['n_ventanas']} ventanas · {rep['n_partidos_evaluados']} partidos")
     print("=" * 74)
-    print(f"{'PREDICTOR':<16}{'N':>7}{'RPS':>10}{'LogLoss':>10}{'Acc1X2':>9}{'BrierOv':>10}{'AccOv2.5':>10}")
-    print("-" * 74)
+    print(f"{'PREDICTOR':<16}{'N':>7}{'RPS':>10}{'LogLoss':>10}{'Acc1X2':>9}{'BrierO/U':>10}{'AccO/U':>10}")
+    print("-" * 84)
     # Ordenar por RPS ascendente (mejor primero)
     for nombre, m in sorted(rep["predictores"].items(), key=lambda kv: kv[1]["rps"]):
         print(f"{nombre:<16}{m['n']:>7}{m['rps']:>10.4f}{m['log_loss']:>10.4f}"
               f"{m['accuracy_1x2']:>8.1f}%{m['brier_over25']:>10.4f}{m['acc_over25']:>9.1f}%")
-    print("-" * 74)
-    print("RPS, Log-Loss, BrierOv: MENOR mejor. Acc 1X2 / Acc Ov 2.5: MAYOR mejor.")
+    print("-" * 84)
+    print("RPS, Log-Loss, Brier: MENOR mejor. Acc 1X2 / Acc O/U: MAYOR mejor.")
     print("Referencia fútbol: RPS < 0.21 bueno; ~0.33 azar. Brier Over 0.25 = azar.")
     print("=" * 74)
 
