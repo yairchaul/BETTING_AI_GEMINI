@@ -808,16 +808,24 @@ def mercados_completos_futbol(local, visitante, es_torneo=False, fase=""):
             goleadores = obtener_goleadores_partido(local, visitante)
         except Exception:
             goleadores = {"local": [], "visitante": []}
+        ml = {"local": _dc["prob"]["local"], "empate": _dc["prob"]["empate"],
+              "visitante": _dc["prob"]["visitante"]}
+        # Blend de mercado (Benter): modelo + cuotas de-vigueadas
+        try:
+            from motors.mercado_blend import blend_1x2
+            benter = blend_1x2(ml, local, visitante)
+        except Exception:
+            benter = None
         return {
             "fuente": "dixon-coles",
             "xg_local": _dc["xg_local"], "xg_visitante": _dc["xg_visit"],
-            "moneyline": {"local": _dc["prob"]["local"], "empate": _dc["prob"]["empate"],
-                          "visitante": _dc["prob"]["visitante"]},
+            "moneyline": ml,
             "over_under": {"over_2.5": _dc["over_under"]["over_2.5"],
                            "under_2.5": _dc["over_under"]["under_2.5"],
                            "over_1.5": _dc["over_under"]["over_1.5"]},
             "btts": _dc["btts"],
             "goleadores": goleadores,
+            "benter": benter,
             "marcador_correcto": _dc,
         }
 

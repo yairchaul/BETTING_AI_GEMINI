@@ -164,6 +164,20 @@ def contexto_partido(local: str, visitante: str, es_torneo: bool = True) -> str:
                   f"(dif {abs(r_l - r_v)} -> favorito por ranking: "
                   f"{local if r_l < r_v else visitante}).")
 
+    # Probabilidad del MERCADO (cuotas de-vigueadas) — la 'sabiduría del mercado'
+    # de Benter: si el mercado discrepa del modelo, suele saber algo (rotación,
+    # lesión). Se inyecta para que la IA calibre su decisión.
+    try:
+        from motors.mercado_blend import cuotas_1x2
+        mkt = cuotas_1x2(local, visitante)
+        if mkt:
+            lineas.append(f"MERCADO (cuotas {mkt['n_casas']} casas, de-vig): "
+                          f"{local} {mkt['local']:.0f}% / Empate {mkt['empate']:.0f}% / "
+                          f"{visitante} {mkt['visitante']:.0f}%. Si choca con el heurístico, "
+                          f"el mercado puede anticipar rotación/lesión.")
+    except Exception:
+        pass
+
     for equipo in (local, visitante):
         forma = _forma_y_estilo(equipo)
         if forma:
