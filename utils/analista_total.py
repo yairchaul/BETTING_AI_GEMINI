@@ -118,6 +118,26 @@ def _safe_json(obj, limit: Optional[int] = None) -> str:
     return text[:limit] if limit else text
 
 
+def _motivo_error(raw) -> str:
+    """Resume por qué un proveedor no dio un pick válido (para mostrarlo en la UI
+    en vez de un genérico 'falló'). Detecta cuota (429) y key inválida (401)."""
+    s = str(raw or "")
+    if not s:
+        return "sin respuesta"
+    low = s.lower()
+    if "[cuota 429]" in low or "429" in s or "quota" in low or "rate" in low:
+        return "límite de cuota (429)"
+    if "401" in s or "invalid api key" in low or "invalid_api_key" in low or "unauthorized" in low:
+        return "API key inválida"
+    try:
+        d = json.loads(s)
+        if isinstance(d, dict) and d.get("error"):
+            return str(d["error"])[:70]
+    except (json.JSONDecodeError, TypeError):
+        pass
+    return "sin pick válido"
+
+
 def _parse_json_safe(text: str) -> Optional[dict]:
     """Extrae el primer JSON válido del texto, limpiando markdown si es necesario."""
     if not text:
@@ -196,19 +216,23 @@ class AnalistaTotal:
         return None, None
 
     def _call(self, client, prompt: str) -> Optional[dict]:
-        """Llama a un GenericAIClient y retorna el dict parseado o None."""
+        """Llama a un proveedor y retorna el dict parseado o None."""
+        return self._call_raw(client, prompt)[0]
+
+    def _call_raw(self, client, prompt: str):
+        """Como _call pero devuelve (dict_o_None, motivo). El motivo describe el
+        fallo (cuota, key inválida, sin pick) para mostrarlo en la UI."""
         try:
             raw = client.orquestrar_decision(prompt)
-            result = _parse_json_safe(raw)
-            if result and "pick" in result:
-                return result
-            # Fallback: if JSON came wrapped in an 'error' key
-            if isinstance(result, dict) and "error" in result:
-                logger.warning(f"Proveedor retornó error: {result['error']}")
-            return None
         except Exception as e:
             logger.error(f"Error llamando proveedor: {e}")
-            return None
+            return None, f"excepción: {str(e)[:60]}"
+        result = _parse_json_safe(raw)
+        if result and "pick" in result:
+            return result, ""
+        motivo = _motivo_error(raw)
+        logger.warning(f"Proveedor sin pick válido: {motivo}")
+        return None, motivo
 
     def _vote(self, prompt: str) -> dict:
         """
@@ -220,14 +244,19 @@ class AnalistaTotal:
             return {"error": "Sin proveedores disponibles", "pick": "N/A", "confianza": 0, "stake": 1, "razon": "Sin IAs configuradas", "mercado": "MONEYLINE"}
 
         responses = []
+        errores = []
         for name, client in available:
-            result = self._call(client, prompt)
+            result, motivo = self._call_raw(client, prompt)
             if result:
                 result["_proveedor"] = name
                 responses.append(result)
+            else:
+                errores.append(f"{name}: {motivo}")
 
         if not responses:
-            return {"error": "Todos los proveedores fallaron", "pick": "N/A", "confianza": 0, "stake": 1, "razon": "Error en todos los proveedores", "mercado": "MONEYLINE"}
+            detalle = " · ".join(errores) if errores else "sin detalle"
+            return {"error": "Todos los proveedores fallaron", "pick": "N/A", "confianza": 0,
+                    "stake": 1, "razon": f"IA no disponible — {detalle}", "mercado": "MONEYLINE"}
 
         if len(responses) == 1:
             r = responses[0]
@@ -259,14 +288,14 @@ class AnalistaTotal:
                 "razon": f"API key de {self.selected_model} no configurada o cliente no inicializado",
                 "mercado": "MONEYLINE",
             }
-        result = self._call(client, prompt)
+        result, motivo = self._call_raw(client, prompt)
         if result:
             result["proveedor"] = self.selected_model
             return result
         return {
-            "error": f"Respuesta inválida de {self.selected_model}",
+            "error": f"{self.selected_model}: {motivo}",
             "pick": "N/A", "confianza": 0, "stake": 1,
-            "razon": f"{self.selected_model} no devolvió JSON válido",
+            "razon": f"IA no disponible — {self.selected_model}: {motivo}",
             "mercado": "MONEYLINE",
         }
 

@@ -93,14 +93,23 @@ class CerebroGeminiPro:
                 }
             }
             
-            response = requests.post(self.api_url, json=payload, timeout=30)
-            
-            if response.status_code == 200:
-                data = response.json()
-                text = data.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
-                return text
-            else:
-                error_msg = f"Error {response.status_code}: {response.text[:200]}"
+            # Reintento ante límite de cuota (429) o saturación (503): la capa
+            # gratuita de Gemini limita por minuto, así que un backoff corto suele
+            # recuperar la llamada cuando se analizan muchos partidos seguidos.
+            import time as _time
+            for intento in range(3):
+                response = requests.post(self.api_url, json=payload, timeout=30)
+                if response.status_code == 200:
+                    data = response.json()
+                    return data.get('candidates', [{}])[0].get('content', {}).get('parts', [{}])[0].get('text', '')
+                if response.status_code in (429, 503) and intento < 2:
+                    espera = 2 * (intento + 1)   # 2s, 4s
+                    logger.warning(f"Gemini {response.status_code} (cuota/saturación), reintento en {espera}s...")
+                    _time.sleep(espera)
+                    continue
+                # Marca el límite de cuota de forma legible para el analista/UI
+                tag = "[CUOTA 429] " if response.status_code == 429 else ""
+                error_msg = f"{tag}Error {response.status_code}: {response.text[:160]}"
                 logger.error(error_msg)
                 return error_msg
         except Exception as e:
