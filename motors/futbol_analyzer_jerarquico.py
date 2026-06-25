@@ -598,15 +598,16 @@ def analizar_futbol_jerarquico(
         except Exception:
             pass
 
-    # ── Selección primaria por VALOR, no solo por probabilidad ────────────────
-    # Orden: COMBO > OVER 2.5/3.5 (≥50%) > BTTS (≥58%) > UNDER (≥55%) > ML (≥63%) > OVER 1.5.
-    # OVER 2.5 SIEMPRE gana a OVER 1.5 desde 50%: mayor pago con probabilidad suficiente.
+    # ── Selección primaria por VALOR Y probabilidad ──────────────────────────
+    # Orden: OVER 2.5/3.5 (≥50%) > BTTS (≥58%) > UNDER (≥55%) > ML (≥63%) > OVER 1.5
+    #        > COMBO. El COMBO se OFRECE (queda en 'también califican') pero NO es
+    # primario: el backtest mostró que como primario acierta menos (45% vs 64% del
+    # moneyline) y peor ROI, porque necesita que peguen 2 patas. (decisión con datos)
     def _prioridad(x):
         pick_lower = x.get("pick", "").lower()
         conf = x.get("confianza", 0)
-        es_combo = x.get("regla") == 7
-        if es_combo and conf >= 40:
-            return (0, -conf)   # COMBO válido → máximo valor
+        if x.get("regla") == 7:        # COMBO → al fondo (opción, no primario)
+            return (6, -conf)
         if ("over 2.5" in pick_lower or "over 3.5" in pick_lower) and conf >= 50:
             return (1, -conf)   # OVER alto → mejor pago que OVER 1.5 desde 50%
         if ("btts" in pick_lower or "ambos anotan" in pick_lower) and conf >= 58:
