@@ -383,6 +383,33 @@ class UFCAnalyzer:
         metodo_probs = self.desglose_metodo(winner_data, loser_data)
         rounds_totales = self.totales_rounds(p1_data, p2_data)
 
+        # ── Monte Carlo round-por-round: probabilidades COHERENTES de ganador,
+        # método y totales de rounds del MISMO experimento. Se ancla en el modelo
+        # ya calibrado (prob de ganador, distancia, split KO/Sub) y aporta el
+        # reparto por round y los O/U con la convención real del sportsbook.
+        montecarlo = None
+        try:
+            from motors.ufc_montecarlo import simular_combate
+            p_win_f1 = prob / 100.0                      # prob de que gane p1
+            p_finish = 1.0 - duracion.get('prob', 48) / 100.0
+            ko_p = metodo_probs.get("KO/TKO", 0)
+            sub_p = metodo_probs.get("Sumisión", 0)
+            ko_split = ko_p / (ko_p + sub_p) if (ko_p + sub_p) > 0 else 0.6
+            mc = simular_combate(p_win_f1, p_finish, ko_split, rounds=3, n=20000)
+            # El MC reporta el ganador como p1/p2; lo traducimos a nombres.
+            montecarlo = {
+                "prob_ganador": {p1_name: mc["prob_win_f1"], p2_name: mc["prob_win_f2"]},
+                "metodo_probs": mc["metodo_probs"],
+                "prob_distancia": mc["prob_distancia"],
+                "rounds_totales": mc["rounds_totales"],
+                "duracion_media_min": mc["duracion_media_min"],
+                "n": mc["n"],
+            }
+            # El MC da totales de rounds más realistas que la curva lineal previa.
+            rounds_totales = mc["rounds_totales"]
+        except Exception as _mce:
+            pass
+
         # ── MEJOR APUESTA: comparar los 3 mercados y recomendar el más fuerte ──
         # Calibración del backtest ajusta la confianza real de cada mercado.
         calib = self._cargar_calibracion()
@@ -427,6 +454,7 @@ class UFCAnalyzer:
             'mercados': mercados,
             'mejor_apuesta': mejor_apuesta,
             'metodo_probs': metodo_probs,       # {KO/TKO: %, Sumisión: %, Decisión: %}
-            'rounds_totales': rounds_totales,    # [{linea, pick, prob_over, ...}]
+            'rounds_totales': rounds_totales,    # [{linea, pick, prob_over, ...}] (Monte Carlo)
+            'montecarlo': montecarlo,            # simulación coherente (ganador/método/rounds)
             'ganador_por_metodo': f"{winner_name} por {method}",
         }
