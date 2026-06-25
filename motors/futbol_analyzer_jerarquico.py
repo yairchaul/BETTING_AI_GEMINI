@@ -450,10 +450,11 @@ def analizar_futbol_jerarquico(
         viable_picks.append({"pick": "OVER 1.5 HT", "confianza": round(prob_ht, 1),
                              "regla": 1, "fuente_ht": fuente_ht})
 
-    # ── Regla 2 — OVER 3.5 ≥ 60% (fix: >= en lugar de >) ────────────────────
-    prob_o35 = _pct(todos_totales, lambda t: t >= 3.5) * factor_fase  # FIX: >= 3.5
-    if prob_o35 >= 60:
-        viable_picks.append({"pick": "OVER 3.5 FT", "confianza": round(prob_o35, 1), "regla": 2})
+    # ── Regla 2 — (ELIMINADA) El OVER 3.5 ya NO se emite con la frecuencia
+    # histórica CRUDA: eso producía números no-monótonos (OVER 3.5 ≈ OVER 2.5,
+    # imposible: 4+ goles no puede ser tan probable como 3+). El OVER 3.5 ahora
+    # sale ÚNICAMENTE de la Regla 4 (mezcla Dixon-Coles), que es monótona por
+    # construcción: P(Over1.5) ≥ P(Over2.5) ≥ P(Over3.5) siempre.
 
     # ── Regla 3 — BTTS ≥ 60% ─────────────────────────────────────────────────
     hits_btts = (
