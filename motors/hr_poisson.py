@@ -97,15 +97,28 @@ def tasa_shrunk(hr_por_juego, hr_total=0, juegos=0):
     return hpg
 
 
+def factor_fatiga(fatiga):
+    """Acota el factor de fatiga del equipo (de motors.mlb_fatiga). Solo reduce o
+    es neutro. Acepta el float ya calculado; None/0 → 1.0 (sin efecto)."""
+    if not fatiga:
+        return 1.0
+    try:
+        return max(0.85, min(1.0, float(fatiga)))
+    except (TypeError, ValueError):
+        return 1.0
+
+
 def prob_hr(hr_por_juego, hr_total=0, juegos=0, pitcher_hr9=None,
-            park_factor=1.0, mano_pitcher="R", mano_bateador=None, ops=None, clima=None):
+            park_factor=1.0, mano_pitcher="R", mano_bateador=None, ops=None,
+            clima=None, fatiga=None):
     """Probabilidad calibrada (%) de que el bateador pegue ≥1 HR en el juego."""
     hpg = tasa_shrunk(hr_por_juego, hr_total, juegos)
     lam = (hpg
            * factor_pitcher(pitcher_hr9)
            * factor_parque(park_factor)
            * factor_mano(mano_pitcher, mano_bateador)
-           * factor_clima(clima))
+           * factor_clima(clima)
+           * factor_fatiga(fatiga))
     # Ajuste MUY leve por OPS de élite (acotado; no doble-cuenta el grueso)
     if ops and ops > 0.90:
         lam *= 1.0 + min(0.10, (ops - 0.90) * 0.5)
@@ -114,12 +127,14 @@ def prob_hr(hr_por_juego, hr_total=0, juegos=0, pitcher_hr9=None,
 
 
 def lambda_hr(hr_por_juego, hr_total=0, juegos=0, pitcher_hr9=None,
-              park_factor=1.0, mano_pitcher="R", mano_bateador=None, ops=None, clima=None):
+              park_factor=1.0, mano_pitcher="R", mano_bateador=None, ops=None,
+              clima=None, fatiga=None):
     """λ_HR esperado (HR esperados del bateador en el juego), por si se quiere el
     valor continuo en vez de la probabilidad."""
     hpg = tasa_shrunk(hr_por_juego, hr_total, juegos)
     lam = (hpg * factor_pitcher(pitcher_hr9) * factor_parque(park_factor)
-           * factor_mano(mano_pitcher, mano_bateador) * factor_clima(clima))
+           * factor_mano(mano_pitcher, mano_bateador) * factor_clima(clima)
+           * factor_fatiga(fatiga))
     if ops and ops > 0.90:
         lam *= 1.0 + min(0.10, (ops - 0.90) * 0.5)
     return lam

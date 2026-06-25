@@ -263,7 +263,7 @@ class PredictorHRPro:
         return bateadores_candidatos[:6]  # Top 6
     
     # ==================== CALCULO DE PROBABILIDAD (POISSON CALIBRADO) ====================
-    def calcular_probabilidad_hr_inteligente(self, bateador_stats, pitcher_info, estadio="", clima=None):
+    def calcular_probabilidad_hr_inteligente(self, bateador_stats, pitcher_info, estadio="", clima=None, fatiga=None):
         """Probabilidad CALIBRADA de ≥1 HR vía el núcleo Poisson (motors.hr_poisson).
         P(≥1 HR)=1−e^(−λ), con λ = tasa·factor_pitcher·factor_parque·factor_mano y
         shrinkage de la tasa. Se topa en ~25% (realista) en vez del 95% del modelo
@@ -284,10 +284,11 @@ class PredictorHRPro:
         except Exception:
             pass
 
+        fatiga_factor = (fatiga or {}).get("factor", 1.0) if isinstance(fatiga, dict) else (fatiga or 1.0)
         prob_final = _prob_hr_poisson(
             hr_por_juego=hr_por_juego, hr_total=hr_total,
             pitcher_hr9=hr9_pitcher, park_factor=park_factor,
-            mano_pitcher=mano_pitcher, ops=ops, clima=clima,
+            mano_pitcher=mano_pitcher, ops=ops, clima=clima, fatiga=fatiga_factor,
         )
 
         # Factores DESCRIPTIVOS (transparencia; no inflan la probabilidad)
@@ -312,6 +313,11 @@ class PredictorHRPro:
             factores.append(f"🌡️ Clima a favor (calor/viento out, ×{fclima:.2f})")
         elif fclima < 0.94:
             factores.append(f"🌬️ Clima en contra (frío/viento in, ×{fclima:.2f})")
+        # Fatiga del equipo (doble jornada, día tras noche, sin descanso)
+        if isinstance(fatiga, dict) and fatiga.get("factor", 1.0) < 0.99:
+            razon_f = fatiga.get("razon", "")
+            factores.append(f"😴 Fatiga: {razon_f} (×{fatiga['factor']:.2f})" if razon_f
+                            else f"😴 Fatiga del equipo (×{fatiga['factor']:.2f})")
         if ops >= 0.90:
             factores.append(f"💪 Poder élite (OPS {ops:.2f})")
         if hr_total >= 20:
@@ -345,14 +351,23 @@ class PredictorHRPro:
         """Análisis completo de HR para un equipo (para visualización)"""
         # Obtener bateadores activos
         bateadores = self.obtener_bateadores_activos_pro(equipo_nombre, game_pk)
-        
+
         # Obtener información del pitcher rival
         pitcher_info = self._buscar_pitcher_rival_pro(equipo_nombre, game_pk)
-        
+
+        # Fatiga del EQUIPO (la comparten todos sus bateadores). Se calcula una vez.
+        fatiga = {"factor": 1.0, "razon": ""}
+        try:
+            from motors.mlb_fatiga import factor_fatiga
+            f_val, f_razon = factor_fatiga(equipo_nombre)
+            fatiga = {"factor": f_val, "razon": f_razon}
+        except Exception:
+            pass
+
         resultados = []
         for b in bateadores:
             # Calcular probabilidad inteligente
-            probabilidad = self.calcular_probabilidad_hr_inteligente(b, pitcher_info, estadio, clima)
+            probabilidad = self.calcular_probabilidad_hr_inteligente(b, pitcher_info, estadio, clima, fatiga)
             
             resultados.append({
                 "nombre": b['nombre'],
