@@ -494,8 +494,12 @@ def analizar_futbol_jerarquico(
     p_o35_raw = _mezcla_over(p_o35_hist, "over_3.5")
     p_under25 = _mezcla_over(p_u25_hist, "under_2.5")
 
+    # OVER 2.5 se surte desde 52% (no 55%): el backtest WC out-of-sample mostró
+    # que ya es +EV ahí (≥50%→59%, ≥58%→64% de acierto, breakeven -110 = 52.4%).
+    # OVER 1.5 y 3.5 se mantienen en 55% (1.5 paga poco, 3.5 es ruidoso).
+    _umbral_over = {"OVER 2.5": 52}
     for nombre, pr in (("OVER 1.5", p_o15), ("OVER 2.5", p_o25), ("OVER 3.5", p_o35_raw)):
-        if pr >= 55:
+        if pr >= _umbral_over.get(nombre, 55):
             viable_picks.append({"pick": nombre, "confianza": round(min(92, pr * factor_fase), 1), "regla": 4})
     # UNDER 2.5 — matchups DEFENSIVOS (ambos conceden/anotan poco). Detecta los
     # partidos cerrados (p.ej. Mexico 1-0 Korea) donde el OVER falla. Compite por
