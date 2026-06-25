@@ -1,10 +1,10 @@
 {
-  "timestamp": "2026-06-19T14:21:48.024138",
+  "timestamp": "2026-06-25T10:20:09.410376",
   "fuente": "Mundial 2026 (marcador real, forzar_ranking=True)",
   "partidos": 25,
   "evaluados": 25,
   "no_evaluables": 0,
-  "precision_global": 80.0,
+  "precision_global": 56.0,
   "mercados": {
     "moneyline": {
       "aciertos": 0,
@@ -12,19 +12,19 @@
       "precision": 0.0
     },
     "over_under": {
-      "aciertos": 19,
-      "total": 23,
-      "precision": 82.6
+      "aciertos": 4,
+      "total": 6,
+      "precision": 66.7
     },
     "btts": {
-      "aciertos": 1,
-      "total": 2,
-      "precision": 50.0
+      "aciertos": 3,
+      "total": 4,
+      "precision": 75.0
     },
     "combo": {
-      "aciertos": 0,
-      "total": 0,
-      "precision": 0.0
+      "aciertos": 7,
+      "total": 15,
+      "precision": 46.7
     }
   },
   "detalle": [
@@ -34,25 +34,25 @@
       "pick": "OVER 1.5 goles",
       "regla": 2,
       "mercado": "over_under",
-      "confianza": 83.2,
+      "confianza": 67.4,
       "acierto": true
     },
     {
       "fecha": "2026-06-18",
       "partido": "Switzerland 4-1 Bosnia-Herzegovina",
-      "pick": "OVER 1.5 goles",
-      "regla": 2,
-      "mercado": "over_under",
-      "confianza": 88,
+      "pick": "Gana Switzerland + Over 2.5",
+      "regla": 7,
+      "mercado": "combo",
+      "confianza": 38.3,
       "acierto": true
     },
     {
       "fecha": "2026-06-18",
       "partido": "Canada 6-0 Qatar",
-      "pick": "OVER 1.5 goles",
-      "regla": 2,
-      "mercado": "over_under",
-      "confianza": 87.3,
+      "pick": "Gana Canada + Over 2.5",
+      "regla": 7,
+      "mercado": "combo",
+      "confianza": 34.8,
       "acierto": true
     },
     {
@@ -61,26 +61,26 @@
       "pick": "AMBOS ANOTAN (BTTS)",
       "regla": 3,
       "mercado": "btts",
-      "confianza": 39.2,
+      "confianza": 46.6,
       "acierto": false
     },
     {
       "fecha": "2026-06-17",
       "partido": "Austria 3-1 Jordan",
-      "pick": "OVER 1.5 goles",
-      "regla": 2,
-      "mercado": "over_under",
-      "confianza": 88,
+      "pick": "Gana Austria + Over 2.5",
+      "regla": 7,
+      "mercado": "combo",
+      "confianza": 35.7,
       "acierto": true
     },
     {
       "fecha": "2026-06-17",
       "partido": "Portugal 1-1 Congo DR",
-      "pick": "OVER 1.5 goles",
-      "regla": 2,
-      "mercado": "over_under",
-      "confianza": 88,
-      "acierto": true
+      "pick": "Gana Portugal + Over 2.5",
+      "regla": 7,
+      "mercado": "combo",
+      "confianza": 39.1,
+      "acierto": false
     },
     {
       "fecha": "2026-06-17",
@@ -88,7 +88,7 @@
       "pick": "OVER 1.5 goles",
       "regla": 2,
       "mercado": "over_under",
-      "confianza": 75.0,
+      "confianza": 63.8,
       "acierto": true
     },
     {
@@ -97,16 +97,16 @@
       "pick": "OVER 1.5 goles",
       "regla": 2,
       "mercado": "over_under",
-      "confianza": 75.0,
+      "confianza": 63.8,
       "acierto": false
     },
     {
       "fecha": "2026-06-18",
       "partido": "Uzbekistan 1-3 Colombia",
-      "pick": "OVER 1.5 goles",
-      "regla": 2,
-      "mercado": "over_under",
-      "confianza": 88,
+      "pick": "Gana Colombia + Over 2.5",
+      "regla": 7,
+      "mercado": "combo",
+      "confianza": 38.3,
       "acierto": true
     },
     {
@@ -115,7 +115,7 @@
       "pick": "OVER 1.5 goles",
       "regla": 2,
       "mercado": "over_under",
-      "confianza": 83.2,
+      "confianza": 67.4,
       "acierto": true
     },
     {
@@ -124,44 +124,44 @@
       "pick": "OVER 1.5 goles",
       "regla": 2,
       "mercado": "over_under",
-      "confianza": 75.0,
+      "confianza": 63.8,
       "acierto": true
     },
     {
       "fecha": "2026-06-17",
       "partido": "Argentina 3-0 Algeria",
-      "pick": "OVER 1.5 goles",
-      "regla": 2,
-      "mercado": "over_under",
-      "confianza": 88,
+      "pick": "Gana Argentina + Over 2.5",
+      "regla": 7,
+      "mercado": "combo",
+      "confianza": 35.7,
       "acierto": true
     },
     {
       "fecha": "2026-06-15",
       "partido": "Spain 0-0 Cape Verde",
-      "pick": "OVER 1.5 goles",
-      "regla": 2,
-      "mercado": "over_under",
-      "confianza": 88,
+      "pick": "Gana Spain + Over 2.5",
+      "regla": 7,
+      "mercado": "combo",
+      "confianza": 39.1,
       "acierto": false
     },
     {
       "fecha": "2026-06-15",
       "partido": "Belgium 1-1 Egypt",
-      "pick": "OVER 1.5 goles",
-      "regla": 2,
-      "mercado": "over_under",
-      "confianza": 87.3,
-      "acierto": true
+      "pick": "Gana Belgium + Over 2.5",
+      "regla": 7,
+      "mercado": "combo",
+      "confianza": 34.8,
+      "acierto": false
     },
     {
       "fecha": "2026-06-15",
       "partido": "Saudi Arabia 1-1 Uruguay",
-      "pick": "OVER 1.5 goles",
-      "regla": 2,
-      "mercado": "over_under",
-      "confianza": 88,
-      "acierto": true
+      "pick": "Gana Uruguay + Over 2.5",
+      "regla": 7,
+      "mercado": "combo",
+      "confianza": 38.3,
+      "acierto": false
     },
     {
       "fecha": "2026-06-16",
@@ -169,70 +169,70 @@
       "pick": "AMBOS ANOTAN (BTTS)",
       "regla": 3,
       "mercado": "btts",
-      "confianza": 39.2,
+      "confianza": 46.6,
       "acierto": true
     },
     {
       "fecha": "2026-06-14",
       "partido": "Australia 2-0 Türkiye",
-      "pick": "OVER 1.5 goles",
-      "regla": 2,
-      "mercado": "over_under",
-      "confianza": 88,
-      "acierto": true
+      "pick": "Gana Australia + Over 2.5",
+      "regla": 7,
+      "mercado": "combo",
+      "confianza": 35.7,
+      "acierto": false
     },
     {
       "fecha": "2026-06-14",
       "partido": "Germany 7-1 Curaçao",
-      "pick": "OVER 1.5 goles",
-      "regla": 2,
-      "mercado": "over_under",
-      "confianza": 88,
+      "pick": "Gana Germany + Over 2.5",
+      "regla": 7,
+      "mercado": "combo",
+      "confianza": 36.5,
       "acierto": true
     },
     {
       "fecha": "2026-06-14",
       "partido": "Netherlands 2-2 Japan",
-      "pick": "Netherlands OVER 0.5 goles (anota)",
-      "regla": 1,
-      "mercado": "over_under",
-      "confianza": 73,
+      "pick": "AMBOS ANOTAN (BTTS)",
+      "regla": 3,
+      "mercado": "btts",
+      "confianza": 46.6,
       "acierto": true
     },
     {
       "fecha": "2026-06-14",
       "partido": "Ivory Coast 1-0 Ecuador",
-      "pick": "OVER 1.5 goles",
-      "regla": 2,
-      "mercado": "over_under",
-      "confianza": 88,
+      "pick": "Gana Ecuador + Over 2.5",
+      "regla": 7,
+      "mercado": "combo",
+      "confianza": 35.7,
       "acierto": false
     },
     {
       "fecha": "2026-06-15",
       "partido": "Sweden 5-1 Tunisia",
-      "pick": "OVER 1.5 goles",
-      "regla": 2,
-      "mercado": "over_under",
-      "confianza": 84.6,
+      "pick": "Gana Sweden + Over 1.5",
+      "regla": 7,
+      "mercado": "combo",
+      "confianza": 56.0,
       "acierto": true
     },
     {
       "fecha": "2026-06-13",
       "partido": "Qatar 1-1 Switzerland",
-      "pick": "OVER 1.5 goles",
-      "regla": 2,
-      "mercado": "over_under",
-      "confianza": 88,
-      "acierto": true
+      "pick": "Gana Switzerland + Over 2.5",
+      "regla": 7,
+      "mercado": "combo",
+      "confianza": 38.3,
+      "acierto": false
     },
     {
       "fecha": "2026-06-13",
       "partido": "Brazil 1-1 Morocco",
-      "pick": "Brazil OVER 0.5 goles (anota)",
-      "regla": 1,
-      "mercado": "over_under",
-      "confianza": 73,
+      "pick": "AMBOS ANOTAN (BTTS)",
+      "regla": 3,
+      "mercado": "btts",
+      "confianza": 46.6,
       "acierto": true
     },
     {
@@ -241,17 +241,17 @@
       "pick": "OVER 1.5 goles",
       "regla": 2,
       "mercado": "over_under",
-      "confianza": 75.0,
+      "confianza": 63.8,
       "acierto": false
     },
     {
       "fecha": "2026-06-12",
       "partido": "Canada 1-1 Bosnia-Herzegovina",
-      "pick": "OVER 1.5 goles",
-      "regla": 2,
-      "mercado": "over_under",
-      "confianza": 87.3,
-      "acierto": true
+      "pick": "Gana Canada + Over 2.5",
+      "regla": 7,
+      "mercado": "combo",
+      "confianza": 34.8,
+      "acierto": false
     }
   ],
   "detalle_no_evaluables": []

@@ -176,7 +176,7 @@
     "prob": 72.0
    }
   ],
-  "estado": "pendiente"
+  "estado": "perdido"
  },
  {
   "id": "par_20260619164657_695",
@@ -744,7 +744,7 @@
     "prob": 63.0
    }
   ],
-  "estado": "pendiente"
+  "estado": "perdido"
  },
  {
   "id": "par_20260619164657_6839",
@@ -862,6 +862,74 @@
     "prob": 61.0
    }
   ],
-  "estado": "pendiente"
+  "estado": "perdido"
+ },
+ {
+  "id": "par_20260623164551_3209",
+  "fecha": "2026-06-23",
+  "tipo": "⚽ PARLAY SOLO FÚTBOL (4 legs)",
+  "firma": "⚽ FÚTBOL::LOCAL (Portugal)|⚽ FÚTBOL::OVER 1.5|⚽ FÚTBOL::OVER 1.5|⚽ FÚTBOL::UNDER 2.5",
+  "prob": 20.63,
+  "cuota": 3.98,
+  "ev_pct": -17.8,
+  "n_legs": 4,
+  "legs": [
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 1.5",
+    "mercado": "OVER 1.5",
+    "evento": "Norway vs Senegal",
+    "prob": 73.7
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 1.5",
+    "mercado": "OVER 1.5",
+    "evento": "Spain vs Saudi Arabia",
+    "prob": 72.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "UNDER 2.5",
+    "mercado": "UNDER",
+    "evento": "England vs Ghana",
+    "prob": 60.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "LOCAL (Portugal)",
+    "mercado": "1X2",
+    "evento": "Portugal vs Uzbekistan",
+    "prob": 64.8
+   }
+  ],
+  "estado": "perdido"
+ },
+ {
+  "id": "par_20260623165852_1116",
+  "fecha": "2026-06-23",
+  "tipo": "⚽ PARLAY SOLO FÚTBOL (2 legs)",
+  "firma": "⚽ FÚTBOL::OVER 1.5|⚽ FÚTBOL::UNDER 2.5",
+  "prob": 43.8,
+  "cuota": 2.12,
+  "ev_pct": -6.9,
+  "n_legs": 2,
+  "legs": [
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 1.5",
+    "mercado": "OVER 1.5",
+    "evento": "Portugal vs Uzbekistan",
+    "prob": 73.0
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "UNDER 2.5",
+    "mercado": "UNDER",
+    "evento": "England vs Ghana",
+    "prob": 60.0
+   }
+  ],
+  "estado": "perdido"
  }
 ]

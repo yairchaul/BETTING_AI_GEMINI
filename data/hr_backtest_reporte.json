@@ -1,591 +1,586 @@
 {
-  "timestamp": "2026-06-19T13:09:39.562567",
+  "timestamp": "2026-06-25T09:52:10.271690",
   "dias": 3,
-  "juegos": 39,
-  "total_predichos": 367,
-  "total_aciertos": 51,
-  "precision_global": 13.9,
+  "juegos": 44,
+  "total_predichos": 406,
+  "total_aciertos": 39,
+  "precision_global": 9.6,
   "por_tramo_probabilidad": {
-    "22-29%": {
-      "predichos": 55,
-      "aciertos": 10,
-      "precision": 18.2
+    "<15%": {
+      "predichos": 297,
+      "aciertos": 33,
+      "precision": 11.1
     },
     "15-21%": {
-      "predichos": 110,
-      "aciertos": 22,
-      "precision": 20.0
+      "predichos": 94,
+      "aciertos": 5,
+      "precision": 5.3
     },
-    "<15%": {
-      "predichos": 184,
-      "aciertos": 17,
-      "precision": 9.2
-    },
-    "30%+": {
-      "predichos": 18,
-      "aciertos": 2,
-      "precision": 11.1
+    "22-29%": {
+      "predichos": 15,
+      "aciertos": 1,
+      "precision": 6.7
     }
   },
   "detalle": [
     {
-      "fecha": "2026-06-16",
-      "jugador": "Kyle Schwarber",
-      "equipo": "Philadelphia Phillies",
-      "probabilidad": 35,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Ben Rice",
-      "equipo": "New York Yankees",
-      "probabilidad": 32,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-18",
-      "jugador": "Juan Soto",
-      "equipo": "New York Mets",
-      "probabilidad": 29,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Hunter Goodman",
-      "equipo": "Colorado Rockies",
-      "probabilidad": 28,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-18",
-      "jugador": "Colson Montgomery",
-      "equipo": "Chicago White Sox",
-      "probabilidad": 26,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Drake Baldwin",
-      "equipo": "Atlanta Braves",
-      "probabilidad": 26,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Colson Montgomery",
-      "equipo": "Chicago White Sox",
-      "probabilidad": 26,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Jackson Chourio",
-      "equipo": "Milwaukee Brewers",
-      "probabilidad": 26,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Drake Baldwin",
-      "equipo": "Atlanta Braves",
-      "probabilidad": 26,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Brandon Lowe",
-      "equipo": "Pittsburgh Pirates",
-      "probabilidad": 25,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Paul Goldschmidt",
-      "equipo": "New York Yankees",
-      "probabilidad": 22,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Paul Goldschmidt",
-      "equipo": "New York Yankees",
-      "probabilidad": 22,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Shohei Ohtani",
-      "equipo": "Los Angeles Dodgers",
-      "probabilidad": 21,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Sal Stewart",
-      "equipo": "Cincinnati Reds",
-      "probabilidad": 20,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Mike Trout",
-      "equipo": "Los Angeles Angels",
-      "probabilidad": 20,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Kerry Carpenter",
-      "equipo": "Detroit Tigers",
-      "probabilidad": 18,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Corbin Carroll",
-      "equipo": "Arizona Diamondbacks",
-      "probabilidad": 18,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Zach Neto",
-      "equipo": "Los Angeles Angels",
-      "probabilidad": 17,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Ryan O'Hearn",
-      "equipo": "Pittsburgh Pirates",
-      "probabilidad": 17,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Curtis Mead",
-      "equipo": "Washington Nationals",
-      "probabilidad": 17,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Kody Clemens",
-      "equipo": "Minnesota Twins",
-      "probabilidad": 17,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Zach Neto",
-      "equipo": "Los Angeles Angels",
-      "probabilidad": 17,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-18",
-      "jugador": "Brooks Lee",
-      "equipo": "Minnesota Twins",
-      "probabilidad": 16,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Freddie Freeman",
-      "equipo": "Los Angeles Dodgers",
-      "probabilidad": 16,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Cody Bellinger",
-      "equipo": "New York Yankees",
-      "probabilidad": 16,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Pete Crow-Armstrong",
-      "equipo": "Chicago Cubs",
-      "probabilidad": 16,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Gunnar Henderson",
-      "equipo": "Baltimore Orioles",
-      "probabilidad": 16,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Jarren Duran",
-      "equipo": "Boston Red Sox",
-      "probabilidad": 16,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Spencer Steer",
-      "equipo": "Cincinnati Reds",
-      "probabilidad": 16,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Brice Turang",
-      "equipo": "Milwaukee Brewers",
-      "probabilidad": 16,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Pete Crow-Armstrong",
-      "equipo": "Chicago Cubs",
-      "probabilidad": 16,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Willy Adames",
-      "equipo": "San Francisco Giants",
-      "probabilidad": 15,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Willy Adames",
-      "equipo": "San Francisco Giants",
-      "probabilidad": 15,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Willy Adames",
-      "equipo": "San Francisco Giants",
-      "probabilidad": 15,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Jazz Chisholm Jr.",
-      "equipo": "New York Yankees",
-      "probabilidad": 14,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Dominic Canzone",
-      "equipo": "Seattle Mariners",
-      "probabilidad": 14,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Alec Bohm",
-      "equipo": "Philadelphia Phillies",
-      "probabilidad": 13,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Brandon Marsh",
-      "equipo": "Philadelphia Phillies",
-      "probabilidad": 13,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Mark Vientos",
-      "equipo": "New York Mets",
-      "probabilidad": 13,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "TJ Rumfield",
-      "equipo": "Colorado Rockies",
-      "probabilidad": 13,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-18",
-      "jugador": "Ryan McMahon",
-      "equipo": "New York Yankees",
-      "probabilidad": 12,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-18",
-      "jugador": "Salvador Perez",
-      "equipo": "Kansas City Royals",
-      "probabilidad": 12,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Rafael Devers",
-      "equipo": "San Francisco Giants",
-      "probabilidad": 12,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Rafael Devers",
-      "equipo": "San Francisco Giants",
-      "probabilidad": 12,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Bryan Reynolds",
-      "equipo": "Pittsburgh Pirates",
-      "probabilidad": 12,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-18",
-      "jugador": "Kyle Manzardo",
-      "equipo": "Cleveland Guardians",
-      "probabilidad": 11,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-18",
-      "jugador": "Bobby Witt Jr.",
-      "equipo": "Kansas City Royals",
-      "probabilidad": 11,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-18",
-      "jugador": "Jac Caglianone",
-      "equipo": "Kansas City Royals",
-      "probabilidad": 11,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-18",
-      "jugador": "Tyler Soderstrom",
-      "equipo": "Athletics",
-      "probabilidad": 10,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Dansby Swanson",
-      "equipo": "Chicago Cubs",
-      "probabilidad": 10,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Jackson Merrill",
-      "equipo": "San Diego Padres",
-      "probabilidad": 9,
-      "pegó_hr": true
-    },
-    {
-      "fecha": "2026-06-18",
-      "jugador": "Munetaka Murakami",
-      "equipo": "Chicago White Sox",
-      "probabilidad": 36,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Munetaka Murakami",
-      "equipo": "Chicago White Sox",
-      "probabilidad": 36,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Munetaka Murakami",
-      "equipo": "Chicago White Sox",
-      "probabilidad": 36,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-18",
+      "fecha": "2026-06-22",
       "jugador": "Byron Buxton",
       "equipo": "Minnesota Twins",
-      "probabilidad": 35,
-      "pegó_hr": false
+      "probabilidad": 24.0,
+      "pegó_hr": true
     },
     {
-      "fecha": "2026-06-18",
-      "jugador": "Kyle Schwarber",
-      "equipo": "Philadelphia Phillies",
-      "probabilidad": 35,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Kyle Schwarber",
-      "equipo": "Philadelphia Phillies",
-      "probabilidad": 35,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Byron Buxton",
-      "equipo": "Minnesota Twins",
-      "probabilidad": 35,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Yordan Alvarez",
-      "equipo": "Houston Astros",
-      "probabilidad": 33,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Yordan Alvarez",
-      "equipo": "Houston Astros",
-      "probabilidad": 33,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-18",
-      "jugador": "Ben Rice",
-      "equipo": "New York Yankees",
-      "probabilidad": 32,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Ben Rice",
-      "equipo": "New York Yankees",
-      "probabilidad": 32,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-18",
-      "jugador": "Aaron Judge",
-      "equipo": "New York Yankees",
-      "probabilidad": 30,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Juan Soto",
-      "equipo": "New York Mets",
-      "probabilidad": 30,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Aaron Judge",
-      "equipo": "New York Yankees",
-      "probabilidad": 30,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Aaron Judge",
-      "equipo": "New York Yankees",
-      "probabilidad": 30,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Juan Soto",
-      "equipo": "New York Mets",
-      "probabilidad": 30,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Mickey Moniak",
-      "equipo": "Colorado Rockies",
-      "probabilidad": 28,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Hunter Goodman",
-      "equipo": "Colorado Rockies",
-      "probabilidad": 28,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Mickey Moniak",
-      "equipo": "Colorado Rockies",
-      "probabilidad": 28,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-18",
-      "jugador": "Jackson Chourio",
+      "fecha": "2026-06-24",
+      "jugador": "Jake Bauers",
       "equipo": "Milwaukee Brewers",
-      "probabilidad": 26,
-      "pegó_hr": false
+      "probabilidad": 18.5,
+      "pegó_hr": true
     },
     {
-      "fecha": "2026-06-18",
-      "jugador": "Matt Olson",
-      "equipo": "Atlanta Braves",
-      "probabilidad": 26,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-18",
-      "jugador": "Drake Baldwin",
-      "equipo": "Atlanta Braves",
-      "probabilidad": 26,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Matt Olson",
-      "equipo": "Atlanta Braves",
-      "probabilidad": 26,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Matt Olson",
-      "equipo": "Atlanta Braves",
-      "probabilidad": 26,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-17",
-      "jugador": "Drake Baldwin",
-      "equipo": "Atlanta Braves",
-      "probabilidad": 26,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Colson Montgomery",
-      "equipo": "Chicago White Sox",
-      "probabilidad": 26,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Matt Olson",
-      "equipo": "Atlanta Braves",
-      "probabilidad": 26,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-16",
-      "jugador": "Jackson Chourio",
-      "equipo": "Milwaukee Brewers",
-      "probabilidad": 26,
-      "pegó_hr": false
-    },
-    {
-      "fecha": "2026-06-18",
+      "fecha": "2026-06-23",
       "jugador": "Miguel Vargas",
       "equipo": "Chicago White Sox",
-      "probabilidad": 25,
+      "probabilidad": 17.5,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Kazuma Okamoto",
+      "equipo": "Toronto Blue Jays",
+      "probabilidad": 17.2,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Junior Caminero",
+      "equipo": "Tampa Bay Rays",
+      "probabilidad": 16.0,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Shohei Ohtani",
+      "equipo": "Los Angeles Dodgers",
+      "probabilidad": 16.0,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Curtis Mead",
+      "equipo": "Washington Nationals",
+      "probabilidad": 14.1,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Spencer Steer",
+      "equipo": "Cincinnati Reds",
+      "probabilidad": 14.1,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Curtis Mead",
+      "equipo": "Washington Nationals",
+      "probabilidad": 14.1,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Paul Goldschmidt",
+      "equipo": "New York Yankees",
+      "probabilidad": 13.7,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Mookie Betts",
+      "equipo": "Los Angeles Dodgers",
+      "probabilidad": 13.6,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Samuel Basallo",
+      "equipo": "Baltimore Orioles",
+      "probabilidad": 13.2,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Pete Crow-Armstrong",
+      "equipo": "Chicago Cubs",
+      "probabilidad": 13.1,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Manny Machado",
+      "equipo": "San Diego Padres",
+      "probabilidad": 13.1,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Brooks Lee",
+      "equipo": "Minnesota Twins",
+      "probabilidad": 12.9,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Freddie Freeman",
+      "equipo": "Los Angeles Dodgers",
+      "probabilidad": 12.9,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Jorge Soler",
+      "equipo": "Los Angeles Angels",
+      "probabilidad": 12.5,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Jorge Soler",
+      "equipo": "Los Angeles Angels",
+      "probabilidad": 12.5,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Coby Mayo",
+      "equipo": "Baltimore Orioles",
+      "probabilidad": 12.5,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Ketel Marte",
+      "equipo": "Arizona Diamondbacks",
+      "probabilidad": 12.4,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Cal Raleigh",
+      "equipo": "Seattle Mariners",
+      "probabilidad": 12.3,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Wilyer Abreu",
+      "equipo": "Boston Red Sox",
+      "probabilidad": 12.1,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Luis García Jr.",
+      "equipo": "Washington Nationals",
+      "probabilidad": 11.7,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Luis García Jr.",
+      "equipo": "Washington Nationals",
+      "probabilidad": 11.7,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Luis García Jr.",
+      "equipo": "Washington Nationals",
+      "probabilidad": 11.7,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Brandon Marsh",
+      "equipo": "Philadelphia Phillies",
+      "probabilidad": 10.8,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Brandon Marsh",
+      "equipo": "Philadelphia Phillies",
+      "probabilidad": 10.8,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Jazz Chisholm Jr.",
+      "equipo": "New York Yankees",
+      "probabilidad": 10.7,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Mark Vientos",
+      "equipo": "New York Mets",
+      "probabilidad": 10.3,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Jac Caglianone",
+      "equipo": "Kansas City Royals",
+      "probabilidad": 10.3,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Michael Busch",
+      "equipo": "Chicago Cubs",
+      "probabilidad": 9.8,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Bo Bichette",
+      "equipo": "New York Mets",
+      "probabilidad": 9.8,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Rafael Devers",
+      "equipo": "San Francisco Giants",
+      "probabilidad": 9.8,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Cam Smith",
+      "equipo": "Houston Astros",
+      "probabilidad": 9.8,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Bo Bichette",
+      "equipo": "New York Mets",
+      "probabilidad": 9.8,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Michael Busch",
+      "equipo": "Chicago Cubs",
+      "probabilidad": 9.8,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Joc Pederson",
+      "equipo": "Texas Rangers",
+      "probabilidad": 9.6,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Joc Pederson",
+      "equipo": "Texas Rangers",
+      "probabilidad": 9.6,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Brandon Nimmo",
+      "equipo": "Texas Rangers",
+      "probabilidad": 8.5,
+      "pegó_hr": true
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Yordan Alvarez",
+      "equipo": "Houston Astros",
+      "probabilidad": 25.0,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Yordan Alvarez",
+      "equipo": "Houston Astros",
+      "probabilidad": 25.0,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Yordan Alvarez",
+      "equipo": "Houston Astros",
+      "probabilidad": 25.0,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Kyle Schwarber",
+      "equipo": "Philadelphia Phillies",
+      "probabilidad": 24.4,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Kyle Schwarber",
+      "equipo": "Philadelphia Phillies",
+      "probabilidad": 24.4,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Kyle Schwarber",
+      "equipo": "Philadelphia Phillies",
+      "probabilidad": 24.4,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Hunter Goodman",
+      "equipo": "Colorado Rockies",
+      "probabilidad": 24.1,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Hunter Goodman",
+      "equipo": "Colorado Rockies",
+      "probabilidad": 24.1,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Hunter Goodman",
+      "equipo": "Colorado Rockies",
+      "probabilidad": 24.1,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Byron Buxton",
+      "equipo": "Minnesota Twins",
+      "probabilidad": 24.0,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Byron Buxton",
+      "equipo": "Minnesota Twins",
+      "probabilidad": 24.0,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Munetaka Murakami",
+      "equipo": "Chicago White Sox",
+      "probabilidad": 23.6,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Munetaka Murakami",
+      "equipo": "Chicago White Sox",
+      "probabilidad": 23.6,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Munetaka Murakami",
+      "equipo": "Chicago White Sox",
+      "probabilidad": 23.6,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Mickey Moniak",
+      "equipo": "Colorado Rockies",
+      "probabilidad": 21.4,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Mickey Moniak",
+      "equipo": "Colorado Rockies",
+      "probabilidad": 21.4,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Mickey Moniak",
+      "equipo": "Colorado Rockies",
+      "probabilidad": 21.4,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Willson Contreras",
+      "equipo": "Boston Red Sox",
+      "probabilidad": 20.8,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Willson Contreras",
+      "equipo": "Boston Red Sox",
+      "probabilidad": 20.8,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Willson Contreras",
+      "equipo": "Boston Red Sox",
+      "probabilidad": 20.8,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Ben Rice",
+      "equipo": "New York Yankees",
+      "probabilidad": 20.0,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Ben Rice",
+      "equipo": "New York Yankees",
+      "probabilidad": 20.0,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Ben Rice",
+      "equipo": "New York Yankees",
+      "probabilidad": 20.0,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Jackson Chourio",
+      "equipo": "Milwaukee Brewers",
+      "probabilidad": 19.5,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Jackson Chourio",
+      "equipo": "Milwaukee Brewers",
+      "probabilidad": 19.5,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Jackson Chourio",
+      "equipo": "Milwaukee Brewers",
+      "probabilidad": 19.5,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Christian Walker",
+      "equipo": "Houston Astros",
+      "probabilidad": 19.4,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Christian Walker",
+      "equipo": "Houston Astros",
+      "probabilidad": 19.4,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Christian Walker",
+      "equipo": "Houston Astros",
+      "probabilidad": 19.4,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Matt Olson",
+      "equipo": "Atlanta Braves",
+      "probabilidad": 18.9,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Matt Olson",
+      "equipo": "Atlanta Braves",
+      "probabilidad": 18.9,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Matt Olson",
+      "equipo": "Atlanta Braves",
+      "probabilidad": 18.9,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Juan Soto",
+      "equipo": "New York Mets",
+      "probabilidad": 18.8,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Juan Soto",
+      "equipo": "New York Mets",
+      "probabilidad": 18.8,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Juan Soto",
+      "equipo": "New York Mets",
+      "probabilidad": 18.8,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Juan Soto",
+      "equipo": "New York Mets",
+      "probabilidad": 18.8,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Aaron Judge",
+      "equipo": "New York Yankees",
+      "probabilidad": 18.7,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Aaron Judge",
+      "equipo": "New York Yankees",
+      "probabilidad": 18.7,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-22",
+      "jugador": "Aaron Judge",
+      "equipo": "New York Yankees",
+      "probabilidad": 18.7,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-24",
+      "jugador": "Colson Montgomery",
+      "equipo": "Chicago White Sox",
+      "probabilidad": 18.6,
+      "pegó_hr": false
+    },
+    {
+      "fecha": "2026-06-23",
+      "jugador": "Colson Montgomery",
+      "equipo": "Chicago White Sox",
+      "probabilidad": 18.6,
       "pegó_hr": false
     }
   ]

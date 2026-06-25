@@ -1,92 +1,86 @@
 {
   "juegos": [
     {
-      "away_team": "San Francisco Giants",
-      "home_team": "Atlanta Braves",
-      "away_pitcher": "TBD",
-      "home_pitcher": "TBD"
-    },
-    {
-      "away_team": "New York Mets",
-      "home_team": "Cincinnati Reds",
-      "away_pitcher": "TBD",
-      "home_pitcher": "TBD"
-    },
-    {
-      "away_team": "Kansas City Royals",
-      "home_team": "Washington Nationals",
-      "away_pitcher": "TBD",
-      "home_pitcher": "TBD"
-    },
-    {
-      "away_team": "Miami Marlins",
-      "home_team": "Philadelphia Phillies",
-      "away_pitcher": "TBD",
-      "home_pitcher": "TBD"
-    },
-    {
-      "away_team": "Detroit Tigers",
-      "home_team": "Houston Astros",
-      "away_pitcher": "TBD",
-      "home_pitcher": "TBD"
-    },
-    {
-      "away_team": "San Diego Padres",
-      "home_team": "St. Louis Cardinals",
-      "away_pitcher": "TBD",
-      "home_pitcher": "TBD"
-    },
-    {
-      "away_team": "Tampa Bay Rays",
-      "home_team": "Los Angeles Dodgers",
-      "away_pitcher": "TBD",
-      "home_pitcher": "TBD"
-    },
-    {
-      "away_team": "Los Angeles Angels",
-      "home_team": "Arizona Diamondbacks",
-      "away_pitcher": "TBD",
-      "home_pitcher": "TBD"
-    },
-    {
       "away_team": "Toronto Blue Jays",
-      "home_team": "Boston Red Sox",
+      "home_team": "Chicago Cubs",
       "away_pitcher": "TBD",
       "home_pitcher": "TBD"
     },
     {
       "away_team": "Chicago White Sox",
+      "home_team": "Detroit Tigers",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "Cincinnati Reds",
       "home_team": "New York Yankees",
       "away_pitcher": "TBD",
       "home_pitcher": "TBD"
     },
     {
       "away_team": "San Francisco Giants",
+      "home_team": "Miami Marlins",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "Washington Nationals",
+      "home_team": "Tampa Bay Rays",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "Milwaukee Brewers",
       "home_team": "Atlanta Braves",
       "away_pitcher": "TBD",
       "home_pitcher": "TBD"
     },
     {
+      "away_team": "San Diego Padres",
+      "home_team": "Texas Rangers",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
       "away_team": "Cleveland Guardians",
-      "home_team": "Milwaukee Brewers",
+      "home_team": "Houston Astros",
       "away_pitcher": "TBD",
       "home_pitcher": "TBD"
     },
     {
-      "away_team": "Colorado Rockies",
-      "home_team": "Chicago Cubs",
-      "away_pitcher": "TBD",
-      "home_pitcher": "TBD"
-    },
-    {
-      "away_team": "Baltimore Orioles",
-      "home_team": "Seattle Mariners",
+      "away_team": "St. Louis Cardinals",
+      "home_team": "Kansas City Royals",
       "away_pitcher": "TBD",
       "home_pitcher": "TBD"
     },
     {
       "away_team": "Pittsburgh Pirates",
+      "home_team": "Colorado Rockies",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "Los Angeles Angels",
       "home_team": "Athletics",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "Minnesota Twins",
+      "home_team": "Arizona Diamondbacks",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "Baltimore Orioles",
+      "home_team": "Los Angeles Dodgers",
+      "away_pitcher": "TBD",
+      "home_pitcher": "TBD"
+    },
+    {
+      "away_team": "Boston Red Sox",
+      "home_team": "Seattle Mariners",
       "away_pitcher": "TBD",
       "home_pitcher": "TBD"
     }

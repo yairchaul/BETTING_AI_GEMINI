@@ -1,93 +1,189 @@
 {
-  "timestamp": "2026-06-19T15:10:29.064828",
-  "partidos": 47,
-  "evaluados": 46,
-  "precision_global": 65.2,
+  "timestamp": "2026-06-25T10:37:09.441506",
+  "partidos": 54,
+  "evaluados": 53,
+  "precision_global": 66.0,
   "mercados": {
     "moneyline": {
-      "aciertos": 3,
-      "total": 4,
+      "aciertos": 6,
+      "total": 8,
       "precision": 75.0
     },
     "over_under": {
-      "aciertos": 20,
-      "total": 27,
-      "precision": 74.1
+      "aciertos": 24,
+      "total": 38,
+      "precision": 63.2
     },
     "btts": {
       "aciertos": 5,
-      "total": 11,
-      "precision": 45.5
+      "total": 7,
+      "precision": 71.4
     },
     "combo": {
-      "aciertos": 2,
-      "total": 4,
-      "precision": 50.0
+      "aciertos": 0,
+      "total": 0,
+      "precision": 0.0
     }
   },
   "detalle": [
     {
-      "fecha": "2026-06-19",
-      "partido": "United States 2-0 Australia",
-      "pick": "VISITANTE (Australia)",
-      "mercado": "moneyline",
-      "confianza": 42.0,
+      "fecha": "2026-06-11",
+      "partido": "Mexico 2-0 South Africa",
+      "pick": "UNDER 2.5",
+      "mercado": "over_under",
+      "confianza": 66.7,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-12",
+      "partido": "Canada 1-1 Bosnia-Herzegovina",
+      "pick": "UNDER 2.5",
+      "mercado": "over_under",
+      "confianza": 79.5,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-12",
+      "partido": "South Korea 2-1 Czechia",
+      "pick": "OVER 2.5",
+      "mercado": "over_under",
+      "confianza": 60.0,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-13",
+      "partido": "Qatar 1-1 Switzerland",
+      "pick": "OVER 1.5",
+      "mercado": "over_under",
+      "confianza": 71.7,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-13",
+      "partido": "Brazil 1-1 Morocco",
+      "pick": "OVER 2.5",
+      "mercado": "over_under",
+      "confianza": 62.9,
       "acierto": false
     },
     {
-      "fecha": "2026-06-18",
-      "partido": "Czechia 1-1 South Africa",
-      "pick": "AMBOS ANOTAN (BTTS)",
-      "mercado": "btts",
-      "confianza": 60,
+      "fecha": "2026-06-13",
+      "partido": "United States 4-1 Paraguay",
+      "pick": "OVER 1.5 goles",
+      "mercado": "over_under",
+      "confianza": 62.0,
       "acierto": true
     },
     {
-      "fecha": "2026-06-18",
-      "partido": "Switzerland 4-1 Bosnia-Herzegovina",
-      "pick": "AMBOS ANOTAN (BTTS)",
-      "mercado": "btts",
-      "confianza": 60,
-      "acierto": true
-    },
-    {
-      "fecha": "2026-06-18",
-      "partido": "Canada 6-0 Qatar",
+      "fecha": "2026-06-14",
+      "partido": "Australia 2-0 Türkiye",
       "pick": "OVER 1.5",
       "mercado": "over_under",
-      "confianza": 88,
+      "confianza": 75.7,
       "acierto": true
     },
     {
-      "fecha": "2026-06-19",
-      "partido": "Mexico 1-0 South Korea",
-      "pick": "OVER 1.5",
+      "fecha": "2026-06-14",
+      "partido": "Germany 7-1 Curaçao",
+      "pick": "OVER 2.5 goles",
       "mercado": "over_under",
-      "confianza": 88,
+      "confianza": 44.2,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-14",
+      "partido": "Netherlands 2-2 Japan",
+      "pick": "UNDER 2.5",
+      "mercado": "over_under",
+      "confianza": 70.2,
       "acierto": false
+    },
+    {
+      "fecha": "2026-06-14",
+      "partido": "Haiti 0-1 Scotland",
+      "pick": "OVER 2.5",
+      "mercado": "over_under",
+      "confianza": 65.1,
+      "acierto": false
+    },
+    {
+      "fecha": "2026-06-15",
+      "partido": "Spain 0-0 Cape Verde",
+      "pick": "OVER 1.5",
+      "mercado": "over_under",
+      "confianza": 80.7,
+      "acierto": false
+    },
+    {
+      "fecha": "2026-06-15",
+      "partido": "Belgium 1-1 Egypt",
+      "pick": "UNDER 2.5",
+      "mercado": "over_under",
+      "confianza": 60.7,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-15",
+      "partido": "Saudi Arabia 1-1 Uruguay",
+      "pick": "OVER 1.5",
+      "mercado": "over_under",
+      "confianza": 71.4,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-15",
+      "partido": "Sweden 5-1 Tunisia",
+      "pick": "OVER 2.5 goles",
+      "mercado": "over_under",
+      "confianza": 44.2,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-16",
+      "partido": "France 3-1 Senegal",
+      "pick": "AMBOS ANOTAN (BTTS)",
+      "mercado": "btts",
+      "confianza": 66.9,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-16",
+      "partido": "Iraq 1-4 Norway",
+      "pick": "UNDER 2.5",
+      "mercado": "over_under",
+      "confianza": 67.3,
+      "acierto": false
+    },
+    {
+      "fecha": "2026-06-16",
+      "partido": "Iran 2-2 New Zealand",
+      "pick": "OVER 2.5",
+      "mercado": "over_under",
+      "confianza": 59.4,
+      "acierto": true
     },
     {
       "fecha": "2026-06-17",
       "partido": "Austria 3-1 Jordan",
-      "pick": "Gana Austria + OVER 1.5",
-      "mercado": "combo",
-      "confianza": 88,
+      "pick": "OVER 1.5 goles",
+      "mercado": "over_under",
+      "confianza": 62.0,
       "acierto": true
     },
     {
       "fecha": "2026-06-17",
       "partido": "Portugal 1-1 Congo DR",
-      "pick": "OVER 1.5",
-      "mercado": "over_under",
-      "confianza": 88,
-      "acierto": true
+      "pick": "LOCAL (Portugal)",
+      "mercado": "moneyline",
+      "confianza": 74.8,
+      "acierto": false
     },
     {
       "fecha": "2026-06-17",
       "partido": "England 4-2 Croatia",
-      "pick": "LOCAL (England)",
-      "mercado": "moneyline",
-      "confianza": 45.1,
+      "pick": "OVER 1.5",
+      "mercado": "over_under",
+      "confianza": 75.4,
       "acierto": true
     },
     {
@@ -95,7 +191,39 @@
       "partido": "Ghana 1-0 Panama",
       "pick": "AMBOS ANOTAN (BTTS)",
       "mercado": "btts",
-      "confianza": 60,
+      "confianza": 66.9,
+      "acierto": false
+    },
+    {
+      "fecha": "2026-06-17",
+      "partido": "Argentina 3-0 Algeria",
+      "pick": "LOCAL (Argentina)",
+      "mercado": "moneyline",
+      "confianza": 74.8,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-18",
+      "partido": "Czechia 1-1 South Africa",
+      "pick": "OVER 1.5",
+      "mercado": "over_under",
+      "confianza": 72.6,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-18",
+      "partido": "Switzerland 4-1 Bosnia-Herzegovina",
+      "pick": "AMBOS ANOTAN (BTTS)",
+      "mercado": "btts",
+      "confianza": 66.9,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-18",
+      "partido": "Canada 6-0 Qatar",
+      "pick": "UNDER 2.5",
+      "mercado": "over_under",
+      "confianza": 75.2,
       "acierto": false
     },
     {
@@ -103,317 +231,230 @@
       "partido": "Uzbekistan 1-3 Colombia",
       "pick": "VISITANTE (Colombia)",
       "mercado": "moneyline",
-      "confianza": 42.0,
+      "confianza": 66.5,
       "acierto": true
     },
     {
-      "fecha": "2026-05-30",
-      "partido": "Paris Saint-Germain 1-1 Arsenal",
+      "fecha": "2026-06-19",
+      "partido": "United States 2-0 Australia",
       "pick": "OVER 1.5 goles",
       "mercado": "over_under",
-      "confianza": 75.0,
+      "confianza": 62.0,
       "acierto": true
     },
     {
-      "fecha": "2026-05-20",
-      "partido": "SC Freiburg 0-3 Aston Villa",
+      "fecha": "2026-06-19",
+      "partido": "Scotland 0-1 Morocco",
+      "pick": "OVER 1.5",
+      "mercado": "over_under",
+      "confianza": 78.3,
+      "acierto": false
+    },
+    {
+      "fecha": "2026-06-19",
+      "partido": "Mexico 1-0 South Korea",
+      "pick": "OVER 1.5",
+      "mercado": "over_under",
+      "confianza": 77.1,
+      "acierto": false
+    },
+    {
+      "fecha": "2026-06-20",
+      "partido": "Netherlands 5-1 Sweden",
+      "pick": "AMBOS ANOTAN (BTTS)",
+      "mercado": "btts",
+      "confianza": 72.3,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-20",
+      "partido": "Germany 2-1 Ivory Coast",
       "pick": "OVER 1.5 goles",
       "mercado": "over_under",
-      "confianza": 61.2,
+      "confianza": 62.0,
       "acierto": true
     },
     {
-      "fecha": "2026-05-28",
-      "partido": "Cerro Porteño 2-0 Sporting Cristal",
-      "pick": "LOCAL (Cerro Porteño)",
+      "fecha": "2026-06-20",
+      "partido": "Brazil 3-0 Haiti",
+      "pick": "OVER 1.5 goles",
+      "mercado": "over_under",
+      "confianza": 62.0,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-20",
+      "partido": "Türkiye 0-1 Paraguay",
+      "pick": "OVER 1.5 goles",
+      "mercado": "over_under",
+      "confianza": 62.0,
+      "acierto": false
+    },
+    {
+      "fecha": "2026-06-21",
+      "partido": "Tunisia 0-4 Japan",
+      "pick": "VISITANTE (Japan)",
       "mercado": "moneyline",
-      "confianza": 42.0,
+      "confianza": 76.6,
       "acierto": true
     },
     {
-      "fecha": "2026-05-29",
-      "partido": "Boca Juniors 0-1 Universidad Católica",
-      "pick": "Gana Universidad Católica + OVER 1.5",
-      "mercado": "combo",
-      "confianza": 77.2,
+      "fecha": "2026-06-21",
+      "partido": "Spain 4-0 Saudi Arabia",
+      "pick": "UNDER 2.5",
+      "mercado": "over_under",
+      "confianza": 59.1,
       "acierto": false
     },
     {
-      "fecha": "2026-05-29",
-      "partido": "Cruzeiro 4-0 Barcelona SC",
-      "pick": "OVER 1.5 goles",
-      "mercado": "over_under",
-      "confianza": 54.4,
-      "acierto": true
-    },
-    {
-      "fecha": "2026-05-29",
-      "partido": "América de Cali 0-0 Macará",
+      "fecha": "2026-06-21",
+      "partido": "Belgium 0-0 Iran",
       "pick": "OVER 1.5",
       "mercado": "over_under",
-      "confianza": 75.9,
+      "confianza": 81.0,
       "acierto": false
     },
     {
-      "fecha": "2026-05-29",
-      "partido": "Tigre 2-0 Alianza Atlético",
-      "pick": "OVER 1.5 goles",
-      "mercado": "over_under",
-      "confianza": 53.5,
-      "acierto": true
-    },
-    {
-      "fecha": "2026-05-24",
-      "partido": "Villarreal 5-1 Atlético Madrid",
-      "pick": "OVER 1.5 goles",
-      "mercado": "over_under",
-      "confianza": 75.0,
-      "acierto": true
-    },
-    {
-      "fecha": "2026-05-16",
-      "partido": "1. FC Heidenheim 1846 0-2 Mainz",
-      "pick": "OVER 1.5 goles",
-      "mercado": "over_under",
-      "confianza": 75.0,
-      "acierto": true
-    },
-    {
-      "fecha": "2026-05-16",
-      "partido": "1. FC Union Berlin 4-0 FC Augsburg",
-      "pick": "OVER 1.5 goles",
-      "mercado": "over_under",
-      "confianza": 75.0,
-      "acierto": true
-    },
-    {
-      "fecha": "2026-05-16",
-      "partido": "Bayer Leverkusen 1-1 Hamburg SV",
-      "pick": "OVER 1.5 goles",
-      "mercado": "over_under",
-      "confianza": 75.0,
-      "acierto": true
-    },
-    {
-      "fecha": "2026-05-16",
-      "partido": "Bayern Munich 5-1 FC Cologne",
-      "pick": "OVER 1.5 goles",
-      "mercado": "over_under",
-      "confianza": 75.0,
-      "acierto": true
-    },
-    {
-      "fecha": "2026-05-16",
-      "partido": "Borussia Mönchengladbach 4-0 TSG Hoffenheim",
-      "pick": "OVER 1.5 goles",
-      "mercado": "over_under",
-      "confianza": 75.0,
-      "acierto": true
-    },
-    {
-      "fecha": "2026-05-16",
-      "partido": "Eintracht Frankfurt 2-2 VfB Stuttgart",
-      "pick": "OVER 1.5 goles",
-      "mercado": "over_under",
-      "confianza": 75.0,
-      "acierto": true
-    },
-    {
-      "fecha": "2026-05-16",
-      "partido": "SC Freiburg 4-1 RB Leipzig",
-      "pick": "OVER 1.5 goles",
-      "mercado": "over_under",
-      "confianza": 75.0,
-      "acierto": true
-    },
-    {
-      "fecha": "2026-05-16",
-      "partido": "St. Pauli 1-3 VfL Wolfsburg",
-      "pick": "OVER 1.5 goles",
-      "mercado": "over_under",
-      "confianza": 75.0,
-      "acierto": true
-    },
-    {
-      "fecha": "2026-05-16",
-      "partido": "Werder Bremen 0-2 Borussia Dortmund",
-      "pick": "OVER 1.5 goles",
-      "mercado": "over_under",
-      "confianza": 75.0,
-      "acierto": true
-    },
-    {
-      "fecha": "2026-05-16",
-      "partido": "FC Porto 1-0 Santa Clara",
+      "fecha": "2026-06-21",
+      "partido": "Uruguay 2-2 Cape Verde",
       "pick": "OVER 1.5",
       "mercado": "over_under",
-      "confianza": 55.0,
-      "acierto": false
-    },
-    {
-      "fecha": "2026-05-16",
-      "partido": "Moreirense 0-0 AVS",
-      "pick": "AMBOS ANOTAN (BTTS)",
-      "mercado": "btts",
-      "confianza": 60,
-      "acierto": false
-    },
-    {
-      "fecha": "2026-05-16",
-      "partido": "Arouca 3-1 Tondela",
-      "pick": "AMBOS ANOTAN (BTTS)",
-      "mercado": "btts",
-      "confianza": 60,
+      "confianza": 75.0,
       "acierto": true
     },
     {
-      "fecha": "2026-05-16",
-      "partido": "Braga 2-2 Estrela",
-      "pick": "Gana Braga + OVER 1.5",
-      "mercado": "combo",
-      "confianza": 64,
+      "fecha": "2026-06-21",
+      "partido": "Ecuador 0-0 Curaçao",
+      "pick": "OVER 2.5",
+      "mercado": "over_under",
+      "confianza": 63.1,
       "acierto": false
     },
     {
-      "fecha": "2026-05-16",
-      "partido": "C.D. Nacional 2-0 Vitória de Guimaraes",
+      "fecha": "2026-06-22",
+      "partido": "Argentina 2-0 Austria",
+      "pick": "OVER 1.5 goles",
+      "mercado": "over_under",
+      "confianza": 62.0,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-22",
+      "partido": "France 3-0 Iraq",
+      "pick": "AMBOS ANOTAN (BTTS)",
+      "mercado": "btts",
+      "confianza": 60,
+      "acierto": false
+    },
+    {
+      "fecha": "2026-06-22",
+      "partido": "New Zealand 1-3 Egypt",
       "pick": "OVER 1.5",
       "mercado": "over_under",
-      "confianza": 55.0,
+      "confianza": 72.3,
       "acierto": true
     },
     {
-      "fecha": "2026-05-16",
-      "partido": "Casa Pia 1-1 Rio Ave",
+      "fecha": "2026-06-23",
+      "partido": "Portugal 5-0 Uzbekistan",
+      "pick": "LOCAL (Portugal)",
+      "mercado": "moneyline",
+      "confianza": 68.6,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-23",
+      "partido": "England 0-0 Ghana",
+      "pick": "LOCAL (England)",
+      "mercado": "moneyline",
+      "confianza": 68.6,
+      "acierto": false
+    },
+    {
+      "fecha": "2026-06-23",
+      "partido": "Panama 0-1 Croatia",
+      "pick": "OVER 2.5",
+      "mercado": "over_under",
+      "confianza": 60.8,
+      "acierto": false
+    },
+    {
+      "fecha": "2026-06-23",
+      "partido": "Norway 3-2 Senegal",
+      "pick": "AMBOS ANOTAN (BTTS)",
+      "mercado": "btts",
+      "confianza": 60,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-23",
+      "partido": "Jordan 1-2 Algeria",
+      "pick": "OVER 1.5 goles",
+      "mercado": "over_under",
+      "confianza": 62.0,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-24",
+      "partido": "Bosnia-Herzegovina 3-1 Qatar",
+      "pick": "UNDER 2.5",
+      "mercado": "over_under",
+      "confianza": 60.1,
+      "acierto": false
+    },
+    {
+      "fecha": "2026-06-24",
+      "partido": "Switzerland 2-1 Canada",
+      "pick": "AMBOS ANOTAN (BTTS)",
+      "mercado": "btts",
+      "confianza": 60,
+      "acierto": true
+    },
+    {
+      "fecha": "2026-06-24",
+      "partido": "Morocco 4-2 Haiti",
       "pick": "OVER 1.5",
       "mercado": "over_under",
-      "confianza": 55.0,
+      "confianza": 76.8,
       "acierto": true
     },
     {
-      "fecha": "2026-05-16",
-      "partido": "Estoril 1-3 Benfica",
-      "pick": "AMBOS ANOTAN (BTTS)",
-      "mercado": "btts",
-      "confianza": 80.0,
-      "acierto": true
-    },
-    {
-      "fecha": "2026-05-16",
-      "partido": "FC Famalicao 1-0 Alverca",
-      "pick": "OVER 1.5",
-      "mercado": "over_under",
-      "confianza": 55.0,
-      "acierto": false
-    },
-    {
-      "fecha": "2026-05-16",
-      "partido": "Sporting CP 3-0 Gil Vicente",
-      "pick": "AMBOS ANOTAN (BTTS)",
-      "mercado": "btts",
-      "confianza": 60,
-      "acierto": false
-    },
-    {
-      "fecha": "2026-05-24",
-      "partido": "Columbus Crew 2-0 Atlanta United FC",
-      "pick": "AMBOS ANOTAN (BTTS)",
-      "mercado": "btts",
-      "confianza": 60,
-      "acierto": false
-    },
-    {
-      "fecha": "2026-05-24",
-      "partido": "Inter Miami CF 6-4 Philadelphia Union",
+      "fecha": "2026-06-24",
+      "partido": "Scotland 0-3 Brazil",
       "pick": "OVER 1.5 goles",
       "mercado": "over_under",
-      "confianza": 64.6,
+      "confianza": 62.0,
       "acierto": true
     },
     {
-      "fecha": "2026-05-25",
-      "partido": "LAFC 1-0 Seattle Sounders FC",
-      "pick": "AMBOS ANOTAN (BTTS)",
-      "mercado": "btts",
-      "confianza": 60,
-      "acierto": false
-    },
-    {
-      "fecha": "2026-05-31",
-      "partido": "Red Bull Bragantino 3-1 Internacional",
-      "pick": "Gana Red Bull Bragantino + OVER 1.5",
-      "mercado": "combo",
-      "confianza": 80,
+      "fecha": "2026-06-24",
+      "partido": "Colombia 1-0 Congo DR",
+      "pick": "LOCAL (Colombia)",
+      "mercado": "moneyline",
+      "confianza": 68.6,
       "acierto": true
     },
     {
-      "fecha": "2026-05-31",
-      "partido": "Palmeiras 1-0 Chapecoense",
-      "pick": "OVER 1.5 goles",
-      "mercado": "over_under",
-      "confianza": 61.2,
-      "acierto": false
-    },
-    {
-      "fecha": "2026-05-31",
-      "partido": "Vasco da Gama 0-1 Atlético-MG",
-      "pick": "OVER 1.5 goles",
-      "mercado": "over_under",
-      "confianza": 61.2,
-      "acierto": false
-    },
-    {
-      "fecha": "2026-05-31",
-      "partido": "Cruzeiro 1-1 Fluminense",
-      "pick": "AMBOS ANOTAN (BTTS)",
-      "mercado": "btts",
-      "confianza": 80.0,
+      "fecha": "2026-06-25",
+      "partido": "Czechia 0-3 Mexico",
+      "pick": "VISITANTE (Mexico)",
+      "mercado": "moneyline",
+      "confianza": 69.0,
       "acierto": true
     },
     {
-      "fecha": "2026-05-31",
-      "partido": "Remo 1-0 São Paulo",
-      "pick": "AMBOS ANOTAN (BTTS)",
-      "mercado": "btts",
-      "confianza": 60,
-      "acierto": false
-    },
-    {
-      "fecha": "2026-05-24",
-      "partido": "River Plate 2-3 Belgrano (Córdoba)",
-      "pick": "OVER 1.5 goles",
+      "fecha": "2026-06-25",
+      "partido": "South Africa 1-0 South Korea",
+      "pick": "UNDER 2.5",
       "mercado": "over_under",
-      "confianza": 57.8,
+      "confianza": 66.4,
       "acierto": true
-    },
-    {
-      "fecha": "2026-05-23",
-      "partido": "Hull City 1-0 Middlesbrough",
-      "pick": "OVER 1.5 goles",
-      "mercado": "over_under",
-      "confianza": 65.5,
-      "acierto": false
     }
   ],
   "ligas": [
-    "FIFA World Cup",
-    "UEFA Champions League",
-    "UEFA Europa League",
-    "Copa Libertadores",
-    "Copa Sudamericana",
-    "Premier League",
-    "La Liga",
-    "Serie A",
-    "Bundesliga",
-    "Ligue 1",
-    "Eredivisie",
-    "Primeira Liga",
-    "Liga MX",
-    "MLS",
-    "Brazilian Serie A",
-    "Argentine Liga Profesional",
-    "Championship"
+    "FIFA World Cup"
   ],
-  "dias": 2,
-  "nota_metodologia": "Los picks del backtest se generan con el historial actual de la DB, que incluye resultados posteriores al partido evaluado (leakage). El pick real del día usó el historial disponible en ese momento. Por eso puede haber discrepancia entre el pick en vivo y el del backtest."
+  "dias": 15,
+  "sin_leakage": true,
+  "nota_metodologia": "SIN LEAKAGE: cada pick se calcula con un corte temporal (as-of) que limita la forma del equipo a partidos ANTERIORES al evaluado, igual que en vivo. Por eso esta precisión SÍ refleja lo que el programa puede acertar de verdad (ya no el ~95% inflado de antes). La medida más pura del modelo Dixon-Coles es el backtest walk-forward."
 }
