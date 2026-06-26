@@ -263,23 +263,29 @@ def _runline_pick(fav_team, local, visitante, confianza, p_pick, gap_pct=0.0):
     riesgo de paliza → baja la confianza del +1.5."""
     perdedor = visitante if fav_team == local else local
     es_visitante_dog = (perdedor == visitante)
-    # Favorito -1.5 solo en dominancia clara (y como local, donde -1.5 es menos malo)
-    if confianza >= 80 and (p_pick or 0) >= 0.74 and fav_team == local:
-        return {"pick": f"{fav_team} -1.5", "linea": "-1.5",
-                "confianza": round(min(58, confianza - 22)),
-                "nota": "favorito local dominante (raro: -1.5 solo aquí)"}
+
+    # ── Hándicap por NIVEL DE CONFIANZA (estrategia del usuario) ────────────
+    # Cobertura real (backtest MLB 2026, 259 juegos): -1.5 ~47% · +1.5 ~55-59%
+    # (visitante 66%) · +2.5 ~69%. El -1.5 paga momio + (favorito por 2+), por eso
+    # vale cuando ESPERAS paliza aunque cubra ~47%.
+    #   • Confianza ALTA en el favorito  → favorito -1.5 (paga más, solo en paliza)
+    #   • DUDA (confianza baja/parejo)    → perdedor +2.5 (colchón de 2, el más seguro)
+    #   • En medio                        → perdedor +1.5 (preferente al visitante)
+    if confianza >= 72 and (p_pick or 0) >= 0.66:
+        return {"pick": f"{fav_team} -1.5", "linea": "-1.5", "confianza": 47,
+                "nota": f"{fav_team} por 2+: alto pago, úsalo solo si esperas paliza (cubre ~47% histórico)"}
+    if confianza < 56:
+        return {"pick": f"{perdedor} +2.5", "linea": "+2.5", "confianza": 69,
+                "nota": f"duda/parejo: {perdedor} +2.5 da colchón de 2 carreras, el más seguro (~69%)"}
     conf = 63 if es_visitante_dog else 58
-    # Filtro por brecha: si el +1.5 es de un MUY inferior vs favorito dominante,
-    # crece el riesgo de paliza por 2+ → penaliza la confianza.
     nota_gap = ""
     if gap_pct >= 0.20:
         conf -= 8
-        nota_gap = " (brecha grande: riesgo de paliza, confianza reducida)"
+        nota_gap = " (brecha grande: riesgo de paliza)"
     elif gap_pct >= 0.12:
         conf -= 4
-        nota_gap = " (brecha media)"
-    base = ("visitante +1.5: cubre 63% (pierde por ≤1 o gana)" if es_visitante_dog
-            else "no favorito +1.5: cubre 58% (pierde por ≤1 o gana)")
+    base = ("visitante +1.5: cubre ~66% (pierde por ≤1 o gana)" if es_visitante_dog
+            else "no favorito +1.5: cubre ~58%")
     return {"pick": f"{perdedor} +1.5", "linea": "+1.5", "confianza": max(48, conf),
             "nota": base + nota_gap}
 
