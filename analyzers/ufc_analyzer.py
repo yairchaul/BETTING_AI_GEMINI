@@ -379,6 +379,16 @@ class UFCAnalyzer:
         duracion = self.predecir_duracion(p1_data, p2_data)
         conf_ganador = prob if prob >= 50 else 100 - prob
 
+        # ── Blend de mercado (Benter): combina la prob del modelo con las cuotas
+        # de-vigueadas del ganador. El mercado puede saber de lesiones/peso de
+        # ultimo momento. 'prob' es la prob de que gane p1.
+        benter = None
+        try:
+            from motors.mercado_blend import blend_2via
+            benter = blend_2via(prob, p1_name, p2_name, "mma_mixed_martial_arts")
+        except Exception:
+            pass
+
         # Mercados extra (estilo sportsbook)
         metodo_probs = self.desglose_metodo(winner_data, loser_data)
         rounds_totales = self.totales_rounds(p1_data, p2_data)
@@ -456,5 +466,6 @@ class UFCAnalyzer:
             'metodo_probs': metodo_probs,       # {KO/TKO: %, Sumisión: %, Decisión: %}
             'rounds_totales': rounds_totales,    # [{linea, pick, prob_over, ...}] (Monte Carlo)
             'montecarlo': montecarlo,            # simulación coherente (ganador/método/rounds)
+            'benter': benter,                    # blend modelo+mercado del ganador
             'ganador_por_metodo': f"{winner_name} por {method}",
         }

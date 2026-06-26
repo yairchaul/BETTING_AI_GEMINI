@@ -563,12 +563,12 @@ def analizar_futbol_jerarquico(
             })
 
     # ── Regla 7 — COMBINADO (gana + Over): mismatch claro. Dos sabores ──────
-    # Exige favorito con ML ≥63%. Se ofrecen DOS combos según el perfil de riesgo:
+    # SOLO se arma el combo si el equipo gana con ≥64% (regla del usuario): si el
+    # ganador no es claro, se deja SOLO la probabilidad de goles (el over), sin
+    # combinar. Con favorito ≥64% se ofrecen dos sabores según el perfil de riesgo:
     #   • VALOR  : Gana + Over 2.5/3.5 (Over ≥58%) → más pago, menos probable.
-    #   • SEGURO : Gana + Over 1.5 (Over 1.5 ≥72%) → más probable, paga más que el
-    #     moneyline solo. El backtest WC mostró que favoritos ML≥60% aciertan este
-    #     combo 60-75% out-of-sample (es +EV; lo pidió el usuario).
-    ml_pick = next((p for p in viable_picks if p["regla"] == 5 and p["confianza"] >= 63), None)
+    #   • SEGURO : Gana + Over 1.5 (Over 1.5 ≥72%) → más probable, paga más que el ML.
+    ml_pick = next((p for p in viable_picks if p["regla"] == 5 and p["confianza"] >= 64), None)
     if ml_pick and not es_eliminacion:
         equipo = ml_pick["pick"].split("(")[-1].rstrip(")") if "(" in ml_pick["pick"] else ml_pick["pick"]
 

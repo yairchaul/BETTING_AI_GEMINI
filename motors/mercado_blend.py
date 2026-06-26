@@ -116,6 +116,68 @@ def cuotas_1x2(local: str, visitante: str, sport_key="soccer_fifa_world_cup"):
     }
 
 
+def cuotas_2via(equipo_a: str, equipo_b: str, sport_key: str):
+    """h2h de 2 vías (sin empate) DE-VIGUEADO, mediana entre casas. Para el money
+    line de MLB (baseball_mlb) y el ganador de UFC (mma_mixed_martial_arts).
+    Devuelve {'a','b','n_casas'} con a=equipo_a, b=equipo_b en %, o None."""
+    na, nb = _norm(equipo_a), _norm(equipo_b)
+    juego = None
+    for g in _juegos_odds(sport_key):
+        h, aw = _norm(g.get("home_team", "")), _norm(g.get("away_team", ""))
+        if ((na in h or h in na or na in aw or aw in na)
+                and (nb in h or h in nb or nb in aw or aw in nb)):
+            juego = g
+            break
+    if not juego:
+        return None
+    pa, pb = [], []
+    for bk in juego.get("bookmakers", []):
+        for m in bk.get("markets", []):
+            if m.get("key") != "h2h":
+                continue
+            ia = ib = None
+            for o in m.get("outcomes", []):
+                nm = _norm(o.get("name", ""))
+                if na in nm or nm in na:
+                    ia = _american_to_prob(o.get("price"))
+                elif nb in nm or nm in nb:
+                    ib = _american_to_prob(o.get("price"))
+            if ia is None or ib is None:
+                continue
+            tot = ia + ib
+            if tot <= 0:
+                continue
+            pa.append(ia / tot); pb.append(ib / tot)   # de-vig
+    if not pa:
+        return None
+    return {"a": round(_mediana(pa) * 100, 1), "b": round(_mediana(pb) * 100, 1), "n_casas": len(pa)}
+
+
+def blend_2via(p_model_a, equipo_a: str, equipo_b: str, sport_key: str,
+               w_model: float = W_MODEL_DEFAULT):
+    """Benter de 2 vías: combina la prob del MODELO de que gane equipo_a (%) con
+    la del MERCADO. Devuelve {'modelo','mercado','blend','blend_b','nota'} o blend
+    None si no hay cuotas. Sirve para MLB money line y UFC ganador."""
+    mkt = cuotas_2via(equipo_a, equipo_b, sport_key)
+    pm = float(p_model_a or 0)
+    if not mkt:
+        return {"modelo": round(pm, 1), "mercado": None, "blend": None, "blend_b": None,
+                "nota": "Sin cuotas de mercado para este evento (solo modelo)."}
+    w = max(0.0, min(1.0, float(w_model)))
+    ba = w * pm + (1 - w) * mkt["a"]
+    bb = w * (100 - pm) + (1 - w) * mkt["b"]
+    s = ba + bb or 1.0
+    blend_a = round(ba / s * 100, 1)
+    dif = abs(pm - mkt["a"])
+    if dif >= 12:
+        nota = (f"⚠️ Modelo {pm:.0f}% vs mercado {mkt['a']:.0f}% ({dif:.0f}pts): el mercado "
+                f"puede saber algo (lesión, alineación). Benter → {blend_a:.0f}%.")
+    else:
+        nota = f"Mercado ≈ modelo. Benter ({int(w*100)}/{int((1-w)*100)}) → {blend_a:.0f}%."
+    return {"modelo": round(pm, 1), "mercado": mkt, "blend": blend_a,
+            "blend_b": round(100 - blend_a, 1), "nota": nota, "n_casas": mkt["n_casas"]}
+
+
 def blend_1x2(model_1x2: dict, local: str, visitante: str, w_model: float = W_MODEL_DEFAULT):
     """Mezcla el 1X2 del modelo con el del mercado (Benter). Devuelve dict con
     'modelo', 'mercado', 'blend' (todos {local,empate,visitante}) y 'nota'. Si no
