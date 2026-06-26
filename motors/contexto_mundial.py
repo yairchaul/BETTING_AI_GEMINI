@@ -178,10 +178,21 @@ def contexto_partido(local: str, visitante: str, es_torneo: bool = True) -> str:
     except Exception:
         pass
 
+    # Situación de grupo / motivación (la lee Gemini para ajustar por interés:
+    # ya clasificó y rota, o necesita ganar y ataca → over/BTTS).
+    try:
+        from motors.contexto_grupo import situacion_grupo
+    except Exception:
+        situacion_grupo = None
+
     for equipo in (local, visitante):
         forma = _forma_y_estilo(equipo)
         if forma:
             lineas.append(f"{equipo} — {forma}.")
+        if situacion_grupo:
+            sg = situacion_grupo(equipo)
+            if sg:
+                lineas.append(f"SITUACIÓN [{equipo}]: {sg['resumen']}")
         lista_gol = goleadores.get("local" if equipo == local else "visitante", [])
         if lista_gol:
             top = ", ".join(f"{g['jugador']} ({g.get('prob', 0)}% anota)" for g in lista_gol[:2])

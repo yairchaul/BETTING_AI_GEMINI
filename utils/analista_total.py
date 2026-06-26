@@ -422,8 +422,11 @@ class AnalistaTotal:
             f"Análisis heurístico jerárquico: {_safe_json(heur, 500)}\n"
             + bloque_ctx +
             "Evalúa 1X2 vs Doble oportunidad vs BTTS vs Over/Under goles y elige el de mayor valor. "
-            "USA EL CONTEXTO REAL para ajustar: una lesión clave, una baja, polémica o mala racha puede "
-            "cambiar el favorito o bajar la probabilidad de goles; dilo en 'alerta' si aplica. "
+            "USA EL CONTEXTO REAL para ajustar: (1) lesiones/bajas/racha pueden cambiar el favorito; "
+            "(2) SITUACIÓN DE GRUPO/MOTIVACIÓN: si AMBOS necesitan ganar para avanzar o traen estrellas "
+            "goleadoras → SUBE Over 2.5/BTTS; si un equipo YA clasificó y probablemente rota titulares → "
+            "BAJA los goles y cuidado con el favorito (riesgo de sorpresa); (3) el MERCADO: si discrepa "
+            "mucho del heurístico, suele saber algo. Resume el factor decisivo en 'alerta'. "
             "Recomendación final en JSON."
         )
 
