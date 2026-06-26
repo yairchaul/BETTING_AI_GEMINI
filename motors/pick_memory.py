@@ -186,6 +186,17 @@ class PickMemory:
         }
 
     # ── FASE 3: EVOLUCIÓN ─────────────────────────────────────────────────
+    @staticmethod
+    def _norm_mercado(m: str) -> str:
+        """Canonicaliza el nombre de mercado para que el aprendizaje encuentre las
+        muestras pese a variaciones: 'HOME_RUN'/'HOME RUN', 'PONCHES'/'PONCHES (K)',
+        'TOTAL_BASES'/'TOTAL BASES' → mismo token. (Bug: antes el match era exacto y
+        nunca penalizaba HR ni premiaba PONCHES por estos desajustes de nombre.)"""
+        m = (m or "").upper().replace("_", " ").strip()
+        if "(" in m:
+            m = m.split("(")[0].strip()
+        return m
+
     def factor_confianza(self, deporte: str, mercado: str, min_muestras: int = 8) -> float:
         """Multiplicador de confianza según el rendimiento histórico.
 
@@ -194,10 +205,10 @@ class PickMemory:
         Devuelve 1.0 si no hay muestras suficientes (no castiga sin datos).
         """
         dep = (deporte or "").upper()
-        mer = mercado or ""
+        mer = self._norm_mercado(mercado)
         subset = [p for p in self._cargar()
                   if (p.get("deporte") or "").upper() == dep
-                  and p.get("mercado") == mer
+                  and self._norm_mercado(p.get("mercado")) == mer
                   and p.get("estado") in ("ganado", "perdido")]
         if len(subset) < min_muestras:
             return 1.0
