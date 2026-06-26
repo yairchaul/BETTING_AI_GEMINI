@@ -396,6 +396,14 @@ def _recolectar_picks(dia_filtro=None):
                 pk["prob"] = max(1, min(99, round(pk["prob"] * factor, 1)))
             except Exception:
                 pass
+        # Excluir del parlay los mercados PROBADOS perdedores (factor ≤0.6 = win
+        # rate <40% con muestra suficiente: HR 22%, total bases 32%). Bajar la prob
+        # no basta — en un parlay una sola pata mala lo tumba. Los de factor 1.0
+        # (sin datos aún) se mantienen. Siguen disponibles como pick suelto.
+        n0 = len(pool)
+        pool = [pk for pk in pool if pk.get("factor_hist", 1.0) > 0.6]
+        if len(pool) < n0:
+            logger.info(f"Parlay: {n0 - len(pool)} picks excluidos por mercado probado perdedor (factor ≤0.6)")
 
     return pool
 
