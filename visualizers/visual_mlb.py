@@ -330,6 +330,14 @@ class VisualMLB:
                         f"<div style='text-align:right;color:{color_k};font-weight:700'>"
                         f"{pred} {kp.get('linea', '')} <span style='color:#64748b;font-size:0.75rem'>{kp.get('confianza', 0)}%</span></div>",
                         unsafe_allow_html=True)
+                # Escalera de líneas (casa la que ponga el book) + Plan B seguro
+                esc = kp.get('escalera') or []
+                if esc:
+                    st.caption("📊 Casa tu línea: " +
+                               " · ".join(f"{e['linea']}→O{e['over']}/U{e['under']}" for e in esc))
+                pb = kp.get('plan_b')
+                if pb:
+                    st.caption(f"🛡️ Plan B (si la línea no coincide): **{pb['pick']}** ({pb['confianza']}%)")
 
         # ── Decisión de la IA (si se ejecutó) ────────────────────────────────
         _pick_ia = analisis_mlb.get("pick_ia") if analisis_mlb else None
