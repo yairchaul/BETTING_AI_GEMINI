@@ -615,12 +615,33 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
         else:
             pred, conf_p, apostable = "OVER", p_over, False   # sin edge real en la casa
         conf_k = int(max(38, min(80, round(conf_p * 100))))
+
+        # ── PLAN B: escalera de líneas alternas + colchón seguro ────────────
+        # La casa pone SU línea y no siempre coincide con la nuestra (a veces muy
+        # alta o muy baja). La escalera da la prob a varias líneas para CASAR con
+        # la que ofrezca el book; el plan_b es el OVER más alto que aún cubre ≥72%
+        # (colchón seguro, como el +2.5 del run line) para cuando el ponche es la
+        # opción pero la línea no coincide.
+        escalera = []
+        for ln in (round(k_proy) - 2.5, round(k_proy) - 1.5, round(k_proy) - 0.5,
+                   round(k_proy) + 0.5, round(k_proy) + 1.5):
+            if ln < 1.5:
+                continue
+            po = _poisson_over(k_proy, ln)
+            escalera.append({'linea': ln, 'over': round(po * 100), 'under': round((1 - po) * 100)})
+        plan_b = None
+        for e in escalera:                     # ascendente → me quedo con el OVER más alto ≥72%
+            if e['over'] >= 72:
+                plan_b = {'pick': f"OVER {e['linea']} K", 'confianza': e['over'],
+                          'nota': 'Plan B seguro: colchón de K si la línea de la casa no coincide'}
+
         k_picks.append({
             'pitcher': pitcher, 'k9': round(k9, 1), 'proyeccion': k_proy,
             'linea': linea_casa, 'linea_programa': linea, 'linea_casa': linea_casa,
             'prediccion': pred, 'pick': f"{pred} {linea_casa} K",
             'prob_over_casa': round(p_over * 100, 1), 'apostable': apostable,
             'confianza': conf_k,
+            'escalera': escalera, 'plan_b': plan_b,
         })
 
     resultado = {
