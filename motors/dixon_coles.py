@@ -468,18 +468,40 @@ def predecir(local, visitante, neutral=True, top_n=5, modelo=None, goles_factor=
         res = "LOCAL" if i > j else ("EMPATE" if i == j else "VISITANTE")
         top.append({"marcador": f"{i}-{j}", "pct": round(p * 100, 1), "resultado": res})
 
-    # Confianza del marcador: qué tan "picudo" es el top. Si el marcador #1
-    # concentra mucha probabilidad → el modelo está seguro; si los 3 están
-    # parejos y bajos → es un partido abierto (toss-up).
+    # Marcador más probable DENTRO de cada resultado 1X2, y el RECOMENDADO: el
+    # marcador más probable dentro del resultado 1X2 más probable. Esto vuelve el
+    # marcador exacto CONSISTENTE con el pick: antes el #1 global podía ser un
+    # empate 1-1 mientras el pick era victoria local → confundía. Ahora si el pick
+    # es local, el marcador sugerido SIEMPRE es una victoria local (la más probable).
+    mejor_por_res = {"LOCAL": (0.0, None), "EMPATE": (0.0, None), "VISITANTE": (0.0, None)}
+    for p, i, j in plano:
+        res = "LOCAL" if i > j else ("EMPATE" if i == j else "VISITANTE")
+        if p > mejor_por_res[res][0]:
+            mejor_por_res[res] = (p, f"{i}-{j}")
+    marcador_por_resultado = {
+        k: {"marcador": v[1], "pct": round(float(v[0]) * 100, 1)}
+        for k, v in mejor_por_res.items() if v[1]
+    }
+    _res_top = max((("LOCAL", p_home), ("EMPATE", p_draw), ("VISITANTE", p_away)),
+                   key=lambda kv: kv[1])[0]
+    marcador_recomendado = marcador_por_resultado.get(_res_top, top[0] if top else None)
+
+    # Confianza del marcador: combina cuán concentrado está el #1 (top1_pct) con la
+    # SEPARACIÓN respecto al #2. Un #1 que destaca claro es más fiable que tres
+    # marcadores casi empatados (partido abierto). Umbrales realistas: en fútbol el
+    # marcador más probable rara vez pasa de ~13-15%.
     top1_pct = top[0]["pct"] if top else 0.0
+    top2_pct = top[1]["pct"] if len(top) > 1 else 0.0
     top3_masa = round(sum(t["pct"] for t in top[:3]), 1)
-    if top1_pct >= 15:
+    sep = round(top1_pct - top2_pct, 1)
+    if top1_pct >= 13 and sep >= 2.5:
         conf_nivel = "Alta"
-    elif top1_pct >= 10:
+    elif top1_pct >= 9:
         conf_nivel = "Media"
     else:
         conf_nivel = "Baja"
-    confianza_marcador = {"nivel": conf_nivel, "top1_pct": top1_pct, "top3_masa": top3_masa}
+    confianza_marcador = {"nivel": conf_nivel, "top1_pct": top1_pct,
+                          "top3_masa": top3_masa, "separacion": sep}
 
     _r = lambda v: round(v * 100, 1)
     return {
@@ -492,6 +514,8 @@ def predecir(local, visitante, neutral=True, top_n=5, modelo=None, goles_factor=
                        "over_3.5": _r(p_over35), "under_2.5": _r(1 - p_over25)},
         "btts": {"si": _r(p_btts), "no": _r(1 - p_btts)},
         "marcador_top": top,
+        "marcador_por_resultado": marcador_por_resultado,
+        "marcador_recomendado": marcador_recomendado,
         "confianza_marcador": confianza_marcador,
         "matriz": M.tolist(),
         # Todos los mercados derivados de la MISMA matriz (para nutrir el motor):

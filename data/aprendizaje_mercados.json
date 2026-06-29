@@ -1,45 +1,128 @@
 {
-  "actualizado": "2026-06-19T12:59:53.211648",
+  "actualizado": "2026-06-29T15:20:18.109482",
   "global": {
-    "total": 158,
-    "aciertos": 62,
-    "win_rate": 39.2,
-    "roi": -11.4
+    "total": 401,
+    "aciertos": 170,
+    "win_rate": 42.4,
+    "roi": -8.6
   },
   "por_mercado": {
     "MLB · MONEYLINE": {
-      "win_rate": 50.0,
-      "roi": -5.0,
-      "total": 14,
-      "factor": 1.0
+      "win_rate": 57.9,
+      "roi": 3.5,
+      "total": 38,
+      "factor": 1.08
     },
     "MLB · TOTAL": {
-      "win_rate": 41.2,
-      "roi": -21.8,
-      "total": 17,
-      "factor": 0.91
+      "win_rate": 42.4,
+      "roi": -19.4,
+      "total": 33,
+      "factor": 0.92
     },
     "MLB · PONCHES (K)": {
-      "win_rate": 85.7,
-      "roi": 58.6,
-      "total": 28,
-      "factor": 1.36
+      "win_rate": 87.5,
+      "roi": 61.9,
+      "total": 56,
+      "factor": 1.38
     },
     "MLB · TOTAL BASES": {
-      "win_rate": 21.2,
-      "roi": -58.6,
-      "total": 33,
-      "factor": 0.71
+      "win_rate": 32.4,
+      "roi": -36.8,
+      "total": 71,
+      "factor": 0.82
     },
     "MLB · HOME RUN": {
-      "win_rate": 22.2,
-      "roi": -22.2,
-      "total": 63,
+      "win_rate": 21.9,
+      "roi": -23.4,
+      "total": 160,
       "factor": 0.72
+    },
+    "SOCCER · 1X2/Goles": {
+      "win_rate": 66.7,
+      "roi": 3.5,
+      "total": 21,
+      "factor": 1.17
     }
   },
   "por_tipo_parlay": {
     "💎 PARLAY DE VALOR (+EV)": {
+      "total": 3,
+      "ganados": 0,
+      "cuota_sum": 0.0,
+      "win_rate": 0.0,
+      "roi": -100.0
+    },
+    "🎯 PARLAY ÓPTIMO (3 legs)": {
+      "total": 1,
+      "ganados": 0,
+      "cuota_sum": 0.0,
+      "win_rate": 0.0,
+      "roi": -100.0
+    },
+    "🟢 PARLAY SEGURO": {
+      "total": 2,
+      "ganados": 0,
+      "cuota_sum": 0.0,
+      "win_rate": 0.0,
+      "roi": -100.0
+    },
+    "🟡 PARLAY VALOR": {
+      "total": 2,
+      "ganados": 0,
+      "cuota_sum": 0.0,
+      "win_rate": 0.0,
+      "roi": -100.0
+    },
+    "🔴 PARLAY BOMBA": {
+      "total": 2,
+      "ganados": 0,
+      "cuota_sum": 0.0,
+      "win_rate": 0.0,
+      "roi": -100.0
+    },
+    "🎯 PARLAY HR + FÚTBOL": {
+      "total": 2,
+      "ganados": 0,
+      "cuota_sum": 0.0,
+      "win_rate": 0.0,
+      "roi": -100.0
+    },
+    "⚡ PARLAY SLUGGER DEL DÍA": {
+      "total": 2,
+      "ganados": 0,
+      "cuota_sum": 0.0,
+      "win_rate": 0.0,
+      "roi": -100.0
+    },
+    "🟣 PARLAY GIGANTE (38 legs)": {
+      "total": 1,
+      "ganados": 0,
+      "cuota_sum": 0.0,
+      "win_rate": 0.0,
+      "roi": -100.0
+    },
+    "💎 PARLAY MÁXIMO PAGO": {
+      "total": 2,
+      "ganados": 0,
+      "cuota_sum": 0.0,
+      "win_rate": 0.0,
+      "roi": -100.0
+    },
+    "⚽ PARLAY SOLO FÚTBOL (4 legs)": {
+      "total": 1,
+      "ganados": 0,
+      "cuota_sum": 0.0,
+      "win_rate": 0.0,
+      "roi": -100.0
+    },
+    "⚽ PARLAY SOLO FÚTBOL (2 legs)": {
+      "total": 1,
+      "ganados": 0,
+      "cuota_sum": 0.0,
+      "win_rate": 0.0,
+      "roi": -100.0
+    },
+    "🎯 PARLAY ÓPTIMO (4 legs)": {
       "total": 1,
       "ganados": 0,
       "cuota_sum": 0.0,
@@ -50,33 +133,39 @@
   "ranking_mercados": [
     {
       "mercado": "MLB · PONCHES (K)",
-      "win_rate": 85.7,
-      "roi": 58.6,
-      "n": 28
+      "win_rate": 87.5,
+      "roi": 61.9,
+      "n": 56
+    },
+    {
+      "mercado": "SOCCER · 1X2/Goles",
+      "win_rate": 66.7,
+      "roi": 3.5,
+      "n": 21
     },
     {
       "mercado": "MLB · MONEYLINE",
-      "win_rate": 50.0,
-      "roi": -5.0,
-      "n": 14
+      "win_rate": 57.9,
+      "roi": 3.5,
+      "n": 38
     },
     {
       "mercado": "MLB · TOTAL",
-      "win_rate": 41.2,
-      "roi": -21.8,
-      "n": 17
-    },
-    {
-      "mercado": "MLB · HOME RUN",
-      "win_rate": 22.2,
-      "roi": -22.2,
-      "n": 63
+      "win_rate": 42.4,
+      "roi": -19.4,
+      "n": 33
     },
     {
       "mercado": "MLB · TOTAL BASES",
-      "win_rate": 21.2,
-      "roi": -58.6,
-      "n": 33
+      "win_rate": 32.4,
+      "roi": -36.8,
+      "n": 71
+    },
+    {
+      "mercado": "MLB · HOME RUN",
+      "win_rate": 21.9,
+      "roi": -23.4,
+      "n": 160
     }
   ]
 }

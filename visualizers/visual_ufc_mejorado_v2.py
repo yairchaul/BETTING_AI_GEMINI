@@ -76,7 +76,12 @@ class VisualUFCMejoradoV2:
                 odds1 = p1.get('odds', 'N/A')
                 if (not odds1 or str(odds1) in ('N/A', 'None', '')) and _pr is not None:
                     odds1 = self._momio_implicito(_pr * 100)
-                st.markdown(f"## 🔴 {p1.get('nombre', 'Desconocido')}")
+                
+                p1_nombre_display = p1.get('nombre', 'Desconocido')
+                if p1.get('streak', 0) >= 3:
+                    p1_nombre_display += " 🔥"
+                
+                st.markdown(f"## 🔴 {p1_nombre_display}")
                 if odds1 and str(odds1) not in ('N/A', 'None', ''):
                     st.markdown(
                         f"<div style='display:inline-block;margin:2px 0 6px 0;padding:3px 14px;border-radius:16px;"
@@ -95,12 +100,19 @@ class VisualUFCMejoradoV2:
                     ⚖️ <strong>Peso:</strong> {p1.get('peso', 'N/A')}
                     </p>
                     <p style='font-size: 13px; color: #AAA; margin: 2px 0;'>
+                    🎂 <strong>Edad:</strong> {p1.get('edad', 'N/A')} |
+                    📈 <strong>Racha:</strong> {p1.get('streak', 0)} victorias
+                    </p>
+                    <p style='font-size: 13px; color: #AAA; margin: 2px 0;'>
                     📏 <strong>Alcance:</strong> {p1.get('alcance', 'N/A')} | 
                     🥊 <strong>Postura:</strong> {p1.get('postura', 'Desconocida')}
                     </p>
                     <p style='font-size: 13px; color: #FFD700; margin: 2px 0;'>
                     💥 <strong>KO Rate:</strong> {p1_ko_rate:.1f}% | 
                     🔥 <strong>Win Rate:</strong> {p1.get('win_rate', 0):.0f}%
+                    </p>
+                    <p style='font-size: 13px; color: #FFD700; margin: 2px 0;'>
+                    🏆 <strong>Ranking:</strong> #{p1.get('rank', 'NR')}
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
@@ -148,7 +160,12 @@ class VisualUFCMejoradoV2:
                 odds2 = p2.get('odds', 'N/A')
                 if (not odds2 or str(odds2) in ('N/A', 'None', '')) and _pr is not None:
                     odds2 = self._momio_implicito((1 - _pr) * 100)
-                st.markdown(f"## 🔵 {p2.get('nombre', 'Desconocido')}")
+                
+                p2_nombre_display = p2.get('nombre', 'Desconocido')
+                if p2.get('streak', 0) >= 3:
+                    p2_nombre_display += " 🔥"
+                
+                st.markdown(f"## 🔵 {p2_nombre_display}")
                 if odds2 and str(odds2) not in ('N/A', 'None', ''):
                     st.markdown(
                         f"<div style='display:inline-block;margin:2px 0 6px 0;padding:3px 14px;border-radius:16px;"
@@ -167,12 +184,19 @@ class VisualUFCMejoradoV2:
                     ⚖️ <strong>Peso:</strong> {p2.get('peso', 'N/A')}
                     </p>
                     <p style='font-size: 13px; color: #AAA; margin: 2px 0;'>
+                    🎂 <strong>Edad:</strong> {p2.get('edad', 'N/A')} |
+                    📈 <strong>Racha:</strong> {p2.get('streak', 0)} victorias
+                    </p>
+                    <p style='font-size: 13px; color: #AAA; margin: 2px 0;'>
                     📏 <strong>Alcance:</strong> {p2.get('alcance', 'N/A')} | 
                     🥊 <strong>Postura:</strong> {p2.get('postura', 'Desconocida')}
                     </p>
                     <p style='font-size: 13px; color: #FFD700; margin: 2px 0;'>
                     💥 <strong>KO Rate:</strong> {p2_ko_rate:.1f}% | 
                     🔥 <strong>Win Rate:</strong> {p2.get('win_rate', 0):.0f}%
+                    </p>
+                    <p style='font-size: 13px; color: #FFD700; margin: 2px 0;'>
+                    🏆 <strong>Ranking:</strong> #{p2.get('rank', 'NR')}
                     </p>
                 </div>
                 """, unsafe_allow_html=True)

@@ -24,6 +24,11 @@ logger = logging.getLogger(__name__)
 
 from .hr_poisson import prob_hr as prob_hr_poisson
 
+try:
+    from .mlb_runs_model import predecir as predecir_runs_model
+except ImportError:
+    predecir_runs_model = None
+
 # Mapa nombre completo → abreviatura (el dataset de HR usa abreviaturas)
 _TEAM_ABREV = {
     "arizona diamondbacks": "ARI", "atlanta braves": "ATL", "baltimore orioles": "BAL",
@@ -457,41 +462,47 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
     # ── 5. Ventaja de local ─────────────────────────────────────────────
     score += 3.0
 
-    # ── Pick de money line: el MERCADO manda; si no hay, el récord ───────
-    # El momio es el mejor predictor (incorpora pitcheo/lesiones/forma). Tu
-    # observación: cuando el mercado favorece al de PEOR récord, suele dar la
-    # vuelta. Así que si hay favorito CLARO de mercado, el pick lo SIGUE (y eso
-    # convierte el "posible upset" en el pick). Si no hay momio claro, sigue al récord.
-    fav_record = local if diff_pct >= 0 else visitante
-    fav_mercado = None
-    if p_l is not None and p_v is not None and abs(p_l - p_v) >= 0.06:
-        fav_mercado = local if p_l > p_v else visitante
+    # --- MEJORA: Integrar modelo de carreras (Dixon-Coles) para precisión ---
+    prob_dc_local = None
+    if predecir_runs_model:
+        try:
+            res_dc = predecir_runs_model(local, visitante)
+            if res_dc and res_dc.get("disponible"):
+                prob_dc_local = res_dc.get("moneyline", {}).get("local")
+                if prob_dc_local is not None:
+                    razones.append(f"Modelo Carreras: {local} {prob_dc_local:.1f}%")
+        except Exception as e:
+            logger.debug(f"mlb_runs_model falló: {e}")
 
-    if fav_mercado:
-        pick_team = fav_mercado
-    elif abs(diff_pct) >= 0.01:
-        pick_team = fav_record
-    else:
-        pick_team = local if score >= 0 else visitante
+    # --- Fusión de probabilidades: MERCADO + Modelo de Carreras + Heurístico ---
+    # El MERCADO (momio de-vigueado) es el mejor predictor individual (incorpora
+    # pitcheo/lesiones/forma), así que manda. Gemini lo había eliminado dejando
+    # solo score+runs_model, lo que degradaba el ML (que iba 57.9% real).
+    prob_heur_local = max(10, min(90, 50 + score / 2.0))
 
-    # Alerta cuando el mercado contradice al mejor récord (el upset que SÍ conviene seguir)
+    prob_mkt_local = None
+    if p_l is not None and p_v is not None and (p_l + p_v) > 0:
+        prob_mkt_local = p_l / (p_l + p_v) * 100   # de-vig a 2 vías
+
+    componentes = []                      # (probabilidad_local, peso)
+    if prob_mkt_local is not None:
+        componentes.append((prob_mkt_local, 0.50))
+    if prob_dc_local is not None:
+        componentes.append((prob_dc_local, 0.30))
+    componentes.append((prob_heur_local, 0.20 if componentes else 1.0))
+    _tot_w = sum(w for _, w in componentes)
+    final_prob_local = sum(p * w for p, w in componentes) / _tot_w
+
+    pick_team = local if final_prob_local >= 50 else visitante
+    confianza = round(min(88, max(35, max(final_prob_local, 100 - final_prob_local))))
+    p_pick = final_prob_local / 100.0 if pick_team == local else (100 - final_prob_local) / 100.0
+
+    # Alerta cuando el modelo contradice al mejor récord (el upset que conviene seguir)
     alerta_upset = ""
-    if fav_mercado and fav_record and fav_mercado != fav_record and abs(diff_pct) >= 0.05:
-        alerta_upset = (f"Upset: el mercado favorece a {fav_mercado} pese al mejor récord de "
-                        f"{fav_record} — el pick SIGUE al mercado (suele dar la vuelta)")
-
-    # Confianza: parte de la prob. implícita del momio del pick (calibrada por el
-    # mercado); si no hay momio, usa la diferencia de récord. Bono si récord+mercado coinciden.
-    p_pick = None
-    if p_l is not None and p_v is not None:
-        p_pick = p_l if pick_team == local else p_v
-    if p_pick is not None:
-        confianza = p_pick * 100
-    else:
-        confianza = 50 + abs(diff_pct) * 80
-    if fav_mercado and fav_record == fav_mercado:
-        confianza += 5   # récord y mercado de acuerdo → más confianza
-    confianza = round(min(88, max(35, confianza)))
+    fav_record = local if diff_pct >= 0 else visitante
+    if pick_team != fav_record and abs(diff_pct) >= 0.05:
+        alerta_upset = (f"Upset: el modelo favorece a {pick_team} pese al mejor récord de "
+                        f"{fav_record} — suele dar la vuelta")
 
     if confianza >= 70:
         decision, tipo, handicap, stake = "🟢 ÉLITE", "MONEYLINE", "", "3u"

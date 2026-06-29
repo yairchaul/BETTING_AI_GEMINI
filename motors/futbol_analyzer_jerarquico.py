@@ -7,7 +7,10 @@ Fixes v25: threshold ≥3.5, divisor dinámico, recency weighting, fase de torne
 
 import math
 import logging
+import json
+import re
 from utils.database_manager import db
+from motors.contexto_grupo import situacion_grupo
 from .motor_fut_pro import analizar_futbol_pro_v20
 
 logger = logging.getLogger(__name__)
@@ -328,6 +331,61 @@ def _integrar_dixon_coles(mc, local, visitante, primary, picks_multiples):
     return primary, picks_multiples, ajuste_dc
 
 
+def _get_contexto_ia(local, visitante, fase, goles_local, goles_contra_local, goles_visitante, goles_contra_visitante, gemini_client):
+    """Usa Gemini para obtener un análisis contextual del partido."""
+    if not gemini_client:
+        return ""
+
+    # Construir historial de resultados recientes
+    hist_local = ""
+    if goles_local and goles_contra_local:
+        hist_local = f"Resultados recientes de {local} (GF-GC): " + ", ".join([f"{gf}-{gc}" for gf, gc in zip(goles_local, goles_contra_local)])
+
+    hist_visitante = ""
+    if goles_visitante and goles_contra_visitante:
+        hist_visitante = f"Resultados recientes de {visitante} (GF-GC): " + ", ".join([f"{gf}-{gc}" for gf, gc in zip(goles_visitante, goles_contra_visitante)])
+
+    prompt = (
+        f"Eres un analista experto de la Copa del Mundo. Para el partido {local} vs {visitante} en la fase de {fase}, "
+        f"considerando su historial reciente:\n"
+        f"- {hist_local}\n"
+        f"- {hist_visitante}\n"
+        "dame un breve análisis contextual (máximo 60 palabras) sobre el momentum, estilo de juego (ofensivo/defensivo), "
+        "y lo que está en juego para cada equipo. Este contexto se usará para decidir la mejor apuesta."
+    )
+    try:
+        # Asumiendo que el cliente tiene un método para generar contenido
+        response = gemini_client.model.generate_content(prompt)
+        return response.text.strip()
+    except Exception as e:
+        logger.warning(f"IA context failed for {local} vs {visitante}: {e}")
+        return ""
+
+
+def _arbitraje_ia_con_contexto(viable_picks, contexto, local, visitante, gemini_client):
+    """Usa Gemini para elegir el mejor pick de una lista, basado en el contexto."""
+    if not gemini_client or not contexto or not viable_picks:
+        return viable_picks[0] if viable_picks else None
+
+    picks_str = "\n".join([f"- {p['pick']} (confianza heurística: {p['confianza']}%)" for p in viable_picks])
+    prompt = f"""Dado el siguiente contexto del partido {local} vs {visitante}:
+'{contexto}'
+
+Y estas posibles apuestas con su confianza heurística:
+{picks_str}
+
+¿Cuál de estas apuestas es la MEJOR opción considerando el contexto? Responde únicamente con el JSON de la apuesta elegida, usando la misma estructura de los ejemplos. El pick debe ser exactamente uno de los proporcionados.
+Ejemplo de respuesta: {{"pick": "UNDER 2.5", "confianza": 75, "regla": 4}}
+"""
+    try:
+        response = gemini_client.model.generate_content(prompt)
+        match = re.search(r'\{.*\}', response.text, re.DOTALL)
+        if match:
+            return json.loads(match.group())
+    except Exception as e:
+        logger.warning(f"IA arbitration failed for {local} vs {visitante}: {e}")
+    return viable_picks[0] # Fallback al mejor pick heurístico
+
 def analizar_futbol_jerarquico(
     local: str,
     visitante: str,
@@ -335,6 +393,7 @@ def analizar_futbol_jerarquico(
     fase: str = "",
     forzar_ranking: bool = False,
     liga: str = "",
+    gemini_client=None,
 ) -> dict:
     """
     Aplica reglas de descarte jerárquico para fútbol.
@@ -347,13 +406,36 @@ def analizar_futbol_jerarquico(
         forzar_ranking: usa SOLO el fallback por ranking FIFA (lógica pre-partido),
                    sin leer la DB. En el backtest de torneos evita el "leakage" de
                    stats post-juego y reproduce el MISMO pick que mostró la tarjeta.
+        gemini_client: Instancia del cliente de Gemini para análisis contextual.
     """
+    # --- Racha y situación de grupo ---
+    situacion_l, situacion_v = None, None
+    if es_torneo:
+        try:
+            situacion_l = situacion_grupo(local)
+            situacion_v = situacion_grupo(visitante)
+        except Exception:
+            pass  # No fallar si el módulo de contexto no está disponible
+
+    def _get_streak(gf, gc):
+        if not gf or not gc: return ""
+        chars = []
+        for f, c in zip(gf, gc):
+            if f > c: chars.append("V")
+            elif f < c: chars.append("D")
+            else: chars.append("E")
+        return "-".join(reversed(chars[-5:]))
+
     if forzar_ranking:
         res = _analisis_ranking_fifa(local, visitante, fase)
         res['h2h_historico'] = _h2h_suplemento(local, visitante)
         return res
     s_l = db.get_team_stats_detailed(local, "soccer")
     s_v = db.get_team_stats_detailed(visitante, "soccer")
+    rivales_l = s_l.get("rivales", []) if s_l else []
+    rivales_v = s_v.get("rivales", []) if s_v else []
+    streak_l = _get_streak(s_l.get("goles_favor", []) if s_l else [], s_l.get("goles_contra", []) if s_l else [])
+    streak_v = _get_streak(s_v.get("goles_favor", []) if s_v else [], s_v.get("goles_contra", []) if s_v else [])
 
     if not s_l or not s_v:
         res = _analisis_ranking_fifa(local, visitante, fase)
@@ -473,6 +555,12 @@ def analizar_futbol_jerarquico(
     prob_btts = (hits_btts / total_partidos) * 100 * factor_fase
     if prob_btts >= 60:
         viable_picks.append({"pick": "AMBOS ANOTAN (BTTS)", "confianza": round(prob_btts, 1), "regla": 3})
+    
+    # Regla "Ambos NO Anotan" (BTTS NO)
+    prob_btts_no = 100 - prob_btts
+    # Solo sugerir si la confianza es alta y no es un juego proyectado como de alta anotación
+    if prob_btts_no >= 68 and (avg_goles_l + avg_goles_v) / 2 < 2.7:
+        viable_picks.append({"pick": "AMBOS NO ANOTAN", "confianza": round(prob_btts_no, 1), "regla": 3})
 
     # ── Regla 4 — Overs de tiempo completo con su PROBABILIDAD REAL ─────────
     # Antes se elegía "el over más cercano al 55%", lo que IGNORABA a propósito
@@ -619,7 +707,9 @@ def analizar_futbol_jerarquico(
             return (6, -conf)
         if ("over 2.5" in pick_lower or "over 3.5" in pick_lower) and conf >= 50:
             return (1, -conf)   # OVER alto → mejor pago que OVER 1.5 desde 50%
-        if ("btts" in pick_lower or "ambos anotan" in pick_lower) and conf >= 58:
+        if "ambos no anotan" in pick_lower and conf >= 65:
+            return (1, -conf)   # BTTS NO es un pick de valor en juegos cerrados
+        if ("btts" in pick_lower or "ambos anotan" in pick_lower) and "no" not in pick_lower and conf >= 58:
             return (1, -conf)   # BTTS → ambos anotan, buen pago
         if "under" in pick_lower and conf >= 55:
             return (2, -conf)   # UNDER → matchup defensivo detectado
@@ -628,9 +718,28 @@ def analizar_futbol_jerarquico(
         return (4, -conf)       # OVER 1.5 / HT / resto → fallback
 
     primary = {"pick": "REVISAR DATOS", "confianza": 0.0, "regla": 99}
+    contexto_ia = ""
+
     if viable_picks:
         viable_picks.sort(key=_prioridad)
-        primary = viable_picks[0]
+        
+        # Si es torneo, obtener contexto de IA y dejar que arbitre
+        if es_torneo and gemini_client:
+            contexto_ia = _get_contexto_ia(
+                local, visitante, fase,
+                gl[-5:], gc[-5:], gv[-5:], gc_v[-5:],
+                gemini_client
+            )
+            if contexto_ia:
+                chosen_pick = _arbitraje_ia_con_contexto(viable_picks, contexto_ia, local, visitante, gemini_client)
+                # Encontrar el pick completo en la lista original para mantener todos los datos
+                primary = next((p for p in viable_picks if p["pick"] == chosen_pick.get("pick")), viable_picks[0])
+                primary['confianza'] = chosen_pick.get('confianza', primary['confianza']) # Actualizar confianza con la de la IA
+            else:
+                primary = viable_picks[0]
+        else:
+            primary = viable_picks[0]
+
     # Guardar pick ANTES de calibraciones (Motor 1 original — reglas puras sin ajuste de liga/WC)
     pick_motor_1 = primary["pick"]
     conf_motor_1 = primary["confianza"]
@@ -781,6 +890,17 @@ def analizar_futbol_jerarquico(
         "picks_multiples": picks_multiples,
         "marcador_correcto": marcador_correcto,
         "ajuste_dc": ajuste_dc,
+        "goles_favor_local_hist": gl[-5:],
+        "goles_contra_local_hist": gc[-5:],
+        "rivales_local_hist": rivales_l[-5:],
+        "goles_favor_visitante_hist": gv[-5:],
+        "goles_contra_visitante_hist": gc_v[-5:],
+        "rivales_visitante_hist": rivales_v[-5:],
+        "streak_local": streak_l,
+        "streak_visitante": streak_v,
+        "situacion_local": situacion_l,
+        "situacion_visitante": situacion_v,
+        "nota_ia": contexto_ia,
     }
 
 

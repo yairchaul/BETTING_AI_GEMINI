@@ -274,6 +274,27 @@ class PredictorHRPro:
         hr9_pitcher = pitcher_info.get("hr9", 1.0) or 1.0
         mano_pitcher = pitcher_info.get("mano", "R") or "R"
 
+        # --- MEJORA: Añadir Bullpen ERA para reflejar el juego completo ---
+        equipo_rival = pitcher_info.get("equipo_rival", "")
+        bullpen_hr9_rival = None
+        if equipo_rival:
+            try:
+                stats_rival = db.get_team_stats_detailed(equipo_rival, 'mlb') or {}
+                # Usar bullpen_era como proxy para la vulnerabilidad a HR del bullpen
+                bullpen_era_rival = stats_rival.get('bullpen_era', 4.2)
+                # Convertir ERA a un factor HR/9-like (asumiendo correlación)
+                bullpen_hr9_rival = (bullpen_era_rival / 4.2) * 1.20
+            except Exception:
+                pass
+
+        # --- MEJORA: Integración directa de Statcast para precisión quirúrgica ---
+        statcast_factor, statcast_nota = 1.0, ""
+        try:
+            from motors.pybaseball_hr import factor_hr_statcast
+            statcast_factor, statcast_nota = factor_hr_statcast(bateador_stats.get("nombre", ""))
+        except Exception:
+            pass
+
         # Factor de parque desde la base de estadios
         park_factor = 1.0
         try:
@@ -287,8 +308,9 @@ class PredictorHRPro:
         fatiga_factor = (fatiga or {}).get("factor", 1.0) if isinstance(fatiga, dict) else (fatiga or 1.0)
         prob_final = _prob_hr_poisson(
             hr_por_juego=hr_por_juego, hr_total=hr_total,
-            pitcher_hr9=hr9_pitcher, park_factor=park_factor,
-            mano_pitcher=mano_pitcher, ops=ops, clima=clima, fatiga=fatiga_factor,
+            pitcher_hr9=hr9_pitcher, bullpen_hr9=bullpen_hr9_rival,
+            park_factor=park_factor,
+            mano_pitcher=mano_pitcher, ops=ops, statcast_factor=statcast_factor, clima=clima, fatiga=fatiga_factor,
         )
 
         # Factores DESCRIPTIVOS (transparencia; no inflan la probabilidad)
@@ -299,6 +321,10 @@ class PredictorHRPro:
             factores.append(f"🛡️ Pitcher difícil (HR/9={hr9_pitcher:.1f})")
         if mano_pitcher == "L":
             factores.append("👈 Abridor zurdo")
+        if statcast_nota:
+            factores.append(statcast_nota)
+        if bullpen_hr9_rival is not None and bullpen_hr9_rival > 1.3:
+            factores.append(f" bullpen rival vulnerable (ERA {stats_rival.get('bullpen_era', '?'):.2f})")
         if park_factor > 1.1:
             factores.append(f"🏟️ Estadio favorable ({estadio}, {park_factor:.2f})")
         elif park_factor < 0.9:

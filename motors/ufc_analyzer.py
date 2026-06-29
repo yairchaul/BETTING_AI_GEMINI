@@ -5,6 +5,7 @@ Unifica: Heurística (Alcance/Altura/KO) + Sabermetrics (Edad/Accuracy/P4P) + Je
 """
 import logging
 import re
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -70,9 +71,10 @@ class UFCAnalyzer:
         except (ValueError, IndexError):
             return 0.0
 
-    def calculate_score(self, fighter, opponent):
+    def calculate_score(self, fighter, opponent, combate_info=None):
         """Calcula el Power Score basado en 9 pilares técnicos."""
         score = 50
+        razones = []
         
         # 1. CAMPEÓN / P4P
         if self.rankings:
@@ -82,30 +84,45 @@ class UFCAnalyzer:
             elif bonus >= 0.03: score += 5
             
             p4p_pos = self.rankings.get_p4p_position(name)
-            if p4p_pos and p4p_pos <= 10: score += 6
+            if p4p_pos and p4p_pos <= 10:
+                score += 6
+                razones.append(f"Ranking P4P #{p4p_pos}")
 
         # 2. KO Rate (Potencia)
         ko = self._to_num(fighter.get('ko_rate', 0))
         if isinstance(ko, str): ko = 0
         if ko > 1: ko /= 100
-        if ko >= 0.65: score += 8
-        elif ko >= 0.45: score += 4
+        if ko >= 0.65:
+            score += 8
+            razones.append(f"Poder de KO ({ko:.0%})")
+        elif ko >= 0.45:
+            score += 4
 
         # 3. Ventaja Física (Alcance) - Pilar Heurístico (Corregido)
         a1 = self._parse_reach_to_cm(fighter.get('alcance', '0'))
         a2 = self._parse_reach_to_cm(opponent.get('alcance', '0'))
-        if a1 > 0 and a2 > 0 and a1 > a2 + 5: # Ventaja crítica de 5cm
-            score += 7
-            # BONO ADICIONAL: Si tiene ventaja de alcance Y alto volumen de golpes
-            slpm = self._to_num(fighter.get('estadisticas_carrera', {}).get('sig_strikes_landed_per_min', 0))
-            if slpm >= 4.5:
-                score += 3 # Bono extra por saber usar el alcance
-        elif a1 > a2: score += 2
+        if a1 > 0 and a2 > 0:
+            reach_diff = a1 - a2
+            if reach_diff > 10:  # Ventaja de más de 10 cm
+                score += 10  # Bono significativo
+                razones.append(f"Ventaja de alcance (+{reach_diff:.0f} cm)")
+            elif reach_diff > 5:  # Ventaja crítica de 5cm
+                score += 7
+                razones.append(f"Ventaja de alcance (+{reach_diff:.0f} cm)")
+                # BONO ADICIONAL: Si tiene ventaja de alcance Y alto volumen de golpes
+                slpm = self._to_num(fighter.get('estadisticas_carrera', {}).get('sig_strikes_landed_per_min', 0))
+                if slpm >= 4.5:
+                    score += 3  # Bono extra por saber usar el alcance
+                    razones.append("Sabe usar su alcance (alto volumen)")
+            elif reach_diff > 0:
+                score += 2
 
         # 3.1 Altura (Rescatado de Enhanced) (Corregido)
         h1 = self._parse_height_to_cm(fighter.get('altura', '0'))
         h2 = self._parse_height_to_cm(opponent.get('altura', '0'))
-        if h1 > 0 and h2 > 0 and h1 > h2 + 5: score += 3 # Ventaja de 5cm
+        if h1 > 0 and h2 > 0 and h1 > h2 + 5:
+            score += 3  # Ventaja de 5cm
+            razones.append(f"Ventaja de altura (+{h1-h2:.0f} cm)")
 
         # 4. Experiencia y Win Rate
         w1 = self._to_num(fighter.get('wins', 0))
@@ -119,40 +136,75 @@ class UFCAnalyzer:
             except:
                 l1 = 0
         exp1 = w1 + l1
-        if exp1 >= 20: score += 4
+        if exp1 >= 20:
+            score += 4
+            razones.append(f"Veterano ({exp1} peleas)")
+
+        # 4.1 Contexto de la pelea (NUEVO) - Inexperiencia en peleas de campeonato
+        if combate_info:
+            evento_lower = (combate_info.get('evento', '') or '').lower()
+            is_title_fight = 'championship' in evento_lower or 'title' in evento_lower
+            is_main_event = combate_info.get('is_main_event', False)
+
+            if (is_title_fight or is_main_event) and exp1 < 10:
+                score -= 8  # Penalización por inexperiencia en peleas de alto calibre
+                razones.append(f"Inexperto en peleas estelares ({exp1} peleas)")
         
         # 5. Edad / Peak (27-32 es prime)
         age = self._to_num(fighter.get('edad', 30))
-        if 27 <= age <= 32: score += 6
-        elif age >= 36: score -= 4
+        if 27 <= age <= 32:
+            score += 6
+            razones.append("En su 'prime' físico")
+        elif age >= 36:
+            score -= 4
+            razones.append("En declive físico (edad)")
 
         # 5.1 Racha Reciente (NUEVO)
         streak_val = self._parse_streak(fighter.get('streak', ''))
         if streak_val >= 3:
             score += 5 # Bono por racha de 3+ victorias
+            razones.append(f"Racha de {streak_val} victorias")
         elif streak_val <= -2:
-            score -= 3 # Penalización por racha de 2+ derrotas
+            score -= 5 # Penalización AUMENTADA por racha de 2+ derrotas
+            razones.append(f"Racha de {abs(streak_val)} derrotas")
+
+        # 5.2 Inactividad (NUEVO) - Penalización por más de 1 año sin pelear
+        try:
+            # El scraper de UFCStats.com no provee esta fecha, pero el de ESPN sí.
+            # Si el dato está presente en el diccionario del peleador, se usa.
+            last_fight_date_str = fighter.get('last_fight_date')
+            if last_fight_date_str:
+                last_fight_date = datetime.strptime(last_fight_date_str, '%Y-%m-%d')
+                if (datetime.now() - last_fight_date).days > 365:
+                    score -= 5 # Penalización de 5 puntos
+                    razones.append("Inactividad (+1 año)")
+        except (ValueError, TypeError):
+            pass # Ignorar si la fecha no es válida o no está presente
 
         # 6. Striking Accuracy (Mapeado de str_acc)
         s_acc = self._to_num(fighter.get('str_acc', 0))
         if s_acc > 1: s_acc /= 100
-        if s_acc >= 0.50: score += 4
+        if s_acc >= 0.50:
+            score += 4
+            razones.append(f"Precisión de golpeo ({s_acc:.0%})")
 
         # 7. Takedown Accuracy (Mapeado de td_acc)
         t_acc = fighter.get('td_acc', 0)
         if t_acc > 1: t_acc /= 100
-        if t_acc >= 0.45: score += 4
+        if t_acc >= 0.45:
+            score += 4
+            razones.append(f"Precisión de derribo ({t_acc:.0%})")
 
-        return score
+        return score, razones
 
-    def analizar_combate(self, p1_data, p2_data):
+    def analizar_combate(self, p1_data, p2_data, combate_info=None):
         """Realiza el cruce de datos y devuelve el veredicto visual."""
         p1_nombre = p1_data.get('nombre', 'Peleador 1')
         p2_nombre = p2_data.get('nombre', 'Peleador 2')
         
         # Cálculo de Scores Técnicos
-        score1 = self.calculate_score(p1_data, p2_data)
-        score2 = self.calculate_score(p2_data, p1_data)
+        score1, razones1 = self.calculate_score(p1_data, p2_data, combate_info)
+        score2, razones2 = self.calculate_score(p2_data, p1_data, combate_info)
         
         total = score1 + score2
         prob = round((score1 / total) * 100) if total > 0 else 50
@@ -161,9 +213,11 @@ class UFCAnalyzer:
         if prob >= 50:
             winner_name, winner_data, loser_data = p1_data.get('nombre', 'P1'), p1_data, p2_data
             confianza = prob
+            razones_ganador = razones1
         else:
             winner_name, winner_data, loser_data = p2_data.get('nombre', 'P2'), p2_data, p1_data
             confianza = 100 - prob
+            razones_ganador = razones2
 
         # Predicción de Método (Normalizando tipos)
         ko_rate = self._to_num(winner_data.get('ko_rate', 0))
@@ -181,6 +235,9 @@ class UFCAnalyzer:
         
         # Lógica de Jerarquía de Decisiones (Rescatada de Enhanced)
         razon = "Superioridad técnica y estadística."
+        if razones_ganador:
+            razon = ", ".join(razones_ganador[:3]) + "."  # Top 3 razones
+
         if prob / 100 > self.umbral_ko and (ko_rate >= 0.50):
             decision_str = f"GANA {winner_name.upper()} POR KO/TKO"
             razon = "Dominio físico y alta potencia de finalización."

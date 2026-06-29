@@ -185,10 +185,16 @@ def contexto_partido(local: str, visitante: str, es_torneo: bool = True) -> str:
     except Exception:
         situacion_grupo = None
 
+    # Cobertura de datos por equipo: si NO tenemos ni forma ni noticias, el pick
+    # se está generando "a ciegas" (solo ranking/heurística). Hay que avisarlo.
+    cobertura = {local: {"forma": False, "noticias": False},
+                 visitante: {"forma": False, "noticias": False}}
+
     for equipo in (local, visitante):
         forma = _forma_y_estilo(equipo)
         if forma:
             lineas.append(f"{equipo} — {forma}.")
+            cobertura[equipo]["forma"] = True
         if situacion_grupo:
             sg = situacion_grupo(equipo)
             if sg:
@@ -197,12 +203,25 @@ def contexto_partido(local: str, visitante: str, es_torneo: bool = True) -> str:
         if lista_gol:
             top = ", ".join(f"{g['jugador']} ({g.get('prob', 0)}% anota)" for g in lista_gol[:2])
             lineas.append(f"Goleadores {equipo}: {top}.")
-        for a in noticias_de_equipo(equipo, nots, max_n=2):
+        noticias_eq = noticias_de_equipo(equipo, nots, max_n=2)
+        for a in noticias_eq:
             txt = a["headline"]
             if a.get("description"):
                 txt += f" — {a['description']}"
             lineas.append(f"NOTICIA [{equipo}]: {txt}")
+        if noticias_eq:
+            cobertura[equipo]["noticias"] = True
+
+    # Aviso de contexto limitado (visible para la IA y para quien muestre el bloque)
+    a_ciegas = [eq for eq, c in cobertura.items() if not c["forma"] and not c["noticias"]]
+    aviso = ""
+    if a_ciegas:
+        aviso = ("⚠️ CONTEXTO LIMITADO para " + " y ".join(a_ciegas) +
+                 ": sin noticias recientes ni forma en la DB — para ese(esos) "
+                 "equipo(s) el pick se apoya solo en ranking/heurística, NO en datos "
+                 "del torneo. Trátalo con cautela.\n")
 
     if not lineas:
-        return ""
-    return "CONTEXTO REAL DEL TORNEO (considera lesiones, bajas, moral, polémicas):\n- " + "\n- ".join(lineas)
+        return (aviso + "CONTEXTO REAL DEL TORNEO: sin datos disponibles.") if aviso else ""
+    return (aviso + "CONTEXTO REAL DEL TORNEO (considera lesiones, bajas, moral, "
+            "polémicas):\n- " + "\n- ".join(lineas))

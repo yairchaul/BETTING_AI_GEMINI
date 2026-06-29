@@ -58,7 +58,7 @@ from visual_futbol_triple import VisualFutbolTriple
 from radar_triples_nba import radar_triples
 from visualizers.visual_mlb import VisualMLB
 try:
-    from visualizers.parlay_builder import render_parlay_tab
+    from visualizers.parlay_builder import render_parlay_tab, render_parlay_backtest_section
 except Exception:
     render_parlay_tab = None
 from database_manager import db
@@ -1014,7 +1014,7 @@ def main():
                 if res_ufc is None:
                     try:
                         res_ufc = st.session_state.ufc_analyzer.analizar_combate(
-                            partido_visual['peleador1'], partido_visual['peleador2'])
+                            partido_visual['peleador1'], partido_visual['peleador2'], combate_info=c)
                         st.session_state.analisis_ufc[fight_key] = res_ufc
                         db.guardar_backtesting("UFC", f"{p1_nombre} vs {p2_nombre}", res_ufc.get('ganador', ''))
                     except Exception as _e:
@@ -1034,7 +1034,7 @@ def main():
 
                 if accion == "analizar":
                     with st.spinner("🚀 Ejecutando Análisis de UFC..."):
-                        resultado_heuristico = st.session_state.ufc_analyzer.analizar_combate(partido_visual['peleador1'], partido_visual['peleador2'])
+                        resultado_heuristico = st.session_state.ufc_analyzer.analizar_combate(partido_visual['peleador1'], partido_visual['peleador2'], combate_info=c)
 
                         if st.session_state.get("selected_ia_model", "Heurístico") != "Heurístico":
                             analista = AnalistaTotal(
@@ -1065,7 +1065,7 @@ def main():
                         # Claude SIEMPRE (si está conectado) para la columna Premium, independiente del modelo elegido
                         if st.session_state.get("claude"):
                             try:
-                                analista_claude = AnalistaTotal(claude_client=st.session_state.claude, selected_model="Claude")
+                                analista_claude = AnalistaTotal(claude_client=st.session_state.claude, selected_model="Claude") # type: ignore
                                 st.session_state.analisis_ufc[claude_key] = analista_claude.analizar_ufc(partido_visual, resultado_heuristico)
                             except Exception as _ce:
                                 logger.warning(f"Claude UFC falló: {_ce}")
@@ -1097,6 +1097,7 @@ def main():
                                     es_torneo=p.get('es_torneo', False),
                                     fase=p.get('fase', ''),
                                     liga=liga,
+                                    gemini_client=st.session_state.get("gemini"),
                                 )
                                 st.session_state.analisis_futbol[key_fut] = res_fut
                                 pick_f = res_fut.get('pick', '')
@@ -1233,6 +1234,17 @@ def main():
     with tab5:
         st.header("📊 Reporte de Backtesting Universal")
         st.caption("Resultados del rendimiento histórico de los motores de análisis.")
+
+        # --- Sección de Backtesting de Parlays (movida desde la pestaña de Parlays) ---
+        st.markdown("---")
+        if render_parlay_backtest_section:
+            try:
+                render_parlay_backtest_section()
+            except Exception as e:
+                st.error(f"Error al cargar el backtest de parlays: {e}")
+                logger.exception(e)
+        else:
+            st.warning("Módulo de backtesting de parlays no disponible.")
 
         # ── 🧠 APRENDIZAJE — Parlays generados + aciertos ───────────────────
         with st.expander("🧠 Aprendizaje — Parlays generados y resultados", expanded=False):
@@ -1386,36 +1398,6 @@ def main():
                         st.rerun()
                     except Exception as _re:
                         st.error(f"Error: {_re}")
-
-            # ── Estadísticas de aprendizaje por TIPO de parlay ────────────────
-            try:
-                from motors.parlay_brain import stats_por_tipo
-                _stats_t = stats_por_tipo()
-                if _stats_t:
-                    st.markdown("---")
-                    st.markdown("**📊 Aprendizaje por tipo de parlay (resultados reales):**")
-                    st.caption("Cuántos parlays de cada tipo se resolvieron y cuál tiene mejor tasa de acierto. "
-                               "El generador ya usa esto para mostrarte primero los tipos más rentables.")
-                    filas_t = sorted(_stats_t.items(), key=lambda x: x[1].get("win_rate", 0), reverse=True)
-                    for tipo_t, s_t in filas_t:
-                        color_t = "#22c55e" if s_t["win_rate"] >= 50 else "#ef4444"
-                        tipo_lbl = str(tipo_t).replace("🎯","").replace("🟢","").replace("🟡","").replace(
-                            "🔴","").replace("🟣","").replace("💎","").replace("⚡","").strip()[:30]
-                        st.markdown(
-                            f"<div style='background:#0f172a;border-radius:6px;padding:5px 12px;margin:2px 0'>"
-                            f"<b>{tipo_lbl}</b> — "
-                            f"<span style='color:{color_t}'>{s_t['win_rate']}% acierto</span> "
-                            f"({s_t['ganados']}/{s_t['total']}) · "
-                            f"ROI <span style='color:{'#22c55e' if s_t['roi']>=0 else '#ef4444'}'>"
-                            f"{s_t['roi']:+.1f}%</span>"
-                            f"</div>",
-                            unsafe_allow_html=True,
-                        )
-                    st.caption("⚠️ Necesitas al menos 4+ parlays resueltos por tipo para que el aprendizaje "
-                               "sea estadísticamente significativo. Genera parlays diariamente y resuélvelos "
-                               "con los botones de arriba.")
-            except Exception:
-                pass
 
             # ── Tabla pick_memory por deporte / mercado ───────────────────────
             if pick_memory is not None:

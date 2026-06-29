@@ -19,11 +19,25 @@ El cerebro devuelve factores de ajuste por mercado que se aplican a la
 confianza del motor ANTES de emitir el pick.
 """
 import os
+import re
 import json
 import logging
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
+
+# Detección ROBUSTA de "es liga del Mundial". Antes se usaba 'wc' in liga como
+# substring, lo que daba falsos positivos: "neWCastle" contiene "wc". Aquí se
+# exige palabra completa (world cup / mundial / fifa world / wc / copa del mundo).
+_WC_PATRON = re.compile(
+    r"\b(?:world\s*cup|mundial|copa\s*del\s*mundo|fifa\s*world)\b|(?<![a-z])wc(?![a-z])",
+    re.IGNORECASE,
+)
+
+
+def es_liga_wc(liga) -> bool:
+    """True si la liga/torneo corresponde al Mundial (con límites de palabra)."""
+    return bool(_WC_PATRON.search(str(liga or "")))
 
 # ── Tasas históricas WC (2014–2022, calculadas sobre 192 partidos finales) ──
 _WC_BASE = {
@@ -88,9 +102,7 @@ def _leer_live_wc() -> dict:
         wc_picks = [
             p for p in picks
             if (p.get("estado") in ("ganado", "perdido"))
-            and ("world" in str(p.get("liga", "")).lower()
-                 or "wc" in str(p.get("liga", "")).lower()
-                 or "mundial" in str(p.get("liga", "")).lower())
+            and es_liga_wc(p.get("liga", ""))
         ]
         for p in wc_picks:
             mkt = (p.get("mercado") or "").upper()

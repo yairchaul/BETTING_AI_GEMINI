@@ -3,6 +3,7 @@
 
 import json
 import os
+from database_manager import db
 from .predictor_hr import predictor_hr
 
 _UMPIRES_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "inteligencia_umpires.json")
@@ -30,13 +31,19 @@ class MotorOverUnder:
         "Citizens Bank Park": 0.6, "Fenway Park": 0.4, "Wrigley Field": 0.3,
         "Oriole Park at Camden Yards": 0.3, "Globe Life Field": 0.2,
         "Truist Park": 0.2, "Minute Maid Park": 0.2, "Busch Stadium": -0.2,
-        "Dodger Stadium": -0.3, "Oracle Park": -0.6, "Petco Park": -0.7,
-        "T-Mobile Park": -0.8, "Oakland Coliseum": -0.4, "Tropicana Field": -0.3,
-        "American Family Field": -0.1, "Chase Field": 0.3, "PNC Park": -0.2,
-        "Kauffman Stadium": -0.1, "Progressive Field": -0.2, "Target Field": -0.1,
-        "Guaranteed Rate Field": 0.1, "Angel Stadium": -0.1, "Comerica Park": -0.3,
-        "Nationals Park": 0.0, "loanDepot park": -0.4, "Rogers Centre": 0.2,
+        "Dodger Stadium": -0.3, "Oracle Park": -0.6, "Petco Park": -0.7, "T-Mobile Park": -0.8,
+        "Oakland Coliseum": -0.4, "Tropicana Field": -0.3, "American Family Field": -0.1,
+        "Chase Field": 0.3, "PNC Park": -0.2, "Kauffman Stadium": -0.1,
+        "Progressive Field": -0.2, "Target Field": -0.1, "Guaranteed Rate Field": 0.1,
+        "Angel Stadium": -0.1, "Comerica Park": -0.3, "Nationals Park": 0.0,
+        "loanDepot park": -0.4, "Rogers Centre": 0.2,
     }
+
+    # Media de liga y respaldos POR EQUIPO. La DB (get_team_stats_detailed) manda
+    # cuando trae forma reciente; si viene vacía (aún sin scrapear), se usa este
+    # estático real para NO perder la diferenciación entre equipos. Antes Gemini
+    # lo borró y dejó a todos en la media → el modelo no distinguía ofensivas.
+    LEAGUE_AVG = {"avg_runs": 4.4, "bullpen_era": 4.2}
 
     TEAM_RUNS_AVG = {
         "Los Angeles Dodgers": 5.2, "Atlanta Braves": 5.1, "New York Yankees": 4.9,
@@ -51,17 +58,14 @@ class MotorOverUnder:
         "St. Louis Cardinals": 3.4, "New York Mets": 3.3, "Los Angeles Angels": 3.2,
     }
 
-    TEAM_RUNS_ALLOWED = {
-        "Atlanta Braves": 3.5, "Los Angeles Dodgers": 3.6, "New York Yankees": 3.7,
-        "Philadelphia Phillies": 3.8, "Houston Astros": 3.9, "Baltimore Orioles": 4.0,
-        "Seattle Mariners": 4.0, "Cleveland Guardians": 4.1, "Minnesota Twins": 4.1,
-        "San Diego Padres": 4.2, "Toronto Blue Jays": 4.2, "Arizona Diamondbacks": 4.3,
-        "Texas Rangers": 4.3, "Cincinnati Reds": 4.4, "Boston Red Sox": 4.5,
-        "Milwaukee Brewers": 4.5, "Chicago Cubs": 4.6, "Tampa Bay Rays": 4.6,
-        "Miami Marlins": 4.7, "San Francisco Giants": 4.7, "Washington Nationals": 4.8,
-        "Detroit Tigers": 4.9, "Kansas City Royals": 4.9, "Pittsburgh Pirates": 5.0,
-        "St. Louis Cardinals": 5.0, "Chicago White Sox": 5.1, "Colorado Rockies": 5.2,
-        "New York Mets": 5.2, "Oakland Athletics": 5.3, "Los Angeles Angels": 5.3,
+    BULLPEN_ERA = {
+        "New York Yankees": 3.1, "Cleveland Guardians": 3.2, "Los Angeles Dodgers": 3.3,
+        "Baltimore Orioles": 3.4, "Seattle Mariners": 3.5, "Atlanta Braves": 3.6,
+        "Milwaukee Brewers": 3.7, "Houston Astros": 3.8, "Tampa Bay Rays": 3.9,
+        "San Diego Padres": 4.0, "Philadelphia Phillies": 4.1, "Texas Rangers": 4.2,
+        "Boston Red Sox": 4.3, "Chicago Cubs": 4.4, "New York Mets": 4.5,
+        "Miami Marlins": 4.6, "San Francisco Giants": 4.7, "Arizona Diamondbacks": 4.8,
+        "Colorado Rockies": 5.5, "Oakland Athletics": 5.2, "Chicago White Sox": 5.0,
     }
 
     def calcular_total(self, partido: dict) -> dict:
@@ -70,6 +74,14 @@ class MotorOverUnder:
         venue    = partido.get("venue", "Estadio Neutral")
         game_pk  = partido.get("game_pk")
 
+        # Datos dinámicos desde la DB cuando existan; si no, respaldo estático real.
+        try:
+            stats_l = db.get_team_stats_detailed(local, 'mlb') or {}
+            stats_v = db.get_team_stats_detailed(visitante, 'mlb') or {}
+        except Exception:
+            stats_l, stats_v = {}, {}
+        league_avg = self.LEAGUE_AVG
+
         pitchers  = partido.get("pitchers", {})
         p_local   = pitchers.get("local", {}) if isinstance(pitchers.get("local"), dict) else {}
         p_visit   = pitchers.get("visitante", {}) if isinstance(pitchers.get("visitante"), dict) else {}
@@ -77,15 +89,21 @@ class MotorOverUnder:
         era_l = float(p_local.get("era", 4.50))
         era_v = float(p_visit.get("era", 4.50))
 
-        # ── 1. Base por lanzadores ────────────────────────────────────────────
-        carreras_base = (era_l + era_v) / 2 * 0.9
+        # 1. Base por lanzadores (65% abridor, 35% bullpen). Bullpen: DB → estático → liga.
+        bp_era_l = stats_l.get('bullpen_era') or self.BULLPEN_ERA.get(local, league_avg['bullpen_era'])
+        bp_era_v = stats_v.get('bullpen_era') or self.BULLPEN_ERA.get(visitante, league_avg['bullpen_era'])
+        carreras_esperadas_l = era_v * 0.65 + bp_era_v * 0.35 # Carreras que se espera anote el local
+        carreras_esperadas_v = era_l * 0.65 + bp_era_l * 0.35 # Carreras que se espera anote el visitante
+        carreras_base = carreras_esperadas_l + carreras_esperadas_v
 
         # ── 2. Parque ─────────────────────────────────────────────────────────
         bono_estadio = self.PARK_FACTORS.get(venue, 0.0)
 
-        # ── 3. Ofensiva / Defensiva ───────────────────────────────────────────
-        off_f = (self.TEAM_RUNS_AVG.get(local, 4.0) + self.TEAM_RUNS_AVG.get(visitante, 4.0)) / 8.0
-        def_f = 8.0 / (self.TEAM_RUNS_ALLOWED.get(local, 4.0) + self.TEAM_RUNS_ALLOWED.get(visitante, 4.0))
+        # ── 3. Factor Ofensivo (forma reciente vs media de liga). Runs: DB → estático → liga.
+        avg_runs_l = stats_l.get('avg_runs_for') or self.TEAM_RUNS_AVG.get(local, league_avg['avg_runs'])
+        avg_runs_v = stats_v.get('avg_runs_for') or self.TEAM_RUNS_AVG.get(visitante, league_avg['avg_runs'])
+        off_factor = (avg_runs_l / league_avg['avg_runs']) * (avg_runs_v / league_avg['avg_runs'])
+        off_factor = max(0.85, min(1.15, off_factor)) # Acotar para evitar valores extremos
 
         # ── 4. Clima ──────────────────────────────────────────────────────────
         bono_clima = 0.0
@@ -184,11 +202,27 @@ class MotorOverUnder:
 
         # ── 7. Total proyectado ───────────────────────────────────────────────
         total_proy = round(
-            (carreras_base * off_f * def_f) + bono_estadio + bono_clima + bono_umpire - penalizacion_lineup,
+            (carreras_base * off_factor) + bono_estadio + bono_clima + bono_umpire - penalizacion_lineup,
             1,
         )
 
         linea_vegas = float(partido.get("odds", {}).get("over_under", 8.5))
+
+        # ── Segunda opinión: MODELO DE CARRERAS (Dixon-Coles de béisbol) ──────
+        # La matriz Poisson de carreras da el total esperado y P(over) de forma
+        # coherente con ML y run line. Se mezcla 50/50 con el total heurístico.
+        p_over_modelo = None
+        try:
+            from .mlb_runs_model import predecir as _predecir_runs
+            _rm = _predecir_runs(local, visitante, linea_total=linea_vegas)
+            if _rm and _rm.get("disponible"):
+                total_modelo = _rm.get("total_esperado")
+                p_over_modelo = _rm.get("total", {}).get("over")
+                if total_modelo:
+                    total_proy = round(0.5 * total_proy + 0.5 * float(total_modelo), 1)
+        except Exception:
+            pass
+
         diff = round(total_proy - linea_vegas, 1)
 
         if diff >= 0.8:
@@ -197,6 +231,11 @@ class MotorOverUnder:
             rec, conf = "UNDER", min(85, 60 + int(abs(diff) * 12))
         else:
             rec, conf = "PASAR", 50
+
+        # Si el modelo de carreras coincide con fuerza, refuerza la confianza.
+        if p_over_modelo is not None and rec != "PASAR":
+            pm = p_over_modelo if rec == "OVER" else (100 - p_over_modelo)
+            conf = int(round(min(88, max(40, 0.5 * conf + 0.5 * pm))))
 
         return {
             "total_proyectado":  total_proy,

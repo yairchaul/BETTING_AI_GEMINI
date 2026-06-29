@@ -58,7 +58,7 @@
     "prob": 83.0
    }
   ],
-  "estado": "pendiente"
+  "estado": "perdido"
  },
  {
   "id": "par_20260619164657_9046",
@@ -971,7 +971,7 @@
     "prob": 78.4
    }
   ],
-  "estado": "pendiente"
+  "estado": "perdido"
  },
  {
   "id": "par_20260625130104_2075",
@@ -1095,7 +1095,7 @@
     "prob": 58.0
    }
   ],
-  "estado": "pendiente"
+  "estado": "perdido"
  },
  {
   "id": "par_20260625130104_7805",
@@ -1136,7 +1136,7 @@
     "prob": 11.4
    }
   ],
-  "estado": "pendiente"
+  "estado": "perdido"
  },
  {
   "id": "par_20260625130104_6066",
@@ -1218,7 +1218,7 @@
     "prob": 9.8
    }
   ],
-  "estado": "pendiente"
+  "estado": "perdido"
  },
  {
   "id": "par_20260625130104_2742",
@@ -1370,7 +1370,7 @@
     "prob": 88.0
    }
   ],
-  "estado": "pendiente"
+  "estado": "perdido"
  },
  {
   "id": "par_20260625130104_5945",
@@ -1460,6 +1460,6 @@
     "prob": 53.0
    }
   ],
-  "estado": "pendiente"
+  "estado": "perdido"
  }
 ]

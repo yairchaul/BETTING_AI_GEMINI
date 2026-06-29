@@ -110,13 +110,24 @@ def factor_fatiga(fatiga):
 
 def prob_hr(hr_por_juego, hr_total=0, juegos=0, pitcher_hr9=None,
             park_factor=1.0, mano_pitcher="R", mano_bateador=None, ops=None,
-            clima=None, fatiga=None):
+            statcast_factor=1.0, clima=None, fatiga=None, bullpen_hr9=None):
     """Probabilidad calibrada (%) de que el bateador pegue ≥1 HR en el juego."""
     hpg = tasa_shrunk(hr_por_juego, hr_total, juegos)
+
+    # Ponderar factores de pitcheo: 65% abridor, 35% bullpen — PERO el bullpen
+    # solo pesa si hay dato real. Sin él, factor_pitcher(None)=1.0 diluiría la
+    # señal del abridor un 35% sin razón; en ese caso usamos solo el abridor.
+    f_abridor = factor_pitcher(pitcher_hr9)
+    if bullpen_hr9 and bullpen_hr9 > 0:
+        f_pitcher_total = f_abridor * 0.65 + factor_pitcher(bullpen_hr9) * 0.35
+    else:
+        f_pitcher_total = f_abridor
+
     lam = (hpg
-           * factor_pitcher(pitcher_hr9)
+           * f_pitcher_total
            * factor_parque(park_factor)
            * factor_mano(mano_pitcher, mano_bateador)
+           * max(0.75, min(1.40, statcast_factor or 1.0))  # Integrar Statcast con más peso
            * factor_clima(clima)
            * factor_fatiga(fatiga))
     # Ajuste MUY leve por OPS de élite (acotado; no doble-cuenta el grueso)

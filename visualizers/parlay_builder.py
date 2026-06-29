@@ -19,7 +19,8 @@ from datetime import datetime, timedelta
 
 try:
     from motors.pick_memory import pick_memory
-except Exception:
+    from motors.parlay_brain import stats_por_tipo
+except ImportError:
     pick_memory = None
 
 logger = logging.getLogger(__name__)
@@ -123,22 +124,9 @@ def _decimal_a_americano(dec):
         return "—"
 
 
-def _recolectar_picks(dia_filtro=None):
-    """Corre los motores sobre todo lo cargado y devuelve un pool de picks.
-
-    dia_filtro: 'YYYY-MM-DD' para quedarte solo con los juegos de ese día
-    (recalcula picks frescos del día, útil entre semana por lesiones/cambios).
-    """
-    ss = st.session_state
+def _recolectar_picks_nba(ss, _es_del_dia, **kwargs):
+    """Recolecta los picks de NBA."""
     pool = []
-
-    def _es_del_dia(p):
-        # Debe ser del día pedido Y no haber empezado/terminado todavía
-        if not _no_iniciado(p):
-            return False
-        return (dia_filtro is None) or (_fecha_iso(p) == dia_filtro)
-
-    # ── NBA ──────────────────────────────────────────────────────────────
     try:
         from motors import analizar_nba_pro_v17
         for p in ss.get("nba_partidos", []) or []:
@@ -164,6 +152,13 @@ def _recolectar_picks(dia_filtro=None):
                     "cuota": CUOTA_DEFAULT.get(mejor.get("mercado", "").split()[0], 1.90),
                 })
             # Props de jugador (puntos/asistencias/triples) — la más confiable por equipo
+            # Añadir racha para el parlay de rachas
+            if mejor and mejor.get("pick"):
+                is_local_pick = p.get('local', '') in mejor.get('pick', '')
+                streak = p.get('local_streak', '') if is_local_pick else p.get('visitante_streak', '')
+                if streak:
+                    pool[-1]['streak'] = streak
+
             try:
                 from motors.nba_props import obtener_props_partido
                 pr = obtener_props_partido(p.get('local',''), p.get('visitante',''), db=ss.get('_db'))
@@ -180,7 +175,12 @@ def _recolectar_picks(dia_filtro=None):
     except Exception as e:
         logger.warning(f"Parlay NBA: {e}")
 
-    # ── MLB ──────────────────────────────────────────────────────────────
+    return pool
+
+
+def _recolectar_picks_mlb(ss, _es_del_dia, **kwargs):
+    """Recolecta los picks de MLB."""
+    pool = []
     try:
         from motors import analizar_mlb_pro_v20
         for p in ss.get("mlb_partidos", []) or []:
@@ -208,6 +208,11 @@ def _recolectar_picks(dia_filtro=None):
                     "prob": mejor.get("confianza", 0), "tipo": "SEGURO",
                     "cuota": _cuota.get(mk, 1.90),
                 })
+                # Añadir racha para el parlay de rachas
+                is_local_pick = p.get('local', '') in mejor.get('pick', '')
+                streak = p.get('local_streak', '') if is_local_pick else p.get('visitante_streak', '')
+                if streak:
+                    pool[-1]['streak'] = streak
 
             # HR candidates (props de mayor pago) — para los parlays BOMBA/SLUGGER.
             # SOLO si el bateador está en la alineación del día (oficial o proyectada).
@@ -222,8 +227,12 @@ def _recolectar_picks(dia_filtro=None):
                 })
     except Exception as e:
         logger.warning(f"Parlay MLB: {e}")
+    return pool
 
-    # ── UFC ──────────────────────────────────────────────────────────────
+
+def _recolectar_picks_ufc(ss, _es_del_dia, **kwargs):
+    """Recolecta los picks de UFC."""
+    pool = []
     try:
         _ufc_analyzer = ss.get("ufc_analyzer")
         for idx, c in enumerate(ss.get("ufc_combates", []) or []):
@@ -280,33 +289,16 @@ def _recolectar_picks(dia_filtro=None):
                 })
     except Exception as e:
         logger.warning(f"Parlay UFC: {e}")
+    return pool
 
-    # ── FÚTBOL ───────────────────────────────────────────────────────────
-    # Cuotas REALES: The Odds API (moneyline WC, 44 partidos) como fuente
-    # principal + Caliente como respaldo. Para OVER/UNDER/BTTS se usan cuotas
-    # de mercado típicas (the-odds-api free solo da moneyline).
-    cal_fut = {}
-    odds_api_ml = {}
-    try:
-        from scrapers.odds_scraper import get_soccer_odds_caliente
-        cal_fut = get_soccer_odds_caliente() or {}
-    except Exception as _ce:
-        logger.warning(f"Caliente fútbol odds: {_ce}")
-    try:
-        from scrapers.odds_api import obtener_odds_futbol
-        def _am2dec(am):
-            try:
-                a = int(str(am).replace("+", ""))
-                return round(1 + (a / 100.0 if a > 0 else 100.0 / abs(a)), 2)
-            except Exception:
-                return None
-        for o in obtener_odds_futbol() or []:
-            if o.get("home_ml"):
-                odds_api_ml[(o.get("home") or "").lower()] = _am2dec(o["home_ml"])
-            if o.get("away_ml"):
-                odds_api_ml[(o.get("away") or "").lower()] = _am2dec(o["away_ml"])
-    except Exception as _oe:
-        logger.warning(f"odds_api fútbol: {_oe}")
+
+def _recolectar_picks_futbol(ss, _es_del_dia, **kwargs):
+    """Recolecta los picks de Fútbol."""
+    pool = []
+    # Cuotas REALES: The Odds API (moneyline) como fuente principal + Caliente
+    # como respaldo. Para OVER/UNDER/BTTS se usan cuotas de mercado típicas.
+    cal_fut = kwargs.get("cal_fut", {})
+    odds_api_ml = kwargs.get("odds_api_ml", {})
 
     _CUOTA_MKT = {"over 1.5 ht": 2.20, "over 1.5": 1.25, "over 2.5": 1.95,
                   "over 3.5": 3.20, "under 2.5": 1.70, "btts": 1.85, "ambos": 1.85}
@@ -344,20 +336,30 @@ def _recolectar_picks(dia_filtro=None):
                     home_f, away_f,
                     es_torneo=p.get("es_torneo", False), fase=p.get("fase", ""),
                     liga=liga,
+                    gemini_client=ss.get("gemini"),
                 )
                 pick = r.get("pick", "")
                 if not pick or "revisar" in pick.lower():
                     continue
                 evento_f = f"{home_f or '?'} vs {away_f or '?'}"
+                # Determinar racha para el parlay de rachas
+                streak = ""
+                if "local" in pick.lower() or home_f.lower() in pick.lower():
+                    streak = r.get("streak_local", "")
+                elif "visitante" in pick.lower() or away_f.lower() in pick.lower():
+                    streak = r.get("streak_visitante", "")
+
                 cuota_real = _cuota_real_futbol(pick, home_f, away_f)
                 picks_ya_en_pool = {pick}  # deduplicar por partido
                 pool.append({
                     "sport": "⚽ FÚTBOL", "evento": evento_f,
                     "mercado": "1X2/Goles", "pick": pick,
                     "prob": r.get("confianza", 0),
+                    "streak": streak,
                     "tipo": "SEGURO" if r.get("confianza", 0) >= 55 else "VALOR",
                     "cuota": cuota_real or 1.90,
                     "cuota_real": bool(cuota_real),
+                    "es_torneo": p.get("es_torneo", False),
                 })
                 # Picks múltiples: agregar CADA market que califica independientemente
                 for pm in r.get("picks_multiples", []):
@@ -372,6 +374,7 @@ def _recolectar_picks(dia_filtro=None):
                         "prob": pm.get("confianza", 0),
                         "tipo": "SEGURO" if pm.get("confianza", 0) >= 55 else "VALOR",
                         "cuota": pm_cuota,
+                        "es_torneo": p.get("es_torneo", False),
                     })
                 for op in r.get("todas_opciones", []):
                     if op.get("combo") and op.get("confianza", 0) >= 38 and op.get("pick", "") not in picks_ya_en_pool:
@@ -380,9 +383,58 @@ def _recolectar_picks(dia_filtro=None):
                             "mercado": "COMBINADO", "pick": op["pick"],
                             "prob": op["confianza"], "tipo": "VALOR",
                             "cuota": op.get("cuota", 2.4),
+                            "es_torneo": p.get("es_torneo", False),
                         })
     except Exception as e:
         logger.warning(f"Parlay fútbol: {e}")
+    return pool
+
+
+def _recolectar_picks(dia_filtro=None):
+    """
+    Corre los motores sobre todo lo cargado y devuelve un pool de picks.
+    Llama a sub-funciones por deporte para mayor legibilidad.
+
+    dia_filtro: 'YYYY-MM-DD' para quedarte solo con los juegos de ese día.
+    """
+    ss = st.session_state
+    pool = []
+
+    def _es_del_dia(p):
+        if not _no_iniciado(p):
+            return False
+        return (dia_filtro is None) or (_fecha_iso(p) == dia_filtro)
+
+    # --- Pre-fetch de datos compartidos (cuotas) para optimizar ---
+    # Cuotas de Fútbol
+    cal_fut = {}
+    odds_api_ml = {}
+    try:
+        from scrapers.odds_scraper import get_soccer_odds_caliente
+        cal_fut = get_soccer_odds_caliente() or {}
+    except Exception as _ce:
+        logger.warning(f"Caliente fútbol odds: {_ce}")
+    try:
+        from scrapers.odds_api import obtener_odds_futbol
+        def _am2dec(am):
+            try:
+                a = int(str(am).replace("+", ""))
+                return round(1 + (a / 100.0 if a > 0 else 100.0 / abs(a)), 2)
+            except Exception:
+                return None
+        for o in obtener_odds_futbol() or []:
+            if o.get("home_ml"):
+                odds_api_ml[(o.get("home") or "").lower()] = _am2dec(o["home_ml"])
+            if o.get("away_ml"):
+                odds_api_ml[(o.get("away") or "").lower()] = _am2dec(o["away_ml"])
+    except Exception as _oe:
+        logger.warning(f"odds_api fútbol: {_oe}")
+
+    # Llama a cada recolector, pasando los datos pre-cargados si es necesario
+    pool.extend(_recolectar_picks_nba(ss, _es_del_dia))
+    pool.extend(_recolectar_picks_mlb(ss, _es_del_dia))
+    pool.extend(_recolectar_picks_ufc(ss, _es_del_dia))
+    pool.extend(_recolectar_picks_futbol(ss, _es_del_dia, cal_fut=cal_fut, odds_api_ml=odds_api_ml))
 
     # ── FASE 3 (Evolución): ponderar cada pick por su rendimiento histórico ──
     # El selector se vuelve más inteligente: penaliza mercados que históricamente
@@ -393,7 +445,8 @@ def _recolectar_picks(dia_filtro=None):
                 pk["prob_base"] = pk["prob"]
                 factor = pick_memory.factor_confianza(_deporte_code(pk.get("sport", "")), pk.get("mercado", ""))
                 pk["factor_hist"] = factor
-                pk["prob"] = max(1, min(99, round(pk["prob"] * factor, 1)))
+                # Cap de realismo también en la prob MOSTRADA: nada de "99%".
+                pk["prob"] = max(1, min(90, round(pk["prob"] * factor, 1)))
             except Exception:
                 pass
         # Excluir del parlay los mercados PROBADOS perdedores (factor ≤0.6 = win
@@ -427,15 +480,34 @@ def _rate_real_mercado(sport, mercado):
     return _CALIB_MERCADOS.get(f"{dep} · {mercado}", {}).get("win_rate")
 
 
+REALISMO_CAP = 90.0   # ninguna leg vale >90%: no existe la apuesta "99% segura"
+PRIOR_SIN_CALIBRAR = 55.0  # prior conservador para mercados sin tasa real (UFC, nuevos)
+
+
+def _prob_realista_leg(l):
+    """Probabilidad de la leg con DOS correcciones contra la sobreconfianza que
+    nos tiene en 0/27:
+      • Si hay tasa real del mercado (aprendizaje) → 60% real + 40% modelo.
+      • Si NO la hay (UFC, mercados sin muestra) → el modelo corre CALIENTE, así
+        que lo descontamos hacia un prior conservador (70% modelo + 30% prior).
+      • Cap duro: ninguna leg supera el 90%.
+    """
+    real = _rate_real_mercado(l.get("sport", ""), l.get("mercado", ""))
+    if real is not None:
+        p = l["prob"] * 0.4 + real * 0.6
+    else:
+        p = l["prob"] * 0.7 + PRIOR_SIN_CALIBRAR * 0.3
+    return min(p, REALISMO_CAP)
+
+
 def _armar_parlay(legs):
     """Calcula prob combinada, cuota y EV. La probabilidad de cada leg se
-    CALIBRA con la tasa real del mercado (aprendizaje): 60% tasa real + 40%
-    modelo, para que la prob combinada refleje lo que de verdad acierta."""
+    CALIBRA con la tasa real del mercado (aprendizaje) y se acota a un techo
+    realista, para que la prob combinada refleje lo que de verdad acierta."""
     prob = 1.0
     cuota = 1.0
     for l in legs:
-        real = _rate_real_mercado(l.get("sport", ""), l.get("mercado", ""))
-        p = l["prob"] if real is None else (l["prob"] * 0.4 + real * 0.6)
+        p = _prob_realista_leg(l)
         prob *= max(0.01, p / 100.0)
         cuota *= l.get("cuota", 1.9)
     ev = prob * cuota - 1.0
@@ -476,25 +548,151 @@ def _guardar_parlay(titulo, parlay):
     except Exception:
         pass
 
+def _parlay_underdog(pool, n_legs=3):
+    """
+    Crea un parlay de 'underdogs' con los picks de cuota más alta
+    que aún mantienen una probabilidad razonable.
+    """
+    # Filtrar por probabilidad mínima y cuota mínima para ser underdog
+    candidatos = [
+        p for p in pool
+        if p.get("prob", 0) >= 35 and p.get("cuota", 0) >= 2.1 # Cuota > +110
+    ]
 
-def _tarjeta_parlay(titulo, color, descripcion, parlay):
-    _guardar_parlay(titulo, parlay)   # registra el parlay generado para aprender de él
-    momio = _decimal_a_americano(parlay['cuota'])
-    ganancia = round((parlay['cuota'] - 1) * 100)   # ganancia por cada $100 apostados
-    # Rendimiento HISTÓRICO de este tipo de parlay (el cerebro aprendiendo)
-    hist_html = ""
+    if not candidatos:
+        return None
+
+    # Ordenar por cuota descendente
+    candidatos.sort(key=lambda x: x["cuota"], reverse=True)
+
+    # Seleccionar los mejores N de eventos distintos
+    legs_underdog = []
+    eventos_vistos = set()
+    for p in candidatos:
+        if len(legs_underdog) >= n_legs:
+            break
+        if p["evento"] not in eventos_vistos:
+            legs_underdog.append(p)
+            eventos_vistos.add(p["evento"])
+
+    if len(legs_underdog) < 2:
+        return None
+
+    return _armar_parlay(legs_underdog)
+
+def _parlay_de_rachas(pool, n_legs=3):
+    """
+    Crea un parlay de 'momentum' con los equipos favoritos (Moneyline)
+    con mayor probabilidad de victoria del día.
+    """
+    # Filtrar por picks de Moneyline/1X2 con alta confianza
+    candidatos = [
+        p for p in pool
+        if p.get("mercado") in ("MONEYLINE", "1X2", "1X2/Goles", "GANADOR")
+        and p.get("prob", 0) >= 65
+    ]
+
+    if not candidatos:
+        return None
+
+    # Ordenar por probabilidad descendente
+    candidatos.sort(key=lambda x: x["prob"], reverse=True)
+
+    # Seleccionar los mejores N de eventos distintos
+    legs_rachas = []
+    eventos_vistos = set()
+    for p in candidatos:
+        if len(legs_rachas) >= n_legs:
+            break
+        if p["evento"] not in eventos_vistos:
+            legs_rachas.append(p)
+            eventos_vistos.add(p["evento"])
+
+    if len(legs_rachas) < 2:
+        return None
+
+    return _armar_parlay(legs_rachas)
+
+def _parlay_mundial(pool, n_legs=3):
+    """
+    Crea un parlay con los mejores picks de la Copa del Mundo
+    con confianza superior al 60%.
+    """
+    # Filtrar por picks de fútbol de torneo con alta confianza
+    candidatos = [
+        p for p in pool
+        if p.get("es_torneo")
+        and "FÚTBOL" in p.get("sport", "")
+        and p.get("prob", 0) >= 60
+    ]
+
+    if not candidatos:
+        return None
+
+    # Ordenar por probabilidad descendente
+    candidatos.sort(key=lambda x: x["prob"], reverse=True)
+
+    # Seleccionar los mejores N de eventos distintos
+    legs_mundial = []
+    eventos_vistos = set()
+    for p in candidatos:
+        if len(legs_mundial) >= n_legs:
+            break
+        if p["evento"] not in eventos_vistos:
+            legs_mundial.append(p)
+            eventos_vistos.add(p["evento"])
+
+    if len(legs_mundial) < 2:
+        return None
+
+    return _armar_parlay(legs_mundial)
+
+def _get_historical_performance_html(titulo: str) -> str:
+    """
+    Consulta el rendimiento histórico de un tipo de parlay y devuelve
+    una cadena HTML para mostrar en la tarjeta.
+    """
     try:
         from motors.parlay_brain import stats_de_tipo
         _h = stats_de_tipo(titulo)
         if _h and _h.get("total", 0) >= 2:
             _wc = "#22c55e" if _h["win_rate"] >= 50 else "#ef4444"
-            hist_html = (f"  ·  <span style='color:{_wc}'>📊 histórico: {_h['win_rate']}% "
-                         f"({_h['ganados']}/{_h['total']}) · ROI {_h['roi']:+.0f}%</span>")
+            return (f"  ·  <span style='color:{_wc}'>📊 histórico: {_h['win_rate']}% "
+                    f"({_h['ganados']}/{_h['total']}) · ROI {_h['roi']:+.0f}%</span>")
     except Exception:
         pass
+    return ""
+
+
+def _tarjeta_parlay(titulo, color, descripcion, parlay):
+    _guardar_parlay(titulo, parlay)   # registra el parlay generado para aprender de él
+
+    # Mapeo de títulos a íconos para una UI más clara
+    ICONOS_PARLAY = {
+        "SEGURO": "🟢",
+        "VALOR": "🟡",
+        "BOMBA": "🔴",
+        "RACHAS": "🔥",
+        "ÓPTIMO": "🎯",
+        "DOBLE SEGURO": "🔐",
+        "GIGANTE": "🟣",
+        "MÁXIMO PAGO": "💎",
+        "VALOR (+EV)": "💎",
+        "SLUGGER": "⚡",
+        "HR + FÚTBOL": "🎯",
+        "MEJOR RACHA": "📈",
+        "MUNDIAL": "🏆",
+        "UNDERDOG": "🐺",
+    }
+    icono = next((icon for key, icon in ICONOS_PARLAY.items() if key in titulo.upper()), "🎰")
+
+    momio = _decimal_a_americano(parlay['cuota'])
+    ganancia = round((parlay['cuota'] - 1) * 100)   # ganancia por cada $100 apostados
+    # Rendimiento HISTÓRICO de este tipo de parlay (el cerebro aprendiendo)
+    hist_html = _get_historical_performance_html(titulo)
     st.markdown(
         f"<div style='background:#1e293b;border-left:5px solid {color};border-radius:10px;padding:14px;margin-bottom:6px'>"
-        f"<div style='color:{color};font-weight:800;font-size:1.05rem'>{titulo}</div>"
+        f"<div style='color:{color};font-weight:800;font-size:1.05rem'>{icono} {titulo}</div>"
         f"<div style='color:#94a3b8;font-size:0.8rem;margin-bottom:8px'>{descripcion}</div>"
         f"<div style='display:flex;gap:18px;flex-wrap:wrap'>"
         f"<span style='color:#fff'>Momio: <b style='color:#fbbf24;font-size:1.15rem'>{momio}</b></span>"
@@ -522,7 +720,7 @@ def _tarjeta_parlay(titulo, color, descripcion, parlay):
         )
 
 
-def _sluggers_del_dia(top_n: int = 5) -> list:
+def _sluggers_del_dia(top_n: int = 5, equipos_hoy: set = None) -> list:
     """
     Lee hr_backtest_reporte.json y devuelve los sluggers con más HRs recientes
     como legs de parlay, con probabilidad calibrada por la tasa real del backtest.
@@ -628,6 +826,12 @@ def _sluggers_del_dia(top_n: int = 5) -> list:
             '_statcast_nota': statcast_nota,
         })
 
+    # Filtra el ranking para incluir solo jugadores de equipos que juegan hoy.
+    if equipos_hoy and ranking:
+        from utils.fuzzy_matching import normalizar_equipo
+        equipos_hoy_norm = {normalizar_equipo(e) for e in equipos_hoy}
+        ranking = [r for r in ranking if normalizar_equipo(r.get('evento', '')) in equipos_hoy_norm]
+
     ranking.sort(key=lambda x: (x['_hits'], x['_statcast_factor'], x['_avg_prob_motor']), reverse=True)
     return ranking[:top_n]
 
@@ -686,12 +890,27 @@ def render_parlay_tab():
         st.write("")
         generar = st.button("⚡ GENERAR MEJORES PARLAYS", use_container_width=True, type="primary")
 
-    if not generar:
+    # Persistencia: una vez generado, los parlays QUEDAN visibles aunque toques
+    # otro control (slider, día). Antes se recalculaba solo mientras 'generar'
+    # estaba en True, así que cualquier clic posterior reiniciaba todo y los
+    # parlays desaparecían ("me reinicia todo"). Un flag de sesión los mantiene.
+    if generar:
+        st.session_state["_parlay_visible"] = True
+
+    if not st.session_state.get("_parlay_visible"):
         st.caption("Pulsa **Generar** para analizar todo lo cargado y armar los parlays.")
         return
 
-    with st.spinner(f"Analizando juegos ({dia_opt.lower()}) y armando parlays..."):
-        pool = _recolectar_picks(dia_filtro)
+    # El pool (correr todos los motores) es lo CARO. Se cachea por día: ajustar
+    # 'prob mínima' o 'nº de legs' re-arma los parlays al instante sin re-analizar.
+    # Solo se re-analiza al pulsar Generar o al cambiar el día.
+    _pool_key = f"_parlay_pool_{dia_filtro}"
+    if generar or _pool_key not in st.session_state:
+        with st.spinner(f"Analizando juegos ({dia_opt.lower()}) y armando parlays..."):
+            pool = _recolectar_picks(dia_filtro)
+        st.session_state[_pool_key] = pool
+    else:
+        pool = st.session_state[_pool_key]
 
     if not pool and dia_filtro is not None:
         st.warning(f"No hay juegos para **{dia_opt}** ({dia_filtro}). Prueba con 'Todos' o carga más juegos.")
@@ -805,12 +1024,39 @@ def render_parlay_tab():
 
     st.markdown("---")
 
+    # ── 🏆 PARLAY DEL MUNDIAL ───────────────────────────────────────────────
+    parlay_mundial = _parlay_mundial(pool, n_legs=3)
+    if parlay_mundial:
+        st.markdown("")
+        _tarjeta_parlay("🏆 PARLAY DEL MUNDIAL", "#8a2be2", # BlueViolet
+                        "Combina los 3 mejores picks de la Copa del Mundo con confianza > 60%.",
+                        parlay_mundial)
+        st.markdown("---")
+
+    # ── 🔥 PARLAY DE RACHAS (MOMENTUM) ──────────────────────────────────────
+    parlay_rachas = _parlay_de_rachas(pool, n_legs=3)
+    if parlay_rachas:
+        st.markdown("")
+        _tarjeta_parlay("🔥 PARLAY DE RACHAS (MOMENTUM)", "#f97316",
+                        "Combina los 3 equipos favoritos con mayor probabilidad de victoria del día.",
+                        parlay_rachas)
+
+    # ── 🐺 PARLAY UNDERDOG (CUOTAS ALTAS) ───────────────────────────────────
+    parlay_underdog = _parlay_underdog(pool, n_legs=3)
+    if parlay_underdog:
+        st.markdown("")
+        _tarjeta_parlay("🐺 PARLAY UNDERDOG", "#a78bfa",
+                        "Combina 3 picks con cuotas altas pero una probabilidad razonable (>35%).",
+                        parlay_underdog)
+    # NOTA: aquí había un segundo parlay "📈 MEJOR RACHA" que llamaba a
+    # _parlay_mejor_racha() — función que NUNCA se definió → NameError que cortaba
+    # la pestaña. Se eliminó por estar roto y ser redundante con "🔥 RACHAS".
+
     # ── 🎯 PARLAY ÓPTIMO (4 legs de MAYOR probabilidad real) ──────────────
     # 4 legs: mejor balance prob/pago. Toma la MEJOR leg calibrada por evento
     # (sin HR, 1 por evento), top 4 por probabilidad calibrada.
     def _prob_cal(l):
-        real = _rate_real_mercado(l.get("sport", ""), l.get("mercado", ""))
-        return l["prob"] if real is None else (l["prob"] * 0.4 + real * 0.6)
+        return _prob_realista_leg(l)   # calibración + cap de realismo unificados
 
     cand_opt = sorted([p for p in pool if p["mercado"] != "HOME RUN"],
                       key=_prob_cal, reverse=True)
@@ -842,7 +1088,7 @@ def render_parlay_tab():
             break
     if legs_doble and cuota_doble_acc >= 2.0:
         par_doble = _armar_parlay(legs_doble)
-        _tarjeta_parlay("🔐 PARLAY DOBLE SEGURO", "#22d3ee",
+        _tarjeta_parlay("🔐 PARLAY DOBLE SEGURO", "#22d3ee", # Cyan color
                         f"Mínimas legs de mayor prob para duplicar tu dinero (cuota ≥ 2x) — "
                         f"{len(legs_doble)} legs, {par_doble['prob']:.1f}% prob",
                         par_doble)
@@ -941,7 +1187,7 @@ def render_parlay_tab():
 
     if len(legs_seguro) >= 2:
         n_deportes = len(set(l["sport"] for l in legs_seguro))
-        _tarjeta_parlay("🟢 PARLAY SEGURO", "#22c55e",
+        _tarjeta_parlay("🟢 PARLAY SEGURO", "#22c55e", # Green color
                         f"{len(legs_seguro)} picks de {n_deportes} deporte(s), distintos eventos",
                         _armar_parlay(legs_seguro))
     else:
@@ -954,7 +1200,7 @@ def render_parlay_tab():
         mejor_hr = max(hrs, key=lambda x: x["prob"])
         legs_valor = base + [mejor_hr]
         st.markdown("")
-        _tarjeta_parlay("🟡 PARLAY VALOR", "#fbbf24",
+        _tarjeta_parlay("🟡 PARLAY VALOR", "#fbbf24", # Amber/Yellow color
                         "Picks seguros + el mejor candidato a Home Run (mayor pago)",
                         _armar_parlay(legs_valor))
 
@@ -963,7 +1209,7 @@ def render_parlay_tab():
         hrs.sort(key=lambda x: x["prob"], reverse=True)
         legs_bomba = hrs[:3]
         st.markdown("")
-        _tarjeta_parlay("🔴 PARLAY BOMBA", "#ef4444",
+        _tarjeta_parlay("🔴 PARLAY BOMBA", "#ef4444", # Red color
                         "Solo candidatos a Home Run — baja probabilidad, pago muy alto",
                         _armar_parlay(legs_bomba))
 
@@ -982,14 +1228,25 @@ def render_parlay_tab():
     legs_hrfut = fut_top[:3] + hr_top[:2]
     if len(legs_hrfut) >= 3 and hr_top:
         st.markdown("")
-        _tarjeta_parlay("🎯 PARLAY HR + FÚTBOL", "#e11d48",
+        _tarjeta_parlay("🎯 PARLAY HR + FÚTBOL", "#e11d48", # Rose color
                         "Sluggers top (home run) + mejores picks de fútbol — pago alto, tu combo favorito",
                         _armar_parlay(legs_hrfut))
 
     # ── ⚡ PARLAY SLUGGER DEL DÍA: basado en datos aprendidos del backtest ─────
     # Usa SOLO la memoria histórica de quién pegó HR en los últimos días,
     # calibrando la probabilidad con la tasa de acierto real (no la del motor).
-    sluggers = _sluggers_del_dia(top_n=5)
+    equipos_mlb_hoy = set()
+    if pool:
+        for p in pool:
+            if "MLB" in p.get("sport", ""):
+                try:
+                    # El evento es 'Away @ Home', con nombres normalizados
+                    away, home = p.get("evento", "").split(" @ ")
+                    equipos_mlb_hoy.add(away.strip())
+                    equipos_mlb_hoy.add(home.strip())
+                except ValueError:
+                    pass
+    sluggers = _sluggers_del_dia(top_n=5, equipos_hoy=equipos_mlb_hoy)
     if len(sluggers) >= 3:
         st.markdown("")
         prec_global_bt = 0.0
@@ -1007,7 +1264,7 @@ def render_parlay_tab():
             f"Los {len(sluggers)} sluggers con más HRs recientes (backtest {_juegos} juegos · "
             f"{prec_global_bt:.1f}% tasa real · datos: {_ts}) — prob calibrada con tasa histórica"
         )
-        _tarjeta_parlay("⚡ PARLAY SLUGGER DEL DÍA", "#f59e0b", desc_slug, _armar_parlay(sluggers))
+        _tarjeta_parlay("⚡ PARLAY SLUGGER DEL DÍA", "#f59e0b", desc_slug, _armar_parlay(sluggers)) # Orange color
 
         # Detalle de cada slugger con su racha + datos Statcast
         with st.expander("📊 Detalle de la racha de cada Slugger + Statcast", expanded=False):
@@ -1047,7 +1304,7 @@ def render_parlay_tab():
         legs_gigante.append(p)
     if len(legs_gigante) >= 7:
         st.markdown("")
-        _tarjeta_parlay(f"🟣 PARLAY GIGANTE ({len(legs_gigante)} legs)", "#a855f7",
+        _tarjeta_parlay(f"🟣 PARLAY GIGANTE ({len(legs_gigante)} legs)", "#a855f7", # Purple color
                         "Todos los picks sólidos del día — pago enorme, probabilidad baja pero estructurada",
                         _armar_parlay(legs_gigante))
 
@@ -1064,7 +1321,7 @@ def render_parlay_tab():
     legs_pago = sorted(mejor_por_evento.values(), key=lambda x: x["cuota"], reverse=True)[:n_legs]
     if len(legs_pago) >= 2:
         st.markdown("")
-        _tarjeta_parlay("💎 PARLAY MÁXIMO PAGO", "#06b6d4",
+        _tarjeta_parlay("💎 PARLAY MÁXIMO PAGO", "#06b6d4", # Cyan color
                         "Por evento elige el mercado que MÁS paga (combinados gana+Over) sin perder calidad",
                         _armar_parlay(legs_pago))
 
@@ -1084,7 +1341,7 @@ def render_parlay_tab():
             break
     if len(valor) >= 2:
         st.markdown("")
-        _tarjeta_parlay("💎 PARLAY DE VALOR (+EV)", "#14b8a6",
+        _tarjeta_parlay("💎 PARLAY DE VALOR (+EV)", "#14b8a6", # Teal color
                         "Solo selecciones con VALOR real: prob. del modelo > prob. implícita del momio",
                         _armar_parlay(valor))
 
@@ -1097,6 +1354,7 @@ def render_parlay_tab():
             for p in pool
         ])
 
+def render_parlay_backtest_section():
     # ── 📊 BACKTEST DE PARLAYS: historial real y resolución ─────────────────
     st.markdown("---")
     st.markdown("#### 📊 Backtest de parlays generados")
@@ -1130,8 +1388,14 @@ def render_parlay_tab():
             from motors.parlay_brain import stats_por_tipo as _spt
             _stats = _spt()
             if _stats:
-                mejor = max(_stats.items(), key=lambda x: x[1].get("win_rate", 0))
-                st.metric("Mejor tipo", mejor[0][:20], f"{mejor[1]['win_rate']}% acierto")
+                # Prioridad: mostrar stats del Parlay del Mundial si existen
+                wc_stats = next((v for k, v in _stats.items() if "MUNDIAL" in k.upper()), None)
+                if wc_stats and wc_stats.get("total", 0) > 0:
+                    st.metric("🏆 Parlay Mundial", f"{wc_stats['win_rate']:.1f}% WR", f"ROI {wc_stats['roi']:+.1f}%")
+                else:
+                    # Fallback al mejor tipo si no hay datos del Mundial
+                    mejor = max(_stats.items(), key=lambda x: x[1].get("win_rate", 0))
+                    st.metric("Mejor tipo", mejor[0][:20], f"{mejor[1]['win_rate']}% acierto")
         except Exception:
             pass
 
@@ -1145,18 +1409,64 @@ def render_parlay_tab():
         _recientes = [h for h in _hist if h.get("fecha", "") >= _cutoff]
         if _recientes:
             _total = len(_recientes)
-            _gan = sum(1 for h in _recientes if h.get("estado") == "ganado")
-            _per = sum(1 for h in _recientes if h.get("estado") == "perdido")
-            _pend = _total - _gan - _per
+
+            col_filter, col_export = st.columns([3, 1])
+            with col_filter:
+                # Filtro por tipo de parlay
+                tipos_parlay = sorted(list(set(h.get("tipo", "Desconocido") for h in _recientes)))
+                filtro_tipo = st.selectbox(
+                    "Filtrar por tipo de parlay",
+                    ["Todos"] + tipos_parlay
+                )
+
+            parlays_a_mostrar = [h for h in _recientes if filtro_tipo == "Todos" or h.get("tipo") == filtro_tipo]
+
+            with col_export:
+                st.write("") # for vertical alignment
+                if parlays_a_mostrar:
+                    import pandas as pd
+                    csv_data = []
+                    for parlay in parlays_a_mostrar:
+                        # Calcular profit/loss
+                        estado = parlay.get("estado")
+                        cuota = parlay.get("cuota", 0) or 0
+                        profit = 0.0
+                        if estado == "ganado":
+                            profit = cuota - 1.0
+                        elif estado == "perdido":
+                            profit = -1.0
+
+                        base_info = {
+                            "parlay_id": parlay.get("id"), "fecha": parlay.get("fecha"),
+                            "tipo_parlay": parlay.get("tipo"), "estado_parlay": parlay.get("estado"),
+                            "cuota_parlay": parlay.get("cuota"), "prob_parlay": parlay.get("prob"),
+                            "profit_loss": round(profit, 2),
+                            "n_legs": parlay.get("n_legs"),
+                        }
+                        for leg in parlay.get("legs", []):
+                            csv_data.append({**base_info, **leg})
+                    
+                    df = pd.DataFrame(csv_data)
+                    csv_string = df.to_csv(index=False).encode('utf-8')
+                    
+                    st.download_button(
+                       label="📥 Exportar CSV", data=csv_string,
+                       file_name=f"historial_parlays_{filtro_tipo.lower().replace(' ', '_')}.csv",
+                       mime="text/csv", use_container_width=True
+                    )
+
+            _gan = sum(1 for h in parlays_a_mostrar if h.get("estado") == "ganado")
+            _per = sum(1 for h in parlays_a_mostrar if h.get("estado") == "perdido")
+            _pend = len(parlays_a_mostrar) - _gan - _per
             _wr = round(_gan / (_gan + _per) * 100, 1) if (_gan + _per) > 0 else None
-            _resumen = (f"**{_total}** parlays generados en 14 días — "
+            _resumen = (f"**{len(parlays_a_mostrar)}** parlays mostrados — "
                         f"✅ {_gan} ganados · ❌ {_per} perdidos · ⏳ {_pend} pendientes"
                         + (f" · **{_wr}% win rate**" if _wr is not None else ""))
             st.markdown(_resumen)
 
             with st.expander("📅 Ver historial detallado", expanded=False):
                 _by_day: dict = {}
-                for h in reversed(_recientes):
+                for h in reversed(parlays_a_mostrar):
                     _day = h.get("fecha", "?")
                     _by_day.setdefault(_day, []).append(h)
                 def _dec2am(d):
@@ -1183,6 +1493,46 @@ def render_parlay_tab():
                                 unsafe_allow_html=True)
     except Exception:
         pass
+
+    # Renderizar la nueva sección de análisis de rentabilidad
+    _render_profitability_by_type()
+
+
+def _render_profitability_by_type():
+    """Muestra el rendimiento histórico (WR, ROI) por tipo de parlay."""
+    if stats_por_tipo is None:
+        return
+
+    try:
+        _stats_t = stats_por_tipo()
+        if _stats_t:
+            st.markdown("---")
+            st.markdown("**📊 Aprendizaje por tipo de parlay (resultados reales):**")
+            st.caption("Cuál tipo de parlay ha sido más rentable. El generador usa esto para mostrarte primero los mejores.")
+
+            # Ordenar por ROI (rentabilidad) como criterio principal
+            filas_t = sorted(_stats_t.items(), key=lambda x: (x[1].get("roi", 0), x[1].get("win_rate", 0)), reverse=True)
+
+            for tipo_t, s_t in filas_t:
+                color_roi = "#22c55e" if s_t.get("roi", 0) >= 0 else "#ef4444"
+                color_wr = "#22c55e" if s_t.get("win_rate", 0) >= 50 else "#f59e0b" if s_t.get("win_rate", 0) >= 40 else "#ef4444"
+
+                # Limpiar el nombre del tipo de parlay para que sea más legible
+                tipo_lbl = re.sub(r"[^\w\s\-\.]", "", tipo_t).strip()[:30]
+
+                st.markdown(
+                    f"<div style='background:#0f172a;border-radius:6px;padding:5px 12px;margin:2px 0'>"
+                    f"<b>{tipo_lbl}</b> — "
+                    f"<span style='color:{color_wr}'>{s_t['win_rate']:.1f}% acierto</span> "
+                    f"({s_t['ganados']}/{s_t['total']}) · "
+                    f"ROI <span style='color:{color_roi}; font-weight:700;'>"
+                    f"{s_t['roi']:+.1f}%</span>"
+                    f"</div>",
+                    unsafe_allow_html=True,
+                )
+            st.caption("⚠️ Se necesitan al menos 4+ parlays resueltos por tipo para que el aprendizaje sea estadísticamente significativo.")
+    except Exception as e:
+        logger.warning(f"Error al renderizar stats por tipo de parlay: {e}")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -1268,12 +1618,14 @@ def _parlay_solo_futbol(pool, n_legs=4, min_prob=55):
         aud_r = _audit_rate_de_mercado(l.get("mercado", ""))
         p = l["prob"]
         if real is not None and aud_r is not None:
-            return 0.34 * p + 0.33 * real + 0.33 * aud_r
-        if real is not None:
-            return 0.4 * p + 0.6 * real
-        if aud_r is not None:
-            return 0.5 * p + 0.5 * aud_r
-        return p
+            cal = 0.34 * p + 0.33 * real + 0.33 * aud_r
+        elif real is not None:
+            cal = 0.4 * p + 0.6 * real
+        elif aud_r is not None:
+            cal = 0.5 * p + 0.5 * aud_r
+        else:
+            cal = p * 0.7 + PRIOR_SIN_CALIBRAR * 0.3   # sin datos: descuenta sobreconfianza
+        return min(cal, REALISMO_CAP)                  # techo realista (≤90%)
 
     vistos, legs = set(), []
     for p in sorted(fut, key=_prob_cal_fut, reverse=True):
@@ -1287,7 +1639,7 @@ def _parlay_solo_futbol(pool, n_legs=4, min_prob=55):
 
     legs_top = [l for l in legs if _prob_cal_fut(l) >= min_prob][:n_legs] or legs[:n_legs]
     if len(legs_top) >= 2:
-        _tarjeta_parlay(f"⚽ PARLAY SOLO FÚTBOL ({len(legs_top)} legs)", "#16a34a",
+        _tarjeta_parlay(f"⚽ PARLAY SOLO FÚTBOL ({len(legs_top)} legs)", "#16a34a", # Green color
                         "La mejor leg por partido (1 por evento), solo fútbol — priorizado por la "
                         "tasa que auditamos. También entra a los parlays cross-deporte.",
                         _armar_parlay(legs_top))

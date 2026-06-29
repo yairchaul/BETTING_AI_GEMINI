@@ -31,7 +31,7 @@ def _signo_momio(v):
         return s
 
 
-class VisualFutbolTriple:
+class VisualFutbolTriple: # noqa
     def __init__(self):
         pass
 
@@ -56,9 +56,15 @@ class VisualFutbolTriple:
         logo_v = partido.get('visitante_logo', '')
         rec_l = partido.get('local_record', '')
         rec_v = partido.get('visitante_record', '')
+        streak_l = analisis_heuristico.get('streak_local', '') if analisis_heuristico else ''
+        streak_v = analisis_heuristico.get('streak_visitante', '') if analisis_heuristico else ''
+        gfl_hist = analisis_heuristico.get('goles_favor_local_hist', []) if analisis_heuristico else []
+        gcl_hist = analisis_heuristico.get('goles_contra_local_hist', []) if analisis_heuristico else []
+        sit_l = analisis_heuristico.get('situacion_local') if analisis_heuristico else None
+        sit_v = analisis_heuristico.get('situacion_visitante') if analisis_heuristico else None
 
         # ── Encabezado (centrado, banderas grandes + momio debajo de cada equipo) ─
-        def _bloque_equipo(nombre, logo, record, momio=None):
+        def _bloque_equipo(nombre, logo, record, momio=None, streak="", situacion=None):
             flag = (f"<img src='{logo}' width='68' height='68' "
                     "style='object-fit:contain;display:block;margin:0 auto 8px auto;"
                     "filter:drop-shadow(0 2px 6px rgba(0,0,0,0.4));border-radius:6px'>") if logo else \
@@ -71,13 +77,48 @@ class VisualFutbolTriple:
                               f"color:#22c55e;font-weight:800;font-size:1.05rem'>{momio}</div>")
             else:
                 momio_html = "<div style='margin-top:6px;color:#64748b;font-size:0.95rem'>—</div>"
+            
+            # Añadir ícono de racha si hay 3+ victorias seguidas
+            nombre_display = nombre
+            if streak and streak.startswith("V-V-V"):
+                nombre_display += " 🔥"
+
+            streak_html = ""
+            if streak and goles_favor and goles_contra:
+                colored_chars = []
+                # La racha está del más nuevo al más viejo. Los goles del más viejo al más nuevo.
+                goles_favor_rev = list(reversed(goles_favor))
+                goles_contra_rev = list(reversed(goles_contra))
+                for i, char in enumerate(streak.split('-')):
+                    if char == 'V':
+                        color = '#22c55e' # Verde
+                    elif char == 'D':
+                        color = '#ef4444' # Rojo
+                    else: # 'E'
+                        color = '#94a3b8' # Gris
+                    score = f"{goles_favor_rev[i]}-{goles_contra_rev[i]}"
+                    colored_chars.append(f"<span style='color: {color}; font-weight: 700;' title='Marcador: {score}'>{char}</span>")
+                streak_html = f"<div style='font-size:0.8rem;letter-spacing:1.5px;margin-top:4px;'>{' - '.join(colored_chars)}</div>"
+
+            situacion_html = ""
+            if situacion:
+                sit_resumen = f"{situacion.get('pos', '?')}º {situacion.get('grupo', '')} ({situacion.get('pts', '?')} pts)"
+                situacion_html = f"<div style='color:#fbbf24;font-size:0.75rem;margin-top:4px;'>{sit_resumen}</div>"
             return (f"<div style='text-align:center'>{flag}"
-                    f"<div style='font-weight:800;font-size:1.1rem;color:#f1f5f9;line-height:1.2'>{nombre}</div>"
-                    f"{rec_html}{momio_html}</div>")
+                    f"<div style='font-weight:800;font-size:1.1rem;color:#f1f5f9;line-height:1.2'>{nombre_display}</div>"
+                    f"{rec_html}{streak_html}{situacion_html}{momio_html}</div>")
 
         left, mid, right = st.columns([5, 2, 5])
         with left:
-            st.markdown(_bloque_equipo(local, logo_l, rec_l, ml_loc), unsafe_allow_html=True)
+            st.markdown(_bloque_equipo(local, logo_l, rec_l, ml_loc, streak=streak_l, situacion=sit_l, goles_favor=gfl_hist, goles_contra=gcl_hist), unsafe_allow_html=True)
+            if gfl_hist and gcl_hist:
+                import pandas as pd
+                scores = [f"Marcador: {gf}-{gc}" for gf, gc in zip(gfl_hist, gcl_hist)]
+                chart_df = pd.DataFrame({
+                    'Goles a Favor': gfl_hist,
+                    'Goles en Contra': gcl_hist
+                }, index=scores)
+                st.bar_chart(chart_df, color=["#22c55e", "#ef4444"], height=100)
         with mid:
             marcador = partido.get('marcador', '')
             if marcador and partido.get('completado'):
@@ -104,7 +145,15 @@ class VisualFutbolTriple:
                 st.markdown(f"<div style='text-align:center;color:#94a3b8;font-size:0.72rem'>🏆 {fase}</div>",
                             unsafe_allow_html=True)
         with right:
-            st.markdown(_bloque_equipo(visitante, logo_v, rec_v, ml_vis), unsafe_allow_html=True)
+            st.markdown(_bloque_equipo(visitante, logo_v, rec_v, ml_vis, streak=streak_v, situacion=sit_v, goles_favor=gfv_hist, goles_contra=gcv_hist), unsafe_allow_html=True)
+            if gfv_hist and gcv_hist:
+                import pandas as pd
+                scores = [f"Marcador: {gf}-{gc}" for gf, gc in zip(gfv_hist, gcv_hist)]
+                chart_df = pd.DataFrame({
+                    'Goles a Favor': gfv_hist,
+                    'Goles en Contra': gcv_hist
+                }, index=scores)
+                st.bar_chart(chart_df, color=["#22c55e", "#ef4444"], height=100)
 
         # Estadio
         venue = partido.get('venue', '')
@@ -156,6 +205,7 @@ class VisualFutbolTriple:
             conf = analisis_heuristico.get('confianza', 0)
             regla = analisis_heuristico.get('regla', '')
             nota = analisis_heuristico.get('nota', '')
+            nota_ia = analisis_heuristico.get('nota_ia', '')
             if conf >= 60:
                 acc, ico = "#22c55e", "🎯"
             elif conf >= 40:
@@ -168,6 +218,16 @@ class VisualFutbolTriple:
                 f"border-left:4px solid {acc};border-radius:8px;padding:10px 14px'>"
                 f"<span style='color:{acc};font-weight:800;font-size:1.02rem'>{ico} {pick}</span>"
                 f"<span style='color:#cbd5e1;font-size:0.85rem'>  ·  Confianza {conf:.0f}%{regla_txt}</span></div>",
+                unsafe_allow_html=True)
+
+            # Mostrar el contexto de la IA si está disponible
+            if nota_ia:
+                st.markdown(
+                    f"<div style='background:#1e1b4b;border-left:3px solid #818cf8;"
+                    "border-radius:7px;padding:7px 12px;margin-top:4px;font-size:0.82rem'>"
+                    f"<span style='color:#a5b4fc;font-weight:700'>🤖 Contexto IA:</span> "
+                    f"<span style='color:#d1d5db'>{nota_ia}</span>"
+                    "</div>",
                 unsafe_allow_html=True)
 
             # ── Motor 1 (pre-calibración) — sólo si difiere del pick actual ───
@@ -346,6 +406,17 @@ class VisualFutbolTriple:
                     f"🎯 <b>MARCADOR CORRECTO</b> · modelo Dixon-Coles "
                     f"<span style='color:#64748b'>(xG {xgl} - {xgv})</span>{_ctxt}</div>",
                     unsafe_allow_html=True)
+                # Marcador SUGERIDO: el más probable DENTRO del resultado del pick
+                # (consistente con la predicción 1X2, no el top global que puede ser empate).
+                rec = mc.get('marcador_recomendado') or {}
+                if rec.get('marcador'):
+                    st.markdown(
+                        f"<div style='background:#1e1b4b;border-left:3px solid #fbbf24;border-radius:7px;"
+                        f"padding:6px 12px;margin-bottom:6px;font-size:0.85rem'>"
+                        f"<span style='color:#fbbf24;font-weight:700'>⭐ Marcador sugerido:</span> "
+                        f"<span style='color:#fff;font-weight:800'>{rec['marcador']}</span> "
+                        f"<span style='color:#94a3b8'>({rec.get('pct','?')}% · el más probable acorde al pick)</span></div>",
+                        unsafe_allow_html=True)
                 _col = {"LOCAL": "#3b82f6", "EMPATE": "#94a3b8", "VISITANTE": "#ef4444"}
                 chips = []
                 for i, t in enumerate(top[:3]):
