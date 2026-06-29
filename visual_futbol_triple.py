@@ -64,7 +64,8 @@ class VisualFutbolTriple: # noqa
         sit_v = analisis_heuristico.get('situacion_visitante') if analisis_heuristico else None
 
         # ── Encabezado (centrado, banderas grandes + momio debajo de cada equipo) ─
-        def _bloque_equipo(nombre, logo, record, momio=None, streak="", situacion=None):
+        def _bloque_equipo(nombre, logo, record, momio=None, streak="", situacion=None,
+                           goles_favor=None, goles_contra=None):
             flag = (f"<img src='{logo}' width='68' height='68' "
                     "style='object-fit:contain;display:block;margin:0 auto 8px auto;"
                     "filter:drop-shadow(0 2px 6px rgba(0,0,0,0.4));border-radius:6px'>") if logo else \
@@ -96,7 +97,8 @@ class VisualFutbolTriple: # noqa
                         color = '#ef4444' # Rojo
                     else: # 'E'
                         color = '#94a3b8' # Gris
-                    score = f"{goles_favor_rev[i]}-{goles_contra_rev[i]}"
+                    score = (f"{goles_favor_rev[i]}-{goles_contra_rev[i]}"
+                             if i < len(goles_favor_rev) and i < len(goles_contra_rev) else "")
                     colored_chars.append(f"<span style='color: {color}; font-weight: 700;' title='Marcador: {score}'>{char}</span>")
                 streak_html = f"<div style='font-size:0.8rem;letter-spacing:1.5px;margin-top:4px;'>{' - '.join(colored_chars)}</div>"
 

@@ -9394,9 +9394,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "perdido",
+    "resultado_real": "Gana Shane Collins (R3, Decisión)",
+    "resuelto_en": "2026-06-29T16:35:14",
     "parlay_id": null
   },
   {
@@ -9419,9 +9419,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "perdido",
+    "resultado_real": "Gana Shane Collins (R3, ?)",
+    "resuelto_en": "2026-06-29T16:35:14",
     "parlay_id": null
   },
   {
@@ -9444,9 +9444,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "perdido",
+    "resultado_real": "Gana Shane Collins (R3, Decisión)",
+    "resuelto_en": "2026-06-29T16:35:14",
     "parlay_id": null
   },
   {
@@ -9469,9 +9469,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Luana Santos (R3, Decisión)",
+    "resuelto_en": "2026-06-29T16:35:14",
     "parlay_id": null
   },
   {
@@ -9494,9 +9494,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Luana Santos (R3, ?)",
+    "resuelto_en": "2026-06-29T16:35:14",
     "parlay_id": null
   },
   {
@@ -9519,9 +9519,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Levan Chokheli (R1, KO/TKO)",
+    "resuelto_en": "2026-06-29T16:35:15",
     "parlay_id": null
   },
   {
@@ -9544,9 +9544,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Levan Chokheli (R1, ?)",
+    "resuelto_en": "2026-06-29T16:35:15",
     "parlay_id": null
   },
   {
@@ -9569,9 +9569,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "perdido",
+    "resultado_real": "Gana Levan Chokheli (R1, KO/TKO)",
+    "resuelto_en": "2026-06-29T16:35:15",
     "parlay_id": null
   },
   {
@@ -9594,9 +9594,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "perdido",
+    "resultado_real": "Gana Gaston Bolaños (R3, Decisión)",
+    "resuelto_en": "2026-06-29T16:35:15",
     "parlay_id": null
   },
   {
@@ -9619,9 +9619,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Gaston Bolaños (R3, ?)",
+    "resuelto_en": "2026-06-29T16:35:15",
     "parlay_id": null
   },
   {
@@ -9644,9 +9644,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "perdido",
+    "resultado_real": "Gana Gaston Bolaños (R3, Decisión)",
+    "resuelto_en": "2026-06-29T16:35:15",
     "parlay_id": null
   },
   {
@@ -9669,9 +9669,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "perdido",
+    "resultado_real": "Gana Mitch Raposo (R3, ?)",
+    "resuelto_en": "2026-06-29T16:35:15",
     "parlay_id": null
   },
   {
@@ -9694,9 +9694,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Mitch Raposo (R3, ?)",
+    "resuelto_en": "2026-06-29T16:35:15",
     "parlay_id": null
   },
   {
@@ -9719,9 +9719,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "perdido",
+    "resultado_real": "Gana Mitch Raposo (R3, Decisión)",
+    "resuelto_en": "2026-06-29T16:35:16",
     "parlay_id": null
   },
   {
@@ -9744,9 +9744,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Bia Mesquita (R1, Sumisión)",
+    "resuelto_en": "2026-06-29T16:35:16",
     "parlay_id": null
   },
   {
@@ -9769,9 +9769,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Bia Mesquita (R1, ?)",
+    "resuelto_en": "2026-06-29T16:35:16",
     "parlay_id": null
   },
   {
@@ -9794,9 +9794,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Bia Mesquita (R1, Sumisión)",
+    "resuelto_en": "2026-06-29T16:35:16",
     "parlay_id": null
   },
   {
@@ -9819,9 +9819,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "perdido",
+    "resultado_real": "Gana Kevin Borjas (R3, Decisión)",
+    "resuelto_en": "2026-06-29T16:35:17",
     "parlay_id": null
   },
   {
@@ -9844,9 +9844,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Kevin Borjas (R3, ?)",
+    "resuelto_en": "2026-06-29T16:35:17",
     "parlay_id": null
   },
   {
@@ -9869,9 +9869,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "perdido",
+    "resultado_real": "Gana Kevin Borjas (R3, Decisión)",
+    "resuelto_en": "2026-06-29T16:35:17",
     "parlay_id": null
   },
   {
@@ -9894,9 +9894,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Vinicius Oliveira (R2, ?)",
+    "resuelto_en": "2026-06-29T16:35:17",
     "parlay_id": null
   },
   {
@@ -9919,9 +9919,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Vinicius Oliveira (R2, ?)",
+    "resuelto_en": "2026-06-29T16:35:17",
     "parlay_id": null
   },
   {
@@ -9944,9 +9944,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Vinicius Oliveira (R2, KO/TKO)",
+    "resuelto_en": "2026-06-29T16:35:17",
     "parlay_id": null
   },
   {
@@ -9969,9 +9969,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Murtazali Magomedov (R1, Sumisión)",
+    "resuelto_en": "2026-06-29T16:35:18",
     "parlay_id": null
   },
   {
@@ -9994,9 +9994,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Murtazali Magomedov (R1, ?)",
+    "resuelto_en": "2026-06-29T16:35:18",
     "parlay_id": null
   },
   {
@@ -10019,9 +10019,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "perdido",
+    "resultado_real": "Gana Murtazali Magomedov (R1, Sumisión)",
+    "resuelto_en": "2026-06-29T16:35:18",
     "parlay_id": null
   },
   {
@@ -10044,9 +10044,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "perdido",
+    "resultado_real": "Gana Christian Rodriguez (R1, Sumisión)",
+    "resuelto_en": "2026-06-29T16:35:18",
     "parlay_id": null
   },
   {
@@ -10069,9 +10069,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "perdido",
+    "resultado_real": "Gana Christian Rodriguez (R1, ?)",
+    "resuelto_en": "2026-06-29T16:35:18",
     "parlay_id": null
   },
   {
@@ -10094,9 +10094,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Navajo Stirling (R2, KO/TKO)",
+    "resuelto_en": "2026-06-29T16:35:19",
     "parlay_id": null
   },
   {
@@ -10119,9 +10119,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Navajo Stirling (R2, ?)",
+    "resuelto_en": "2026-06-29T16:35:19",
     "parlay_id": null
   },
   {
@@ -10144,9 +10144,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "perdido",
+    "resultado_real": "Gana Navajo Stirling (R2, KO/TKO)",
+    "resuelto_en": "2026-06-29T16:35:19",
     "parlay_id": null
   },
   {
@@ -10169,9 +10169,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Manel Kape (R3, ?)",
+    "resuelto_en": "2026-06-29T16:35:19",
     "parlay_id": null
   },
   {
@@ -10194,9 +10194,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Manel Kape (R3, ?)",
+    "resuelto_en": "2026-06-29T16:35:19",
     "parlay_id": null
   },
   {
@@ -10219,9 +10219,9 @@
     "stake": 1,
     "fuente": "Heuristico",
     "fecha_evento": "2026-06-19",
-    "estado": "pendiente",
-    "resultado_real": "",
-    "resuelto_en": null,
+    "estado": "ganado",
+    "resultado_real": "Gana Manel Kape (R3, KO/TKO)",
+    "resuelto_en": "2026-06-29T16:35:20",
     "parlay_id": null
   },
   {
