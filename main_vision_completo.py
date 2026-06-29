@@ -1612,6 +1612,8 @@ def main():
                         st.warning(f"⚠️ **Backtest con leakage (precisión inflada, NO reproducible en vivo):**\n\n{nota_bt}")
                 det = fbr.get("detalle", [])
                 if det:
+                    # Ordenar por fecha DESCENDENTE (más reciente primero)
+                    det = sorted(det, key=lambda d: d.get("fecha", ""), reverse=True)
                     st.table([{"Fecha": d.get("fecha", ""), "Partido": d["partido"],
                                "Pick (motor)": d["pick"],
                                "Mercado": d["mercado"], "Conf.": f"{d['confianza']}%",
@@ -1720,9 +1722,11 @@ def main():
                     st.caption("💡 Si el tramo '45%+' acierta mucho menos que 45%, el motor está inflando probabilidades. "
                                "Lo importante es el ORDEN: los de mayor probabilidad deben acertar más que los de menor.")
 
-                # Candidatos a HR: predicción vs RESULTADO real (✅ pegó / ❌ no)
+                # Candidatos a HR: predicción vs RESULTADO real (✅ pegó / ❌ no).
+                # Orden: fecha DESCENDENTE (más reciente primero), prob como desempate.
                 det_hr = sorted(hr_rep.get("detalle", []),
-                                key=lambda d: d.get("probabilidad", 0), reverse=True)
+                                key=lambda d: (str(d.get("fecha", "")), d.get("probabilidad", 0)),
+                                reverse=True)
                 if det_hr:
                     _nh = sum(1 for d in det_hr if d.get("pegó_hr"))
                     st.markdown("**💣 Candidatos a HR — predicción vs resultado real:**")
@@ -1773,8 +1777,8 @@ def main():
             # Mostrar efectividad guardada
             efect_path = os.path.join("data", "backtesting_cache", "pick_type_performance.json")
             efect = cargar_json_safe(efect_path)
+            filas = []
             if efect:
-                filas = []
                 for tipo, m in efect.items():
                     if isinstance(m, dict) and m.get("total", 0) > 0:
                         filas.append({
@@ -1785,13 +1789,34 @@ def main():
                             "ROI": f"{m.get('roi', 0):+.1f}%",
                             "Clasif.": m.get("classification", m.get("clasificacion", "—")),
                         })
-                if filas:
-                    st.markdown("**Efectividad por tipo de pick (datos reales):**")
-                    st.table(filas)
-                else:
-                    st.info("Aún no hay picks auditados. Genera picks en MLB y vuelve a ejecutar.")
+            # Fallback CONECTADO: si ese backtest está vacío, usa la memoria de picks
+            # REAL (pick_history.json), que sí tiene los picks resueltos por mercado.
+            # Antes decía "no hay picks auditados" ignorando 400+ picks ya resueltos.
+            _fuente = "backtest 15 días"
+            if not filas:
+                try:
+                    from motors.pick_memory import pick_memory
+                    pdm = pick_memory.stats().get("por_deporte_mercado", {})
+                    for nombre, v in sorted(pdm.items(), key=lambda x: -x[1].get("total", 0)):
+                        if "MLB" in nombre and v.get("total", 0) > 0:
+                            filas.append({
+                                "Tipo": nombre.replace("MLB · ", ""),
+                                "Picks": v["total"],
+                                "Aciertos": round(v["total"] * v.get("win_rate", 0) / 100),
+                                "Win Rate": f"{v.get('win_rate', 0):.1f}%",
+                                "ROI": f"{v.get('roi', 0):+.1f}%",
+                                "Clasif.": "—",
+                            })
+                    if filas:
+                        _fuente = "memoria de picks resueltos"
+                except Exception:
+                    pass
+            if filas:
+                st.markdown(f"**Efectividad por tipo de pick (datos reales · {_fuente}):**")
+                st.table(filas)
             else:
-                st.caption("Ejecuta el backtest para ver la efectividad real por tipo de apuesta.")
+                st.info("Aún no hay picks de MLB resueltos. Genera picks y resuélvelos en "
+                        "📊 Backtesting → 🧠 Aprendizaje (o corre el backtest de 15 días).")
 
         st.markdown("---")
 

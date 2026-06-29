@@ -1631,8 +1631,24 @@ def _parlay_solo_futbol(pool, n_legs=4, min_prob=55):
                    f"{aud.get('global', 0):.0f}%" + (" · " + " · ".join(partes) if partes else "") +
                    ". Estas legs también se combinan en los parlays cross-deporte.")
     if not fut:
-        st.info("⚽ No hay picks de fútbol del día. Carga partidos de fútbol "
-                "o pon el filtro de día en 'Todos'.")
+        # Diagnóstico: explicar POR QUÉ no hay picks (no solo "no hay").
+        _fp = st.session_state.get("futbol_partidos", {}) or {}
+        _todos = [p for ps in _fp.values() for p in (ps or [])]
+        def _ya_inicio(p):
+            return bool(p.get("en_vivo") or p.get("completado") or p.get("marcador")
+                        or any(x in str(p.get("status", "")).lower()
+                               for x in ("ft", "vivo", "final", "progress", "terminad")))
+        _iniciados = sum(1 for p in _todos if _ya_inicio(p))
+        if not _todos:
+            st.info("⚽ No hay partidos de fútbol cargados. Carga una liga en el sidebar (⚽ FÚTBOL).")
+        else:
+            _resto = len(_todos) - _iniciados
+            st.info(
+                f"⚽ {len(_todos)} partido(s) de fútbol cargado(s), pero **0 picks para este día**: "
+                f"{_iniciados} ya iniciaron/terminaron (no apostables)"
+                + (f" y {_resto} son de otro día o sin datos suficientes para analizar" if _resto else "")
+                + ".  👉 Pon el filtro de día en **'Todos'** para combinar los de otros días, "
+                "o espera a que carguen partidos próximos.")
         return
 
     # ── TODAS las apuestas de fútbol generadas (lista completa por partido) ──
