@@ -78,6 +78,10 @@ class UFCAnalyzer:
         
         # 7. RACHA
         streak = fighter.get('streak', 0)
+        try:                       # algunas fuentes traen la racha como texto ("3")
+            streak = int(streak)
+        except (TypeError, ValueError):
+            streak = 0
         if streak >= 3:
             score += 5
         elif streak >= 2:
@@ -334,7 +338,9 @@ class UFCAnalyzer:
         prob = 50 + (score1 - score2) * 1.6
         return round(max(12, min(88, prob)))
     
-    def analizar_combate(self, p1_data, p2_data):
+    def analizar_combate(self, p1_data, p2_data, combate_info=None):
+        # combate_info (cartelera/evento) lo acepta para compatibilidad con la
+        # llamada de main; este analizador no lo usa todavía.
         prob = self.calculate_probability(p1_data, p2_data)
         p1_name = p1_data.get('nombre', 'P1')
         p2_name = p2_data.get('nombre', 'P2')

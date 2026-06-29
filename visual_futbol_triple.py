@@ -60,6 +60,8 @@ class VisualFutbolTriple: # noqa
         streak_v = analisis_heuristico.get('streak_visitante', '') if analisis_heuristico else ''
         gfl_hist = analisis_heuristico.get('goles_favor_local_hist', []) if analisis_heuristico else []
         gcl_hist = analisis_heuristico.get('goles_contra_local_hist', []) if analisis_heuristico else []
+        gfv_hist = analisis_heuristico.get('goles_favor_visitante_hist', []) if analisis_heuristico else []
+        gcv_hist = analisis_heuristico.get('goles_contra_visitante_hist', []) if analisis_heuristico else []
         sit_l = analisis_heuristico.get('situacion_local') if analisis_heuristico else None
         sit_v = analisis_heuristico.get('situacion_visitante') if analisis_heuristico else None
 
