@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
+r"""
 SCRIPT PARA PROCESAR EL HOOK: on-backtest-complete
 Ruta: C:\Users\Yair\Desktop\BETTING_AI\scripts\notificador_backtest.py
 """

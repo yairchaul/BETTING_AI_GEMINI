@@ -305,10 +305,122 @@ def _grade_prop_nba(pick_txt, boxscore):
     return jug[stat_key] > linea if "over" in pl else jug[stat_key] < linea
 
 
+# ══════════════════════════ UFC ══════════════════════════
+def _grade_ufc(mercado, pick_txt, pelea, metodo=None):
+    """Califica un pick UFC contra el resultado real. True=ganó, False=perdió,
+    None=no se pudo determinar. Función PURA (testeable sin red).
+
+    pelea: dict con ganador_real, round_final, rounds_programados.
+    metodo: 'KO/TKO' | 'Sumisión' | 'Decisión' | None (se pide aparte solo si hace falta).
+    """
+    mercado = (mercado or "").upper()
+    pl = (pick_txt or "").lower()
+    ganador = _norm(pelea.get("ganador_real", ""))
+    rfinal = pelea.get("round_final", 0) or 0
+    rprog = pelea.get("rounds_programados", 3) or 3
+
+    # ¿Va a la distancia? (DISTANCIA / "llega a decisión")
+    if "DISTANCIA" in mercado or "decision" in pl or "decisión" in pl or "distancia" in pl:
+        llega = (metodo == "Decisión") if metodo else (rfinal >= rprog)
+        quiere_no = ("no llega" in pl) or ("termina antes" in pl)
+        return (not llega) if quiere_no else llega
+    # Total de rounds (OVER/UNDER X.5)
+    if "ROUNDS" in mercado or "round" in pl or "asalto" in pl:
+        linea = _num_en(pl) or 1.5
+        paso = rfinal > linea
+        return paso if "over" in pl else (not paso)
+    # Gana por KO/TKO
+    if "KO" in mercado or "ko" in pl:
+        return (ganador in _norm(pick_txt)) and (metodo == "KO/TKO")
+    # Gana por Sumisión
+    if "SUB" in mercado or "sumis" in pl:
+        return (ganador in _norm(pick_txt)) and (metodo == "Sumisión")
+    # Ganador (moneyline)
+    if "GANADOR" in mercado or pl.startswith("gana") or "gana " in pl:
+        return ganador in _norm(pick_txt)
+    return None
+
+
+def _match_pelea_ufc(evento, peleas):
+    """Empareja 'Fighter A vs Fighter B' con una pelea real (por apellido, cualquier orden)."""
+    partes = re.split(r"\s+vs\.?\s+", evento or "", flags=re.I)
+    if len(partes) != 2:
+        return None
+    a, b = _norm(partes[0]), _norm(partes[1])
+
+    def _coincide(x, y):
+        if not x or not y:
+            return False
+        return x in y or y in x or x.split()[-1] == y.split()[-1]
+
+    for pel in peleas:
+        n1, n2 = _norm(pel.get("p1_nombre", "")), _norm(pel.get("p2_nombre", ""))
+        if (_coincide(a, n1) and _coincide(b, n2)) or (_coincide(a, n2) and _coincide(b, n1)):
+            return pel
+    return None
+
+
+def _resolver_ufc(pendientes, progreso_cb=None):
+    """Resuelve picks UFC pendientes contra resultados reales de ESPN MMA
+    (reutiliza motors.ufc_backtester). Cierra el ciclo de aprendizaje de UFC."""
+    ufc_picks = [p for p in pendientes if (p.get("deporte") or "").upper() == "UFC"]
+    if not ufc_picks:
+        return 0
+    try:
+        from motors.ufc_backtester import UFCBacktester
+        bt = UFCBacktester()
+        fechas = [p.get("fecha_evento") or p.get("fecha") for p in ufc_picks
+                  if (p.get("fecha_evento") or p.get("fecha"))]
+        dias = 120
+        if fechas:
+            try:
+                mas_viejo = min(datetime.strptime(f[:10], "%Y-%m-%d") for f in fechas)
+                dias = max(7, min(365, (datetime.now() - mas_viejo).days + 3))
+            except Exception:
+                pass
+        peleas = bt.obtener_peleas_historicas(dias=dias)
+    except Exception as e:
+        if progreso_cb:
+            progreso_cb(f"UFC: no se pudieron traer resultados ({e})")
+        return 0
+    if not peleas:
+        return 0
+
+    metodo_cache = {}
+
+    def _metodo(pel):
+        key = pel.get("comp_id")
+        if key not in metodo_cache:
+            try:
+                metodo_cache[key] = bt._obtener_metodo(pel)
+            except Exception:
+                metodo_cache[key] = None
+        return metodo_cache[key]
+
+    n = 0
+    for p in ufc_picks:
+        pel = _match_pelea_ufc(p.get("evento", ""), peleas)
+        if not pel:
+            continue
+        mercado = (p.get("mercado") or "").upper()
+        # El método solo se pide (1 llamada extra) para los mercados que lo necesitan
+        met = _metodo(pel) if any(k in mercado or k in p.get("pick", "").lower()
+                                  for k in ("DISTANCIA", "KO", "SUB", "decis", "sumis", "ko")) else None
+        res = _grade_ufc(mercado, p.get("pick", ""), pel, met)
+        if res is not None:
+            marcador = f'Gana {pel.get("ganador_real","?")} (R{pel.get("round_final",0)}, {met or "?"})'
+            pick_memory.resolver(p["id"], "ganado" if res else "perdido", marcador)
+            n += 1
+    if progreso_cb:
+        progreso_cb(f"UFC: {n} resueltos")
+    return n
+
+
 # ══════════════════════════ API ══════════════════════════
 def resolver_todo(progreso_cb=None):
-    """Resuelve TODOS los picks pendientes (MLB + NBA) contra box scores reales."""
+    """Resuelve TODOS los picks pendientes (MLB + NBA + UFC) contra resultados reales."""
     pendientes = pick_memory.pendientes()
     n_mlb = _resolver_mlb(pendientes, progreso_cb)
     n_nba = _resolver_nba(pendientes, progreso_cb)
-    return {"mlb": n_mlb, "nba": n_nba, "total": n_mlb + n_nba}
+    n_ufc = _resolver_ufc(pendientes, progreso_cb)
+    return {"mlb": n_mlb, "nba": n_nba, "ufc": n_ufc, "total": n_mlb + n_nba + n_ufc}

@@ -664,8 +664,25 @@ def _get_historical_performance_html(titulo: str) -> str:
     return ""
 
 
+# Parlays SECUNDARIOS: redundantes con el Óptimo/Valor+EV o de pura lotería.
+# En "Modo enfocado" se ocultan (pero SE SIGUEN guardando para el aprendizaje).
+# Se mantienen los distintos y útiles: Óptimo, Valor (+EV), Solo Fútbol, Mundial,
+# HR + Fútbol, IA y la Escalera.
+_PARLAYS_SECUNDARIOS = (
+    "DOBLE SEGURO", "PARLAY SEGURO", "PARLAY VALOR", "BOMBA",
+    "SLUGGER", "GIGANTE", "MÁXIMO PAGO", "RACHAS", "UNDERDOG",
+)
+
+
 def _tarjeta_parlay(titulo, color, descripcion, parlay):
     _guardar_parlay(titulo, parlay)   # registra el parlay generado para aprender de él
+
+    # Poda: en modo enfocado, ocultar los parlays secundarios (ya quedaron
+    # guardados arriba para el aprendizaje). "DE VALOR (+EV)" NO se oculta:
+    # contiene "DE VALOR", no "PARLAY VALOR".
+    if st.session_state.get("_parlay_focus", True) and any(
+            s in titulo.upper() for s in _PARLAYS_SECUNDARIOS):
+        return
 
     # Mapeo de títulos a íconos para una UI más clara
     ICONOS_PARLAY = {
@@ -889,6 +906,13 @@ def render_parlay_tab():
     with col_cfg3:
         st.write("")
         generar = st.button("⚡ GENERAR MEJORES PARLAYS", use_container_width=True, type="primary")
+
+    # Modo enfocado (poda): por defecto muestra solo los ~7 parlays de calidad y
+    # oculta los redundantes/lotería. Los ocultos SE SIGUEN guardando para el
+    # aprendizaje; desmarca para verlos todos.
+    st.session_state["_parlay_focus"] = st.checkbox(
+        "🎯 Modo enfocado — menos parlays, más calidad (oculta redundantes/lotería)",
+        value=st.session_state.get("_parlay_focus", True))
 
     # Persistencia: una vez generado, los parlays QUEDAN visibles aunque toques
     # otro control (slider, día). Antes se recalculaba solo mientras 'generar'
@@ -1266,8 +1290,9 @@ def render_parlay_tab():
         )
         _tarjeta_parlay("⚡ PARLAY SLUGGER DEL DÍA", "#f59e0b", desc_slug, _armar_parlay(sluggers)) # Orange color
 
-        # Detalle de cada slugger con su racha + datos Statcast
-        with st.expander("📊 Detalle de la racha de cada Slugger + Statcast", expanded=False):
+        # Detalle de cada slugger (oculto en modo enfocado, junto con su tarjeta)
+        if not st.session_state.get("_parlay_focus", True):
+          with st.expander("📊 Detalle de la racha de cada Slugger + Statcast", expanded=False):
             st.markdown(
                 "<div style='font-size:0.82rem;color:#94a3b8'>Jugadores con HRs confirmados "
                 "en los últimos días del backtest, mejorados con datos Statcast (barrel rate / exit velo). "
@@ -1368,7 +1393,7 @@ def render_parlay_backtest_section():
                 try:
                     from motors.box_score_resolver import resolver_todo
                     rr = resolver_todo()
-                    st.success(f"Picks: {rr['mlb']} MLB + {rr['nba']} NBA resueltos")
+                    st.success(f"Picks: {rr['mlb']} MLB + {rr['nba']} NBA + {rr.get('ufc', 0)} UFC resueltos")
                 except Exception:
                     pass
                 try:

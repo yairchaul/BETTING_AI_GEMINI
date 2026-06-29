@@ -271,10 +271,24 @@ def ajustar_pick(pick: str, confianza: float, es_torneo: bool, fase: str = "") -
     p = pick.lower()
     nota = ""
 
+    if "ambos no anotan" in p:
+        # BTTS NO: el complemento. En un torneo con BTTS real ~48% (muchos
+        # cierres), "ambos NO anotan" es un pick de valor → se MEZCLA al alza
+        # hacia la tasa real del "no" (100 − btts).
+        btts_no_real = 100 - tasas["btts"]
+        conf_nueva = round(min(85, 0.6 * confianza + 0.4 * btts_no_real), 1)
+        nota = f"WC: ambos NO anotan real {btts_no_real:.0f}% → confianza {confianza:.0f}% → {conf_nueva:.0f}%"
+        return conf_nueva, nota
+
     if "btts" in p or "ambos anotan" in p:
-        conf_nueva = round(confianza * factores["BTTS"], 1)
-        nota = (f"WC: BTTS real {tasas['btts']:.0f}% "
-                f"(histórico {_WC_BASE['btts']}%) → confianza ajustada de {confianza:.0f}% a {conf_nueva:.0f}%")
+        # MEZCLA (no multiplicación) hacia la tasa real del torneo, igual que
+        # Over 1.5. Antes se MULTIPLICABA por ~0.8 y eso suprimía TODO BTTS por
+        # el promedio bajo del Mundial. Con la mezcla, un partido genuinamente
+        # goleador por ambos lados (xG alto de los dos → confianza alta del
+        # modelo) SOBREVIVE el umbral, y uno cerrado no. Data-driven + matchup.
+        conf_nueva = round(min(85, 0.6 * confianza + 0.4 * tasas["btts"]), 1)
+        nota = (f"WC: BTTS real {tasas['btts']:.0f}% (hist {_WC_BASE['btts']}%) → "
+                f"confianza {confianza:.0f}% → {conf_nueva:.0f}%")
         return conf_nueva, nota
 
     if "over 1.5" in p:

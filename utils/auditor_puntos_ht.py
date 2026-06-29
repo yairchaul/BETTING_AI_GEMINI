@@ -19,7 +19,8 @@ def generar_reporte_ht():
         query = """
         SELECT nombre_equipo, puntos_ht 
         FROM historial_equipos 
-        WHERE deporte = '
+        WHERE deporte = 'soccer'
+        """
         df = pd.read_sql_query(query, conn)
         conn.close()
 

@@ -1,4 +1,4 @@
-﻿﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 DIAGNÓSTICO COMPLETO BETTING_AI V24
 Verifica la integridad de todos los componentes del sistema

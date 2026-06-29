@@ -1370,7 +1370,7 @@ def main():
                         if rr['total'] == 0:
                             st.info("0 resueltos — los juegos de esos picks aún no terminan.")
                         else:
-                            st.success(f"✅ {rr['mlb']} MLB + {rr['nba']} NBA resueltos.")
+                            st.success(f"✅ {rr['mlb']} MLB + {rr['nba']} NBA + {rr.get('ufc', 0)} UFC resueltos.")
                         # Cerrar el ciclo: resolver los parlays cuyos picks ya se saben
                         try:
                             from motors.parlay_brain import resolver_parlays_pendientes

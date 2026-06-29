@@ -215,7 +215,7 @@ ESTRUCTURA OBLIGATORIA DE RESPUESTA:
         Partido: {partido.get('local')} vs {partido.get('visitante')}
         Líneas: O/U {partido.get('odds', {}).get('over_under')}, Spread {partido.get('odds', {}).get('spread')}
         Confianza Heurística: {resultado.get('confianza')}%
-        Prioriza: Fatiga por back-to-back y volumen de triples."""
+        Prioriza: Fatiga por back-to-back y volumen de triples.
 
         CONTEXTO ADICIONAL:
         - Lesiones de jugadores estrella: {lesiones}
@@ -241,8 +241,8 @@ ESTRUCTURA OBLIGATORIA DE RESPUESTA:
         Pelea: {p1.get('nombre')} vs {p2.get('nombre')}
         Físico: Alcance {p1.get('alcance')}cm vs {p2.get('alcance')}cm
         Estilo: KO Rate {p1.get('ko_rate')}% vs {p2.get('ko_rate')}%
-        Veredicto sobre si llega a la decisión o termina por sumisión/KO."""
-        
+        Veredicto sobre si llega a la decisión o termina por sumisión/KO.
+
         CONTEXTO ADICIONAL:
         - Lesiones de peleadores: {lesiones}
         - Ausencias confirmadas: {ausencias}
