@@ -2,8 +2,11 @@
 """MOTOR DE DECISIÓN INTELIGENTE - Elige la mejor apuesta"""
 import json
 import os
+import logging
 from datetime import datetime
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 from clima_mlb import ClimaMLB
 from backtesting_auto_aprendizaje import BacktestingAutoAprendizaje
@@ -69,6 +72,7 @@ class MotorDecisionInteligente:
         pick_ml = resultado_heurístico.get("pick", "")
         
         # --- AUTO-APRENDIZAJE: Penalización por fallos previos ---
+        ocurrencias = 0   # definir SIEMPRE (se usa abajo aunque log_fallos esté vacío)
         if self.log_fallos:
             ocurrencias = sum(1 for line in self.log_fallos if pick_ml.lower() in line.lower())
             if ocurrencias > 0:
@@ -100,7 +104,7 @@ class MotorDecisionInteligente:
             "pick": pick_ml,
             "confianza": conf_ml,
             "razon": (f"Diff: {diff:.1f}% | Confianza: {conf_ml}%" +
-                      (f" | {momentum_res.get('ajustes', [])}" if self.motor_momentum else "") +
+                      (" | momentum activo" if self.motor_momentum else "") +
                       (f" | Penalizado por {ocurrencias} fallos previos" if ocurrencias > 0 else "") +
                       (f" | Equipo trampa detectado" if pick_ml in equipos_trampa else "")
                      )

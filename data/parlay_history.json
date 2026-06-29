@@ -1461,5 +1461,39 @@
    }
   ],
   "estado": "perdido"
+ },
+ {
+  "id": "par_20260629172917_3274",
+  "fecha": "2026-06-29",
+  "tipo": "🎯 PARLAY ÓPTIMO (3 legs)",
+  "firma": "⚽ FÚTBOL::DOBLE: Germany o Empate|⚽ FÚTBOL::OVER 2.5|⚾ MLB::Gana Los Angeles Dodgers",
+  "prob": 36.26,
+  "cuota": 5.82,
+  "ev_pct": 110.9,
+  "n_legs": 3,
+  "legs": [
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana Los Angeles Dodgers",
+    "mercado": "MONEYLINE",
+    "evento": "Colorado Rockies @ Los Angeles Dodgers",
+    "prob": 79.2
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "OVER 2.5",
+    "mercado": "1X2/Goles",
+    "evento": "Germany vs Paraguay",
+    "prob": 79.5
+   },
+   {
+    "sport": "⚽ FÚTBOL",
+    "pick": "DOBLE: Germany o Empate",
+    "mercado": "1X2/Goles",
+    "evento": "Germany vs Paraguay",
+    "prob": 90
+   }
+  ],
+  "estado": "pendiente"
  }
 ]
