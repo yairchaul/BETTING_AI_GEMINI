@@ -223,9 +223,16 @@ class VisualMLB:
                               delta=f"calculo {tp} carreras")
             with cols_proj[1]:
                 if rl and rl.get("pick"):
+                    # rl['pick'] ya incluye la línea (ej. "Boston Red Sox +1.5"),
+                    # así que NO concatenar rl['linea'] otra vez (era "+1.5 +1.5").
                     st.metric("🎯 Hándicap (Run Line)",
-                              f"{rl['pick']} {rl.get('linea','')}",
+                              rl['pick'],
                               delta=f"{rl.get('confianza',0)}% confianza")
+                    # Alternativas analizadas (ambos lados): que se vea que comparó.
+                    _alts = rl.get("alternativas", [])
+                    if len(_alts) > 1:
+                        st.caption("Otras líneas: " +
+                                   " · ".join(f"{a['pick']} {a['prob']}%" for a in _alts[1:4]))
 
         # ── Estadio + factor de HR ───────────────────────────────────────────
         if venue and venue != "TBD":
@@ -310,7 +317,7 @@ class VisualMLB:
         # ── 🎯 RUN LINE (Hándicap de carreras) ───────────────────────────────
         rl = analisis_mlb.get("run_line", {}) if analisis_mlb else {}
         if rl and rl.get("pick"):
-            st.caption(f"🎯 Run Line: **{rl['pick']} {rl.get('linea','')}** ({rl.get('confianza',0)}%)")
+            st.caption(f"🎯 Run Line: **{rl['pick']}** ({rl.get('confianza',0)}%)")
 
         # ── ⚡ PONCHES DEL LANZADOR (Over/Under) ──────────────────────────────
         k_picks = analisis_mlb.get("k_picks", []) if analisis_mlb else []

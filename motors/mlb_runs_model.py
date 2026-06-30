@@ -243,10 +243,12 @@ def predecir(local, visitante, linea_total=8.5, modelo=None):
     tot = I + J
     p_over = float(M[tot > linea_total].sum())
     margen = I - J
-    p_local_115 = float(M[margen >= 2].sum())   # local -1.5
+    p_local_115 = float(M[margen >= 2].sum())   # local -1.5 (gana por 2+)
     p_visit_115 = float(M[margen <= -2].sum())   # visitante -1.5
-    p_local_p15 = float(M[margen >= -1].sum())   # local +1.5
+    p_local_p15 = float(M[margen >= -1].sum())   # local +1.5 (pierde por ≤1 o gana)
     p_visit_p15 = float(M[margen <= 1].sum())    # visitante +1.5
+    p_local_p25 = float(M[margen >= -2].sum())   # local +2.5 (pierde por ≤2 o gana)
+    p_visit_p25 = float(M[margen <= 2].sum())    # visitante +2.5
 
     _r = lambda v: round(v * 100, 1)
     return {
@@ -257,6 +259,7 @@ def predecir(local, visitante, linea_total=8.5, modelo=None):
         "run_line": {
             "local_-1.5": _r(p_local_115), "visitante_-1.5": _r(p_visit_115),
             "local_+1.5": _r(p_local_p15), "visitante_+1.5": _r(p_visit_p15),
+            "local_+2.5": _r(p_local_p25), "visitante_+2.5": _r(p_visit_p25),
         },
         "total": {"linea": linea_total, "over": _r(p_over), "under": _r(1 - p_over)},
     }

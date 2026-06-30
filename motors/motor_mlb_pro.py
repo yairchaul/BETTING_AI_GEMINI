@@ -258,16 +258,42 @@ def _poisson_over(lam, linea):
     return max(0.0, min(1.0, 1.0 - cdf))
 
 
-def _runline_pick(fav_team, local, visitante, confianza, p_pick, gap_pct=0.0):
-    """Hándicap (runline) basado en el backtest real 2026:
-        • perdedor +1.5 ≈ 58%  ·  visitante +1.5 ≈ 63%  (los más fiables)
-        • favorito -1.5 ≈ 42%  ·  local -1.5 ≈ 37%       (malos: evitar)
-    Estrategia: por defecto +1.5 al NO favorito (preferente al visitante, que
-    cubre el 63%); -1.5 al favorito SOLO si es dominante extremo y es local.
-    gap_pct = |dif de récord| (0-1): brecha grande a favor del fuerte sube el
-    riesgo de paliza → baja la confianza del +1.5."""
+def _runline_pick(fav_team, local, visitante, confianza, p_pick, gap_pct=0.0, modelo_rl=None):
+    """Hándicap (runline).
+
+    Si hay probabilidades del MODELO DE CARRERAS (modelo_rl, la matriz Poisson),
+    analiza AMBOS lados — favorito +1.5/+2.5 (asegurar), no-favorito +1.5/+2.5, y
+    favorito -1.5 (paga más) — y devuelve el de MAYOR probabilidad con valor real
+    como pick, más las alternativas. Así puede dar el hándicap al equipo correcto
+    (p.ej. favorito +1.5 cuando domina) en vez de siempre al perdedor.
+
+    Sin modelo, cae a la heurística backtesteada (perdedor +1.5/+2.5)."""
     perdedor = visitante if fav_team == local else local
     es_visitante_dog = (perdedor == visitante)
+    lado_fav = "local" if fav_team == local else "visitante"
+    lado_dog = "visitante" if fav_team == local else "local"
+
+    # ── Decisión DATA-DRIVEN con el modelo de carreras (ambos lados) ──────────
+    if modelo_rl:
+        def _p(clave):
+            v = modelo_rl.get(clave)
+            return float(v) if v is not None else None
+        crudos = [
+            (f"{fav_team} +1.5", _p(f"{lado_fav}_+1.5"), "favorito pierde por ≤1 o gana — el más seguro"),
+            (f"{fav_team} +2.5", _p(f"{lado_fav}_+2.5"), "favorito con colchón de 2 carreras"),
+            (f"{perdedor} +1.5", _p(f"{lado_dog}_+1.5"), "no favorito pierde por ≤1 o gana"),
+            (f"{perdedor} +2.5", _p(f"{lado_dog}_+2.5"), "no favorito con colchón de 2"),
+            (f"{fav_team} -1.5", _p(f"{lado_fav}_-1.5"), "favorito gana por 2+ (paga más)"),
+        ]
+        cands = sorted([(e, pr, n) for e, pr, n in crudos if pr is not None],
+                       key=lambda c: c[1], reverse=True)
+        if cands:
+            # El más probable CON valor (≤93%, que pague algo); si todos son
+            # casi seguros, toma igual el más probable (modo "asegurar").
+            pick_e, pick_pr, pick_n = next((c for c in cands if c[1] <= 93), cands[0])
+            return {"pick": pick_e, "linea": pick_e.split()[-1], "confianza": round(pick_pr),
+                    "nota": f"modelo de carreras: {pick_n} (~{pick_pr:.0f}%)",
+                    "alternativas": [{"pick": e, "prob": round(pr)} for e, pr, _ in cands[:4]]}
 
     # ── Hándicap por NIVEL DE CONFIANZA (estrategia del usuario) ────────────
     # Cobertura real (backtest MLB 2026, 259 juegos): -1.5 ~47% · +1.5 ~55-59%
@@ -464,6 +490,7 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
 
     # --- MEJORA: Integrar modelo de carreras (Dixon-Coles) para precisión ---
     prob_dc_local = None
+    res_dc = None   # se reutiliza abajo para el run line (def antes del try)
     if predecir_runs_model:
         try:
             res_dc = predecir_runs_model(local, visitante)
@@ -675,7 +702,8 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
         'hr_candidates': hr_candidates,
         'k_picks': k_picks,
         'tb_picks': tb_picks,
-        'run_line': _runline_pick(pick_team, local, visitante, confianza, p_pick, abs(diff_pct)),
+        'run_line': _runline_pick(pick_team, local, visitante, confianza, p_pick, abs(diff_pct),
+                                  modelo_rl=(res_dc or {}).get("run_line")),
         'score_raw': round(score, 2),
         'pitchers': {'local': hp, 'visitante': ap},
     }
