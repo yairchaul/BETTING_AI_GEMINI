@@ -1770,9 +1770,11 @@ def main():
             # REAL (pick_history.json), que sí tiene los picks resueltos por mercado.
             # Antes decía "no hay picks auditados" ignorando 400+ picks ya resueltos.
             _fuente = "backtest 15 días"
-            if not filas:
+            if not filas and pick_memory is not None:
                 try:
-                    from motors.pick_memory import pick_memory
+                    # Usa el pick_memory GLOBAL (importado arriba). NO re-importar
+                    # aquí: un import local convertía pick_memory en variable local
+                    # de main() → UnboundLocalError en el resto de la función.
                     pdm = pick_memory.stats().get("por_deporte_mercado", {})
                     for nombre, v in sorted(pdm.items(), key=lambda x: -x[1].get("total", 0)):
                         if "MLB" in nombre and v.get("total", 0) > 0:
