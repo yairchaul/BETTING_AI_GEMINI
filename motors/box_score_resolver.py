@@ -416,11 +416,74 @@ def _resolver_ufc(pendientes, progreso_cb=None):
     return n
 
 
+# ══════════════════════════ FÚTBOL ══════════════════════════
+def _resolver_futbol(pendientes, progreso_cb=None):
+    """Resuelve picks de fútbol pendientes contra resultados reales de ESPN.
+    Antes esta lógica vivía suelta en main_vision_completo; ahora es parte del
+    resolver unificado para que el ciclo de aprendizaje cierre TODO de una vez."""
+    soccer = [p for p in pendientes if (p.get("deporte") or "").upper() == "SOCCER"]
+    if not soccer:
+        return 0
+    try:
+        from espn_futbol import ESPN_FUTBOL
+        from motors.futbol_backtest_real import _grade_pick, LIGAS_DEFAULT
+    except Exception as e:
+        if progreso_cb:
+            progreso_cb(f"Fútbol: no se pudo importar el resolver ({e})")
+        return 0
+
+    scraper = ESPN_FUTBOL()
+    resultados = {}   # "home|away" normalizado → (gl, gv, local_real, visit_real)
+    for liga in LIGAS_DEFAULT:
+        try:
+            for p in scraper.gestor.obtener_partidos(liga, dias_atras=5):
+                if p.get("completado") and p.get("goles_local") is not None:
+                    h = (p.get("home") or p.get("local", "")).lower().strip()
+                    a = (p.get("away") or p.get("visitante", "")).lower().strip()
+                    resultados[f"{h}|{a}"] = (int(p["goles_local"]), int(p["goles_visitante"]),
+                                              p.get("home", ""), p.get("away", ""))
+        except Exception:
+            continue
+
+    n = 0
+    for pk in soccer:
+        evento = pk.get("evento", "")
+        if " vs " not in evento:
+            continue
+        local, visitante = [x.strip() for x in evento.split(" vs ", 1)]
+        clave = f"{local.lower()}|{visitante.lower()}"
+        if clave not in resultados:
+            continue
+        gl, gv, loc_real, vis_real = resultados[clave]
+        _, acierto = _grade_pick(pk.get("pick", ""), gl, gv, loc_real, vis_real)
+        if acierto is None:
+            continue
+        pick_memory.resolver(pk["id"], "ganado" if acierto else "perdido", f"{gl}-{gv}")
+        n += 1
+    if progreso_cb:
+        progreso_cb(f"Fútbol: {n} resueltos")
+    return n
+
+
 # ══════════════════════════ API ══════════════════════════
 def resolver_todo(progreso_cb=None):
-    """Resuelve TODOS los picks pendientes (MLB + NBA + UFC) contra resultados reales."""
+    """Resolver UNIFICADO: cierra el ciclo de aprendizaje COMPLETO de una sola
+    llamada — picks de MLB + NBA + UFC + FÚTBOL contra resultados reales, y luego
+    los PARLAYS cuyas legs ya quedaron resueltas. Una sola fuente de verdad."""
     pendientes = pick_memory.pendientes()
     n_mlb = _resolver_mlb(pendientes, progreso_cb)
     n_nba = _resolver_nba(pendientes, progreso_cb)
     n_ufc = _resolver_ufc(pendientes, progreso_cb)
-    return {"mlb": n_mlb, "nba": n_nba, "ufc": n_ufc, "total": n_mlb + n_nba + n_ufc}
+    n_soccer = _resolver_futbol(pendientes, progreso_cb)
+    # Cerrar también los parlays cuyas legs ya se resolvieron (no usa red).
+    n_parlays = 0
+    try:
+        from motors.parlay_brain import resolver_parlays_pendientes
+        n_parlays = resolver_parlays_pendientes() or 0
+        if progreso_cb:
+            progreso_cb(f"Parlays: {n_parlays} resueltos")
+    except Exception as _e:
+        if progreso_cb:
+            progreso_cb(f"Parlays: {_e}")
+    return {"mlb": n_mlb, "nba": n_nba, "ufc": n_ufc, "soccer": n_soccer,
+            "parlays": n_parlays, "total": n_mlb + n_nba + n_ufc + n_soccer}

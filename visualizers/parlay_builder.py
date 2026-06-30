@@ -1390,21 +1390,18 @@ def render_parlay_backtest_section():
     with col_bt1:
         if st.button("🔄 Auto-resolver parlays pendientes", use_container_width=True, key="bt_parlays_resolve"):
             with st.spinner("Cruzando resultados reales con legs del parlay..."):
+                # resolver_todo() ya cierra picks (MLB/NBA/UFC/Fútbol) Y parlays en
+                # una sola pasada — fuente única, sin doble resolución redundante.
                 try:
                     from motors.box_score_resolver import resolver_todo
                     rr = resolver_todo()
-                    st.success(f"Picks: {rr['mlb']} MLB + {rr['nba']} NBA + {rr.get('ufc', 0)} UFC resueltos")
-                except Exception:
-                    pass
-                try:
-                    from motors.parlay_brain import resolver_parlays_pendientes as _res_par
-                    n_par = _res_par()
-                    if n_par:
-                        st.success(f"🎰 {n_par} parlay(s) resueltos")
-                    else:
-                        st.info("Aún no hay parlays con todas las legs resueltas.")
+                    st.success(f"Picks: {rr['mlb']} MLB + {rr['nba']} NBA + {rr.get('ufc', 0)} UFC "
+                               f"+ {rr.get('soccer', 0)} Fútbol resueltos · 🎰 {rr.get('parlays', 0)} parlays cerrados")
+                    if not any(rr.get(k, 0) for k in ('mlb', 'nba', 'ufc', 'soccer', 'parlays')):
+                        st.info("Nada nuevo que resolver — los juegos de los picks/parlays pendientes "
+                                "aún no terminan.")
                 except Exception as _ep:
-                    st.error(f"Error: {_ep}")
+                    st.error(f"Error al resolver: {_ep}")
             st.rerun()
 
     # Stats por tipo

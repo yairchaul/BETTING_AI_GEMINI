@@ -414,44 +414,16 @@ def _log_pick_ia(deporte, local, visitante, resultado_ia, fecha_evento=None):
 
 
 def _auto_resolver_futbol():
-    """Resuelve picks de fútbol pendientes cruzándolos con resultados reales de ESPN."""
+    """Resuelve picks de fútbol pendientes. Delega al resolver UNIFICADO del motor
+    (motors.box_score_resolver._resolver_futbol) para no duplicar la lógica."""
     if pick_memory is None:
         return 0
-    from espn_futbol import ESPN_FUTBOL
-    from motors.futbol_backtest_real import _grade_pick, LIGAS_DEFAULT
-
-    scraper = ESPN_FUTBOL()
-    # Mapa de resultados: "home|away" normalizado → (gl, gv, local, visitante)
-    resultados = {}
-    for liga in LIGAS_DEFAULT:
-        try:
-            for p in scraper.gestor.obtener_partidos(liga, dias_atras=5):
-                if p.get("completado") and p.get("goles_local") is not None:
-                    h = (p.get("home") or p.get("local", "")).lower().strip()
-                    a = (p.get("away") or p.get("visitante", "")).lower().strip()
-                    resultados[f"{h}|{a}"] = (int(p["goles_local"]), int(p["goles_visitante"]),
-                                              p.get("home", ""), p.get("away", ""))
-        except Exception:
-            continue
-
-    n = 0
-    for pk in pick_memory.pendientes():
-        if (pk.get("deporte") or "").upper() != "SOCCER":
-            continue
-        evento = pk.get("evento", "")
-        if " vs " not in evento:
-            continue
-        local, visitante = [x.strip() for x in evento.split(" vs ", 1)]
-        clave = f"{local.lower()}|{visitante.lower()}"
-        if clave not in resultados:
-            continue
-        gl, gv, loc_real, vis_real = resultados[clave]
-        _, acierto = _grade_pick(pk.get("pick", ""), gl, gv, loc_real, vis_real)
-        if acierto is None:
-            continue
-        pick_memory.resolver(pk["id"], "ganado" if acierto else "perdido", f"{gl}-{gv}")
-        n += 1
-    return n
+    try:
+        from motors.box_score_resolver import _resolver_futbol
+        return _resolver_futbol(pick_memory.pendientes())
+    except Exception as e:
+        logger.warning(f"auto-resolver fútbol: {e}")
+        return 0
 
 def _no_iniciado(p):
     """True solo si el evento AÚN NO empieza (descarta finalizados / en vivo / pasados)."""
@@ -1236,6 +1208,18 @@ def main():
         st.header("📊 Reporte de Backtesting Universal")
         st.caption("Resultados del rendimiento histórico de los motores de análisis.")
 
+        # Cierre AUTOMÁTICO del ciclo (1 vez por sesión, sin red): cierra los parlays
+        # cuyas legs ya quedaron resueltas → el aprendizaje de parlays se llena solo,
+        # sin esperar a que el usuario pulse "Auto-resolver". La resolución de picks
+        # contra resultados reales (con red) sigue en los botones de abajo.
+        if not st.session_state.get("_parlays_auto_resueltos"):
+            st.session_state["_parlays_auto_resueltos"] = True
+            try:
+                from motors.parlay_brain import resolver_parlays_pendientes
+                resolver_parlays_pendientes()
+            except Exception:
+                pass
+
         # --- Sección de Backtesting de Parlays (movida desde la pestaña de Parlays) ---
         st.markdown("---")
         if render_parlay_backtest_section:
@@ -1363,23 +1347,16 @@ def main():
             st.markdown("---")
             col_r1, col_r2 = st.columns(2)
             with col_r1:
-                if st.button("🔄 Auto-resolver MLB + NBA", use_container_width=True):
+                if st.button("🔄 Auto-resolver TODO (picks + parlays)", use_container_width=True):
                     try:
                         from motors.box_score_resolver import resolver_todo
-                        with st.spinner("Cruzando picks con box scores reales..."):
-                            rr = resolver_todo()
-                        if rr['total'] == 0:
-                            st.info("0 resueltos — los juegos de esos picks aún no terminan.")
+                        with st.spinner("Cruzando picks con resultados reales (MLB/NBA/UFC/Fútbol) y cerrando parlays..."):
+                            rr = resolver_todo()   # cierra picks de todos los deportes Y parlays
+                        if rr['total'] == 0 and not rr.get('parlays'):
+                            st.info("0 resueltos — los juegos de esos picks/parlays aún no terminan.")
                         else:
-                            st.success(f"✅ {rr['mlb']} MLB + {rr['nba']} NBA + {rr.get('ufc', 0)} UFC resueltos.")
-                        # Cerrar el ciclo: resolver los parlays cuyos picks ya se saben
-                        try:
-                            from motors.parlay_brain import resolver_parlays_pendientes
-                            n_par = resolver_parlays_pendientes()
-                            if n_par:
-                                st.success(f"🎰 {n_par} parlay(s) resueltos automáticamente.")
-                        except Exception:
-                            pass
+                            st.success(f"✅ {rr['mlb']} MLB + {rr['nba']} NBA + {rr.get('ufc', 0)} UFC "
+                                       f"+ {rr.get('soccer', 0)} Fútbol resueltos · 🎰 {rr.get('parlays', 0)} parlays cerrados.")
                         st.rerun()
                     except Exception as _be:
                         st.error(f"Error: {_be}")
