@@ -15,6 +15,50 @@ from typing import Dict, List, Optional
 from datetime import datetime
 
 
+_HR_CALIB = None
+
+
+def _calibrar_prob_hr(raw):
+    """Ajusta la prob de HR a la tasa REAL de su tramo (backtest). El modelo INFLA
+    el tope (tramo 22%+ pega ~7% vs 15-21% pega ~17%). Devuelve la tasa real del
+    tramo, mezclada con la global si la muestra es chica. (Faltaba: se usaba en
+    construir_pool pero no estaba definida → NameError.)"""
+    global _HR_CALIB
+    if _HR_CALIB is None:
+        import os
+        import json
+        try:
+            rep = json.load(open(os.path.join("data", "hr_backtest_reporte.json"), encoding="utf-8"))
+            _HR_CALIB = (rep.get("por_tramo_probabilidad", {}) or {},
+                         float(rep.get("precision_global", 12) or 12))
+        except Exception:
+            _HR_CALIB = ({}, 12.0)
+    tramos, glob = _HR_CALIB
+    try:
+        raw = float(raw)
+    except Exception:
+        return raw
+    for nombre, t in tramos.items():
+        prec = t.get("precision")
+        n = t.get("predichos", 0) or 0
+        nm = str(nombre).replace("%", "").strip()
+        lo = hi = None
+        if nm.startswith("<"):
+            lo, hi = 0.0, float(nm[1:] or 15)
+        elif nm.endswith("+"):
+            lo, hi = float(nm[:-1] or 0), 100.0
+        elif "-" in nm:
+            a, b = nm.split("-", 1)
+            try:
+                lo, hi = float(a), float(b) + 0.999
+            except Exception:
+                continue
+        if lo is not None and prec is not None and lo <= raw <= hi:
+            peso = min(1.0, n / 40.0)
+            return round(prec * peso + glob * (1 - peso), 1)
+    return round(min(raw, 18.0), 1)
+
+
 # ─── Umbrales mínimos de confianza por tipo de pick ──────────────────────────
 MIN_CONF: Dict[str, float] = {
     "HR_PROP":    28.0,   # HRs son eventos raros, umbral intencionalmente bajo
