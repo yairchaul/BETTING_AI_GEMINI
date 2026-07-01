@@ -250,11 +250,18 @@ class VisualMLB:
                               delta=f"calculo {tp} carreras")
             with cols_proj[1]:
                 if rl and rl.get("pick"):
-                    # rl['pick'] ya incluye la línea (ej. "Boston Red Sox +1.5"),
-                    # así que NO concatenar rl['linea'] otra vez (era "+1.5 +1.5").
-                    st.metric("🎯 Hándicap (Run Line)",
-                              rl['pick'],
-                              delta=f"{rl.get('confianza',0)}% confianza")
+                    pick_text = rl['pick']
+                    is_risky = "-1.5" in pick_text
+                    
+                    label = "🎯 Hándicap (Run Line)"
+                    if is_risky:
+                        label = "⚠️ Hándicap (Alto Riesgo)"
+                    
+                    help_text = rl.get("nota")
+                    if is_risky and not help_text:
+                        help_text = "Alto riesgo: el equipo debe ganar por 2 o más carreras."
+
+                    st.metric(label, pick_text, delta=f"{rl.get('confianza',0)}% confianza", help=help_text)
                     # Alternativas analizadas (ambos lados): que se vea que comparó.
                     _alts = rl.get("alternativas", [])
                     if len(_alts) > 1:

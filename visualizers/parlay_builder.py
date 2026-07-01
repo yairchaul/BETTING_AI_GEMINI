@@ -150,6 +150,7 @@ def _recolectar_picks_nba(ss, _es_del_dia, **kwargs):
                     "prob": mejor.get("confianza", 0),
                     "tipo": "SEGURO",
                     "cuota": CUOTA_DEFAULT.get(mejor.get("mercado", "").split()[0], 1.90),
+                    "razon": f"Mejor mercado por confianza ({mejor.get('confianza', 0)}%)",
                 })
             # Props de jugador (puntos/asistencias/triples) — la más confiable por equipo
             # Añadir racha para el parlay de rachas
@@ -183,9 +184,10 @@ _HR_CALIB = None
 
 def _calibrar_prob_hr(raw):
     """Ajusta la probabilidad de HR a la tasa REAL de su tramo (backtest). El modelo
-    INFLA el tope: el tramo 22%+ pega MENOS (6.7%) que el 15-21% bien calibrado (17.2%).
-    Así la selección de HR del parlay prefiere los que DE VERDAD más pegan, no los
-    inflados. Muestras chicas → se mezclan con la tasa global para no castigar por ruido."""
+    INFLA el tope: el tramo 22%+ pega MENOS (6.7%) que el 15-21% bien calibrado (17.2%). Esta
+    versión MEZCLA la probabilidad cruda del modelo con la tasa histórica, para que valores
+    distintos dentro del mismo tramo (ej. 16% y 20%) tengan probabilidades calibradas
+    distintas, haciéndolo más preciso. Muestras chicas → se mezclan con la tasa global."""
     global _HR_CALIB
     if _HR_CALIB is None:
         import os, json
@@ -197,14 +199,15 @@ def _calibrar_prob_hr(raw):
             _HR_CALIB = ({}, 12.0)
     tramos, glob = _HR_CALIB
     try:
-        raw = float(raw)
-    except Exception:
+        raw = float(raw or 0)
+    except (ValueError, TypeError):
         return raw
     for nombre, t in tramos.items():
         prec = t.get("precision")
         n = t.get("predichos", 0) or 0
         nm = str(nombre)
         lo = hi = None
+        # El regex es más robusto para formatos como "15-20%" o "22%+"
         if "<" in nm:
             lo, hi = 0.0, float(re.sub(r"[^0-9.]", "", nm) or 15)
         elif "+" in nm:
@@ -216,9 +219,14 @@ def _calibrar_prob_hr(raw):
             except Exception:
                 continue
         if lo is not None and prec is not None and lo <= raw <= hi:
-            peso = min(1.0, n / 40.0)          # muestra chica → confía menos, mezcla con global
-            return round(prec * peso + glob * (1 - peso), 1)
-    return round(min(raw, 18.0), 1)            # sin tramo: cap (el modelo infla el tope)
+            # Tasa histórica del tramo, suavizada con la tasa global si la muestra es chica.
+            peso_hist = min(1.0, n / 40.0)
+            tasa_hist_suavizada = prec * peso_hist + glob * (1 - peso_hist)
+            # MEJORA: Mezclar la probabilidad cruda con la tasa histórica (50/50).
+            # Esto hace que la calibración sea más granular y no un valor único por tramo.
+            prob_mezclada = 0.5 * raw + 0.5 * tasa_hist_suavizada
+            return round(prob_mezclada, 1)
+    return round(min(raw, 18.0), 1)  # sin tramo: cap (el modelo infla el tope)
 
 
 def _recolectar_picks_mlb(ss, _es_del_dia, **kwargs):
@@ -248,8 +256,11 @@ def _recolectar_picks_mlb(ss, _es_del_dia, **kwargs):
                 pool.append({
                     "sport": "⚾ MLB", "evento": evento,
                     "mercado": _etiqueta.get(mk, mk), "pick": mejor["pick"],
-                    "prob": mejor.get("confianza", 0), "tipo": "SEGURO",
+                    "prob": mejor.get("confianza_ajustada", mejor.get("confianza", 0)),
+                    "tipo": "SEGURO",
                     "cuota": _cuota.get(mk, 1.90),
+                    "razon": mejor.get("razon"),
+                    "is_adjusted": True,  # La confianza ya viene ajustada por el motor MLB
                 })
                 # Añadir racha para el parlay de rachas
                 is_local_pick = p.get('local', '') in mejor.get('pick', '')
@@ -278,62 +289,62 @@ def _recolectar_picks_mlb(ss, _es_del_dia, **kwargs):
 def _recolectar_picks_ufc(ss, _es_del_dia, **kwargs):
     """Recolecta los picks de UFC."""
     pool = []
-    try:
-        _ufc_analyzer = ss.get("ufc_analyzer")
-        for idx, c in enumerate(ss.get("ufc_combates", []) or []):
-            if not _es_del_dia(c):
-                continue
-            p1 = c.get("peleador1", {})
-            p2 = c.get("peleador2", {})
-            fight_key = f"{p1.get('nombre','')}_vs_{p2.get('nombre','')}"
-            res = ss.get("analisis_ufc", {}).get(fight_key)
-            # Si no hay análisis previo, correr el motor UFC on-the-fly
-            if not res and _ufc_analyzer:
-                try:
-                    res = _ufc_analyzer.analizar_combate(p1, p2)
-                except Exception as _ue:
-                    logger.debug(f"UFC on-the-fly {fight_key}: {_ue}")
-            if not res:
-                continue
-            evento_ufc = f"{c.get('peleador1',{}).get('nombre','?')} vs {c.get('peleador2',{}).get('nombre','?')}"
-            mejor = res.get("mejor_apuesta", {})
-            if mejor:
-                pool.append({
-                    "sport": "🥊 UFC", "evento": evento_ufc,
-                    "mercado": mejor.get("mercado", "GANADOR"),
-                    "pick": mejor.get("apuesta", ""),
-                    "prob": mejor.get("confianza", 0),
-                    "tipo": "SEGURO" if mejor.get("confianza", 0) >= 55 else "VALOR",
-                    "cuota": CUOTA_DEFAULT.get("MÉTODO" if "MÉTODO" in mejor.get("mercado", "") else "MONEYLINE", 2.0),
-                })
-            # Total de rounds más probable
-            rt = sorted(res.get("rounds_totales", []), key=lambda x: x.get("confianza", 0), reverse=True)
-            if rt and rt[0].get("confianza", 0) >= 58:
-                pool.append({
-                    "sport": "🥊 UFC", "evento": evento_ufc, "mercado": "ROUNDS",
-                    "pick": rt[0].get("etiqueta", ""), "prob": rt[0].get("confianza", 0),
-                    "tipo": "VALOR", "cuota": 1.85,
-                })
-            # Gana por KO/TKO (cuando el poder de KO del ganador es alto)
-            mp = res.get("metodo_probs", {})
-            ganador = res.get("ganador", "")
-            prob_ko = mp.get("KO/TKO", 0)
-            if ganador and prob_ko >= 40:
-                pool.append({
-                    "sport": "🥊 UFC", "evento": evento_ufc, "mercado": "GANA POR KO",
-                    "pick": f"{ganador} gana por KO/TKO",
-                    "prob": prob_ko, "tipo": "BOMBA", "cuota": 2.60,
-                })
-            # Gana por Sumisión (si el ganador tiene alta amenaza de sumisión)
-            prob_sub = mp.get("Sumisión", 0)
-            if ganador and prob_sub >= 40:
-                pool.append({
-                    "sport": "🥊 UFC", "evento": evento_ufc, "mercado": "GANA POR SUB",
-                    "pick": f"{ganador} gana por Sumisión",
-                    "prob": prob_sub, "tipo": "BOMBA", "cuota": 3.20,
-                })
-    except Exception as e:
-        logger.warning(f"Parlay UFC: {e}")
+    _ufc_analyzer = ss.get("ufc_analyzer")
+    combates = ss.get("ufc_combates", []) or []
+    analisis_cache = ss.get("analisis_ufc", {}) or {}
+
+    for idx, c in enumerate(combates):
+        if not _es_del_dia(c):
+            continue
+
+        res = analisis_cache.get(idx)
+        if not res and _ufc_analyzer:
+            try:
+                p1 = c.get("peleador1", {})
+                p2 = c.get("peleador2", {})
+                res = _ufc_analyzer.analizar_combate(p1, p2)
+            except Exception as _ue:
+                logger.debug(f"UFC on-the-fly para {c.get('evento')}: {_ue}")
+
+        if not res:
+            continue
+
+        evento_ufc = f"{c.get('peleador1',{}).get('nombre','?')} vs {c.get('peleador2',{}).get('nombre','?')}"
+
+        # Pick principal (ganador)
+        pick_text = res.get("recomendacion") or res.get("ganador")
+        conf = res.get("confianza", 0)
+        if pick_text and conf >= 55:
+            pool.append({
+                "sport": "🥊 UFC", "evento": evento_ufc,
+                "mercado": "GANADOR", "pick": pick_text,
+                "prob": conf, "tipo": "SEGURO",
+                "cuota": CUOTA_DEFAULT.get("MONEYLINE", 2.0),
+                "razon": res.get("razon"),
+            })
+
+        # Total de rounds más probable
+        rt = sorted(res.get("rounds_totales", []), key=lambda x: x.get("confianza", 0), reverse=True)
+        if rt and rt[0].get("confianza", 0) >= 58:
+            pool.append({
+                "sport": "🥊 UFC", "evento": evento_ufc, "mercado": "ROUNDS",
+                "pick": rt[0].get("etiqueta", ""), "prob": rt[0].get("confianza", 0),
+                "tipo": "VALOR", "cuota": 1.85,
+                "razon": f"Probabilidad Monte Carlo: {rt[0].get('confianza', 0)}%",
+            })
+
+        # Gana por KO/TKO o Sumisión
+        mp = res.get("metodo_probs", {})
+        ganador = res.get("ganador", "")
+        if ganador:
+            for metodo, prob_metodo, cuota_metodo in [("KO/TKO", mp.get("KO/TKO", 0), 2.60), ("Sumisión", mp.get("Sumisión", 0), 3.20)]:
+                if prob_metodo >= 40:
+                    pool.append({
+                        "sport": "🥊 UFC", "evento": evento_ufc, "mercado": f"GANA POR {metodo}",
+                        "pick": f"{ganador} gana por {metodo}",
+                        "prob": prob_metodo, "tipo": "BOMBA", "cuota": cuota_metodo,
+                        "razon": f"Probabilidad de método: {prob_metodo}%",
+                    })
     return pool
 
 
@@ -394,6 +405,15 @@ def _recolectar_picks_futbol(ss, _es_del_dia, **kwargs):
                 elif "visitante" in pick.lower() or away_f.lower() in pick.lower():
                     streak = r.get("streak_visitante", "")
 
+                # Construir razón a partir de las notas del motor
+                notas = [
+                    r.get("h2h_nota"),
+                    r.get("wc_nota"),
+                    r.get("liga_nota"),
+                    r.get("ajuste_dc"),
+                    r.get("nota_ia")
+                ]
+                razon_fut = " · ".join(filter(None, notas))
                 cuota_real = _cuota_real_futbol(pick, home_f, away_f)
                 picks_ya_en_pool = {pick}  # deduplicar por partido
                 pool.append({
@@ -404,6 +424,7 @@ def _recolectar_picks_futbol(ss, _es_del_dia, **kwargs):
                     "tipo": "SEGURO" if r.get("confianza", 0) >= 55 else "VALOR",
                     "cuota": cuota_real or 1.90,
                     "cuota_real": bool(cuota_real),
+                    "razon": razon_fut,
                     "es_torneo": p.get("es_torneo", False),
                 })
                 # Picks múltiples: agregar CADA market que califica independientemente
@@ -419,6 +440,7 @@ def _recolectar_picks_futbol(ss, _es_del_dia, **kwargs):
                         "prob": pm.get("confianza", 0),
                         "tipo": "SEGURO" if pm.get("confianza", 0) >= 55 else "VALOR",
                         "cuota": pm_cuota,
+                        "razon": pm.get("razon"), # Asumir que puede tener razón
                         "es_torneo": p.get("es_torneo", False),
                     })
                 for op in r.get("todas_opciones", []):
@@ -428,6 +450,7 @@ def _recolectar_picks_futbol(ss, _es_del_dia, **kwargs):
                             "mercado": "COMBINADO", "pick": op["pick"],
                             "prob": op["confianza"], "tipo": "VALOR",
                             "cuota": op.get("cuota", 2.4),
+                            "razon": op.get("razon"),
                             "es_torneo": p.get("es_torneo", False),
                         })
     except Exception as e:
@@ -486,6 +509,8 @@ def _recolectar_picks(dia_filtro=None):
     # fallan y premia los que aciertan (factor_confianza desde la memoria).
     if pick_memory is not None:
         for pk in pool:
+            if pk.get("is_adjusted"):
+                continue
             try:
                 pk["prob_base"] = pk["prob"]
                 factor = pick_memory.factor_confianza(_deporte_code(pk.get("sport", "")), pk.get("mercado", ""))
@@ -597,6 +622,154 @@ def _guardar_parlay(titulo, parlay):
         json.dump(hist[-500:], open(ruta, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     except Exception:
         pass
+
+def _parlay_de_ia(ss, dia_filtro, n_legs=3):
+    """
+    Corre los motores de IA sobre todos los juegos del día y arma un parlay
+    con los mejores picks de IA.
+    """
+    from utils.analista_total import AnalistaTotal
+    from motors import analizar_mlb_pro_v20, analizar_nba_pro_v17
+    from motors.futbol_analyzer_jerarquico import analizar_futbol_jerarquico
+    from analyzers.ufc_analyzer import UFCAnalyzer
+
+    # 1. Instanciar el analizador de IA
+    modelo_ia = ss.get("selected_ia_model", "Heurístico")
+    if modelo_ia == "Heurístico":
+        return None # No hay IA seleccionada
+
+    analista = AnalistaTotal(
+        gemini_client=ss.get("gemini"),
+        groq_client=ss.get("groq"),
+        deepseek_client=ss.get("deepseek"),
+        claude_client=ss.get("claude"),
+        new_ai_client=ss.get("new_ai"),
+        selected_model=modelo_ia,
+    )
+
+    ia_picks = []
+    
+    def _es_del_dia(p):
+        return (dia_filtro is None) or (_fecha_iso(p) == dia_filtro)
+
+    # 2. Analizar cada deporte
+    # MLB
+    for p in ss.get("mlb_partidos", []):
+        if not _es_del_dia(p): continue
+        try:
+            res_h = analizar_mlb_pro_v20(p, game_pk=p.get('game_pk'), predictor_hr=ss.get('predictor_hr'))
+            res_ia = analista.analizar_mlb(p, res_h)
+            if res_ia and res_ia.get('pick') and res_ia.get('confianza', 0) >= 55:
+                ia_picks.append({
+                    "sport": "⚾ MLB", "evento": f"{p.get('visitante','?')} @ {p.get('local','?')}",
+                    "mercado": res_ia.get('mercado', 'IA Pick'), "pick": res_ia.get('pick'),
+                    "prob": res_ia.get('confianza'), "tipo": "IA", "cuota": res_ia.get('cuota', 1.9),
+                    "razon": res_ia.get('razon')
+                })
+        except Exception as e:
+            logger.debug(f"IA Parlay MLB: {e}")
+
+    # NBA
+    for p in ss.get("nba_partidos", []):
+        if not _es_del_dia(p): continue
+        try:
+            res_h = analizar_nba_pro_v17(p)
+            res_ia = analista.analizar_nba(p, res_h)
+            if res_ia and res_ia.get('pick') and res_ia.get('confianza', 0) >= 55:
+                ia_picks.append({
+                    "sport": "🏀 NBA", "evento": f"{p.get('visitante','?')} @ {p.get('local','?')}",
+                    "mercado": res_ia.get('mercado', 'IA Pick'), "pick": res_ia.get('pick'),
+                    "prob": res_ia.get('confianza'), "tipo": "IA", "cuota": res_ia.get('cuota', 1.9),
+                    "razon": res_ia.get('razon')
+                })
+        except Exception as e:
+            logger.debug(f"IA Parlay NBA: {e}")
+
+    # Fútbol
+    for liga, partidos in (ss.get("futbol_partidos", {}) or {}).items():
+        for p in partidos or []:
+            if not _es_del_dia(p): continue
+            try:
+                home_f = p.get("home") or p.get("local", "")
+                away_f = p.get("away") or p.get("visitante", "")
+                res_h = analizar_futbol_jerarquico(
+                    home_f, away_f, es_torneo=p.get("es_torneo", False),
+                    fase=p.get("fase", ""), liga=liga, gemini_client=None
+                )
+                res_ia = analista.analizar_futbol(p, res_h)
+                if res_ia and res_ia.get('pick') and res_ia.get('confianza', 0) >= 55:
+                    ia_picks.append({
+                        "sport": "⚽ FÚTBOL", "evento": f"{home_f or '?'} vs {away_f or '?'}",
+                        "mercado": res_ia.get('mercado', 'IA Pick'), "pick": res_ia.get('pick'),
+                        "prob": res_ia.get('confianza'), "tipo": "IA", "cuota": res_ia.get('cuota', 1.9),
+                        "razon": res_ia.get('razon')
+                    })
+            except Exception as e:
+                logger.debug(f"IA Parlay Fútbol: {e}")
+
+    # UFC
+    ufc_analyzer = UFCAnalyzer()
+    for c in ss.get("ufc_combates", []):
+        if not _es_del_dia(c): continue
+        try:
+            p1, p2 = c.get('peleador1', {}), c.get('peleador2', {})
+            res_h = ufc_analyzer.analizar_combate(p1, p2, c)
+            res_ia = analista.analizar_ufc(c, res_h)
+            if res_ia and res_ia.get('pick') and res_ia.get('confianza', 0) >= 55:
+                 ia_picks.append({
+                    "sport": "🥊 UFC", "evento": f"{p1.get('nombre','?')} vs {p2.get('nombre','?')}",
+                    "mercado": res_ia.get('mercado', 'IA Pick'), "pick": res_ia.get('pick'),
+                    "prob": res_ia.get('confianza'), "tipo": "IA", "cuota": res_ia.get('cuota', 1.9),
+                    "razon": res_ia.get('razon')
+                })
+        except Exception as e:
+            logger.debug(f"IA Parlay UFC: {e}")
+
+    if len(ia_picks) < 2:
+        return None
+
+    # 3. Seleccionar los mejores y armar parlay
+    ia_picks.sort(key=lambda x: x["prob"], reverse=True)
+    legs_ia = []
+    eventos_vistos = set()
+    for pick in ia_picks:
+        if len(legs_ia) >= n_legs: break
+        if pick["evento"] not in eventos_vistos:
+            legs_ia.append(pick)
+            eventos_vistos.add(pick["evento"])
+    return _armar_parlay(legs_ia) if len(legs_ia) >= 2 else None
+
+def _parlay_moneyline_seguro(pool, n_legs=3):
+    """
+    Crea un parlay con los Money Lines más seguros del día.
+    """
+    # Filtrar por picks de Moneyline/1X2 con alta confianza
+    candidatos = [
+        p for p in pool
+        if p.get("mercado") in ("MONEYLINE", "1X2", "1X2/Goles", "GANADOR")
+        and p.get("prob", 0) >= 62
+    ]
+
+    if not candidatos:
+        return None
+
+    # Ordenar por probabilidad descendente
+    candidatos.sort(key=lambda x: x["prob"], reverse=True)
+
+    # Seleccionar los mejores N de eventos distintos
+    legs_seguras = []
+    eventos_vistos = set()
+    for p in candidatos:
+        if len(legs_seguras) >= n_legs:
+            break
+        if p["evento"] not in eventos_vistos:
+            legs_seguras.append(p)
+            eventos_vistos.add(p["evento"])
+
+    if len(legs_seguras) < 2:
+        return None
+
+    return _armar_parlay(legs_seguras)
 
 def _parlay_underdog(pool, n_legs=3):
     """
@@ -720,7 +893,7 @@ def _get_historical_performance_html(titulo: str) -> str:
 # HR + Fútbol, IA y la Escalera.
 _PARLAYS_SECUNDARIOS = (
     "DOBLE SEGURO", "PARLAY SEGURO", "PARLAY VALOR", "BOMBA",
-    "SLUGGER", "GIGANTE", "MÁXIMO PAGO", "RACHAS", "UNDERDOG",
+    "SLUGGER", "GIGANTE", "MÁXIMO PAGO", "RACHAS", "UNDERDOG", "MONEYLINE SEGURO", "PARLAY DE IA",
 )
 
 
@@ -750,6 +923,8 @@ def _tarjeta_parlay(titulo, color, descripcion, parlay):
         "MEJOR RACHA": "📈",
         "MUNDIAL": "🏆",
         "UNDERDOG": "🐺",
+        "MONEYLINE SEGURO": "🛡️",
+        "PARLAY DE IA": "🤖",
     }
     icono = next((icon for key, icon in ICONOS_PARLAY.items() if key in titulo.upper()), "🎰")
 
@@ -774,14 +949,15 @@ def _tarjeta_parlay(titulo, color, descripcion, parlay):
     for l in parlay["legs"]:
         _c = l.get("cuota", 1.9) or 1.9
         _impl = 100.0 / _c if _c > 0 else 100.0
-        _edge = l["prob"] - _impl                      # valor = prob modelo − prob implícita
+        _edge = l["prob"] - _impl
         _ecol = "#22c55e" if _edge >= 0 else "#ef4444"
+        _razon_html = f"title='Razón: {l['razon']}'" if l.get("razon") else ""
         st.markdown(
-            f"<div style='background:#0f172a;border-radius:6px;padding:6px 12px;margin:3px 0'>"
+            f"<div style='background:#0f172a;border-radius:6px;padding:6px 12px;margin:3px 0' {_razon_html}>"
             f"{l['sport']} · <b>{l['pick']}</b> "
             f"<span style='color:#64748b'>({l['mercado']} · {l['evento']})</span> "
             f"<span style='float:right'>"
-            f"<span style='color:{_ecol};font-size:0.78rem' title='valor = prob. modelo − prob. del momio'>valor {_edge:+.0f}%</span>  "
+            f"<span style='color:{_ecol};font-size:0.78rem' title='Valor = prob. modelo − prob. implícita del momio'>valor {_edge:+.0f}%</span>  "
             f"<span style='color:#22c55e;font-weight:700'>{l['prob']:.0f}%</span></span></div>",
             unsafe_allow_html=True,
         )
@@ -1037,43 +1213,18 @@ def render_parlay_tab():
         except Exception as _le:
             logger.warning(f"log picks: {_le}")
 
-        # ── 🤖 PARLAY DE IA (de los picks que la IA registró al analizar) ──────
-        try:
-            _picks_ia = [p for p in pick_memory.pendientes()
-                         if p.get("fuente") == "IA"
-                         and (dia_filtro is None
-                              or p.get("fecha_evento") == dia_filtro
-                              or p.get("fecha") == dia_filtro)]
-            _vistos, _ia_unq = set(), []
-            for p in sorted(_picks_ia, key=lambda x: x.get("confianza", 0) or 0, reverse=True):
-                k = (p.get("evento"), p.get("pick"))
-                if k in _vistos:
-                    continue
-                _vistos.add(k)
-                _ia_unq.append(p)
-            st.markdown("---")
-            st.subheader("🤖 Parlay de IA")
-            st.caption("Combina los picks que las IAs (Gemini/Groq) registraron al analizar. "
-                       "Cada leg se backtestea solo; míralo en Backtesting → 🧠 Aprendizaje (IA vs Heurístico).")
-            if not _ia_unq:
-                st.info("Aún no hay picks de IA para este día. Analiza partidos con un modelo de IA "
-                        "seleccionado (no 'Heurístico') en MLB / Fútbol / UFC y vuelve aquí.")
-            else:
-                _legs_ia = _ia_unq[:max(2, min(n_legs, len(_ia_unq)))]
-                cuota_total = 1.0
-                for p in _legs_ia:
-                    cuota_total *= float(p.get("cuota", 1.9) or 1.9)
-                    st.markdown(
-                        f"<div style='font-size:0.9rem;padding:3px 0'>🤖 <b>{p.get('deporte','')}</b> · "
-                        f"{p.get('pick','')} <span style='color:#64748b'>({p.get('evento','')}) · "
-                        f"{(p.get('confianza',0) or 0):.0f}%</span></div>", unsafe_allow_html=True)
-                _imp = round(100.0 / cuota_total, 1)
-                st.success(f"🎰 Cuota combinada IA: **{cuota_total:.2f}**  ·  {len(_legs_ia)} legs  ·  "
-                           f"prob. implícita ~{_imp}%")
-                st.caption("⚠️ Recuerda: un parlay gana solo si ACIERTAN TODAS las patas. "
-                           "Más legs = más pago pero mucha menos probabilidad.")
-        except Exception as _ie:
-            logger.warning(f"parlay IA: {_ie}")
+    # ── 🤖 PARLAY DE IA (auto-generado) ───────────────────────────────────────
+    st.markdown("---")
+    modelo_ia = st.session_state.get("selected_ia_model", "Heurístico")
+    if modelo_ia != "Heurístico":
+        with st.spinner(f"🤖 Generando parlay con {modelo_ia}..."):
+            parlay_ia = _parlay_de_ia(st.session_state, dia_filtro, n_legs=3)
+        if parlay_ia:
+            _tarjeta_parlay(f"🤖 PARLAY DE IA ({modelo_ia})", "#8b5cf6", # Violet color
+                            f"Los 3 mejores picks generados automáticamente por la IA '{modelo_ia}'.",
+                            parlay_ia)
+        else:
+            st.info(f"🤖 La IA ({modelo_ia}) no encontró suficientes picks de alta confianza para armar un parlay hoy.")
 
     # Ordenar por probabilidad
     pool.sort(key=lambda x: x["prob"], reverse=True)
@@ -1147,6 +1298,14 @@ def render_parlay_tab():
                         f"Las {len(legs_opt)} legs de MAYOR probabilidad real (1 por evento) — "
                         "el más fiable según backtest",
                         _armar_parlay(legs_opt))
+
+    # ── 🛡️ PARLAY MONEYLINE SEGURO (los favoritos más claros) ──────────────
+    parlay_ml_seguro = _parlay_moneyline_seguro(pool, n_legs=3)
+    if parlay_ml_seguro:
+        st.markdown("")
+        _tarjeta_parlay("🛡️ MONEYLINE SEGURO", "#3b82f6", # Blue color
+                        "Combina los 3 favoritos (Moneyline) con mayor probabilidad de victoria del día.",
+                        parlay_ml_seguro)
 
     # ── 🔐 PARLAY DOBLE SEGURO: mínimas legs para cuota ≥ 2.0x ────────────
     # Elige el mínimo de legs de alta probabilidad para que el parlay pague
@@ -1754,41 +1913,4 @@ def _escalera_solo_futbol(legs, prob_fn):
                 n_sims=3000) * 100, 1)
         color = "#22c55e" if prob >= 25 else "#fbbf24" if prob >= 10 else "#ef4444"
         gan = round((par["cuota"] - 1) * 100)
-        tag = " · 🛡️ no perder" if n <= 3 else ""
-        st.markdown(
-            f"<div style='background:#0f172a;border-radius:6px;padding:5px 12px;margin:2px 0'>"
-            f"<b>{n} legs</b> · prob <b style='color:{color}'>{prob}%</b> · "
-            f"cuota {par['cuota']}x · $100 → <b style='color:#22c55e'>${gan:,}</b>{tag}</div>",
-            unsafe_allow_html=True)
-
-
-def _lista_apuestas_futbol(fut):
-    """Lista COMPLETA de TODAS las apuestas de fútbol generadas, agrupadas por
-    partido (incluye cada mercado por juego: 1X2/ML, OVER/UNDER, BTTS, combos),
-    con su confianza, la tasa AUDITADA del mercado y la cuota."""
-    por_evento = {}
-    for p in fut:
-        por_evento.setdefault(p.get("evento", "?"), []).append(p)
-    st.markdown(f"**📋 Todas las apuestas de fútbol generadas: "
-                f"{len(fut)} en {len(por_evento)} partido(s)**")
-    st.caption("Todo lo que produjo el motor de fútbol (cada mercado por partido). "
-               "Las mejores por partido arman el parlay de abajo.")
-    for ev, picks in por_evento.items():
-        picks_s = sorted(picks, key=lambda x: x.get("prob", 0) or 0, reverse=True)
-        filas = ""
-        for p in picks_s:
-            aud = _audit_rate_de_mercado(p.get("mercado", ""))
-            aud_txt = (f" · auditado <b style='color:#22c55e'>{aud:.0f}%</b>"
-                       if aud is not None else "")
-            c = p.get("cuota", 1.9) or 1.9
-            mom = _decimal_a_americano(c)
-            real_badge = " 📈real" if p.get("cuota_real") else ""
-            filas += (f"<div style='padding:1px 0 1px 16px;font-size:0.84rem;color:#cbd5e1'>"
-                      f"• <b style='color:#f1f5f9'>{p.get('pick','')}</b> "
-                      f"<span style='color:#64748b'>({p.get('mercado','')})</span> · "
-                      f"<span style='color:#22c55e'>{(p.get('prob',0) or 0):.0f}%</span>{aud_txt} · "
-                      f"cuota {c:.2f} ({mom}){real_badge}</div>")
-        st.markdown(
-            f"<div style='background:#0f172a;border-radius:6px;padding:6px 10px;margin:3px 0'>"
-            f"<b style='color:#e2e8f0'>⚽ {ev}</b>{filas}</div>",
-            unsafe_allow_html=True)
+  

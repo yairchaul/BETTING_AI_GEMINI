@@ -76,72 +76,64 @@ class ParlayEngine:
         analisis_mlb: Dict,
     ) -> List[Dict]:
         picks = []
+        
+        partidos_map = {p.get("game_pk"): p for p in mlb_partidos if p.get("game_pk")}
 
-        # 1. HR candidates (hr_candidates_local / hr_candidates_visit)
-        for partido in mlb_partidos:
-            local = partido.get("local", "")
-            visit = partido.get("visitante", "")
-            evento = f"{visit} @ {local}"
-
-            candidatos = (
-                partido.get("hr_candidates_local", [])
-                + partido.get("hr_candidates_visit", [])
-            )
-            for c in candidatos:
-                prob = float(c.get("probabilidad", 0))
-                if prob < MIN_CONF["HR_PROP"]:
-                    continue
-
-                bateador = c.get("bateador", c.get("nombre", ""))
-                pitcher = c.get("pitcher_rival", "")
-                cuota = float(c.get("cuota", DEFAULT_ODDS["HR_PROP"]))
-
-                picks.append(self._make_pick(
-                    sport="MLB",
-                    evento=evento,
-                    pick_label=f"{bateador} HR vs {pitcher}" if pitcher else f"{bateador} HR",
-                    pick_type="HR_PROP",
-                    confidence=prob,
-                    cuota=cuota,
-                    metadata={
-                        "bateador": bateador,
-                        "equipo": c.get("equipo", ""),
-                        "pitcher": pitcher,
-                        "mano": c.get("mano_rival", "R"),
-                    },
-                ))
-
-        # 2. ML / Handicap desde analisis_mlb
-        for evento_key, resultado in analisis_mlb.items():
+        for idx, resultado in analisis_mlb.items():
             if not isinstance(resultado, dict):
                 continue
-            pick_final = resultado.get("pick_final", {})
-            if not pick_final:
+            
+            partido = None
+            game_pk = resultado.get("game_pk")
+            if game_pk and game_pk in partidos_map:
+                partido = partidos_map[game_pk]
+            elif isinstance(idx, int) and idx < len(mlb_partidos):
+                partido = mlb_partidos[idx]
+            
+            if not partido:
                 continue
 
-            jerarquia = pick_final.get("jerarquia", "")
-            if jerarquia not in ("ELITE", "SEGURO"):
-                continue
+            evento = f"{partido.get('visitante','?')} @ {partido.get('local','?')}"
 
-            mercado = pick_final.get("mercado", "Moneyline")
-            pick_type = (
-                "HANDICAP" if "handicap" in mercado.lower()
-                else "OVER_UNDER" if any(k in mercado.lower() for k in ("over", "under", "o/u"))
-                else "MONEYLINE"
-            )
-            conf = float(pick_final.get("confianza", 0))
-            if conf < MIN_CONF[pick_type]:
-                continue
+            # 1. Mejor apuesta (ML, Handicap, O/U, K)
+            mejor_apuesta = resultado.get("mejor_apuesta")
+            if mejor_apuesta:
+                mercado = mejor_apuesta.get("mercado", "")
+                conf_ajustada = mejor_apuesta.get("confianza_ajustada", 0)
+                
+                if "HANDICAP" in mercado: pick_type = "HANDICAP"
+                elif "TOTAL" in mercado: pick_type = "OVER_UNDER"
+                elif "MONEYLINE" in mercado: pick_type = "MONEYLINE"
+                elif "PONCHES" in mercado: pick_type = "PONCHES"
+                else: pick_type = "MONEYLINE"
 
-            picks.append(self._make_pick(
-                sport="MLB",
-                evento=evento_key,
-                pick_label=pick_final.get("pick", ""),
-                pick_type=pick_type,
-                confidence=conf,
-                cuota=float(pick_final.get("cuota", DEFAULT_ODDS[pick_type])),
-                metadata={"jerarquia": jerarquia, "mercado": mercado},
-            ))
+                if conf_ajustada >= MIN_CONF.get(pick_type, 58.0) and mercado != "HOME_RUN":
+                    pick_dict = {
+                        "sport": "⚾ MLB", "evento": evento, "mercado": mercado,
+                        "pick": mejor_apuesta.get("pick", ""), "prob": conf_ajustada,
+                        "tipo": "SEGURO", "cuota": DEFAULT_ODDS.get(pick_type, 1.90),
+                        "is_adjusted": True,
+                    }
+                    picks.append(pick_dict)
+                    
+                    is_local_pick = partido.get('local', '') in mejor_apuesta.get('pick', '')
+                    streak = partido.get('local_streak', '') if is_local_pick else partido.get('visitante_streak', '')
+                    if streak:
+                        picks[-1]['streak'] = streak
+
+            # 2. HR candidates
+            for hr in resultado.get("hr_candidates", []):
+                if hr.get("en_lineup") is False:
+                    continue
+                prob_modelo = hr.get("probabilidad", hr.get("prob", 0))
+                prob_hr = _calibrar_prob_hr(prob_modelo)
+                if prob_hr >= MIN_CONF["HR_PROP"]:
+                    picks.append({
+                        "sport": "⚾ MLB", "evento": evento, "mercado": "HOME RUN",
+                        "pick": f"{hr.get('jugador', hr.get('nombre','?'))} pega HR",
+                        "prob": prob_hr, "prob_modelo": prob_modelo,
+                        "tipo": "BOMBA", "cuota": DEFAULT_ODDS["HR_PROP"],
+                    })
 
         return picks
 

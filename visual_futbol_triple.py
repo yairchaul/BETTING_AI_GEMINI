@@ -117,12 +117,16 @@ class VisualFutbolTriple: # noqa
             st.markdown(_bloque_equipo(local, logo_l, rec_l, ml_loc, streak=streak_l, situacion=sit_l, goles_favor=gfl_hist, goles_contra=gcl_hist), unsafe_allow_html=True)
             if gfl_hist and gcl_hist:
                 import pandas as pd
-                scores = [f"Marcador: {gf}-{gc}" for gf, gc in zip(gfl_hist, gcl_hist)]
+                # Limitar a últimos 5 partidos para mejor visualización
+                gfl_display = gfl_hist[-5:]
+                gcl_display = gcl_hist[-5:]
+                scores = [f"{gf}-{gc}" for gf, gc in zip(gfl_display, gcl_display)]
                 chart_df = pd.DataFrame({
-                    'Goles a Favor': gfl_hist,
-                    'Goles en Contra': gcl_hist
+                    'Favor': gfl_display,
+                    'Contra': gcl_display
                 }, index=scores)
-                st.bar_chart(chart_df, color=["#22c55e", "#ef4444"], height=100)
+                st.markdown("<div style='font-size:0.7rem;color:#94a3b8;text-align:center;margin-top:6px'>📊 Últimos partidos</div>", unsafe_allow_html=True)
+                st.bar_chart(chart_df, color=["#22c55e", "#ef4444"], height=120, use_container_width=True)
         with mid:
             marcador = partido.get('marcador', '')
             if marcador and partido.get('completado'):
@@ -152,12 +156,16 @@ class VisualFutbolTriple: # noqa
             st.markdown(_bloque_equipo(visitante, logo_v, rec_v, ml_vis, streak=streak_v, situacion=sit_v, goles_favor=gfv_hist, goles_contra=gcv_hist), unsafe_allow_html=True)
             if gfv_hist and gcv_hist:
                 import pandas as pd
-                scores = [f"Marcador: {gf}-{gc}" for gf, gc in zip(gfv_hist, gcv_hist)]
+                # Limitar a últimos 5 partidos para mejor visualización
+                gfv_display = gfv_hist[-5:]
+                gcv_display = gcv_hist[-5:]
+                scores = [f"{gf}-{gc}" for gf, gc in zip(gfv_display, gcv_display)]
                 chart_df = pd.DataFrame({
-                    'Goles a Favor': gfv_hist,
-                    'Goles en Contra': gcv_hist
+                    'Favor': gfv_display,
+                    'Contra': gcv_display
                 }, index=scores)
-                st.bar_chart(chart_df, color=["#22c55e", "#ef4444"], height=100)
+                st.markdown("<div style='font-size:0.7rem;color:#94a3b8;text-align:center;margin-top:6px'>📊 Últimos partidos</div>", unsafe_allow_html=True)
+                st.bar_chart(chart_df, color=["#22c55e", "#ef4444"], height=120, use_container_width=True)
 
         # Estadio
         venue = partido.get('venue', '')

@@ -292,27 +292,38 @@ def _runline_pick(fav_team, local, visitante, confianza, p_pick, gap_pct=0.0, mo
     # La confianza se CALIBRA con la tasa REAL del backtest (669 juegos MLB 2026):
     # 50% modelo (per-partido) + 50% tasa base histórica de ESA línea. Así el parlay
     # recibe confianzas HONESTAS y prioriza las que de verdad más aciertan.
-    if modelo_rl:
+    if modelo_rl and p_pick is not None:
         def _p(clave):
             v = modelo_rl.get(clave)
             return float(v) if v is not None else None
-        crudos = [
-            (f"{fav_team} +1.5", _p(f"{lado_fav}_+1.5"), _RL_RATE["fav+1.5"], "favorito pierde por ≤1 o gana — el más seguro"),
-            (f"{fav_team} +2.5", _p(f"{lado_fav}_+2.5"), _RL_RATE["fav+2.5"], "favorito con colchón de 2 carreras"),
-            (f"{perdedor} +1.5", _p(f"{lado_dog}_+1.5"), _RL_RATE["dog+1.5"], "no favorito pierde por ≤1 o gana"),
-            (f"{perdedor} +2.5", _p(f"{lado_dog}_+2.5"), _RL_RATE["dog+2.5"], "no favorito con colchón de 2"),
-            (f"{fav_team} -1.5", _p(f"{lado_fav}_-1.5"), _RL_RATE["fav-1.5"], "favorito gana por 2+ (paga más)"),
+        def _cal(model_prob, base):
+            # confianza HONESTA: 50% modelo (per-partido) + 50% tasa real del backtest
+            return round(0.5 * model_prob + 0.5 * base, 1) if model_prob is not None else None
+        opciones = [
+            (f"{fav_team} -1.5", _cal(_p(f"{lado_fav}_-1.5"), _RL_RATE["fav-1.5"])),
+            (f"{fav_team} +1.5", _cal(_p(f"{lado_fav}_+1.5"), _RL_RATE["fav+1.5"])),
+            (f"{fav_team} +2.5", _cal(_p(f"{lado_fav}_+2.5"), _RL_RATE["fav+2.5"])),
+            (f"{perdedor} +1.5", _cal(_p(f"{lado_dog}_+1.5"), _RL_RATE["dog+1.5"])),
+            (f"{perdedor} +2.5", _cal(_p(f"{lado_dog}_+2.5"), _RL_RATE["dog+2.5"])),
         ]
-        cands = sorted([(e, round(0.5 * pr + 0.5 * base, 1), n)   # 50% modelo + 50% tasa real
-                        for e, pr, base, n in crudos if pr is not None],
-                       key=lambda c: c[1], reverse=True)
-        if cands:
-            # El más probable CON valor (≤88%, que pague algo); si todos son
-            # casi seguros, toma igual el más probable (modo "asegurar").
-            pick_e, pick_pr, pick_n = next((c for c in cands if c[1] <= 88), cands[0])
-            return {"pick": pick_e, "linea": pick_e.split()[-1], "confianza": round(pick_pr),
-                    "nota": f"calibrado con backtest: {pick_n} (~{pick_pr:.0f}%)",
-                    "alternativas": [{"pick": e, "prob": round(pr)} for e, pr, _ in cands[:4]]}
+        opciones = [(e, c) for e, c in opciones if c is not None]
+        conf_de = dict(opciones)
+
+        # ── SELECCIÓN por ESCENARIO del partido (ANÁLISIS → variedad real, NO siempre
+        #    el mismo +2.5). La línea la decide qué tan favorito es (p_pick del modelo):
+        if p_pick >= 0.68:
+            pick, nota = f"{fav_team} -1.5", "favorito DOMINANTE → -1.5 (gana por 2+, paga más)"
+        elif p_pick >= 0.56:
+            pick, nota = f"{fav_team} +1.5", "favorito claro → +1.5 (cubre si pierde por ≤1 o gana, ~70%)"
+        else:
+            pick, nota = f"{perdedor} +2.5", "partido PAREJO → +2.5 al no favorito (colchón, el más seguro)"
+
+        conf = conf_de.get(pick)
+        if conf is not None:
+            alts = sorted(opciones, key=lambda x: x[1], reverse=True)
+            return {"pick": pick, "linea": pick.split()[-1], "confianza": round(conf),
+                    "nota": f"análisis por partido — {nota}",
+                    "alternativas": [{"pick": e, "prob": round(c)} for e, c in alts[:4]]}
 
     # ── Hándicap por NIVEL DE CONFIANZA (estrategia del usuario) ────────────
     # Cobertura real (backtest MLB 2026, 259 juegos): -1.5 ~47% · +1.5 ~55-59%

@@ -334,6 +334,8 @@ class AnalistaTotal:
         p_vis = pit.get('visitante', {}).get('nombre', 'TBD') if isinstance(pit.get('visitante'), dict) else 'TBD'
         odds = partido.get('odds', {}) or {}
         # Los candidatos HR pueden venir del argumento o dentro del heurístico (motor v25)
+        # Protección contra heur=None
+        heur = heur or {}
         hrs = hr_candidates or heur.get('hr_candidates', []) or []
         hr_desc = [f"{c.get('jugador', c.get('player', '?'))} ({c.get('probabilidad', c.get('prob', 0))}%)" for c in hrs[:4]]
         k_picks = heur.get('k_picks', [])
