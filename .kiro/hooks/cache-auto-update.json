@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Cache Auto-Update System",
+      "description": "Actualiza automáticamente caché cuando cambian datos críticos",
+      "trigger": "Manual",
+      "action": {
+        "type": "command",
+        "command": "python -c \"from scrapers.espn_futbol_completo import FutbolScraperCompleto; from motors.predictor_hr_corregido import predictor_hr_optimizado; import json, os, time; print('🔄 Actualizando caché...'); scraper = FutbolScraperCompleto(); hr_predictor = predictor_hr_optimizado; os.makedirs('data', exist_ok=True); cache_data = {'timestamp': time.time(), 'mlb_predictions': {}, 'futbol_predictions': {}}; print('✅ Caché inicializado');\""
+      },
+      "enabled": true
+    }
+  ]
+}

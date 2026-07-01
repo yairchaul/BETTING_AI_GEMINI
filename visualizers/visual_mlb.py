@@ -92,6 +92,33 @@ class VisualMLB:
         home = p.get("local") or p.get("home", "Local")
         away_rec = p.get("visit_record") or p.get("away_record") or p.get("visitante_record", "0-0")
         home_rec = p.get("local_record") or p.get("home_record", "0-0")
+
+        # ── Forma reciente: racha (verde Ganó / rojo Perdió) + carreras/juego ──
+        # Contexto que ahora SÍ pesa en el moneyline (racha) y da visión del equipo.
+        def _forma_mlb_html(streak_str, team):
+            partes = []
+            try:
+                from motors.motor_mlb_pro import _parse_streak
+                n = _parse_streak(streak_str)
+            except Exception:
+                n = 0
+            if n != 0:
+                col = "#22c55e" if n > 0 else "#ef4444"
+                ico = "🔥" if n >= 3 else ("✅" if n > 0 else ("❄️" if n <= -3 else "🔻"))
+                partes.append(f"<span style='color:{col};font-weight:700'>{ico} "
+                              f"{'Ganó' if n > 0 else 'Perdió'} {abs(n)}</span>")
+            try:
+                from motors.motor_over_under import MotorOverUnder
+                rpg = MotorOverUnder.TEAM_RUNS_AVG.get(team)
+                if rpg:
+                    partes.append(f"<span style='color:#94a3b8'>{rpg} C/juego</span>")
+            except Exception:
+                pass
+            return (f"<p style='font-size:11px;margin:2px 0'>{' · '.join(partes)}</p>"
+                    if partes else "")
+
+        away_forma = _forma_mlb_html(p.get("visitante_streak", ""), away)
+        home_forma = _forma_mlb_html(p.get("local_streak", ""), home)
         odds = p.get("odds", {})
         a_odds = odds.get("moneyline", {}).get("visitante") or odds.get("moneyline", {}).get("away", "N/A")
         h_odds = odds.get("moneyline", {}).get("local") or odds.get("moneyline", {}).get("home", "N/A")
@@ -144,9 +171,9 @@ class VisualMLB:
 
         st.markdown(f"""<div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding:25px; border-radius:15px; border:1px solid #334155; margin-bottom:20px;">
         <div style="display:flex;justify-content:space-between; align-items:center;">
-        <div style="text-align:center;width:42%">{img_v}<h2 style="color:#fff;margin:0;">{away}</h2><p style="color:#ff6600; font-weight:bold;">{away_rec}</p><div style="display:inline-block;margin:2px 0;padding:2px 12px;border-radius:14px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.45)"><span style="color:#3b82f6;font-weight:800;">🎲 {a_odds}</span></div><p style="color:#94a3b8;font-size:14px;">🥎 <b>{ap} ({hand_away})</b></p><p style="color:{"#fbbf24" if mock_away else "#00ff41"};font-size:11px">⚡ K/9: {k9_away} | Proy: {k_proy_away}K {"⚠️" if mock_away else ""}</p></div>
+        <div style="text-align:center;width:42%">{img_v}<h2 style="color:#fff;margin:0;">{away}</h2><p style="color:#ff6600; font-weight:bold;">{away_rec}</p>{away_forma}<div style="display:inline-block;margin:2px 0;padding:2px 12px;border-radius:14px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.45)"><span style="color:#3b82f6;font-weight:800;">🎲 {a_odds}</span></div><p style="color:#94a3b8;font-size:14px;">🥎 <b>{ap} ({hand_away})</b></p><p style="color:{"#fbbf24" if mock_away else "#00ff41"};font-size:11px">⚡ K/9: {k9_away} | Proy: {k_proy_away}K {"⚠️" if mock_away else ""}</p></div>
         <div style="text-align:center;width:16%"><h1 style="color:#e94560; margin:0;">VS</h1><p style="color:#94a3b8;">🕐 <b>{time}</b></p><p style="color:#3b82f6;">📊 O/U: {ou}</p></div>
-        <div style="text-align:center;width:42%">{img_l}<h2 style="color:#fff;margin:0;">{home}</h2><p style="color:#ff6600; font-weight:bold;">{home_rec}</p><div style="display:inline-block;margin:2px 0;padding:2px 12px;border-radius:14px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.45)"><span style="color:#3b82f6;font-weight:800;">🎲 {h_odds}</span></div><p style="color:#94a3b8;font-size:14px;">🥎 <b>{hp} ({hand_home})</b></p><p style="color:{"#fbbf24" if mock_home else "#00ff41"};font-size:11px">⚡ K/9: {k9_home} | Proy: {k_proy_home}K {"⚠️" if mock_home else ""}</p></div>
+        <div style="text-align:center;width:42%">{img_l}<h2 style="color:#fff;margin:0;">{home}</h2><p style="color:#ff6600; font-weight:bold;">{home_rec}</p>{home_forma}<div style="display:inline-block;margin:2px 0;padding:2px 12px;border-radius:14px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.45)"><span style="color:#3b82f6;font-weight:800;">🎲 {h_odds}</span></div><p style="color:#94a3b8;font-size:14px;">🥎 <b>{hp} ({hand_home})</b></p><p style="color:{"#fbbf24" if mock_home else "#00ff41"};font-size:11px">⚡ K/9: {k9_home} | Proy: {k_proy_home}K {"⚠️" if mock_home else ""}</p></div>
         </div></div>""", unsafe_allow_html=True)
         
         if mock_away or mock_home:

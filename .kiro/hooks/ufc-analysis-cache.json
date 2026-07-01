@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "UFC Analysis Cache Hook",
+      "description": "Cachea análisis de peleas UFC para consultas repetidas del mismo evento",
+      "trigger": "UserPromptSubmit",
+      "action": {
+        "type": "agent",
+        "prompt": "El usuario está consultando análisis UFC. Verifica si es del evento actual o reciente.\n\nPROTOCOLO OPTIMIZACIÓN UFC:\n1. Identificar evento (ej: \"UFC 300\", \"UFC Fight Night\")\n2. Verificar caché en data/ufc_cache.json\n3. Si análisis existe y es <10 minutos viejo, usar caché\n4. Si no existe o es viejo, generar nuevo análisis y cachear\n\nDATOS A CACHEAR POR PELEA:\n- Stats físicos (altura, peso, alcance, edad)\n- Estadísticas carrera (SLpM, precisión, TD avg, TD def)\n- Análisis heurístico\n- Análisis Gemini IA\n- Edge rating premium\n\nPLANTILLA OPTIMIZADA UFC (≤200 tokens):\n\"🥊 [PELEADOR1] vs [PELEADOR2]\n📊 Record: [X-Y-Z] vs [X-Y-Z] | Edad: [X] vs [Y]\n📏 Alcance: [X] vs [Y] | KO Rate: [X]% vs [Y]%\n📈 Heurístico: [GANADOR] @ [CONF]% ([MÉTODO])\n🤖 Gemini: [GANADOR] ([CONF]%)\n🔬 Edge: [X]/10 ⭐\"\n\nCACHE INVALIDATION TRIGGERS:\n- Cambio en odds (>10%)\n- Weigh-in results\n- >24 horas desde creación\n- Cambio en lineup (lesiones)"
+      },
+      "enabled": true
+    }
+  ]
+}

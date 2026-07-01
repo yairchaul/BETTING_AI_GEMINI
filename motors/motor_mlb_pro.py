@@ -197,13 +197,23 @@ def _parse_record(record_str):
 
 
 def _parse_streak(streak_str):
-    """'W3' → +3 | 'L2' → -2 | '' → 0."""
+    """Racha → nº con signo. Acepta el formato compacto 'W3'/'L2' Y el de ESPN
+    ('Won 5 Games' / 'Lost 3 Games'), que era el que llega en vivo y NO se parseaba
+    (el factor de racha estaba muerto → siempre 0). 'W3'/'Won 5' → +5 | 'L2'/'Lost 3' → -3.
+    """
     try:
         s = str(streak_str).strip().upper()
-        m = re.match(r'([WL])(\d+)', s)
+        if not s:
+            return 0
+        m = re.match(r'([WL])(\d+)', s)          # compacto: W3 / L2
         if m:
             n = int(m.group(2))
             return n if m.group(1) == 'W' else -n
+        # ESPN / texto: "WON 5 GAMES" · "LOST 3 GAMES" · "GANÓ 4" · "PERDIÓ 2"
+        m2 = re.search(r'(WON|GANO|GANÓ|LOST|PERDIO|PERDIÓ)\D*(\d+)', s)
+        if m2:
+            n = int(m2.group(2))
+            return n if m2.group(1) in ('WON', 'GANO', 'GANÓ') else -n
     except Exception:
         pass
     return 0
