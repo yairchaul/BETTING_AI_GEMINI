@@ -268,6 +268,11 @@ def _poisson_over(lam, linea):
     return max(0.0, min(1.0, 1.0 - cdf))
 
 
+# Tasas REALES de cobertura de cada run line (backtest 669 juegos MLB 2026,
+# favorito = mejor récord). Anclan la confianza del modelo a lo que de verdad pega.
+_RL_RATE = {"fav+1.5": 70.0, "fav+2.5": 77.9, "dog+1.5": 58.4, "dog+2.5": 69.7, "fav-1.5": 41.6}
+
+
 def _runline_pick(fav_team, local, visitante, confianza, p_pick, gap_pct=0.0, modelo_rl=None):
     """Hándicap (runline).
 
@@ -284,25 +289,29 @@ def _runline_pick(fav_team, local, visitante, confianza, p_pick, gap_pct=0.0, mo
     lado_dog = "visitante" if fav_team == local else "local"
 
     # ── Decisión DATA-DRIVEN con el modelo de carreras (ambos lados) ──────────
+    # La confianza se CALIBRA con la tasa REAL del backtest (669 juegos MLB 2026):
+    # 50% modelo (per-partido) + 50% tasa base histórica de ESA línea. Así el parlay
+    # recibe confianzas HONESTAS y prioriza las que de verdad más aciertan.
     if modelo_rl:
         def _p(clave):
             v = modelo_rl.get(clave)
             return float(v) if v is not None else None
         crudos = [
-            (f"{fav_team} +1.5", _p(f"{lado_fav}_+1.5"), "favorito pierde por ≤1 o gana — el más seguro"),
-            (f"{fav_team} +2.5", _p(f"{lado_fav}_+2.5"), "favorito con colchón de 2 carreras"),
-            (f"{perdedor} +1.5", _p(f"{lado_dog}_+1.5"), "no favorito pierde por ≤1 o gana"),
-            (f"{perdedor} +2.5", _p(f"{lado_dog}_+2.5"), "no favorito con colchón de 2"),
-            (f"{fav_team} -1.5", _p(f"{lado_fav}_-1.5"), "favorito gana por 2+ (paga más)"),
+            (f"{fav_team} +1.5", _p(f"{lado_fav}_+1.5"), _RL_RATE["fav+1.5"], "favorito pierde por ≤1 o gana — el más seguro"),
+            (f"{fav_team} +2.5", _p(f"{lado_fav}_+2.5"), _RL_RATE["fav+2.5"], "favorito con colchón de 2 carreras"),
+            (f"{perdedor} +1.5", _p(f"{lado_dog}_+1.5"), _RL_RATE["dog+1.5"], "no favorito pierde por ≤1 o gana"),
+            (f"{perdedor} +2.5", _p(f"{lado_dog}_+2.5"), _RL_RATE["dog+2.5"], "no favorito con colchón de 2"),
+            (f"{fav_team} -1.5", _p(f"{lado_fav}_-1.5"), _RL_RATE["fav-1.5"], "favorito gana por 2+ (paga más)"),
         ]
-        cands = sorted([(e, pr, n) for e, pr, n in crudos if pr is not None],
+        cands = sorted([(e, round(0.5 * pr + 0.5 * base, 1), n)   # 50% modelo + 50% tasa real
+                        for e, pr, base, n in crudos if pr is not None],
                        key=lambda c: c[1], reverse=True)
         if cands:
-            # El más probable CON valor (≤93%, que pague algo); si todos son
+            # El más probable CON valor (≤88%, que pague algo); si todos son
             # casi seguros, toma igual el más probable (modo "asegurar").
-            pick_e, pick_pr, pick_n = next((c for c in cands if c[1] <= 93), cands[0])
+            pick_e, pick_pr, pick_n = next((c for c in cands if c[1] <= 88), cands[0])
             return {"pick": pick_e, "linea": pick_e.split()[-1], "confianza": round(pick_pr),
-                    "nota": f"modelo de carreras: {pick_n} (~{pick_pr:.0f}%)",
+                    "nota": f"calibrado con backtest: {pick_n} (~{pick_pr:.0f}%)",
                     "alternativas": [{"pick": e, "prob": round(pr)} for e, pr, _ in cands[:4]]}
 
     # ── Hándicap por NIVEL DE CONFIANZA (estrategia del usuario) ────────────

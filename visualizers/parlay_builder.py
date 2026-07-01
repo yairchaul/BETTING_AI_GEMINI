@@ -178,6 +178,49 @@ def _recolectar_picks_nba(ss, _es_del_dia, **kwargs):
     return pool
 
 
+_HR_CALIB = None
+
+
+def _calibrar_prob_hr(raw):
+    """Ajusta la probabilidad de HR a la tasa REAL de su tramo (backtest). El modelo
+    INFLA el tope: el tramo 22%+ pega MENOS (6.7%) que el 15-21% bien calibrado (17.2%).
+    Así la selección de HR del parlay prefiere los que DE VERDAD más pegan, no los
+    inflados. Muestras chicas → se mezclan con la tasa global para no castigar por ruido."""
+    global _HR_CALIB
+    if _HR_CALIB is None:
+        import os, json
+        try:
+            rep = json.load(open(os.path.join("data", "hr_backtest_reporte.json"), encoding="utf-8"))
+            _HR_CALIB = (rep.get("por_tramo_probabilidad", {}) or {},
+                         float(rep.get("precision_global", 12) or 12))
+        except Exception:
+            _HR_CALIB = ({}, 12.0)
+    tramos, glob = _HR_CALIB
+    try:
+        raw = float(raw)
+    except Exception:
+        return raw
+    for nombre, t in tramos.items():
+        prec = t.get("precision")
+        n = t.get("predichos", 0) or 0
+        nm = str(nombre)
+        lo = hi = None
+        if "<" in nm:
+            lo, hi = 0.0, float(re.sub(r"[^0-9.]", "", nm) or 15)
+        elif "+" in nm:
+            lo, hi = float(re.sub(r"[^0-9.]", "", nm) or 0), 100.0
+        elif "-" in nm:
+            partes = re.sub(r"[^0-9.\-]", "", nm).split("-")
+            try:
+                lo, hi = float(partes[0]), float(partes[1]) + 0.999
+            except Exception:
+                continue
+        if lo is not None and prec is not None and lo <= raw <= hi:
+            peso = min(1.0, n / 40.0)          # muestra chica → confía menos, mezcla con global
+            return round(prec * peso + glob * (1 - peso), 1)
+    return round(min(raw, 18.0), 1)            # sin tramo: cap (el modelo infla el tope)
+
+
 def _recolectar_picks_mlb(ss, _es_del_dia, **kwargs):
     """Recolecta los picks de MLB."""
     pool = []
@@ -219,11 +262,13 @@ def _recolectar_picks_mlb(ss, _es_del_dia, **kwargs):
             for hr in r.get("hr_candidates", []):
                 if hr.get("en_lineup") is False:
                     continue
-                prob_hr = hr.get("probabilidad", hr.get("prob", 0))
+                prob_modelo = hr.get("probabilidad", hr.get("prob", 0))
+                prob_hr = _calibrar_prob_hr(prob_modelo)   # tasa REAL del tramo (no la inflada)
                 pool.append({
                     "sport": "⚾ MLB", "evento": evento, "mercado": "HOME RUN",
                     "pick": f"{hr.get('jugador', hr.get('nombre','?'))} pega HR",
-                    "prob": prob_hr, "tipo": "BOMBA", "cuota": 3.50,
+                    "prob": prob_hr, "prob_modelo": prob_modelo,
+                    "tipo": "BOMBA", "cuota": 3.50,
                 })
     except Exception as e:
         logger.warning(f"Parlay MLB: {e}")
@@ -492,9 +537,14 @@ def _prob_realista_leg(l):
         que lo descontamos hacia un prior conservador (70% modelo + 30% prior).
       • Cap duro: ninguna leg supera el 90%.
     """
+    mk = (l.get("mercado") or "").upper()
     real = _rate_real_mercado(l.get("sport", ""), l.get("mercado", ""))
     if real is not None:
         p = l["prob"] * 0.4 + real * 0.6
+    elif "RUNLINE" in mk or "HAND" in mk:
+        # El run line YA viene calibrado a la tasa real del backtest en el motor
+        # (_runline_pick). No re-encogerlo hacia el prior: se pasa tal cual.
+        p = l["prob"]
     else:
         p = l["prob"] * 0.7 + PRIOR_SIN_CALIBRAR * 0.3
     return min(p, REALISMO_CAP)
