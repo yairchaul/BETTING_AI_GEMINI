@@ -410,16 +410,21 @@ class VisualFutbolTriple: # noqa
                     f"🎯 <b>MARCADOR CORRECTO</b> · modelo Dixon-Coles "
                     f"<span style='color:#64748b'>(xG {xgl} - {xgv})</span>{_ctxt}</div>",
                     unsafe_allow_html=True)
-                # Marcador SUGERIDO: el más probable DENTRO del resultado del pick
-                # (consistente con la predicción 1X2, no el top global que puede ser empate).
+                # Marcador ESPERADO: xG redondeado — el que MÁS SE ACERCA al resultado
+                # real (backtest: dist 1.52 vs 1.66 del modo). El modo de Poisson
+                # (top-1) siempre da marcadores bajos; este refleja el ambiente de goles.
+                esp = mc.get('marcador_esperado') or {}
                 rec = mc.get('marcador_recomendado') or {}
-                if rec.get('marcador'):
+                if esp.get('marcador'):
+                    _sug = rec.get('marcador')
+                    _sug_txt = (f" · <span style='color:#94a3b8'>más probable acorde al pick: "
+                                f"{_sug}</span>") if _sug and _sug != esp['marcador'] else ""
                     st.markdown(
                         f"<div style='background:#1e1b4b;border-left:3px solid #fbbf24;border-radius:7px;"
                         f"padding:6px 12px;margin-bottom:6px;font-size:0.85rem'>"
-                        f"<span style='color:#fbbf24;font-weight:700'>⭐ Marcador sugerido:</span> "
-                        f"<span style='color:#fff;font-weight:800'>{rec['marcador']}</span> "
-                        f"<span style='color:#94a3b8'>({rec.get('pct','?')}% · el más probable acorde al pick)</span></div>",
+                        f"<span style='color:#fbbf24;font-weight:700'>⭐ Marcador esperado:</span> "
+                        f"<span style='color:#fff;font-weight:800'>{esp['marcador']}</span> "
+                        f"<span style='color:#94a3b8'>(cerca del ambiente de goles real)</span>{_sug_txt}</div>",
                         unsafe_allow_html=True)
                 _col = {"LOCAL": "#3b82f6", "EMPATE": "#94a3b8", "VISITANTE": "#ef4444"}
                 chips = []

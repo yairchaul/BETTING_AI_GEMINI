@@ -486,6 +486,18 @@ def predecir(local, visitante, neutral=True, top_n=5, modelo=None, goles_factor=
                    key=lambda kv: kv[1])[0]
     marcador_recomendado = marcador_por_resultado.get(_res_top, top[0] if top else None)
 
+    # ── MARCADOR ESPERADO: xG redondeado (cerca del AMBIENTE de goles real) ──
+    # El marcador #1 (modo de Poisson) siempre es bajo (~1.65 goles) aunque el
+    # promedio esperado sea ~2.6 → el modo se aleja de la realidad. Redondear el
+    # xG por equipo da un marcador que SE ACERCA más (backtest: distancia 1.52 vs
+    # 1.66 del modo, y hasta acierta un poco más). Es lo que hacen los tipsters:
+    # predecir cerca del xG (2-1, 2-2), no el modo estadístico (1-0, 1-1).
+    _me_l, _me_v = int(lam_l + 0.5), int(lam_v + 0.5)
+    marcador_esperado = {
+        "marcador": f"{_me_l}-{_me_v}",
+        "resultado": "LOCAL" if _me_l > _me_v else ("EMPATE" if _me_l == _me_v else "VISITANTE"),
+    }
+
     # Confianza del marcador: combina cuán concentrado está el #1 (top1_pct) con la
     # SEPARACIÓN respecto al #2. Un #1 que destaca claro es más fiable que tres
     # marcadores casi empatados (partido abierto). Umbrales realistas: en fútbol el
@@ -514,6 +526,7 @@ def predecir(local, visitante, neutral=True, top_n=5, modelo=None, goles_factor=
                        "over_3.5": _r(p_over35), "under_2.5": _r(1 - p_over25)},
         "btts": {"si": _r(p_btts), "no": _r(1 - p_btts)},
         "marcador_top": top,
+        "marcador_esperado": marcador_esperado,
         "marcador_por_resultado": marcador_por_resultado,
         "marcador_recomendado": marcador_recomendado,
         "confianza_marcador": confianza_marcador,
