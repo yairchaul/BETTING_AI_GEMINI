@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "BETTING_AI (Streamlit)",
-      "runtimeExecutable": ".venv/Scripts/python.exe",
+      "runtimeExecutable": "py",
       "runtimeArgs": ["-m", "streamlit", "run", "main_vision_completo.py", "--server.port", "8501", "--server.headless", "true"],
       "port": 8501,
       "autoPort": false

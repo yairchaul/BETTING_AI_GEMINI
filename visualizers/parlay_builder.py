@@ -253,12 +253,17 @@ def _recolectar_picks_mlb(ss, _es_del_dia, **kwargs):
                       "PONCHES": 1.85, "TOTAL_BASES": 1.95, "HOME_RUN": 3.50}
             if mejor.get("pick") and mejor.get("mercado") != "HOME_RUN":
                 mk = mejor["mercado"]
+                # La cuota del MONEYLINE es REAL (viene de los odds de ESPN);
+                # las demás son estimadas → el maestro las acota a precio justo.
+                _ml_real = mk == "MONEYLINE" and _americano_a_decimal(
+                    ml.get("local") if r.get("pick") == p.get("local") else ml.get("visitante")) is not None
                 pool.append({
                     "sport": "⚾ MLB", "evento": evento,
                     "mercado": _etiqueta.get(mk, mk), "pick": mejor["pick"],
                     "prob": mejor.get("confianza_ajustada", mejor.get("confianza", 0)),
                     "tipo": "SEGURO",
                     "cuota": _cuota.get(mk, 1.90),
+                    "cuota_real": _ml_real,
                     "razon": mejor.get("razon"),
                     "is_adjusted": True,  # La confianza ya viene ajustada por el motor MLB
                 })
@@ -531,48 +536,20 @@ def _recolectar_picks(dia_filtro=None):
     return pool
 
 
-_CALIB_MERCADOS = None
+# La calibración vive en motors.parlay_maestro (ÚNICA fuente de verdad: la
+# usan esta UI, el optimizador y su backtest). Estos wrappers conservan los
+# nombres locales que el resto del archivo ya usa.
+from motors.parlay_maestro import (
+    REALISMO_CAP,
+    PRIOR_SIN_CALIBRAR,
+    calibrar_prob as _prob_realista_leg,
+)
 
 
 def _rate_real_mercado(sport, mercado):
     """Tasa de acierto REAL del mercado (aprendizaje_mercados.json) o None."""
-    global _CALIB_MERCADOS
-    if _CALIB_MERCADOS is None:
-        import os, json
-        try:
-            with open(os.path.join("data", "aprendizaje_mercados.json"), encoding="utf-8") as f:
-                _CALIB_MERCADOS = json.load(f).get("por_mercado", {})
-        except Exception:
-            _CALIB_MERCADOS = {}
-    s = (sport or "").upper()
-    dep = ("MLB" if "MLB" in s else "SOCCER" if "FÚTBOL" in s or "FUTBOL" in s
-           else "NBA" if "NBA" in s else "UFC" if "UFC" in s else "")
-    return _CALIB_MERCADOS.get(f"{dep} · {mercado}", {}).get("win_rate")
-
-
-REALISMO_CAP = 90.0   # ninguna leg vale >90%: no existe la apuesta "99% segura"
-PRIOR_SIN_CALIBRAR = 55.0  # prior conservador para mercados sin tasa real (UFC, nuevos)
-
-
-def _prob_realista_leg(l):
-    """Probabilidad de la leg con DOS correcciones contra la sobreconfianza que
-    nos tiene en 0/27:
-      • Si hay tasa real del mercado (aprendizaje) → 60% real + 40% modelo.
-      • Si NO la hay (UFC, mercados sin muestra) → el modelo corre CALIENTE, así
-        que lo descontamos hacia un prior conservador (70% modelo + 30% prior).
-      • Cap duro: ninguna leg supera el 90%.
-    """
-    mk = (l.get("mercado") or "").upper()
-    real = _rate_real_mercado(l.get("sport", ""), l.get("mercado", ""))
-    if real is not None:
-        p = l["prob"] * 0.4 + real * 0.6
-    elif "RUNLINE" in mk or "HAND" in mk:
-        # El run line YA viene calibrado a la tasa real del backtest en el motor
-        # (_runline_pick). No re-encogerlo hacia el prior: se pasa tal cual.
-        p = l["prob"]
-    else:
-        p = l["prob"] * 0.7 + PRIOR_SIN_CALIBRAR * 0.3
-    return min(p, REALISMO_CAP)
+    from motors.parlay_maestro import rate_real_mercado
+    return rate_real_mercado(sport, mercado)[0]
 
 
 def _armar_parlay(legs):
@@ -909,6 +886,7 @@ def _tarjeta_parlay(titulo, color, descripcion, parlay):
 
     # Mapeo de títulos a íconos para una UI más clara
     ICONOS_PARLAY = {
+        "MAESTRO": "👑",
         "SEGURO": "🟢",
         "VALOR": "🟡",
         "BOMBA": "🔴",
@@ -1212,6 +1190,58 @@ def render_parlay_tab():
             st.caption(f"🧠 {n_log} picks registrados en la memoria de aprendizaje.")
         except Exception as _le:
             logger.warning(f"log picks: {_le}")
+
+    # ── 👑 PARLAY MAESTRO — optimizador exacto (frontera por edge) ────────────
+    st.markdown("---")
+    st.subheader("👑 PARLAY MAESTRO — el óptimo matemático del día")
+    st.caption("Revisa TODAS las variables: probabilidad calibrada con tasas reales × cuota "
+               "de cada leg (edge). El mejor parlay de k legs es exactamente el top-k por "
+               "edge — óptimo exacto, no heurística. Stake sugerido = ¼ de Kelly.")
+    try:
+        from motors.parlay_maestro import seleccionar as _maestro_seleccionar
+        _sel = _maestro_seleccionar(pool)
+        if _sel.get("error"):
+            st.info(f"👑 {_sel['error']}")
+        else:
+            if _sel.get("nota"):
+                st.warning(f"⚠️ {_sel['nota']}")
+            _cards = (("mas_viable", "MAESTRO MÁS VIABLE", "#38bdf8",
+                       "La mayor probabilidad real de cobrar duplicando tu dinero (cuota ≥ 2)."),
+                      ("mejor_ev", "MAESTRO MEJOR EV", "#22c55e",
+                       "El punto de la frontera con MAYOR valor esperado — el que más deja a la larga."),
+                      ("mejor_pago", "MAESTRO PAGO MÁXIMO", "#f59e0b",
+                       "La cuota más alta que sigue siendo viable (prob ≥ 10%)."))
+            for _k, _titulo, _color, _desc in _cards:
+                _p = _sel.get(_k)
+                if not _p:
+                    continue
+                _tarjeta_parlay(_titulo, _color, _desc, _p)
+                st.caption(f"💰 Stake sugerido (¼ Kelly): **{_p['kelly_pct']:.1f}%** del bank "
+                           f"· edge medio por leg {_p['edge_medio']:.2f} "
+                           f"· respaldo de datos {int(_p['confiabilidad']*100)}%")
+            # Frontera completa: todos los tamaños óptimos con su riesgo/retorno
+            with st.expander("📐 Frontera óptima completa (2-8 legs, top-k por edge)"):
+                for _f in _sel.get("frontera", []):
+                    _c = "#22c55e" if _f["ev_pct"] > 0 else "#ef4444"
+                    st.markdown(
+                        f"<div style='background:#0f172a;border-radius:6px;padding:4px 12px;margin:2px 0'>"
+                        f"<b>{_f['n_legs']} legs</b> · prob <b>{_f['prob']}%</b> · cuota {_f['cuota']}x · "
+                        f"EV <b style='color:{_c}'>{_f['ev_pct']:+.1f}%</b> · ¼Kelly {_f['kelly_pct']:.1f}%</div>",
+                        unsafe_allow_html=True)
+            # La mejor jugada de CADA partido, rankeada por edge
+            with st.expander("🏟️ Mejor jugada por partido (rankeadas por edge)"):
+                for _j in _sel.get("mejor_por_partido", [])[:12]:
+                    _ec = "#22c55e" if _j["edge"] >= 1.0 else "#94a3b8"
+                    st.markdown(
+                        f"<div style='background:#0f172a;border-radius:6px;padding:4px 12px;margin:2px 0'>"
+                        f"{_j['sport']} · <b>{_j['pick']}</b> "
+                        f"<span style='color:#64748b'>({_j['mercado']} · {_j['evento']})</span>"
+                        f"<span style='float:right'>prob {_j['prob_cal']}% · cuota {_j['cuota']:.2f} · "
+                        f"<b style='color:{_ec}'>edge {_j['edge']:.2f}</b></span></div>",
+                        unsafe_allow_html=True)
+    except Exception as _me:
+        logger.warning(f"Parlay maestro: {_me}")
+        st.info("👑 El optimizador maestro no pudo correr con los picks de hoy.")
 
     # ── 🤖 PARLAY DE IA (auto-generado) ───────────────────────────────────────
     st.markdown("---")

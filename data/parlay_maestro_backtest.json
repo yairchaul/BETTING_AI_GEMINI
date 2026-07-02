@@ -1,0 +1,133 @@
+{
+ "por_objetivo": {
+  "mejor_ev": {
+   "n": 4,
+   "ganados": 1,
+   "win_rate": 25.0,
+   "roi_pct": 169.5
+  },
+  "mas_viable": {
+   "n": 4,
+   "ganados": 3,
+   "win_rate": 75.0,
+   "roi_pct": 70.0
+  },
+  "mejor_pago": {
+   "n": 4,
+   "ganados": 1,
+   "win_rate": 25.0,
+   "roi_pct": 295.9
+  }
+ },
+ "dias_evaluados": 4,
+ "detalle": [
+  {
+   "fecha": "2026-06-16",
+   "objetivo": "mejor_ev",
+   "n_legs": 6,
+   "cuota_prevista": 10.55,
+   "prob_prevista": 17.15,
+   "gano": false,
+   "profit": -1.0
+  },
+  {
+   "fecha": "2026-06-16",
+   "objetivo": "mas_viable",
+   "n_legs": 3,
+   "cuota_prevista": 2.79,
+   "prob_prevista": 48.4,
+   "gano": true,
+   "profit": 1.79
+  },
+  {
+   "fecha": "2026-06-16",
+   "objetivo": "mejor_pago",
+   "n_legs": 7,
+   "cuota_prevista": 15.5,
+   "prob_prevista": 12.25,
+   "gano": false,
+   "profit": -1.0
+  },
+  {
+   "fecha": "2026-06-17",
+   "objetivo": "mejor_ev",
+   "n_legs": 6,
+   "cuota_prevista": 10.78,
+   "prob_prevista": 16.7,
+   "gano": true,
+   "profit": 9.78
+  },
+  {
+   "fecha": "2026-06-17",
+   "objetivo": "mas_viable",
+   "n_legs": 2,
+   "cuota_prevista": 2.0,
+   "prob_prevista": 60.75,
+   "gano": true,
+   "profit": 1.0
+  },
+  {
+   "fecha": "2026-06-17",
+   "objetivo": "mejor_pago",
+   "n_legs": 7,
+   "cuota_prevista": 15.84,
+   "prob_prevista": 11.95,
+   "gano": true,
+   "profit": 14.84
+  },
+  {
+   "fecha": "2026-06-19",
+   "objetivo": "mejor_ev",
+   "n_legs": 5,
+   "cuota_prevista": 9.57,
+   "prob_prevista": 16.05,
+   "gano": false,
+   "profit": -1.0
+  },
+  {
+   "fecha": "2026-06-19",
+   "objetivo": "mas_viable",
+   "n_legs": 2,
+   "cuota_prevista": 2.01,
+   "prob_prevista": 58.95,
+   "gano": true,
+   "profit": 1.01
+  },
+  {
+   "fecha": "2026-06-19",
+   "objetivo": "mejor_pago",
+   "n_legs": 6,
+   "cuota_prevista": 14.39,
+   "prob_prevista": 12.7,
+   "gano": false,
+   "profit": -1.0
+  },
+  {
+   "fecha": "2026-06-25",
+   "objetivo": "mejor_ev",
+   "n_legs": 4,
+   "cuota_prevista": 7.71,
+   "prob_prevista": 19.05,
+   "gano": false,
+   "profit": -1.0
+  },
+  {
+   "fecha": "2026-06-25",
+   "objetivo": "mas_viable",
+   "n_legs": 3,
+   "cuota_prevista": 2.37,
+   "prob_prevista": 38.9,
+   "gano": false,
+   "profit": -1.0
+  },
+  {
+   "fecha": "2026-06-25",
+   "objetivo": "mejor_pago",
+   "n_legs": 5,
+   "cuota_prevista": 14.14,
+   "prob_prevista": 10.2,
+   "gano": false,
+   "profit": -1.0
+  }
+ ]
+}

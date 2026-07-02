@@ -1495,5 +1495,437 @@
    }
   ],
   "estado": "pendiente"
+ },
+ {
+  "id": "par_20260702105731_2582",
+  "fecha": "2026-07-02",
+  "tipo": "👑 MAESTRO MÁS VIABLE",
+  "firma": "⚾ MLB::Atlanta Braves +1.5|⚾ MLB::Chicago White Sox +2.5",
+  "prob": 69.82,
+  "cuota": 3.24,
+  "ev_pct": 126.2,
+  "n_legs": 2,
+  "legs": [
+   {
+    "sport": "⚾ MLB",
+    "pick": "Chicago White Sox +2.5",
+    "mercado": "RUNLINE",
+    "evento": "Chicago White Sox @ Cleveland Guardians",
+    "prob": 83.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Atlanta Braves +1.5",
+    "mercado": "RUNLINE",
+    "evento": "St. Louis Cardinals @ Atlanta Braves",
+    "prob": 83.6
+   }
+  ],
+  "estado": "pendiente"
+ },
+ {
+  "id": "par_20260702105731_7876",
+  "fecha": "2026-07-02",
+  "tipo": "👑 MAESTRO MEJOR EV",
+  "firma": "⚾ MLB::Atlanta Braves +1.5|⚾ MLB::Chicago White Sox +2.5|⚾ MLB::Detroit Tigers +2.5|⚾ MLB::Miami Marlins +1.5|⚾ MLB::Philadelphia Phillies +2.5|⚾ MLB::Seattle Mariners +1.5|⚾ MLB::Tampa Bay Rays +1.5",
+  "prob": 25.75,
+  "cuota": 61.22,
+  "ev_pct": 1476.5,
+  "n_legs": 7,
+  "legs": [
+   {
+    "sport": "⚾ MLB",
+    "pick": "Chicago White Sox +2.5",
+    "mercado": "RUNLINE",
+    "evento": "Chicago White Sox @ Cleveland Guardians",
+    "prob": 83.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Atlanta Braves +1.5",
+    "mercado": "RUNLINE",
+    "evento": "St. Louis Cardinals @ Atlanta Braves",
+    "prob": 83.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Detroit Tigers +2.5",
+    "mercado": "RUNLINE",
+    "evento": "Detroit Tigers @ Texas Rangers",
+    "prob": 83.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Miami Marlins +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Miami Marlins @ Colorado Rockies",
+    "prob": 82.5
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Tampa Bay Rays +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Tampa Bay Rays @ Kansas City Royals",
+    "prob": 82.5
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Philadelphia Phillies +2.5",
+    "mercado": "RUNLINE",
+    "evento": "Pittsburgh Pirates @ Philadelphia Phillies",
+    "prob": 81.4
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Seattle Mariners +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Los Angeles Angels @ Seattle Mariners",
+    "prob": 79.2
+   }
+  ],
+  "estado": "pendiente"
+ },
+ {
+  "id": "par_20260702105731_7599",
+  "fecha": "2026-07-02",
+  "tipo": "👑 MAESTRO PAGO MÁXIMO",
+  "firma": "⚾ MLB::Atlanta Braves +1.5|⚾ MLB::Chicago White Sox +2.5|⚾ MLB::Detroit Tigers +2.5|⚾ MLB::Gana Los Angeles Dodgers|⚾ MLB::Miami Marlins +1.5|⚾ MLB::Philadelphia Phillies +2.5|⚾ MLB::Seattle Mariners +1.5|⚾ MLB::Tampa Bay Rays +1.5",
+  "prob": 16.43,
+  "cuota": 92.45,
+  "ev_pct": 1419.2,
+  "n_legs": 8,
+  "legs": [
+   {
+    "sport": "⚾ MLB",
+    "pick": "Chicago White Sox +2.5",
+    "mercado": "RUNLINE",
+    "evento": "Chicago White Sox @ Cleveland Guardians",
+    "prob": 83.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Atlanta Braves +1.5",
+    "mercado": "RUNLINE",
+    "evento": "St. Louis Cardinals @ Atlanta Braves",
+    "prob": 83.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Detroit Tigers +2.5",
+    "mercado": "RUNLINE",
+    "evento": "Detroit Tigers @ Texas Rangers",
+    "prob": 83.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Miami Marlins +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Miami Marlins @ Colorado Rockies",
+    "prob": 82.5
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Tampa Bay Rays +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Tampa Bay Rays @ Kansas City Royals",
+    "prob": 82.5
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Philadelphia Phillies +2.5",
+    "mercado": "RUNLINE",
+    "evento": "Pittsburgh Pirates @ Philadelphia Phillies",
+    "prob": 81.4
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Seattle Mariners +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Los Angeles Angels @ Seattle Mariners",
+    "prob": 79.2
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana Los Angeles Dodgers",
+    "mercado": "MONEYLINE",
+    "evento": "San Diego Padres @ Los Angeles Dodgers",
+    "prob": 74.8
+   }
+  ],
+  "estado": "pendiente"
+ },
+ {
+  "id": "par_20260702105732_1605",
+  "fecha": "2026-07-02",
+  "tipo": "🔥 PARLAY DE RACHAS (MOMENTUM)",
+  "firma": "⚾ MLB::Gana Los Angeles Dodgers|⚾ MLB::Gana Milwaukee Brewers",
+  "prob": 42.95,
+  "cuota": 2.2,
+  "ev_pct": -5.3,
+  "n_legs": 2,
+  "legs": [
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana Milwaukee Brewers",
+    "mercado": "MONEYLINE",
+    "evento": "Cincinnati Reds @ Milwaukee Brewers",
+    "prob": 79.2
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana Los Angeles Dodgers",
+    "mercado": "MONEYLINE",
+    "evento": "San Diego Padres @ Los Angeles Dodgers",
+    "prob": 74.8
+   }
+  ],
+  "estado": "ganado"
+ },
+ {
+  "id": "par_20260702105732_8082",
+  "fecha": "2026-07-02",
+  "tipo": "🎯 PARLAY ÓPTIMO (4 legs)",
+  "firma": "⚾ MLB::Atlanta Braves +1.5|⚾ MLB::Chicago White Sox +2.5|⚾ MLB::Detroit Tigers +2.5|⚾ MLB::Miami Marlins +1.5",
+  "prob": 48.2,
+  "cuota": 10.5,
+  "ev_pct": 406.0,
+  "n_legs": 4,
+  "legs": [
+   {
+    "sport": "⚾ MLB",
+    "pick": "Chicago White Sox +2.5",
+    "mercado": "RUNLINE",
+    "evento": "Chicago White Sox @ Cleveland Guardians",
+    "prob": 83.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Atlanta Braves +1.5",
+    "mercado": "RUNLINE",
+    "evento": "St. Louis Cardinals @ Atlanta Braves",
+    "prob": 83.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Detroit Tigers +2.5",
+    "mercado": "RUNLINE",
+    "evento": "Detroit Tigers @ Texas Rangers",
+    "prob": 83.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Miami Marlins +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Miami Marlins @ Colorado Rockies",
+    "prob": 82.5
+   }
+  ],
+  "estado": "pendiente"
+ },
+ {
+  "id": "par_20260702105732_3485",
+  "fecha": "2026-07-02",
+  "tipo": "🟢 PARLAY SEGURO",
+  "firma": "⚾ MLB::Atlanta Braves +1.5|⚾ MLB::Chicago White Sox +2.5|⚾ MLB::Detroit Tigers +2.5|⚾ MLB::Miami Marlins +1.5|⚾ MLB::Tampa Bay Rays +1.5",
+  "prob": 39.77,
+  "cuota": 18.9,
+  "ev_pct": 651.4,
+  "n_legs": 5,
+  "legs": [
+   {
+    "sport": "⚾ MLB",
+    "pick": "Chicago White Sox +2.5",
+    "mercado": "RUNLINE",
+    "evento": "Chicago White Sox @ Cleveland Guardians",
+    "prob": 83.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Atlanta Braves +1.5",
+    "mercado": "RUNLINE",
+    "evento": "St. Louis Cardinals @ Atlanta Braves",
+    "prob": 83.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Detroit Tigers +2.5",
+    "mercado": "RUNLINE",
+    "evento": "Detroit Tigers @ Texas Rangers",
+    "prob": 83.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Miami Marlins +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Miami Marlins @ Colorado Rockies",
+    "prob": 82.5
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Tampa Bay Rays +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Tampa Bay Rays @ Kansas City Royals",
+    "prob": 82.5
+   }
+  ],
+  "estado": "pendiente"
+ },
+ {
+  "id": "par_20260702105732_6287",
+  "fecha": "2026-07-02",
+  "tipo": "⚡ PARLAY SLUGGER DEL DÍA",
+  "firma": "⚾ MLB::Brandon Marsh pega HR|⚾ MLB::Hunter Goodman pega HR|⚾ MLB::Junior Caminero pega HR|⚾ MLB::Mickey Moniak pega HR|⚾ MLB::Shohei Ohtani pega HR",
+  "prob": 0.04,
+  "cuota": 525.22,
+  "ev_pct": -79.5,
+  "n_legs": 5,
+  "legs": [
+   {
+    "sport": "⚾ MLB",
+    "pick": "Hunter Goodman pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Colorado Rockies",
+    "prob": 24.8
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Mickey Moniak pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Colorado Rockies",
+    "prob": 19.4
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Junior Caminero pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Tampa Bay Rays",
+    "prob": 18.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Brandon Marsh pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Philadelphia Phillies",
+    "prob": 13.8
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Shohei Ohtani pega HR",
+    "mercado": "HOME RUN",
+    "evento": "Los Angeles Dodgers",
+    "prob": 20.0
+   }
+  ],
+  "estado": "perdido"
+ },
+ {
+  "id": "par_20260702105732_5564",
+  "fecha": "2026-07-02",
+  "tipo": "🟣 PARLAY GIGANTE (9 legs)",
+  "firma": "⚾ MLB::Atlanta Braves +1.5|⚾ MLB::Chicago White Sox +2.5|⚾ MLB::Detroit Tigers +2.5|⚾ MLB::Gana Los Angeles Dodgers|⚾ MLB::Gana Milwaukee Brewers|⚾ MLB::Miami Marlins +1.5|⚾ MLB::Philadelphia Phillies +2.5|⚾ MLB::Seattle Mariners +1.5|⚾ MLB::Tampa Bay Rays +1.5",
+  "prob": 11.01,
+  "cuota": 134.97,
+  "ev_pct": 1386.1,
+  "n_legs": 9,
+  "legs": [
+   {
+    "sport": "⚾ MLB",
+    "pick": "Chicago White Sox +2.5",
+    "mercado": "RUNLINE",
+    "evento": "Chicago White Sox @ Cleveland Guardians",
+    "prob": 83.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Atlanta Braves +1.5",
+    "mercado": "RUNLINE",
+    "evento": "St. Louis Cardinals @ Atlanta Braves",
+    "prob": 83.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Detroit Tigers +2.5",
+    "mercado": "RUNLINE",
+    "evento": "Detroit Tigers @ Texas Rangers",
+    "prob": 83.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Miami Marlins +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Miami Marlins @ Colorado Rockies",
+    "prob": 82.5
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Tampa Bay Rays +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Tampa Bay Rays @ Kansas City Royals",
+    "prob": 82.5
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Philadelphia Phillies +2.5",
+    "mercado": "RUNLINE",
+    "evento": "Pittsburgh Pirates @ Philadelphia Phillies",
+    "prob": 81.4
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana Milwaukee Brewers",
+    "mercado": "MONEYLINE",
+    "evento": "Cincinnati Reds @ Milwaukee Brewers",
+    "prob": 79.2
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Seattle Mariners +1.5",
+    "mercado": "RUNLINE",
+    "evento": "Los Angeles Angels @ Seattle Mariners",
+    "prob": 79.2
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Gana Los Angeles Dodgers",
+    "mercado": "MONEYLINE",
+    "evento": "San Diego Padres @ Los Angeles Dodgers",
+    "prob": 74.8
+   }
+  ],
+  "estado": "pendiente"
+ },
+ {
+  "id": "par_20260702105919_3918",
+  "fecha": "2026-07-02",
+  "tipo": "MAESTRO MÁS VIABLE",
+  "firma": "⚾ MLB::Atlanta Braves +1.5|⚾ MLB::Chicago White Sox +2.5|⚾ MLB::Detroit Tigers +2.5",
+  "prob": 58.62,
+  "cuota": 2.28,
+  "ev_pct": 33.6,
+  "n_legs": 3,
+  "legs": [
+   {
+    "sport": "⚾ MLB",
+    "pick": "Chicago White Sox +2.5",
+    "mercado": "RUNLINE",
+    "evento": "Chicago White Sox @ Cleveland Guardians",
+    "prob": 83.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Atlanta Braves +1.5",
+    "mercado": "RUNLINE",
+    "evento": "St. Louis Cardinals @ Atlanta Braves",
+    "prob": 83.6
+   },
+   {
+    "sport": "⚾ MLB",
+    "pick": "Detroit Tigers +2.5",
+    "mercado": "RUNLINE",
+    "evento": "Detroit Tigers @ Texas Rangers",
+    "prob": 83.6
+   }
+  ],
+  "estado": "pendiente"
  }
 ]
