@@ -2,6 +2,7 @@
 """Motor Over/Under para MLB — V25 (Clima + Umpire + Lineup integrados)"""
 
 import json
+import math
 import os
 from database_manager import db
 from .predictor_hr import predictor_hr
@@ -45,6 +46,12 @@ class MotorOverUnder:
     # lo borró y dejó a todos en la media → el modelo no distinguía ofensivas.
     LEAGUE_AVG = {"avg_runs": 4.4, "bullpen_era": 4.2}
 
+    # Media de la tabla estática TEAM_RUNS_AVG (≈4.03). El factor ofensivo debe
+    # dividir cada fuente entre SU PROPIA media: antes la tabla estática se
+    # dividía entre 4.4 → off_factor quedaba clavado en el piso 0.85 para casi
+    # cualquier duelo → sesgo UNDER estructural (backtest: 77% picks UNDER).
+    STATIC_RUNS_MEAN = 4.03
+
     TEAM_RUNS_AVG = {
         "Los Angeles Dodgers": 5.2, "Atlanta Braves": 5.1, "New York Yankees": 4.9,
         "Philadelphia Phillies": 4.8, "Texas Rangers": 4.7, "Houston Astros": 4.6,
@@ -67,6 +74,21 @@ class MotorOverUnder:
         "Miami Marlins": 4.6, "San Francisco Giants": 4.7, "Arizona Diamondbacks": 4.8,
         "Colorado Rockies": 5.5, "Oakland Athletics": 5.2, "Chicago White Sox": 5.0,
     }
+
+    def _park_bonus(self, venue) -> float:
+        """Bono del estadio con match DIFUSO: los feeds traen nombres con
+        patrocinador ('UNIQLO Field at Dodger Stadium') que el lookup exacto
+        perdía → todos esos juegos quedaban con parque neutro."""
+        if not venue:
+            return 0.0
+        v = str(venue).strip()
+        if v in self.PARK_FACTORS:
+            return self.PARK_FACTORS[v]
+        vl = v.lower()
+        for nombre, bono in self.PARK_FACTORS.items():
+            if nombre.lower() in vl or vl in nombre.lower():
+                return bono
+        return 0.0
 
     def calcular_total(self, partido: dict) -> dict:
         local    = partido.get("local", "")
@@ -94,15 +116,23 @@ class MotorOverUnder:
         bp_era_v = stats_v.get('bullpen_era') or self.BULLPEN_ERA.get(visitante, league_avg['bullpen_era'])
         carreras_esperadas_l = era_v * 0.65 + bp_era_v * 0.35 # Carreras que se espera anote el local
         carreras_esperadas_v = era_l * 0.65 + bp_era_l * 0.35 # Carreras que se espera anote el visitante
-        carreras_base = carreras_esperadas_l + carreras_esperadas_v
+        # ERA solo cuenta carreras LIMPIAS: la suma de ERAs (~8.4) queda corta
+        # frente al total real (media 8.94, backtest 926 juegos 2026). El ×1.06
+        # repone las carreras sucias; sin él el motor sacaba UNDER 78% de veces.
+        carreras_base = (carreras_esperadas_l + carreras_esperadas_v) * 1.06
 
         # ── 2. Parque ─────────────────────────────────────────────────────────
-        bono_estadio = self.PARK_FACTORS.get(venue, 0.0)
+        bono_estadio = self._park_bonus(venue)
 
         # ── 3. Factor Ofensivo (forma reciente vs media de liga). Runs: DB → estático → liga.
-        avg_runs_l = stats_l.get('avg_runs_for') or self.TEAM_RUNS_AVG.get(local, league_avg['avg_runs'])
-        avg_runs_v = stats_v.get('avg_runs_for') or self.TEAM_RUNS_AVG.get(visitante, league_avg['avg_runs'])
-        off_factor = (avg_runs_l / league_avg['avg_runs']) * (avg_runs_v / league_avg['avg_runs'])
+        # Cada fuente se normaliza contra su propia media (DB→4.4, estático→4.03).
+        def _ratio_ofensivo(stats_db, equipo):
+            desde_db = stats_db.get('avg_runs_for')
+            if desde_db:
+                return float(desde_db) / league_avg['avg_runs']
+            return self.TEAM_RUNS_AVG.get(equipo, self.STATIC_RUNS_MEAN) / self.STATIC_RUNS_MEAN
+
+        off_factor = _ratio_ofensivo(stats_l, local) * _ratio_ofensivo(stats_v, visitante)
         off_factor = max(0.85, min(1.15, off_factor)) # Acotar para evitar valores extremos
 
         # ── 4. Clima ──────────────────────────────────────────────────────────
@@ -225,17 +255,22 @@ class MotorOverUnder:
 
         diff = round(total_proy - linea_vegas, 1)
 
-        if diff >= 0.8:
-            rec, conf = "OVER", min(85, 60 + int(diff * 12))
-        elif diff <= -0.8:
-            rec, conf = "UNDER", min(85, 60 + int(abs(diff) * 12))
+        # Confianza HONESTA: los totales MLB 2026 tienen sd REAL 4.5 (backtest
+        # 926 juegos con líneas de cierre). Con esa varianza, |diff|=0.8 ⇒ ~57%
+        # y |diff|=2 ⇒ ~67% teórico; el viejo 60+12·diff (hasta 85%) era ficción
+        # (el motor acertaba ~50-52%). Techo 64%.
+        if abs(diff) >= 0.8:
+            rec = "OVER" if diff > 0 else "UNDER"
+            conf = int(round(100 * 0.5 * (1 + math.erf((abs(diff) / 4.5) / math.sqrt(2)))))
+            conf = max(52, min(64, conf))
         else:
             rec, conf = "PASAR", 50
 
-        # Si el modelo de carreras coincide con fuerza, refuerza la confianza.
+        # Si el modelo de carreras coincide con fuerza, refuerza la confianza
+        # (mismo techo honesto: 66).
         if p_over_modelo is not None and rec != "PASAR":
             pm = p_over_modelo if rec == "OVER" else (100 - p_over_modelo)
-            conf = int(round(min(88, max(40, 0.5 * conf + 0.5 * pm))))
+            conf = int(round(min(66, max(40, 0.5 * conf + 0.5 * pm))))
 
         return {
             "total_proyectado":  total_proy,

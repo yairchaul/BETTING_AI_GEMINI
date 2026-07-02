@@ -1,0 +1,40 @@
+{
+  "_descripcion": "Backtest del O/U de carreras MLB con líneas REALES de cierre (DraftKings vía ESPN core API), marcadores de statsapi y stats de abridores point-in-time (sin fuga de futuro). Generado 2026-07-02.",
+  "_metodologia": "1220 juegos de temporada regular 2026-04-01 a 2026-07-01. Pitchers: probables del día con ERA/K9 acumulados HASTA el día anterior + shrinkage (PRIOR_IP=25). Push (total == línea entera) excluido del win-rate y ROI 0. ROI con momios americanos reales de cierre.",
+  "temporada_2026": {
+    "n_juegos": 1220,
+    "media_total_real": 9.03,
+    "sd_total_real": 4.48,
+    "media_linea_cierre": 8.45,
+    "correlacion_linea_vs_real": 0.247
+  },
+  "baselines": {
+    "siempre_over": {"n": 1162, "wr": 51.3, "roi": -1.9},
+    "siempre_under": {"n": 1162, "wr": 48.7, "roi": -7.0}
+  },
+  "motor_viejo_motor_mlb_pro": {
+    "wr": 50.0, "roi": -4.5,
+    "picks_under_pct": 88,
+    "nota": "Baseline K/9=7.5 con liga en 8.2 → UNDER sistemático; confianza Poisson hasta 75% sin correlación con aciertos (bucket 56-60 acertaba 43.8%)"
+  },
+  "motor_nuevo_analizar_ou": {
+    "wr": 54.1, "roi": 3.3,
+    "n_picks": 693, "n_pasar": 527,
+    "picks": {"UNDER": 458, "OVER": 235},
+    "por_lado": {"OVER": {"wr": 53.6}, "UNDER": {"wr": 54.3}},
+    "por_mes": {"2026-04": 50.5, "2026-05": 58.3, "2026-06": 53.1},
+    "parametros": {"sigma_total": 4.5, "umbral_pasar": 0.5, "techo_confianza": 63},
+    "nota": "Ajuste centrado en liga (abridores promedio → PASAR), Normal σ=4.5 real, push excluido de la probabilidad. Break-even a -110 = 52.4%."
+  },
+  "motor_over_under_v25": {
+    "antes": {"wr": 49.8, "roi": -5.2, "picks": {"UNDER": 618, "OVER": 225}},
+    "despues_fixes": {"wr": 51.1, "roi": -2.7, "picks": {"UNDER": 431, "OVER": 412}},
+    "fixes": ["park factor con match difuso (venues patrocinados)", "×1.06 carreras sucias (ERA solo cuenta limpias)", "off_factor normalizado por la media de su fuente (estática 4.03 vs DB 4.4)", "confianza honesta techo 64-66 (antes 85-88)"]
+  },
+  "conclusiones": [
+    "Los totales MLB al cierre son eficientes: ningún modelo del repo supera consistentemente 52.4% apostando TODOS los juegos.",
+    "El valor está en la SELECTIVIDAD: solo con ≥0.5 carreras de desviación de abridores el WR sube a ~54%.",
+    "La confianza honesta del O/U vive en 51-63%: cualquier número mayor era ficción de varianza subestimada.",
+    "mlb_runs_model walk-forward (equipo, sin abridor) quedó en 49.8% para totales → no usarlo solo para O/U."
+  ]
+}

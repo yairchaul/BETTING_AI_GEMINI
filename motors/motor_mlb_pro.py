@@ -268,6 +268,58 @@ def _poisson_over(lam, linea):
     return max(0.0, min(1.0, 1.0 - cdf))
 
 
+# ── O/U de carreras: parámetros calibrados con backtest REAL ──────────────
+# Backtest 926 juegos MLB 2026 con líneas reales de cierre (DraftKings):
+#   • total real: media 8.9, sd 4.5 → Poisson (sd≈3.0) SUBESTIMA la varianza
+#     y por eso la confianza vieja llegaba a 75% (ficción; acertaba ~51%).
+#   • el O/U anterior sacaba UNDER en 94% de juegos: su baseline de K/9 era
+#     7.5 con la liga en 8.2 → "proyectaba" total < línea casi siempre.
+#   • ningún bucket de confianza superó consistentemente el 52.4% de break-even
+#     → sin edge claro el pick honesto es PASAR.
+OU_SIGMA_TOTAL = 4.5      # sd real de los totales MLB 2026
+OU_UMBRAL_PASAR = 0.5     # sin ½ carrera de desviación no hay pick
+LIGA_K9_REF = 8.2         # media de liga (igual que mlb_pitchers_live.LIGA_K9)
+
+
+def _normal_cdf(x):
+    return 0.5 * (1.0 + math.erf(x / math.sqrt(2.0)))
+
+
+def _analizar_ou(ou_linea, era_l, era_v, k9_l, k9_v, pf_runs=1.0):
+    """Over/Under HONESTO anclado a la línea del mercado.
+
+    La línea de cierre ya trae parque y abridores; solo ajustamos con la
+    DESVIACIÓN de los abridores vs media de liga (centrada en 0: abridores
+    promedio → ajuste 0 → PASAR) y una pizca de parque. El total se modela
+    Normal(proy, σ=4.5 real); en líneas ENTERAS el push se excluye de la
+    probabilidad (antes 1−P(over) le regalaba la masa del empate al UNDER).
+
+    Devuelve (pick | None, confianza, total_proyectado, p_over_normalizada%).
+    pick None = PASAR (sin edge ≥ ½ carrera).
+    """
+    aj_era = ((era_l + era_v) / 2.0 - LIGA_ERA_REF) * 1.2   # ERA alta → más carreras
+    aj_k9 = (LIGA_K9_REF - (k9_l + k9_v) / 2.0) * 0.10      # menos K → más contacto
+    aj_parque = (pf_runs - 1.0) * 1.5                       # extra sobre lo ya lineado
+    ajuste = max(-1.5, min(1.5, aj_era + aj_k9 + aj_parque))
+    total_proy = round(max(5.0, ou_linea + ajuste), 1)
+
+    es_entera = abs(ou_linea - round(ou_linea)) < 1e-9
+    hi = ou_linea + 0.5 if es_entera else ou_linea
+    lo = ou_linea - 0.5 if es_entera else ou_linea
+    p_over = 1.0 - _normal_cdf((hi - total_proy) / OU_SIGMA_TOTAL)
+    p_under = _normal_cdf((lo - total_proy) / OU_SIGMA_TOTAL)
+    denom = (p_over + p_under) or 1.0        # excluye la masa del push
+    p_over_n = p_over / denom
+
+    if abs(total_proy - ou_linea) < OU_UMBRAL_PASAR:
+        return None, 50, total_proy, round(p_over_n * 100, 1)
+
+    pick = "OVER" if p_over_n >= 0.5 else "UNDER"
+    conf = int(round(100 * max(p_over_n, 1.0 - p_over_n)))
+    conf = max(51, min(63, conf))            # techo honesto: σ=4.5 no da para más
+    return pick, conf, total_proy, round(p_over_n * 100, 1)
+
+
 # Tasas REALES de cobertura de cada run line (backtest 669 juegos MLB 2026,
 # favorito = mejor récord). Anclan la confianza del modelo a lo que de verdad pega.
 _RL_RATE = {"fav+1.5": 70.0, "fav+2.5": 77.9, "dog+1.5": 58.4, "dog+2.5": 69.7, "fav-1.5": 41.6}
@@ -580,21 +632,16 @@ def analizar_mlb_pro_v20(partido, game_pk=None, predictor_hr=None):
     except Exception:
         ou_linea = 8.5
 
-    # Pitcheo dominante (K/9 alto + ERA baja) empuja al UNDER. Para TOTALES, el
-    # abridor del día es la señal #1; un modelo de carreras a nivel EQUIPO no
-    # mejoró el O/U en backtest (47% vs 50.6% baseline: los totales MLB son muy
-    # eficientes y el modelo de equipo ignora al abridor). Por eso O/U usa pitcheo.
-    factor_pitcheo = (k9_l + k9_v) / 2 - 7.5 + (4.2 - (era_l + era_v) / 2) * 1.5
+    # O/U honesto calibrado con backtest real (ver _analizar_ou): la desviación
+    # de los ABRIDORES vs liga es la única señal (centrada en 0), la varianza es
+    # la REAL de los totales 2026 (σ=4.5) y sin ½ carrera de edge se PASA.
     pf_runs = _park_factor(venue)  # parques de HR también suben carreras
-    total_proyectado = max(5.0, round(ou_linea - factor_pitcheo * 0.55 + (pf_runs - 1.0) * 4, 1))
-    # Probabilidad REAL del over con Poisson sobre el total proyectado.
-    p_over_tot = _poisson_over(total_proyectado, ou_linea)
-    p_under_tot = 1.0 - p_over_tot
-    if p_over_tot >= p_under_tot:
-        ou_pick, ou_conf = "OVER", int(min(75, round(p_over_tot * 100)))
+    ou_pick, ou_conf, total_proyectado, p_over_pct = _analizar_ou(
+        ou_linea, era_l, era_v, k9_l, k9_v, pf_runs)
+    if ou_pick:
+        razones.append(f"O/U: proy {total_proyectado} vs línea {ou_linea} → {ou_pick} {ou_conf}% (σ real 4.5)")
     else:
-        ou_pick, ou_conf = "UNDER", int(min(75, round(p_under_tot * 100)))
-    razones.append(f"O/U Poisson (pitcheo+estadio): proy {total_proyectado} vs línea {ou_linea} → {ou_pick} {ou_conf}%")
+        razones.append(f"O/U: proy {total_proyectado} ≈ línea {ou_linea} → sin edge, PASAR")
 
     # ── 7. Candidatos HR ────────────────────────────────────────────────
     # Primero intentar el predictor con lineup oficial (si ya se publicó);

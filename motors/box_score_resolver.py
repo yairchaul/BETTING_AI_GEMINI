@@ -109,6 +109,22 @@ def _match_juego(evento, juegos):
     return None
 
 
+def _estado_de(res):
+    """Mapea el resultado de calificar un pick a estado de pick_memory.
+    True→ganado, False→perdido, "push"→push (línea exacta: se devuelve la apuesta,
+    NO cuenta como pérdida en el win-rate)."""
+    if res == "push":
+        return "push"
+    return "ganado" if res else "perdido"
+
+
+def _grade_linea(valor, linea, es_over):
+    """Califica OVER/UNDER contra una línea. Empate exacto (línea entera) = push."""
+    if valor == linea:
+        return "push"
+    return valor > linea if es_over else valor < linea
+
+
 def _resolver_mlb(pendientes, progreso_cb=None):
     por_fecha = defaultdict(list)
     for p in pendientes:
@@ -143,10 +159,10 @@ def _resolver_mlb(pendientes, progreso_cb=None):
                 jugador = _norm(re.split(r"over|under", pick_txt, flags=re.I)[0])
                 bat = _buscar_jugador(box_cache[j["gamePk"]]["bateadores"], jugador)
                 if bat is not None:
-                    res = bat["tb"] > linea if "over" in pl else bat["tb"] < linea
+                    res = _grade_linea(bat["tb"], linea, "over" in pl)
             elif mercado == "TOTAL" or "over" in pl or "under" in pl:
                 linea = _num_en(pick_txt) or 8.5
-                res = total > linea if "over" in pl else total < linea
+                res = _grade_linea(total, linea, "over" in pl)
             elif "HOME RUN" in mercado or " hr" in pl or "pega hr" in pl:
                 if j["gamePk"] not in box_cache:
                     box_cache[j["gamePk"]] = _mlb_boxscore(j["gamePk"])
@@ -161,10 +177,10 @@ def _resolver_mlb(pendientes, progreso_cb=None):
                 pitcher = _norm(re.split(r"over|under", pick_txt, flags=re.I)[0])
                 pit = _buscar_jugador(box_cache[j["gamePk"]]["pitchers"], pitcher)
                 if pit is not None:
-                    res = pit["k"] > linea if "over" in pl else pit["k"] < linea
+                    res = _grade_linea(pit["k"], linea, "over" in pl)
 
             if res is not None:
-                pick_memory.resolver(p["id"], "ganado" if res else "perdido", marcador)
+                pick_memory.resolver(p["id"], _estado_de(res), marcador)
                 n += 1
         if progreso_cb:
             progreso_cb(f"MLB {fecha}: {n} resueltos")
@@ -268,17 +284,17 @@ def _resolver_nba(pendientes, progreso_cb=None):
                 res = ganador in _norm(pick_txt)
             elif "TOTAL" in mercado and "OVER" in pick_txt.upper():
                 linea = _num_en(pick_txt) or 225.5
-                res = total > linea
+                res = _grade_linea(total, linea, True)
             elif "TOTAL" in mercado and "UNDER" in pick_txt.upper():
                 linea = _num_en(pick_txt) or 225.5
-                res = total < linea
+                res = _grade_linea(total, linea, False)
             elif "PROP" in mercado:
                 if j["id"] not in box_cache:
                     box_cache[j["id"]] = _nba_boxscore(j["id"])
                 res = _grade_prop_nba(pick_txt, box_cache[j["id"]])
 
             if res is not None:
-                pick_memory.resolver(p["id"], "ganado" if res else "perdido", marcador)
+                pick_memory.resolver(p["id"], _estado_de(res), marcador)
                 n += 1
         if progreso_cb:
             progreso_cb(f"NBA {fecha}: {n} resueltos")
@@ -302,7 +318,7 @@ def _grade_prop_nba(pick_txt, boxscore):
     jug = _buscar_jugador(boxscore, jugador)
     if jug is None:
         return None
-    return jug[stat_key] > linea if "over" in pl else jug[stat_key] < linea
+    return _grade_linea(jug[stat_key], linea, "over" in pl)
 
 
 # ══════════════════════════ UFC ══════════════════════════
@@ -327,8 +343,7 @@ def _grade_ufc(mercado, pick_txt, pelea, metodo=None):
     # Total de rounds (OVER/UNDER X.5)
     if "ROUNDS" in mercado or "round" in pl or "asalto" in pl:
         linea = _num_en(pl) or 1.5
-        paso = rfinal > linea
-        return paso if "over" in pl else (not paso)
+        return _grade_linea(rfinal, linea, "over" in pl)
     # Gana por KO/TKO
     if "KO" in mercado or "ko" in pl:
         return (ganador in _norm(pick_txt)) and (metodo == "KO/TKO")
@@ -409,7 +424,7 @@ def _resolver_ufc(pendientes, progreso_cb=None):
         res = _grade_ufc(mercado, p.get("pick", ""), pel, met)
         if res is not None:
             marcador = f'Gana {pel.get("ganador_real","?")} (R{pel.get("round_final",0)}, {met or "?"})'
-            pick_memory.resolver(p["id"], "ganado" if res else "perdido", marcador)
+            pick_memory.resolver(p["id"], _estado_de(res), marcador)
             n += 1
     if progreso_cb:
         progreso_cb(f"UFC: {n} resueltos")
